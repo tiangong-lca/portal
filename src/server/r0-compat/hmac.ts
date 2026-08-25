@@ -2,6 +2,7 @@ import "server-only";
 
 const keyIdPattern = /^[A-Za-z0-9._-]{1,64}$/;
 const base64UrlPattern = /^[A-Za-z0-9_-]+$/;
+const functionPathPattern = /^\/functions\/v1\/[a-z0-9_]{1,128}$/;
 
 export const r0CompatFunctionPath = "/functions/v1/portal_r0_hmac_verify_v1";
 
@@ -12,7 +13,7 @@ type PortalHmacInput = {
   timestamp: number;
   nonce: string;
   method?: "POST";
-  functionPath?: typeof r0CompatFunctionPath;
+  functionPath?: string;
 };
 
 type PortalHmacResult = {
@@ -53,6 +54,16 @@ export function createPortalNonce(): string {
   return encodeBase64Url(crypto.getRandomValues(new Uint8Array(16)));
 }
 
+export function validatePortalHmacCredentials(keyId: string, secret: string): void {
+  if (!keyIdPattern.test(keyId)) {
+    throw new Error("Invalid Portal HMAC keyId");
+  }
+
+  if (decodeBase64Url(secret).byteLength < 32) {
+    throw new Error("Portal HMAC secret must contain at least 256 bits");
+  }
+}
+
 export async function signPortalHmac({
   rawBody,
   keyId,
@@ -62,12 +73,14 @@ export async function signPortalHmac({
   method = "POST",
   functionPath = r0CompatFunctionPath,
 }: PortalHmacInput): Promise<PortalHmacResult> {
-  if (!keyIdPattern.test(keyId)) {
-    throw new Error("Invalid Portal HMAC keyId");
-  }
+  validatePortalHmacCredentials(keyId, secret);
 
   if (!Number.isSafeInteger(timestamp) || timestamp <= 0) {
     throw new Error("Invalid Portal HMAC timestamp");
+  }
+
+  if (!functionPathPattern.test(functionPath)) {
+    throw new Error("Invalid Portal Edge Function path");
   }
 
   if (decodeBase64Url(nonce).byteLength !== 16) {
@@ -75,10 +88,6 @@ export async function signPortalHmac({
   }
 
   const secretBytes = decodeBase64Url(secret);
-
-  if (secretBytes.byteLength < 32) {
-    throw new Error("Portal HMAC secret must contain at least 256 bits");
-  }
 
   const bodyBytes = new Uint8Array(rawBody.byteLength);
   bodyBytes.set(rawBody);

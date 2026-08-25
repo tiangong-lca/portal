@@ -1,0 +1,338 @@
+{
+  "datasetProcess": {
+    "schemaVersion": "portal.public-dataset.v1",
+    "key": {
+      "kind": "process",
+      "id": "11111111-1111-1111-1111-111111111111",
+      "version": "01.00.000"
+    },
+    "accessLevel": "open",
+    "capabilities": {
+      "metadataVisible": true,
+      "exchangesVisible": true,
+      "lciaVisible": true,
+      "publicArtifactVisible": false,
+      "citationVisible": true,
+      "policyVersion": "portal-capability-policy.v1",
+      "reasonCodes": ["state_100_public"]
+    },
+    "metadata": {
+      "kind": "process",
+      "names": [{ "language": "en", "value": "Electricity, medium voltage" }],
+      "generalComment": [{ "language": "en", "value": "Public process fixture" }],
+      "referenceProduct": [{ "language": "en", "value": "Electricity" }],
+      "functionalUnit": {
+        "amount": "1",
+        "unit": "kWh",
+        "description": [{ "language": "en", "value": "1 kWh electricity" }]
+      },
+      "classifications": [
+        {
+          "system": "CPC",
+          "code": "17100",
+          "label": [{ "language": "en", "value": "Electrical energy" }]
+        }
+      ],
+      "geography": {
+        "code": "CN",
+        "label": [{ "language": "en", "value": "China" }],
+        "precision": "country"
+      },
+      "referenceYear": 2024,
+      "validUntilYear": null,
+      "technology": [{ "language": "en", "value": "Grid mix" }],
+      "dataSetType": "Unit process, black box",
+      "allocationAndModeling": [{ "language": "en", "value": "Physical allocation" }],
+      "cutoffRules": [],
+      "quality": {
+        "reviewStatus": "reviewed",
+        "timeRepresentativeness": null,
+        "geographyRepresentativeness": null,
+        "technologyRepresentativeness": null,
+        "completeness": null,
+        "uncertainty": null
+      },
+      "source": {
+        "databaseId": "tg",
+        "databaseVersion": "2026.1",
+        "sourceRecordId": "source-1",
+        "providerName": [{ "language": "en", "value": "TianGong" }],
+        "licenseId": "CC-BY-4.0",
+        "licenseUrl": "https://example.com/license"
+      },
+      "compliance": [
+        {
+          "system": { "id": null, "version": null, "name": [] },
+          "overall": null,
+          "nomenclature": null,
+          "methodological": null,
+          "review": null,
+          "documentation": null,
+          "quality": null
+        }
+      ],
+      "administration": {
+        "workflowStatus": "published",
+        "copyright": false,
+        "owner": { "id": null, "version": null, "name": [] },
+        "commissioner": { "id": null, "version": null, "name": [] },
+        "dataGenerator": { "id": null, "version": null, "name": [] },
+        "dataEntryBy": { "id": null, "version": null, "name": [] },
+        "project": [],
+        "intendedApplications": [],
+        "accessRestrictions": [],
+        "licenseType": "free of charge for all users and uses",
+        "registrationNumber": null,
+        "lastRevisionAt": "2026-08-25T12:00:00.000000Z",
+        "permanentDataSetUri": "https://example.com/datasets/process-1",
+        "precedingVersion": { "id": null, "version": null, "name": [] }
+      }
+    },
+    "provenance": {
+      "importBatchId": null,
+      "normalizationRuleVersion": "normalize.v1",
+      "fieldOrigins": [
+        {
+          "path": "metadata.names",
+          "kind": "original",
+          "ruleId": null,
+          "ruleVersion": null,
+          "confidence": null,
+          "reason": []
+        }
+      ]
+    },
+    "publication": {
+      "publicationId": "44444444-4444-4444-4444-444444444444",
+      "packageId": "55555555-5555-5555-5555-555555555555",
+      "packageVersion": "release-2026.1",
+      "publishedAt": "2026-08-25T12:00:00.000000Z",
+      "lciaMethods": [{ "id": "33333333-3333-3333-3333-333333333333", "version": "01.00.000" }]
+    },
+    "modifiedAt": "2026-08-25T12:00:00.000000Z"
+  },
+  "datasetFlow": {
+    "schemaVersion": "portal.public-dataset.v1",
+    "key": {
+      "kind": "flow",
+      "id": "22222222-2222-2222-2222-222222222222",
+      "version": "01.00.000"
+    },
+    "accessLevel": "metadata_only",
+    "capabilities": {
+      "metadataVisible": true,
+      "exchangesVisible": false,
+      "lciaVisible": false,
+      "publicArtifactVisible": false,
+      "citationVisible": true,
+      "policyVersion": "portal-capability-policy.v1",
+      "reasonCodes": ["state_200_metadata_only"]
+    },
+    "metadata": {
+      "kind": "flow",
+      "names": [{ "language": "en", "value": "Carbon dioxide" }],
+      "synonyms": [{ "language": "en", "value": "CO2" }],
+      "generalComment": [],
+      "casNumber": "124-38-9",
+      "flowType": "elementary",
+      "classifications": [],
+      "locationOfSupply": { "code": null, "label": [] },
+      "referenceFlowProperty": {
+        "id": "66666666-6666-6666-6666-666666666666",
+        "version": "01.00.000",
+        "name": [{ "language": "en", "value": "Mass" }]
+      },
+      "source": {
+        "databaseId": null,
+        "databaseVersion": null,
+        "sourceRecordId": null,
+        "providerName": [],
+        "licenseId": null,
+        "licenseUrl": null
+      },
+      "compliance": [],
+      "administration": {
+        "workflowStatus": null,
+        "copyright": null,
+        "owner": { "id": null, "version": null, "name": [] },
+        "commissioner": { "id": null, "version": null, "name": [] },
+        "dataGenerator": { "id": null, "version": null, "name": [] },
+        "dataEntryBy": { "id": null, "version": null, "name": [] },
+        "project": [],
+        "intendedApplications": [],
+        "accessRestrictions": [],
+        "licenseType": null,
+        "registrationNumber": null,
+        "lastRevisionAt": null,
+        "permanentDataSetUri": null,
+        "precedingVersion": { "id": null, "version": null, "name": [] }
+      }
+    },
+    "provenance": {
+      "importBatchId": null,
+      "normalizationRuleVersion": null,
+      "fieldOrigins": []
+    },
+    "publication": null,
+    "modifiedAt": "2026-08-25T12:00:00Z"
+  },
+  "search": {
+    "schemaVersion": "portal.public-search-page.v1",
+    "kind": "process",
+    "queryFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "items": [
+      {
+        "key": {
+          "kind": "process",
+          "id": "11111111-1111-1111-1111-111111111111",
+          "version": "01.00.000"
+        },
+        "accessLevel": "open",
+        "capabilities": {
+          "metadataVisible": true,
+          "exchangesVisible": true,
+          "lciaVisible": true,
+          "publicArtifactVisible": false,
+          "citationVisible": true,
+          "policyVersion": "portal-capability-policy.v1",
+          "reasonCodes": ["state_100_public"]
+        },
+        "names": [{ "language": "en", "value": "Electricity, medium voltage" }],
+        "summary": [],
+        "geography": { "code": "CN", "label": [], "precision": "country" },
+        "referenceYear": 2024,
+        "modifiedAt": "2026-08-25T12:00:00Z",
+        "match": { "kind": "lexical", "score": 0.9, "reasonCodes": ["name"] }
+      }
+    ],
+    "nextCursor": "eyJ2IjoxfQ"
+  },
+  "exchanges": {
+    "schemaVersion": "portal.public-exchange-page.v1",
+    "process": { "id": "11111111-1111-1111-1111-111111111111", "version": "01.00.000" },
+    "processContext": {
+      "functionalUnit": {
+        "amount": "1",
+        "unit": "kWh",
+        "description": [{ "language": "en", "value": "1 kWh electricity" }]
+      },
+      "capabilityPolicyVersion": "portal-capability-policy.v1"
+    },
+    "rows": [
+      {
+        "internalId": "1",
+        "kind": "elementary",
+        "direction": "output",
+        "flow": {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "version": "01.00.000",
+          "name": [{ "language": "en", "value": "Carbon dioxide" }]
+        },
+        "classification": null,
+        "amount": "1.25",
+        "unit": "kg",
+        "isQuantitativeReference": false,
+        "uncertainty": { "type": "uniform", "minimum": "0.1", "maximum": "2" },
+        "origin": []
+      }
+    ],
+    "nextCursor": null
+  },
+  "facets": {
+    "schemaVersion": "portal.public-facets.v1",
+    "kind": "all",
+    "queryFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "groups": [
+      {
+        "id": "kind",
+        "label": [{ "language": "en", "value": "Object type" }],
+        "values": [
+          {
+            "value": "process",
+            "label": [{ "language": "en", "value": "Process" }],
+            "count": 1
+          }
+        ],
+        "hasMore": false
+      }
+    ]
+  },
+  "versions": {
+    "schemaVersion": "portal.public-version-page.v1",
+    "dataset": { "kind": "process", "id": "11111111-1111-1111-1111-111111111111" },
+    "items": [
+      {
+        "key": {
+          "kind": "process",
+          "id": "11111111-1111-1111-1111-111111111111",
+          "version": "01.00.000"
+        },
+        "accessLevel": "open",
+        "capabilities": {
+          "metadataVisible": true,
+          "exchangesVisible": true,
+          "lciaVisible": true,
+          "publicArtifactVisible": false,
+          "citationVisible": true,
+          "policyVersion": "portal-capability-policy.v1",
+          "reasonCodes": ["state_100_public"]
+        },
+        "modifiedAt": "2026-08-25T12:00:00Z",
+        "isLatest": true
+      }
+    ],
+    "nextCursor": null
+  },
+  "sitemap": {
+    "schemaVersion": "portal.public-sitemap-page.v1",
+    "items": [
+      {
+        "key": {
+          "kind": "process",
+          "id": "11111111-1111-1111-1111-111111111111",
+          "version": "01.00.000"
+        },
+        "modifiedAt": "2026-08-25T12:00:00Z"
+      }
+    ],
+    "nextCursor": null
+  },
+  "lcia": {
+    "schemaVersion": "portal.published-lcia-page.v1",
+    "mode": "process_all_impacts",
+    "publication": {
+      "publicationId": "44444444-4444-4444-4444-444444444444",
+      "packageId": "55555555-5555-5555-5555-555555555555",
+      "packageVersion": "release-2026.1",
+      "publishedAt": "2026-08-25T12:00:00Z",
+      "evidenceHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "rows": [
+      {
+        "process": {
+          "id": "11111111-1111-1111-1111-111111111111",
+          "version": "01.00.000"
+        },
+        "functionalUnit": {
+          "amount": "1",
+          "unit": "kWh",
+          "description": [{ "language": "en", "value": "1 kWh electricity" }]
+        },
+        "geography": { "code": "CN", "precision": "country" },
+        "referenceYear": 2024,
+        "method": {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "version": "01.00.000"
+        },
+        "impact": {
+          "id": "climate-change",
+          "name": [{ "language": "en", "value": "Climate change" }]
+        },
+        "value": "12.5",
+        "unit": "kg CO2-Eq",
+        "evidenceStatus": "verified"
+      }
+    ],
+    "nextCursor": null
+  }
+}
