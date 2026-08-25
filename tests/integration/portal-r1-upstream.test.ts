@@ -106,6 +106,11 @@ describe("Portal R1 fixture upstream", () => {
     expect(facets.kind).toBe("all");
     expect(sitemap.items.map((item) => item.key.kind)).toEqual(["flow", "process"]);
     expect(fixture.receipts.rpcAccepted).toBe(8);
+    expect(fixture.receipts.rpcByName).toMatchObject({
+      portal_get_dataset_v1: 2,
+      portal_search_flows_v1: 1,
+      portal_search_processes_v1: 1,
+    });
     expect(fixture.receipts.lastRpc).toMatchObject({ name: "portal_sitemap_entries_v1" });
 
     const missingProfile = await fetch(`${fixture.origin}/rest/v1/rpc/portal_search_processes_v1`, {
@@ -130,6 +135,12 @@ describe("Portal R1 fixture upstream", () => {
     );
     expect(bearerCredential.status).toBe(403);
     expect(fixture.receipts.rejected).toBe(2);
+
+    const receiptProbe = await fetch(`${fixture.origin}/receipts`);
+    expect(await receiptProbe.json()).toMatchObject({
+      schemaVersion: "portal.r1-fixture-receipts.v1",
+      rpcAccepted: 8,
+    });
   });
 
   it("verifies HMAC against the exact raw body before returning LCIA", async () => {

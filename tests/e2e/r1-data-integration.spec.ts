@@ -1,6 +1,33 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type APIRequestContext } from "@playwright/test";
 
 import environmentFixture from "../fixtures/portal/r1-environments.json" with { type: "json" };
+
+type FixtureReceipts = {
+  rpcByName: Record<string, number>;
+};
+
+async function fixtureReceipts(request: APIRequestContext): Promise<FixtureReceipts> {
+  const response = await request.get("http://127.0.0.1:4328/receipts");
+  expect(response.ok()).toBe(true);
+  return (await response.json()) as FixtureReceipts;
+}
+
+test("deduplicates the exact public detail envelope within one render", async ({
+  page,
+  request,
+}) => {
+  const before = await fixtureReceipts(request);
+  const response = await page.goto("/zh-CN/process/11111111-1111-1111-1111-111111111111@01.00.000");
+
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Electricity, medium voltage",
+  );
+  const after = await fixtureReceipts(request);
+  expect(
+    (after.rpcByName.portal_get_dataset_v1 ?? 0) - (before.rpcByName.portal_get_dataset_v1 ?? 0),
+  ).toBe(1);
+});
 
 test("routes signed LCIA through the isolated Preview fixture", async ({ page, request }) => {
   const fixtureHealth = await request.get("http://127.0.0.1:4328/health");

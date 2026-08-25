@@ -18,6 +18,7 @@ type FixtureRequestReceipt = {
 
 export type PortalR1FixtureReceipts = {
   rpcAccepted: number;
+  rpcByName: Record<string, number>;
   lciaAccepted: number;
   rejected: number;
   lastRpc: FixtureRequestReceipt | null;
@@ -332,6 +333,7 @@ export async function startPortalR1FixtureServer(
 
   const receipts: PortalR1FixtureReceipts = {
     rpcAccepted: 0,
+    rpcByName: {},
     lciaAccepted: 0,
     rejected: 0,
     lastRpc: null,
@@ -345,6 +347,13 @@ export async function startPortalR1FixtureServer(
         writeJson(response, 200, {
           schemaVersion: "portal.r1-fixture-health.v1",
           environment: options.environment,
+        });
+        return;
+      }
+      if (request.method === "GET" && requestUrl.pathname === "/receipts") {
+        writeJson(response, 200, {
+          ...receipts,
+          schemaVersion: "portal.r1-fixture-receipts.v1",
         });
         return;
       }
@@ -380,6 +389,7 @@ export async function startPortalR1FixtureServer(
         }
 
         receipts.rpcAccepted += 1;
+        receipts.rpcByName[name] = (receipts.rpcByName[name] ?? 0) + 1;
         receipts.lastRpc = { ...bodyReceipt(rawBody), name };
         writeJson(response, 200, payload);
         return;
