@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --background: oklch(0.985 0.004 300);
+  --foreground: oklch(0.205 0.02 300);
+  --primary: #5c246a;
+  --primary-foreground: #ffffff;
+}
+
+.dark {
+  --background: oklch(0.145 0.018 300);
+  --foreground: oklch(0.97 0.008 300);
+  --primary: #9e3ffd;
+  --primary-foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    "Source Sans 3", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+}

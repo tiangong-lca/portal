@@ -1,0 +1,12 @@
+{
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "outputDirectory": ".next",
+  "nodeVersion": "24.18.0",
+  "cloudFunctions": {
+    "overseasRegions": ["na-ashburn"],
+    "nodejs": {
+      "maxDuration": 30
+    }
+  }
+}

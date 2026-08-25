@@ -28,16 +28,16 @@ related:
 
 # tiangong-lca-portal 产品与技术方案
 
-| 项目         | 约束                                                                                                  |
-| ------------ | ----------------------------------------------------------------------------------------------------- |
-| 状态         | 最终实施方案，尚未实施                                                                                |
-| 产品形态     | 面向匿名用户的公共 LCA 数据检索与展示门户                                                             |
-| 技术形态     | Next.js App Router 前后端同构，部署到 EdgeOne Makers                                                  |
-| 数据边界     | 只读消费现有数据；不生产、修改、审核或维护 LCA 数据                                                   |
-| 权限边界     | 终端用户无注册、登录或会话；EdgeOne 后端使用 Portal 专用 HMAC 请求签名                                |
-| 机器接口边界 | Portal 不提供开发者 API、GraphQL、MCP 或 Skills 产品                                                  |
-| 品牌边界     | 默认浅/深主色与 `tiangong-lca-next` 一致；其余使用 Portal UI 框架最佳实践；主色、Logo、favicon 可替换 |
-| 文档原则     | 只描述当前目标状态；变更历史由 Git 承载                                                               |
+| 项目 | 约束 |
+| --- | --- |
+| 状态 | 最终实施方案；Phase 0 bootstrap 进行中 |
+| 产品形态 | 面向匿名用户的公共 LCA 数据检索与展示门户 |
+| 技术形态 | Next.js App Router 前后端同构，部署到 EdgeOne Makers |
+| 数据边界 | 只读消费现有数据；不生产、修改、审核或维护 LCA 数据 |
+| 权限边界 | 终端用户无注册、登录或会话；EdgeOne 后端使用 Portal 专用 HMAC 请求签名 |
+| 机器接口边界 | Portal 不提供开发者 API、GraphQL、MCP 或 Skills 产品 |
+| 品牌边界 | 默认浅/深主色与 `tiangong-lca-next` 一致；其余使用 Portal UI 框架最佳实践；主色、Logo、favicon 可替换 |
+| 文档原则 | 只描述当前目标状态；变更历史由 Git 承载 |
 
 ## 1. 产品定位
 
@@ -91,17 +91,17 @@ Portal 没有后台机器用户、登录页面或浏览器 token/cookie。高级
 
 ## 3. 跨项目职责
 
-| 项目                                   | 责任                                                           | 与 Portal 的关系                                     |
-| -------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------- |
-| `tiangong-lca-portal`                  | 公共匿名只读 Web 产品                                          | 消费公共契约并负责页面体验                           |
-| `tiangong-lca-next`                    | 登录后的产品工作台、私有/团队数据与高级能力                    | 仅作为行为与数据访问模式参考；默认不改代码           |
-| `database-engine`                      | Schema、RPC、RLS、ACL、索引和公共读取 façade                   | 为 Portal 提供固定公共范围的权威只读契约             |
-| `tiangong-lca-edge-functions`          | Hybrid Search、查询改写、Embedding、发布态 LCIA 投影与滥用防护 | 为匿名终端用户提供仅受 HMAC 服务端调用的公共读取入口 |
-| `tiangong-lca-worker`                  | 求解、计算证据和长任务                                         | Portal 不直接调用；只有公共发布范围改变时才需要修改  |
-| `tiangong-lca-release`                 | LCI/LCIA 发布控制面                                            | Portal 只读取已经公开的发布投影                      |
-| `tidas` / `tidas-sdk`                  | 对象、Schema 和类型事实                                        | Portal 的术语和字段解释以 TIDAS/ILCD 为准            |
-| `data-foundry` / `cli` / `tidas-tools` | 数据生产、导入、验证和转换                                     | Portal 不参与                                        |
-| `lca-workspace`                        | 多仓治理、tracked delivery 和精确子模块集成                    | 在所有子仓交付完成后集成精确 SHA                     |
+| 项目 | 责任 | 与 Portal 的关系 |
+| --- | --- | --- |
+| `tiangong-lca-portal` | 公共匿名只读 Web 产品 | 消费公共契约并负责页面体验 |
+| `tiangong-lca-next` | 登录后的产品工作台、私有/团队数据与高级能力 | 仅作为行为与数据访问模式参考；默认不改代码 |
+| `database-engine` | Schema、RPC、RLS、ACL、索引和公共读取 façade | 为 Portal 提供固定公共范围的权威只读契约 |
+| `tiangong-lca-edge-functions` | Hybrid Search、查询改写、Embedding、发布态 LCIA 投影与滥用防护 | 为匿名终端用户提供仅受 HMAC 服务端调用的公共读取入口 |
+| `tiangong-lca-worker` | 求解、计算证据和长任务 | Portal 不直接调用；只有公共发布范围改变时才需要修改 |
+| `tiangong-lca-release` | LCI/LCIA 发布控制面 | Portal 只读取已经公开的发布投影 |
+| `tidas` / `tidas-sdk` | 对象、Schema 和类型事实 | Portal 的术语和字段解释以 TIDAS/ILCD 为准 |
+| `data-foundry` / `cli` / `tidas-tools` | 数据生产、导入、验证和转换 | Portal 不参与 |
+| `lca-workspace` | 多仓治理、tracked delivery 和精确子模块集成 | 在所有子仓交付完成后集成精确 SHA |
 
 ## 4. 公共数据与权限契约
 
@@ -130,13 +130,13 @@ type PublicCapabilities = {
 
 能力的唯一权威来源为：
 
-| 能力                    | 权威计算者                              | 成立条件                                                         |
-| ----------------------- | --------------------------------------- | ---------------------------------------------------------------- |
-| `metadataVisible`       | `database-engine` 公共 façade           | exact row 为允许对象类型且状态为 100/200                         |
-| `exchangesVisible`      | `database-engine` 公共 façade           | metadata 可见，且数据集许可/公开策略明确允许 exchange projection |
-| `lciaVisible`           | `data_product_results` 公共 publication | 当前 public publication 包含 exact Process 版本及请求方法        |
-| `publicArtifactVisible` | `lca_release_results`                   | 返回 exact release/public artifact descriptor                    |
-| `citationVisible`       | `database-engine` 公共 façade           | metadata 可见且 identity/version 完整                            |
+| 能力 | 权威计算者 | 成立条件 |
+| --- | --- | --- |
+| `metadataVisible` | `database-engine` 公共 façade | exact row 为允许对象类型且状态为 100/200 |
+| `exchangesVisible` | `database-engine` 公共 façade | metadata 可见，且数据集许可/公开策略明确允许 exchange projection |
+| `lciaVisible` | `data_product_results` 公共 publication | 当前 public publication 包含 exact Process 版本及请求方法 |
+| `publicArtifactVisible` | `lca_release_results` | 返回 exact release/public artifact descriptor |
+| `citationVisible` | `database-engine` 公共 façade | metadata 可见且 identity/version 完整 |
 
 Portal 只能进一步隐藏能力，不能把 `false` 改成 `true`。
 
@@ -315,25 +315,25 @@ DTO 不返回：
 
 首发语言为 `zh-CN` 与 `en`，语言进入路径。根路径只做语言协商，不承载内容。
 
-| 路由                                         | 用途                 | 渲染                    | 索引                           |
-| -------------------------------------------- | -------------------- | ----------------------- | ------------------------------ |
-| `/:locale`                                   | 首页                 | SSG/ISR                 | `index,follow`                 |
-| `/:locale/search?...`                        | 搜索与分面           | SSR/RSC                 | `noindex,follow`               |
-| `/:locale/process/:uuid@:version`            | Process Overview     | SSR/RSC + Data Cache    | `index,follow`                 |
-| `/:locale/process/:uuid@:version/exchanges`  | Exchanges 分页       | SSR/RSC + Data Cache    | `index,follow`，正文需有摘要   |
-| `/:locale/process/:uuid@:version/lcia`       | 公开 LCIA            | SSR/RSC + Data Cache    | `index,follow`                 |
-| `/:locale/process/:uuid@:version/method`     | Scope & Method       | SSR/RSC + Data Cache    | `index,follow`                 |
-| `/:locale/process/:uuid@:version/quality`    | Data Quality         | SSR/RSC + Data Cache    | `index,follow`                 |
-| `/:locale/process/:uuid@:version/provenance` | Provenance           | SSR/RSC + Data Cache    | `index,follow`                 |
-| `/:locale/process/:uuid@:version/versions`   | 版本列表与 diff 摘要 | SSR/RSC + Data Cache    | `index,follow`                 |
-| `/:locale/process/:uuid`                     | 最新版本别名         | 动态 307 到精确版本     | 不单独索引                     |
-| `/:locale/flow/:uuid@:version`               | Flow 详情            | SSR/RSC + Data Cache    | `index,follow`                 |
-| `/:locale/compare?ids=...`                   | 2–4 条比较           | SSR/RSC + Client island | `noindex,follow`               |
-| `/:locale/browse/:dimension`                 | 受控目录浏览         | ISR/RSC                 | 仅规范目录页可索引             |
-| `/:locale/collections`                       | 本地候选集           | Client island           | `noindex,nofollow`             |
-| `/:locale/methodology`                       | 方法论与字段解释     | SSG                     | `index,follow`                 |
-| `/:locale/databases`                         | 数据库目录           | 扩展阶段                | `index,follow`                 |
-| `/:locale/map`                               | 地图                 | 扩展阶段                | `noindex,follow`，提供等价表格 |
+| 路由 | 用途 | 渲染 | 索引 |
+| --- | --- | --- | --- |
+| `/:locale` | 首页 | SSG/ISR | `index,follow` |
+| `/:locale/search?...` | 搜索与分面 | SSR/RSC | `noindex,follow` |
+| `/:locale/process/:uuid@:version` | Process Overview | SSR/RSC + Data Cache | `index,follow` |
+| `/:locale/process/:uuid@:version/exchanges` | Exchanges 分页 | SSR/RSC + Data Cache | `index,follow`，正文需有摘要 |
+| `/:locale/process/:uuid@:version/lcia` | 公开 LCIA | SSR/RSC + Data Cache | `index,follow` |
+| `/:locale/process/:uuid@:version/method` | Scope & Method | SSR/RSC + Data Cache | `index,follow` |
+| `/:locale/process/:uuid@:version/quality` | Data Quality | SSR/RSC + Data Cache | `index,follow` |
+| `/:locale/process/:uuid@:version/provenance` | Provenance | SSR/RSC + Data Cache | `index,follow` |
+| `/:locale/process/:uuid@:version/versions` | 版本列表与 diff 摘要 | SSR/RSC + Data Cache | `index,follow` |
+| `/:locale/process/:uuid` | 最新版本别名 | 动态 307 到精确版本 | 不单独索引 |
+| `/:locale/flow/:uuid@:version` | Flow 详情 | SSR/RSC + Data Cache | `index,follow` |
+| `/:locale/compare?ids=...` | 2–4 条比较 | SSR/RSC + Client island | `noindex,follow` |
+| `/:locale/browse/:dimension` | 受控目录浏览 | ISR/RSC | 仅规范目录页可索引 |
+| `/:locale/collections` | 本地候选集 | Client island | `noindex,nofollow` |
+| `/:locale/methodology` | 方法论与字段解释 | SSG | `index,follow` |
+| `/:locale/databases` | 数据库目录 | 扩展阶段 | `index,follow` |
+| `/:locale/map` | 地图 | 扩展阶段 | `noindex,follow`，提供等价表格 |
 
 详情页的“标签页”使用真实子路由，不把主要内容藏在仅客户端可见的 Tab 内。这样可以深链、无 JavaScript 阅读并生成独立 metadata。
 
@@ -598,11 +598,11 @@ type PublicExchangePage = {
 
 数值上下文按数值类型分别验收，不能用 LCIA publication 条件套 Exchange：
 
-| 数值类型                  | 必须同屏或同表关联的上下文                                                                                                                                                          |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Exchange amount           | exact Process ID/version、exchange internal ID/kind/direction、exact Flow ID/version、amount、unit、quantitative-reference 标记、Process functional unit、capability policy version |
-| LCIA result               | exact Process ID/version、functional unit、地理与精度、参考年、LCIA Method ID/version、impact category ID/name、value、unit、publication/package ID/version、publishedAt            |
-| Quality/uncertainty value | exact dataset ID/version、维度名、量表/单位、来源字段或规则版本；缺少量表时只显示原文而不画可比较刻度                                                                               |
+| 数值类型 | 必须同屏或同表关联的上下文 |
+| --- | --- |
+| Exchange amount | exact Process ID/version、exchange internal ID/kind/direction、exact Flow ID/version、amount、unit、quantitative-reference 标记、Process functional unit、capability policy version |
+| LCIA result | exact Process ID/version、functional unit、地理与精度、参考年、LCIA Method ID/version、impact category ID/name、value、unit、publication/package ID/version、publishedAt |
+| Quality/uncertainty value | exact dataset ID/version、维度名、量表/单位、来源字段或规则版本；缺少量表时只显示原文而不画可比较刻度 |
 
 任何上下文缺失都隐藏对应可视化并显示“上下文不完整”，不能把该数值并入比较。
 
@@ -626,19 +626,19 @@ type PublicExchangePage = {
 
 凭据采用至少 256-bit CSPRNG 随机 secret，不使用用户密码、Supabase JWT secret 或已有全局 API key。`keyId` 是可记录的非秘密标识，例如 `portal-prod-2026q3`。配置面明确分为：
 
-| 持有方            | 必需 Secrets                                                                                                                        |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| EdgeOne signer    | `PORTAL_EDGE_KEY_ID`、`PORTAL_EDGE_HMAC_SECRET`                                                                                     |
+| 持有方 | 必需 Secrets |
+| --- | --- |
+| EdgeOne signer | `PORTAL_EDGE_KEY_ID`、`PORTAL_EDGE_HMAC_SECRET` |
 | Supabase verifier | `PORTAL_HMAC_KEY_ID_CURRENT`、`PORTAL_HMAC_SECRET_CURRENT`；轮换期再加 `PORTAL_HMAC_KEY_ID_PREVIOUS`、`PORTAL_HMAC_SECRET_PREVIOUS` |
 
 secret 使用 Base64URL 编码保存，启动时解码并强校验长度；缺失、重复 keyId、无法解码或不足 32 bytes 时 fail closed。keyId 可以进入安全指标，secret 永不进入日志。
 
 反重放、route budget 和 concurrency lease 复用 `tiangong-lca-edge-functions/supabase/functions/_shared/redis_client.ts` 的 Redis provider 约定，不引入 Deno KV：
 
-| 运行目标            | Provider           | 配置                                                                                                                         |
-| ------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| 运行目标 | Provider | 配置 |
+| --- | --- | --- |
 | Supabase Dev / Main | Upstash Redis REST | `REDIS_CLIENT_TYPE=upstash`、`UPSTASH_REDIS_URL`、`UPSTASH_REDIS_TOKEN`、`PORTAL_REDIS_NAMESPACE`、`PORTAL_REDIS_TIMEOUT_MS` |
-| 本地开发与 CI       | Standard Redis     | `REDIS_CLIENT_TYPE=standard`、`REDIS_URL`、可选 `REDIS_PASSWORD`、`PORTAL_REDIS_NAMESPACE`、`PORTAL_REDIS_TIMEOUT_MS`        |
+| 本地开发与 CI | Standard Redis | `REDIS_CLIENT_TYPE=standard`、`REDIS_URL`、可选 `REDIS_PASSWORD`、`PORTAL_REDIS_NAMESPACE`、`PORTAL_REDIS_TIMEOUT_MS` |
 
 Dev 与 Main 使用独立 Upstash database、endpoint、token 和 namespace，并分别存入对应 Supabase project 的 Edge Function Secrets；EdgeOne 不持有 Redis 凭据。`PORTAL_REDIS_NAMESPACE` 固定为 `portal:<environment>:v1`，禁止为空或跨环境复用。`PORTAL_REDIS_TIMEOUT_MS` 默认 500，超时按 guard unavailable 处理。
 
@@ -756,22 +756,22 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 
 安全状态与缓存所有权不能重叠：
 
-| 层                    | 只负责                                                                                                | 明确不负责                                                    |
-| --------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| EdgeOne CDN           | hash 静态资源、构建产物和平台路由                                                                     | 不缓存 Search 或详情动态 HTML，不判断数据可见性               |
-| Next Route/Data Cache | 首页/目录 ISR、详情 DTO、Exchange 页和 LCIA 短缓存、request dedupe                                    | 不缓存用户/团队数据，不缓存 Hybrid 原文                       |
-| Edge Redis            | HMAC nonce、route budget、concurrency lease，以及 Hybrid rewrite/embedding/公共结果的 hash-key 短缓存 | 不缓存页面 HTML、候选集或 Database 权限事实；不决定数据可见性 |
+| 层 | 只负责 | 明确不负责 |
+| --- | --- | --- |
+| EdgeOne CDN | hash 静态资源、构建产物和平台路由 | 不缓存 Search 或详情动态 HTML，不判断数据可见性 |
+| Next Route/Data Cache | 首页/目录 ISR、详情 DTO、Exchange 页和 LCIA 短缓存、request dedupe | 不缓存用户/团队数据，不缓存 Hybrid 原文 |
+| Edge Redis | HMAC nonce、route budget、concurrency lease，以及 Hybrid rewrite/embedding/公共结果的 hash-key 短缓存 | 不缓存页面 HTML、候选集或 Database 权限事实；不决定数据可见性 |
 
-| 内容                              | 策略                                             | 最大陈旧时间                        |
-| --------------------------------- | ------------------------------------------------ | ----------------------------------- |
-| 方法论、词表、静态导航            | 构建时生成                                       | 随部署更新                          |
-| 首页统计、受控目录                | ISR                                              | 15 分钟                             |
-| exact-version visibility envelope | 每次 SSR `no-store` 或最长 60 秒 cache           | 60 秒                               |
-| 精确版本详情与版本列表 DTO        | Next Data Cache + tag                            | 5 分钟；visibility=false 时不得渲染 |
-| Exchanges 分页 DTO                | Next Data Cache + tag                            | 5 分钟；visibility=false 时不得渲染 |
-| 当前公开 LCIA publication         | 短 TTL/tag cache                                 | 5 分钟                              |
-| Search 页面                       | Next `no-store`；Edge 可对公共 hash query 短缓存 | 不跨用户状态                        |
-| sitemap                           | 分片 ISR                                         | 5 分钟                              |
+| 内容 | 策略 | 最大陈旧时间 |
+| --- | --- | --- |
+| 方法论、词表、静态导航 | 构建时生成 | 随部署更新 |
+| 首页统计、受控目录 | ISR | 15 分钟 |
+| exact-version visibility envelope | 每次 SSR `no-store` 或最长 60 秒 cache | 60 秒 |
+| 精确版本详情与版本列表 DTO | Next Data Cache + tag | 5 分钟；visibility=false 时不得渲染 |
+| Exchanges 分页 DTO | Next Data Cache + tag | 5 分钟；visibility=false 时不得渲染 |
+| 当前公开 LCIA publication | 短 TTL/tag cache | 5 分钟 |
+| Search 页面 | Next `no-store`；Edge 可对公共 hash query 短缓存 | 不跨用户状态 |
+| sitemap | 分片 ISR | 5 分钟 |
 
 详情 HTML 为动态 SSR，先读取 visibility envelope，再使用可缓存 DTO。EdgeOne headers 必须阻止 CDN 把动态详情/Search HTML 缓存成长期对象。撤回和能力收紧在 60 秒 visibility SLA 内停止展示；LCIA publication 与 sitemap 在 5 分钟内更新。
 
@@ -959,7 +959,7 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 | ------------------ | -------------------------------------- |
 | Node build         | `24.18.0`                              |
 | package manager    | `pnpm 11.24.0`                         |
-| Next.js            | `16.3.2`                               |
+| Next.js            | `16.3.3`                               |
 | React / React DOM  | `19.2.8`                               |
 | TypeScript         | `7.0.2`                                |
 | Tailwind CSS       | `4.3.3`                                |
@@ -1076,22 +1076,22 @@ tiangong-lca-portal/
 
 EdgeOne 环境变量按 Production/Preview 分开配置：
 
-| 类别          | 变量                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------- |
-| HMAC signer   | `PORTAL_EDGE_KEY_ID`、`PORTAL_EDGE_HMAC_SECRET`                                       |
-| 公共数据      | `SUPABASE_URL`、`SUPABASE_PUBLISHABLE_KEY`、`SITE_URL`                                |
-| 主色          | `PORTAL_LIGHT_PRIMARY`、`PORTAL_DARK_PRIMARY`、`PORTAL_BRAND_VERSION`                 |
-| Logo          | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON`         |
+| 类别 | 变量 |
+| --- | --- |
+| HMAC signer | `PORTAL_EDGE_KEY_ID`、`PORTAL_EDGE_HMAC_SECRET` |
+| 公共数据 | `SUPABASE_URL`、`SUPABASE_PUBLISHABLE_KEY`、`SITE_URL` |
+| 主色 | `PORTAL_LIGHT_PRIMARY`、`PORTAL_DARK_PRIMARY`、`PORTAL_BRAND_VERSION` |
+| Logo | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON` |
 | Logo metadata | `PORTAL_LOGO_ALT_ZH/EN`、`PORTAL_LOGO_WIDTH/HEIGHT`、可选 `PORTAL_BRAND_ASSET_ORIGIN` |
 
 Supabase Edge Function 配置按项目隔离；EdgeOne Preview 只调用 Supabase Dev，EdgeOne Production 只调用 Supabase Main：
 
-| 类别           | Edge Function 配置                                                                                                                  |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| HMAC verifier  | `PORTAL_HMAC_KEY_ID_CURRENT`、`PORTAL_HMAC_SECRET_CURRENT`；轮换期可选 `PORTAL_HMAC_KEY_ID_PREVIOUS`、`PORTAL_HMAC_SECRET_PREVIOUS` |
-| Redis provider | `REDIS_CLIENT_TYPE=upstash`、`UPSTASH_REDIS_URL`、`UPSTASH_REDIS_TOKEN`                                                             |
-| Redis guard    | `PORTAL_REDIS_NAMESPACE=portal:<environment>:v1`、`PORTAL_REDIS_TIMEOUT_MS=500`                                                     |
-| Hybrid gate    | `PORTAL_HYBRID_ENABLED=false`，仅在 R2 gate 全绿的目标环境显式设为 `true`                                                           |
+| 类别 | Edge Function 配置 |
+| --- | --- |
+| HMAC verifier | `PORTAL_HMAC_KEY_ID_CURRENT`、`PORTAL_HMAC_SECRET_CURRENT`；轮换期可选 `PORTAL_HMAC_KEY_ID_PREVIOUS`、`PORTAL_HMAC_SECRET_PREVIOUS` |
+| Redis provider | `REDIS_CLIENT_TYPE=upstash`、`UPSTASH_REDIS_URL`、`UPSTASH_REDIS_TOKEN` |
+| Redis guard | `PORTAL_REDIS_NAMESPACE=portal:<environment>:v1`、`PORTAL_REDIS_TIMEOUT_MS=500` |
+| Hybrid gate | `PORTAL_HYBRID_ENABLED=false`，仅在 R2 gate 全绿的目标环境显式设为 `true` |
 
 HMAC 与 Redis 凭据是秘密，永不渲染；previous HMAC key 只存在于 Supabase Edge Function Secrets 的轮换窗口，不配置到 EdgeOne signer。品牌变量本质上是公共展示配置，经过校验后进入 HTML/CSS metadata。由于 EdgeOne 单变量值上限为 500 bytes，品牌配置使用独立变量，不使用大段 JSON。变量变化只对新 deployment 生效，因此每次换色/Logo 都生成可回滚的部署记录。
 
@@ -1216,12 +1216,12 @@ format/lint
 
 ### 20.1 可发布版本矩阵
 
-| Release                  | 对外状态 | 功能范围                                                                                                                                           | 硬依赖                                                                  | Go/no-go gate                                                                               |
-| ------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| R0 Bootstrap             | 不公开   | 独立仓库、治理、最小 App、EdgeOne compatibility                                                                                                    | Portal 首个 main、workspace onboarding                                  | §17.3 全部 compatibility 项有 exact deployment SHA、runtime 输出、官方文档 URL 与 pass 证据 |
-| R1 Public Catalog MVP    | 首次公开 | lexical/identifier search、Process/Flow 详情、Versions、Exchanges、公开 LCIA、Citation、2–4 条确定性比较、本地候选集/JSON、品牌配置、SEO/i18n/a11y | Database Phase 1 promoted main、HMAC verifier + signed LCIA wrapper、R0 | §23.5 R1 checklist 每项通过；不依赖 Hybrid                                                  |
-| R2 Intelligent Discovery | 增量公开 | HMAC-signed Hybrid、query interpretation、evidence-backed reasons、可选 Process Group、显式 Hybrid-query/含备注 fragment 分享                      | Portal/Edge Phase 3 promoted main、HMAC/admission contract              | §23.6 R2 checklist 每项通过；Hybrid 故障或 guard 拒绝自动回退 lexical                       |
-| R3 Catalog Expansion     | 分项公开 | Database/Data Package、LCIA Method、Relationships、Map、经批准的 Redis 短链                                                                        | 每项独立上游 identity/provenance/privacy contract                       | 每个能力单独 tracked Issue 和验收，不整包放行                                               |
+| Release | 对外状态 | 功能范围 | 硬依赖 | Go/no-go gate |
+| --- | --- | --- | --- | --- |
+| R0 Bootstrap | 不公开 | 独立仓库、治理、最小 App、EdgeOne compatibility | Portal 首个 main、workspace onboarding | §17.3 全部 compatibility 项有 exact deployment SHA、runtime 输出、官方文档 URL 与 pass 证据 |
+| R1 Public Catalog MVP | 首次公开 | lexical/identifier search、Process/Flow 详情、Versions、Exchanges、公开 LCIA、Citation、2–4 条确定性比较、本地候选集/JSON、品牌配置、SEO/i18n/a11y | Database Phase 1 promoted main、HMAC verifier + signed LCIA wrapper、R0 | §23.5 R1 checklist 每项通过；不依赖 Hybrid |
+| R2 Intelligent Discovery | 增量公开 | HMAC-signed Hybrid、query interpretation、evidence-backed reasons、可选 Process Group、显式 Hybrid-query/含备注 fragment 分享 | Portal/Edge Phase 3 promoted main、HMAC/admission contract | §23.6 R2 checklist 每项通过；Hybrid 故障或 guard 拒绝自动回退 lexical |
+| R3 Catalog Expansion | 分项公开 | Database/Data Package、LCIA Method、Relationships、Map、经批准的 Redis 短链 | 每项独立上游 identity/provenance/privacy contract | 每个能力单独 tracked Issue 和验收，不整包放行 |
 
 §23 是完整目标验收；R1 使用 §23.5，R2 使用 §23.6。R2/R3 不能用尚未实现的增强项阻塞 R1，也不能反向放松 R1 的匿名安全、SEO 或可比性门。
 
@@ -1282,16 +1282,16 @@ format/lint
 
 ## 21. 需要创建的 tracked work
 
-| Work package                    | Owner repo                    | 分支/PR 目标                                           | 主要产物                                                                                           |
-| ------------------------------- | ----------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| Portal bootstrap                | `tiangong-lca-portal`         | M1：`main`                                             | 首个仓库提交、治理、可丢弃 EdgeOne compatibility spike                                             |
-| Public read façade              | `database-engine`             | M2：feature from `dev`, PR to `dev`, promote to `main` | RPC、ACL、RLS、索引、tests、types                                                                  |
-| Portal R1 product + HMAC signer | `tiangong-lca-portal`         | M1：PR to `main`                                       | App Router 闭环、same-origin BFF signer、部署级品牌配置                                            |
-| Edge R1 verifier + LCIA         | `tiangong-lca-edge-functions` | M2：feature from `dev`, PR to `dev`, promote to `main` | verifier、keyring、Upstash/Standard Redis 原子 guard adapter、deploy/auth probe、signed LCIA、限流 |
-| Portal R2 Hybrid adapter/UI     | `tiangong-lca-portal`         | M1：PR to `main`                                       | Hybrid BFF adapter、lexical fallback、解释与分享 UI                                                |
-| Edge R2 Hybrid runtime          | `tiangong-lca-edge-functions` | M2：feature from `dev`, PR to `dev`, promote to `main` | signed Hybrid、原子预算/并发、缓存、熔断、kill switch、fallback                                    |
-| Worker/Release change           | 条件触发                      | 各仓当前 policy                                        | 仅当 200 数值被明确纳入 public publication                                                         |
-| Workspace integration           | `lca-workspace`               | M3：PR to `main`                                       | 各 release 所需 exact main SHA 与跨仓验证                                                          |
+| Work package | Owner repo | 分支/PR 目标 | 主要产物 |
+| --- | --- | --- | --- |
+| Portal bootstrap | `tiangong-lca-portal` | M1：`main` | 首个仓库提交、治理、可丢弃 EdgeOne compatibility spike |
+| Public read façade | `database-engine` | M2：feature from `dev`, PR to `dev`, promote to `main` | RPC、ACL、RLS、索引、tests、types |
+| Portal R1 product + HMAC signer | `tiangong-lca-portal` | M1：PR to `main` | App Router 闭环、same-origin BFF signer、部署级品牌配置 |
+| Edge R1 verifier + LCIA | `tiangong-lca-edge-functions` | M2：feature from `dev`, PR to `dev`, promote to `main` | verifier、keyring、Upstash/Standard Redis 原子 guard adapter、deploy/auth probe、signed LCIA、限流 |
+| Portal R2 Hybrid adapter/UI | `tiangong-lca-portal` | M1：PR to `main` | Hybrid BFF adapter、lexical fallback、解释与分享 UI |
+| Edge R2 Hybrid runtime | `tiangong-lca-edge-functions` | M2：feature from `dev`, PR to `dev`, promote to `main` | signed Hybrid、原子预算/并发、缓存、熔断、kill switch、fallback |
+| Worker/Release change | 条件触发 | 各仓当前 policy | 仅当 200 数值被明确纳入 public publication |
+| Workspace integration | `lca-workspace` | M3：PR to `main` | 各 release 所需 exact main SHA 与跨仓验证 |
 
 `tiangong-lca-next` 默认不需要改动；只有确认要抽取共享公共 DTO/package 时才单独立项，不能从 Portal 任务顺手修改。
 

@@ -55,4 +55,4 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 ## 状态
 
-最终实施方案已定稿，尚未开始实现。当前目录还不是独立 Git 仓库或 workspace 子模块。
+最终实施方案已定稿，Phase 0 repository/runtime bootstrap 正在进行。Portal 已成为独立本地 Git 仓库；canonical 远端与 workspace 子模块 onboarding 尚未完成。

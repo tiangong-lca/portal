@@ -24,6 +24,30 @@ ownership:
           - docs/**
           - .docpact/config.yaml
       ownerRepo: portal
+    - id: portal-product-runtime
+      paths:
+        include:
+          - package.json
+          - pnpm-lock.yaml
+          - pnpm-workspace.yaml
+          - components.json
+          - tsconfig.json
+          - next.config.ts
+          - postcss.config.mjs
+          - prettier.config.mjs
+          - vitest.config.ts
+          - vitest.setup.ts
+          - playwright.config.ts
+          - edgeone.json
+          - .node-version
+          - .npmrc
+          - .env.example
+          - src/**
+          - public/**
+          - tests/**
+          - scripts/**
+          - .github/workflows/**
+      ownerRepo: portal
 
 coverage:
   include:
@@ -31,6 +55,26 @@ coverage:
     - README.md
     - docs/**
     - .docpact/config.yaml
+    - package.json
+    - pnpm-lock.yaml
+    - pnpm-workspace.yaml
+    - components.json
+    - tsconfig.json
+    - next.config.ts
+    - postcss.config.mjs
+    - prettier.config.mjs
+    - vitest.config.ts
+    - vitest.setup.ts
+    - playwright.config.ts
+    - edgeone.json
+    - .node-version
+    - .npmrc
+    - .env.example
+    - src/**
+    - public/**
+    - tests/**
+    - scripts/**
+    - .github/workflows/**
   exclude:
     - .git/**
     - .docpact/runs/**
@@ -56,6 +100,32 @@ routing:
         - README.md
         - docs/**
         - .docpact/config.yaml
+    app-runtime:
+      paths:
+        - package.json
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
+        - components.json
+        - tsconfig.json
+        - next.config.ts
+        - postcss.config.mjs
+        - src/**
+        - public/**
+    proof:
+      paths:
+        - vitest.config.ts
+        - vitest.setup.ts
+        - playwright.config.ts
+        - tests/**
+        - scripts/**
+        - .github/workflows/**
+    deployment:
+      paths:
+        - edgeone.json
+        - .node-version
+        - .npmrc
+        - .env.example
+        - package.json
     root-integration:
       paths:
         - AGENTS.md
@@ -107,3 +177,71 @@ rules:
       - path: README.md
         mode: review_or_update
     reason: Product, data, security, UI, release, and cross-repository target state is owned by one plan.
+
+  - id: portal-product-runtime-contract
+    scope: repo
+    repo: portal
+    triggers:
+      - path: package.json
+        kind: package-runtime
+      - path: pnpm-lock.yaml
+        kind: dependency-lock
+      - path: pnpm-workspace.yaml
+        kind: package-runtime
+      - path: components.json
+        kind: ui-system
+      - path: tsconfig.json
+        kind: compiler-config
+      - path: next.config.ts
+        kind: framework-config
+      - path: postcss.config.mjs
+        kind: style-config
+      - path: prettier.config.mjs
+        kind: format-config
+      - path: .node-version
+        kind: runtime-version
+      - path: .npmrc
+        kind: package-policy
+      - path: src/**
+        kind: product-code
+      - path: public/**
+        kind: public-asset
+    requiredDocs:
+      - path: docs/design-plan.md
+        mode: review_or_update
+      - path: AGENTS.md
+        mode: review_or_update
+      - path: README.md
+        mode: review_or_update
+    reason: Portal runtime changes must stay inside the anonymous read-only product and architecture contract.
+
+  - id: portal-proof-and-deployment-contract
+    scope: repo
+    repo: portal
+    triggers:
+      - path: vitest.config.ts
+        kind: test-config
+      - path: vitest.setup.ts
+        kind: test-config
+      - path: playwright.config.ts
+        kind: test-config
+      - path: tests/**
+        kind: test
+      - path: scripts/**
+        kind: validation-tool
+      - path: .github/workflows/**
+        kind: ci
+      - path: edgeone.json
+        kind: deployment-config
+      - path: .env.example
+        kind: env-contract
+    requiredDocs:
+      - path: docs/design-plan.md
+        mode: review_or_update
+      - path: AGENTS.md
+        mode: review_or_update
+      - path: README.md
+        mode: review_or_update
+      - path: .docpact/config.yaml
+        mode: review_or_update
+    reason: Proof, environment, and deployment changes must preserve release gates and secret boundaries.
