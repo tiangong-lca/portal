@@ -3,7 +3,7 @@ import "server-only";
 import { z } from "zod";
 
 import { readPortalDataEnvironment, type PortalDataEnvironment } from "@/server/data/environment";
-import { validatePortalHmacCredentials } from "@/server/r0-compat/hmac";
+import { portalHmacKeyIdPattern, validatePortalHmacCredentials } from "@/server/r0-compat/hmac";
 
 const loopbackHosts = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
@@ -28,10 +28,7 @@ const edgeOriginSchema = z
 
 const lciaEnvironmentSchema = z.strictObject({
   edgeOrigin: edgeOriginSchema,
-  keyId: z
-    .string()
-    .trim()
-    .regex(/^[A-Za-z0-9._-]{1,64}$/),
+  keyId: z.string().trim().regex(portalHmacKeyIdPattern),
   secret: z
     .string()
     .trim()

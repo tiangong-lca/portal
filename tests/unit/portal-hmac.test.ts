@@ -76,4 +76,26 @@ describe("portal-hmac-v1 signer", () => {
       }),
     ).rejects.toThrow("canonical unpadded Base64URL");
   });
+
+  it("requires a letter or digit as the keyId prefix", async () => {
+    await expect(
+      signPortalHmac({
+        rawBody: new Uint8Array(),
+        keyId: "_preview",
+        secret: fixture.secret,
+        timestamp: fixture.timestamp,
+        nonce: fixture.nonce,
+      }),
+    ).rejects.toThrow("Invalid Portal HMAC keyId");
+
+    await expect(
+      signPortalHmac({
+        rawBody: new Uint8Array(),
+        keyId: "preview_1.test-key",
+        secret: fixture.secret,
+        timestamp: fixture.timestamp,
+        nonce: fixture.nonce,
+      }),
+    ).resolves.toMatchObject({ headers: { "x-portal-key-id": "preview_1.test-key" } });
+  });
 });

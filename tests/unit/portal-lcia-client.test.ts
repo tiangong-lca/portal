@@ -125,5 +125,14 @@ describe("Portal signed LCIA client", () => {
         PORTAL_EDGE_HMAC_SECRET: "c2hvcnQ",
       }),
     ).toThrow("at least 256 bits");
+
+    expect(() =>
+      readPortalLciaEnvironment({
+        SUPABASE_URL: environment.supabaseUrl,
+        SUPABASE_PUBLISHABLE_KEY: environment.publishableKey,
+        PORTAL_EDGE_KEY_ID: "_preview",
+        PORTAL_EDGE_HMAC_SECRET: environment.secret,
+      }),
+    ).toThrow("Invalid string");
   });
 });

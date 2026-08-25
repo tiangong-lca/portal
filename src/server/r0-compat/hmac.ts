@@ -1,6 +1,6 @@
 import "server-only";
 
-const keyIdPattern = /^[A-Za-z0-9._-]{1,64}$/;
+export const portalHmacKeyIdPattern = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 const base64UrlPattern = /^[A-Za-z0-9_-]+$/;
 const functionPathPattern = /^\/functions\/v1\/[a-z0-9_]{1,128}$/;
 
@@ -59,7 +59,7 @@ export function createPortalNonce(): string {
 }
 
 export function validatePortalHmacCredentials(keyId: string, secret: string): void {
-  if (!keyIdPattern.test(keyId)) {
+  if (!portalHmacKeyIdPattern.test(keyId)) {
     throw new Error("Invalid Portal HMAC keyId");
   }
 
