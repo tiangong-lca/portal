@@ -10,6 +10,18 @@ describe("R0 compatibility environment", () => {
     });
   });
 
+  it("does not treat the ordinary R1 publishable key as R0 fixture activation", () => {
+    expect(
+      readR0CompatEnvironment({
+        SUPABASE_PUBLISHABLE_KEY: "sb_publishable_portal_preview_fixture_v1",
+      }),
+    ).toMatchObject({
+      deploymentEnvironment: "local",
+      deploymentSha: "local",
+      publishableKey: "sb_publishable_portal_preview_fixture_v1",
+    });
+  });
+
   it("rejects partial HMAC fixture configuration", () => {
     expect(() =>
       readR0CompatEnvironment({

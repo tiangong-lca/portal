@@ -37,10 +37,11 @@ export function readR0CompatEnvironment(
     publishableKey: environment.SUPABASE_PUBLISHABLE_KEY,
   });
 
-  const configured = [parsed.endpoint, parsed.keyId, parsed.secret, parsed.publishableKey];
-  const configuredCount = configured.filter(Boolean).length;
+  const r0Configuration = [parsed.endpoint, parsed.keyId, parsed.secret];
+  const r0FixtureEnabled = r0Configuration.some(Boolean);
+  const completeConfiguration = [...r0Configuration, parsed.publishableKey];
 
-  if (configuredCount !== 0 && configuredCount !== configured.length) {
+  if (r0FixtureEnabled && !completeConfiguration.every(Boolean)) {
     throw new Error("R0 HMAC fixture configuration must be complete or entirely absent");
   }
 
