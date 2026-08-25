@@ -23,11 +23,33 @@ function jsonResponse(body: Record<string, unknown>, status: number) {
   });
 }
 
+function expectedOrigin(request: Request): string | null {
+  const configuredSiteUrl = process.env.SITE_URL;
+  try {
+    if (configuredSiteUrl) {
+      const siteUrl = new URL(configuredSiteUrl);
+      const loopback = ["localhost", "127.0.0.1", "[::1]"].includes(siteUrl.hostname);
+      if (
+        (siteUrl.protocol !== "https:" && !(siteUrl.protocol === "http:" && loopback)) ||
+        siteUrl.username !== "" ||
+        siteUrl.password !== ""
+      ) {
+        return null;
+      }
+      return siteUrl.origin;
+    }
+    return new URL(request.url).origin;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: Request) {
   const origin = request.headers.get("origin");
   if (origin !== null) {
+    const allowedOrigin = expectedOrigin(request);
     try {
-      if (new URL(origin).origin !== new URL(request.url).origin) {
+      if (!allowedOrigin || new URL(origin).origin !== allowedOrigin) {
         return jsonResponse({ code: "cross_origin_request" }, 403);
       }
     } catch {

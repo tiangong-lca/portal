@@ -24,8 +24,10 @@
     "format": "prettier --write . --ignore-unknown --ignore-path .gitignore",
     "format:check": "prettier --check . --ignore-unknown --ignore-path .gitignore",
     "test": "vitest run",
+    "test:integration": "vitest run tests/integration",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "pnpm build && playwright test",
+    "fixture:r1": "node --import tsx scripts/portal-r1-fixture-server.ts",
     "check:bundle": "node scripts/check-client-bundle.mjs",
     "check": "pnpm check:toolchain && pnpm check:brand && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:bundle"
   },

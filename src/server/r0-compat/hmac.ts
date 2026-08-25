@@ -47,6 +47,10 @@ function decodeBase64Url(value: string): Uint8Array<ArrayBuffer> {
     bytes[index] = binary.charCodeAt(index);
   }
 
+  if (encodeBase64Url(bytes) !== value) {
+    throw new Error("Expected canonical unpadded Base64URL");
+  }
+
   return bytes;
 }
 

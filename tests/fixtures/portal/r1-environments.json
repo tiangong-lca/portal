@@ -1,0 +1,12 @@
+{
+  "preview": {
+    "keyId": "portal-preview-fixture-v1",
+    "hmacSecret": "cG9ydGFsLXByZXZpZXctZml4dHVyZS1zZWNyZXQtdjEhIQ",
+    "publishableKey": "sb_publishable_portal_preview_fixture_v1"
+  },
+  "production": {
+    "keyId": "portal-production-fixture-v1",
+    "hmacSecret": "cG9ydGFsLXByb2R1Y3Rpb24tZml4dHVyZS1zZWNyZXQtdjE",
+    "publishableKey": "sb_publishable_portal_production_fixture_v1"
+  }
+}

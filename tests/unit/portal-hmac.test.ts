@@ -54,4 +54,26 @@ describe("portal-hmac-v1 signer", () => {
       }),
     ).rejects.toThrow("128 bits");
   });
+
+  it("rejects non-canonical Base64URL trailing bits", async () => {
+    await expect(
+      signPortalHmac({
+        rawBody: new Uint8Array(),
+        keyId: fixture.keyId,
+        secret: fixture.secret,
+        timestamp: fixture.timestamp,
+        nonce: "_____________________x",
+      }),
+    ).rejects.toThrow("canonical unpadded Base64URL");
+
+    await expect(
+      signPortalHmac({
+        rawBody: new Uint8Array(),
+        keyId: fixture.keyId,
+        secret: `${fixture.secret.slice(0, -1)}9`,
+        timestamp: fixture.timestamp,
+        nonce: fixture.nonce,
+      }),
+    ).rejects.toThrow("canonical unpadded Base64URL");
+  });
 });
