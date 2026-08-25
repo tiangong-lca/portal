@@ -17,7 +17,7 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-08-26
-lastReviewedCommit: 346fe4ceedcb79a7ddefa7487962ff6f6c8dc202
+lastReviewedCommit: bba412b64865911b8845f9a6a696dbbd29a6f377
 related:
   - AGENTS.md
   - docs/design-plan.md

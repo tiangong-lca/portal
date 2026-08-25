@@ -20,7 +20,7 @@ checkPaths:
   - scripts/**
   - edgeone.json
 lastReviewedAt: 2026-08-26
-lastReviewedCommit: 346fe4ceedcb79a7ddefa7487962ff6f6c8dc202
+lastReviewedCommit: bba412b64865911b8845f9a6a696dbbd29a6f377
 related:
   - AGENTS.md
   - README.md
@@ -977,7 +977,8 @@ MVP 不引入重量级状态管理、客户端查询缓存、Chart 或 Map 依�
 - App Router；
 - 不使用 `output: "export"`；
 - EdgeOne 输出目录 `.next`；
-- TypeScript 7 需要时启用并验证 `experimental.useTypeScriptCli: true`；
+- TypeScript 7 使用 Next 16 默认 TypeScript CLI 路径，并在 compatibility spike 验证；不为默认已启用的行为保留冗余 experimental 配置；
+- `next-env.d.ts` 由 `next dev/build/typegen` 生成并纳入 `tsconfig`，但不提交到 Git；
 - 不依赖 Next config redirects/rewrites，跨路径规则使用 `proxy.ts` 或 `edgeone.json`；
 - 图片使用 `next/image`，仅配置必要远端域名；
 - `next typegen && tsc --noEmit` 是独立 typecheck；
