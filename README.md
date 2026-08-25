@@ -55,4 +55,4 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 ## 状态
 
-最终实施方案已定稿，Phase 0 repository/runtime bootstrap 正在进行。Portal 已成为独立本地 Git 仓库；canonical 远端与 workspace 子模块 onboarding 尚未完成。
+最终实施方案已定稿，Phase 0 repository/runtime bootstrap 正在进行。本地 `main` 已包含 exact-pinned Next.js/TypeScript/Tailwind 工具链、Radix Nova shell、部署级品牌解析与可验证默认资产；format、type-aware lint、typecheck、unit、production build 和隔离端口 Playwright 门已建立。Canonical 远端仍为空且当前身份只有 READ permission，workspace 子模块 onboarding 尚未完成。

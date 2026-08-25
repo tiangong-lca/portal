@@ -20,7 +20,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm dev --hostname 127.0.0.1 --port 4317",
+    command: "pnpm start --hostname 127.0.0.1 --port 4317",
     url: portalE2eUrl,
     reuseExistingServer: false,
     timeout: 120_000,

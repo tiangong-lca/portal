@@ -187,7 +187,7 @@ type PublicProcessMetadata = {
   generalComment: LocalizedText;
   referenceProduct: LocalizedText;
   functionalUnit: {
-    amount: number | null;
+    amount: string | null;
     unit: string | null;
     description: LocalizedText;
   };
@@ -569,13 +569,13 @@ type PublicExchangeRow = {
   direction: "input" | "output";
   flow: { id: string; version: string; name: LocalizedText };
   classification: { system: string; code: string; label: LocalizedText } | null;
-  amount: number;
+  amount: string;
   unit: string;
   isQuantitativeReference: boolean;
   uncertainty: {
     type: string;
-    minimum: number | null;
-    maximum: number | null;
+    minimum: string | null;
+    maximum: string | null;
   } | null;
   origin: FieldOrigin[];
 };
@@ -585,7 +585,7 @@ type PublicExchangePage = {
   process: { id: string; version: string };
   processContext: {
     functionalUnit: {
-      amount: number | null;
+      amount: string | null;
       unit: string | null;
       description: LocalizedText;
     };
@@ -605,6 +605,8 @@ type PublicExchangePage = {
 | Quality/uncertainty value | exact dataset ID/version、维度名、量表/单位、来源字段或规则版本；缺少量表时只显示原文而不画可比较刻度 |
 
 任何上下文缺失都隐藏对应可视化并显示“上下文不完整”，不能把该数值并入比较。
+
+所有 Exchange、functional-unit、uncertainty 与 LCIA 数值在 DTO 中使用规范化十进制字符串，禁止先转成 JavaScript `number`；Schema 固定格式/范围，Portal 只在格式化或比较边界使用精确 decimal 库。
 
 要求：
 
@@ -720,7 +722,12 @@ HMAC 只阻止未持有 secret 的客户端直接调用 Edge Function，不限�
 
 ### 10.4 Published LCIA
 
-复用 `data_product_results` 的内部 projection 逻辑，并新增使用同一 `portal-hmac-v1` 签名协议的 `portal_data_product_results_v1`。旧端点在既有消费者迁移前保持兼容，不直接收紧。
+现有 `data_product_results`、service-only RPC、私有 Storage/S3 artifact 和 locator 响应保持不变，Portal 不调用这些入口。R1 新增 publication-bound、immutable、bounded、locator-free 数值投影：
+
+- Worker/Release 在 public publication finalize 时把允许公开的 LCIA 数值和完整上下文写入 Database 私有 projection；
+- Database 提供 exact `api.portal_get_published_lcia_values_v1(mode, process_refs, impact_category_id, cursor, limit)`，只返回当前/指定 publication 的白名单 DTO，并向 `anon`/`authenticated` 精确授权；
+- `portal_data_product_results_v1` 使用 `portal-hmac-v1`，验签/guard 后只以 publishable key 调该 RPC；不得下载 artifact、接收 locator 或构造 service client；
+- projection 与旧 artifact 同源且绑定 package/publication hash；发布验证必须证明行数、身份、方法、单位与 artifact evidence 一致。
 
 Portal wrapper 支持：
 
@@ -730,7 +737,7 @@ Portal wrapper 支持：
 
 Portal 只使用前两种展示详情与显式选中比较；不以公开排名代替可比性判断。
 
-响应必须携带或由适配层补齐：Process ID/Version、impact ID/Name、LCIA Method ID/Version、数值、单位、功能单位、package/publication ID、发布时间和 evidence 状态。Edge 需要为 HMAC 入口补限流、缓存、上游超时和 locator-free 错误响应。
+响应必须携带：Process ID/Version、impact ID/Name、LCIA Method ID/Version、规范化 decimal string、单位、功能单位、地理/精度、参考年、package/publication ID、发布时间和 evidence 状态。任何缺失值均为 unavailable，不得补 0。Edge 需要为 HMAC 入口补限流、缓存、上游超时和 locator-free 错误响应。
 
 ## 11. SEO 与渲染
 
@@ -793,7 +800,8 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 
 ### 12.2 Web 安全
 
-- CSP 默认拒绝，按实际字体、图片和后端域名放行；水合前主题脚本使用构建时生成的固定 SHA-256 hash 加入 `script-src`，禁止 `unsafe-inline`，并在 EdgeOne compatibility spike 验证；
+- CSP 默认拒绝，按实际字体、图片和后端域名放行，禁止 `unsafe-inline`；静态/ISR 路由使用 Next App Router 的 SHA-256 SRI 路径，不能使用会强制动态渲染并禁用 ISR 的全站 nonce；
+- 主题 bootstrap 使用同源外部静态脚本，不内联；只有明确动态且不需要 ISR/CDN 缓存的路由才允许 per-request nonce。SRI、RSC hydration、Streaming 和 ISR 必须作为一个组合在 EdgeOne compatibility spike 验证；
 - `frame-ancestors 'none'`、`X-Content-Type-Options: nosniff`、`Referrer-Policy: strict-origin-when-cross-origin` 和最小 Permissions Policy；
 - 用户内容只作为文本渲染，不用未经清洗的 HTML；
 - URL/localStorage/JSON 导入全部经 Zod 校验；
@@ -977,6 +985,7 @@ MVP 不引入重量级状态管理、客户端查询缓存、Chart 或 Map 依�
 - App Router；
 - 不使用 `output: "export"`；
 - EdgeOne 输出目录 `.next`；
+- 静态与 ISR 路由启用 `experimental.sri.algorithm="sha256"`，并由 R0 Preview 证明 EdgeOne 对该 experimental 能力兼容；
 - TypeScript 7 使用 Next 16 默认 TypeScript CLI 路径，并在 compatibility spike 验证；不为默认已启用的行为保留冗余 experimental 配置；
 - `next-env.d.ts` 由 `next dev/build/typegen` 生成并纳入 `tsconfig`，但不提交到 Git；
 - 不依赖 Next config redirects/rewrites，跨路径规则使用 `proxy.ts` 或 `edgeone.json`；
@@ -994,11 +1003,11 @@ tiangong-lca-portal/
 ├── next.config.ts
 ├── package.json
 ├── pnpm-lock.yaml
-├── proxy.ts
 ├── public/
 │   ├── fonts/
 │   └── brand/
 ├── src/
+│   ├── proxy.ts
 │   ├── app/
 │   │   ├── [locale]/
 │   │   │   ├── page.tsx
@@ -1016,7 +1025,7 @@ tiangong-lca-portal/
 │   │   ├── brand/
 │   │   └── domain/
 │   ├── config/
-│   │   └── brand/
+│   │   └── brand.ts
 │   ├── features/
 │   │   ├── search/
 │   │   ├── dataset-detail/
@@ -1028,8 +1037,7 @@ tiangong-lca-portal/
 │   │   ├── search/
 │   │   └── lcia/
 │   ├── i18n/
-│   ├── lib/
-│   └── styles/globals.css
+│   └── lib/
 ├── scripts/
 │   └── validate-brand-config.mjs
 ├── tests/
@@ -1105,6 +1113,7 @@ Compatibility spike 必须实测：
 - Node 24 + pnpm 11 build；
 - Next 16 + React 19 + TypeScript 7 typecheck/build；
 - RSC、SSR、ISR、Streaming、`proxy.ts`、Route Handler、Image Optimization；
+- 严格 CSP 下的 SRI、RSC hydration、Streaming 与 ISR 组合；不得用全站 nonce 让页面静态性测试失真；
 - 实际 SSR `process.version`；若低于 Node 22，继续使用 native fetch 且不得引入要求 Node 22+ 的服务端 SDK；
 - 使用独立测试 secret 与一次性 Upstash test database 的可丢弃互操作 fixture，验证 EdgeOne Web Crypto HMAC、Supabase Deno 验签、`SET NX EX`/Lua 原子能力、nonce 防重放和 current/previous key 轮换；fixture 不接业务 RPC/模型、不使用 Dev/Main 凭据，保存证据后删除；
 - Preview/Production 环境变量隔离；
@@ -1220,7 +1229,7 @@ format/lint
 | Release | 对外状态 | 功能范围 | 硬依赖 | Go/no-go gate |
 | --- | --- | --- | --- | --- |
 | R0 Bootstrap | 不公开 | 独立仓库、治理、最小 App、EdgeOne compatibility | Portal 首个 main、workspace onboarding | §17.3 全部 compatibility 项有 exact deployment SHA、runtime 输出、官方文档 URL 与 pass 证据 |
-| R1 Public Catalog MVP | 首次公开 | lexical/identifier search、Process/Flow 详情、Versions、Exchanges、公开 LCIA、Citation、2–4 条确定性比较、本地候选集/JSON、品牌配置、SEO/i18n/a11y | Database Phase 1 promoted main、HMAC verifier + signed LCIA wrapper、R0 | §23.5 R1 checklist 每项通过；不依赖 Hybrid |
+| R1 Public Catalog MVP | 首次公开 | lexical/identifier search、Process/Flow 详情、Versions、Exchanges、公开 LCIA、Citation、2–4 条确定性比较、本地候选集/JSON、品牌配置、SEO/i18n/a11y | Database public catalog + LCIA numeric projection、Worker/Release publication write、HMAC verifier + signed LCIA wrapper、R0 | §23.5 R1 checklist 每项通过；不依赖 Hybrid |
 | R2 Intelligent Discovery | 增量公开 | HMAC-signed Hybrid、query interpretation、evidence-backed reasons、可选 Process Group、显式 Hybrid-query/含备注 fragment 分享 | Portal/Edge Phase 3 promoted main、HMAC/admission contract | §23.6 R2 checklist 每项通过；Hybrid 故障或 guard 拒绝自动回退 lexical |
 | R3 Catalog Expansion | 分项公开 | Database/Data Package、LCIA Method、Relationships、Map、经批准的 Redis 短链 | 每项独立上游 identity/provenance/privacy contract | 每个能力单独 tracked Issue 和验收，不整包放行 |
 
@@ -1238,9 +1247,10 @@ format/lint
 ### 20.3 Phase 1：Database 公共读契约
 
 1. exact detail / versions / exchange page / list / search / facets / sitemap façade；
-2. 100/200 capability 与字段投影；
-3. cursor、ACL/RLS、索引和 anon SQL tests；
-4. 固化 exhaustive JSON Schema、生成类型与契约 fixture。
+2. 许可到 capability 的版本化 fail-closed policy；未知/矛盾许可保持 metadata-only；
+3. publication-bound LCIA decimal projection 与 `portal_get_published_lcia_values_v1`；
+4. cursor、ACL/RLS、索引和 anon SQL tests；
+5. 固化 exhaustive JSON Schema、生成类型与契约 fixture。
 
 退出条件：匿名读取闭包完整，0/20 不可见，Portal 不再需要 raw table。
 
@@ -1286,12 +1296,14 @@ format/lint
 | Work package | Owner repo | 分支/PR 目标 | 主要产物 |
 | --- | --- | --- | --- |
 | Portal bootstrap | `tiangong-lca-portal` | M1：`main` | 首个仓库提交、治理、可丢弃 EdgeOne compatibility spike |
-| Public read façade | `database-engine` | M2：feature from `dev`, PR to `dev`, promote to `main` | RPC、ACL、RLS、索引、tests、types |
+| Public read façade + capability policy | `database-engine` | M2：feature from `dev`, PR to `dev`, promote to `main` | RPC、许可/capability policy、ACL、RLS、索引、tests、types |
+| Public LCIA numeric projection | `database-engine` | M2：feature from `dev`, PR to `dev`, promote to `main` | immutable projection、locator-free RPC、publication/evidence tests |
+| LCIA projection materialization | `tiangong-lca-worker` | M1：PR to `main` | publish payload/value/context materialization 与 idempotence proof |
+| LCIA projection finalize | `tiangong-lca-release` | M1：PR to `main` | publication-bound finalize/verification、hash/count reconciliation |
 | Portal R1 product + HMAC signer | `tiangong-lca-portal` | M1：PR to `main` | App Router 闭环、same-origin BFF signer、部署级品牌配置 |
 | Edge R1 verifier + LCIA | `tiangong-lca-edge-functions` | M2：feature from `dev`, PR to `dev`, promote to `main` | verifier、keyring、Upstash/Standard Redis 原子 guard adapter、deploy/auth probe、signed LCIA、限流 |
 | Portal R2 Hybrid adapter/UI | `tiangong-lca-portal` | M1：PR to `main` | Hybrid BFF adapter、lexical fallback、解释与分享 UI |
 | Edge R2 Hybrid runtime | `tiangong-lca-edge-functions` | M2：feature from `dev`, PR to `dev`, promote to `main` | signed Hybrid、原子预算/并发、缓存、熔断、kill switch、fallback |
-| Worker/Release change | 条件触发 | 各仓当前 policy | 仅当 200 数值被明确纳入 public publication |
 | Workspace integration | `lca-workspace` | M3：PR to `main` | 各 release 所需 exact main SHA 与跨仓验证 |
 
 `tiangong-lca-next` 默认不需要改动；只有确认要抽取共享公共 DTO/package 时才单独立项，不能从 Portal 任务顺手修改。
@@ -1304,11 +1316,11 @@ Portal 远端为空且尚未进入 delivery profile，不能在第一次 child c
 
 ### 22.1 当前状态
 
-- 本地 `tiangong-lca-portal` 只是 root 中的未跟踪目录；
-- 远端 `git@github.com:tiangong-lca/portal.git` 已存在、公开且为空；
-- 还没有 child HEAD、branch 或可 pin SHA；
+- 本地 `tiangong-lca-portal` 已是独立 M1 Git 仓库，`main` 持有受限 bootstrap commits；root 在 onboarding 前仍把该目录视为未跟踪；
+- canonical 远端 `git@github.com:tiangong-lca/portal.git` 已存在、公开且为空；当前执行身份只有 READ permission，无法推送，空仓也不能创建 GitHub fork；
+- 本地 child HEAD 尚未形成可由其他协作者或 root 引用的 remote main SHA；
 - Portal 不在 `.gitmodules`、workspace delivery profile、Docpact catalog、branch matrix 或 repo graph；
-- Portal 没有 `.docpact/config.yaml`，Docpact doctor 当前报告 `missing-config`、0 rules、无 coverage/doc inventory/freshness。
+- Portal 已采用 `layout: repo` 的 `.docpact/config.yaml`，strict validation、routing、coverage、doc inventory 与 freshness 均通过；root catalog onboarding 尚未完成。
 
 ### 22.2 安全顺序
 
@@ -1385,7 +1397,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 以下每项都是 required；没有“与 R1 相关项”之类的解释空间：
 
 1. R0 的完整 EdgeOne compatibility matrix 已绑定 exact Preview SHA 并全绿；
-2. Database Phase 1 exact façade 已 promote 到 `database-engine/main`；HMAC verifier 与 `portal_data_product_results_v1` 已 promote 到 `edge-functions/main`；
+2. Database public catalog/capability/LCIA projection 已 promote 到 `database-engine/main`，Worker/Release materialization/finalize 已进入各自 `main`，HMAC verifier 与 `portal_data_product_results_v1` 已 promote 到 `edge-functions/main`；
 3. 正确签名可调用；缺失/错误签名、篡改 body、过期 timestamp、重复 nonce、未知 keyId 均在业务逻辑前拒绝；old/new key 轮换通过；Supabase Dev/Main 的 Upstash endpoint、token 与 namespace 完全隔离；Redis guard 不可用时 LCIA 不调用数据库并显示暂不可用；
 4. 无终端用户 Cookie/token 的代表性 Process/Flow 100 与 200 查询返回允许元数据；HMAC secret 不出现在浏览器；0/20、owner/team/review fixture 从 search、detail、versions、exchange、facet 和伪造参数入口均不可见；
 5. UUID、CAS、分类码、中文名和英文名 lexical/identifier 查询通过，100/200 使用一个稳定 public-catalog 排序与 cursor；

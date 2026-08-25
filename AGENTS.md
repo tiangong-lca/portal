@@ -44,6 +44,7 @@ related:
 - Database schema, RPC, RLS, ACL, and indexes belong to `database-engine`; Edge runtime and HMAC verification belong to `tiangong-lca-edge-functions`.
 - Portal is read-only for LCA data. It must not create, edit, review, publish, withdraw, repair, or recalculate datasets.
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
+- Node `24.18.x` is the pinned build toolchain, not proof of the deployed SSR runtime. Until an EdgeOne Preview route reports `process.version`, server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
 
 ## Repository and delivery model
 

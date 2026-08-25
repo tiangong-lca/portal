@@ -1,0 +1,22 @@
+{
+  "sourceRepository": "linancn/tiangong-lca-next",
+  "sourceCommit": "a4bd60aca89cc6903a9fd90bb7065bec735c9bfc",
+  "reviewedAt": "2026-08-26",
+  "assets": [
+    {
+      "source": "public/logo.svg",
+      "target": "public/brand/logo.svg",
+      "sha256": "7554c40026b19373fd1964664ccf8709b9b583893282d81d6436921ae5b7cd60"
+    },
+    {
+      "source": "public/logo_dark.svg",
+      "target": "public/brand/logo-dark.svg",
+      "sha256": "45ec5afb14ff07b02dd04c7f4bd66c985fb07819d90bc85cc9a6024a603bbb2b"
+    },
+    {
+      "source": "public/favicon.ico",
+      "target": "public/brand/favicon.ico",
+      "sha256": "4a9d078b98cf8d0ed85e9d0ceee80f3d0f79acedf87bcd1ac6219f9b896509e7"
+    }
+  ]
+}

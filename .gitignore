@@ -2,6 +2,7 @@
 node_modules/
 .next/
 next-env.d.ts
+src/app/brand.generated.css
 out/
 coverage/
 playwright-report/
