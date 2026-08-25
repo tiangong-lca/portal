@@ -1,0 +1,109 @@
+version: 1
+layout: repo
+lastReviewedAt: "2026-08-26"
+lastReviewedCommit: "bootstrap"
+lastReviewedNote: "Initial governance for the anonymous public Portal repository."
+
+catalog:
+  repos:
+    - id: portal
+      path: .
+      canonicalRepo: tiangong-lca/portal
+      entryDoc: AGENTS.md
+      workflowDocs:
+        - docs/design-plan.md
+      workspaceIntegrationRequired: true
+
+ownership:
+  domains:
+    - id: portal-governance-and-docs
+      paths:
+        include:
+          - AGENTS.md
+          - README.md
+          - docs/**
+          - .docpact/config.yaml
+      ownerRepo: portal
+
+coverage:
+  include:
+    - AGENTS.md
+    - README.md
+    - docs/**
+    - .docpact/config.yaml
+  exclude:
+    - .git/**
+    - .docpact/runs/**
+    - node_modules/**
+    - .next/**
+    - coverage/**
+    - playwright-report/**
+    - test-results/**
+
+freshness:
+  warn_after_commits: 40
+  warn_after_days: 60
+  critical_after_days: 120
+
+routing:
+  intents:
+    product-plan:
+      paths:
+        - docs/design-plan.md
+    repo-docs:
+      paths:
+        - AGENTS.md
+        - README.md
+        - docs/**
+        - .docpact/config.yaml
+    root-integration:
+      paths:
+        - AGENTS.md
+
+docInventory:
+  include:
+    - AGENTS.md
+    - README.md
+    - docs/design-plan.md
+    - .docpact/config.yaml
+
+repo:
+  id: portal
+  owner: portal
+
+rules:
+  - id: portal-governance-contract
+    scope: repo
+    repo: portal
+    triggers:
+      - path: AGENTS.md
+        kind: doc-contract
+      - path: .docpact/config.yaml
+        kind: doc-ai-layer
+      - path: README.md
+        kind: repo-landing
+    requiredDocs:
+      - path: AGENTS.md
+        mode: review_or_update
+      - path: README.md
+        mode: review_or_update
+      - path: .docpact/config.yaml
+        mode: review_or_update
+      - path: docs/design-plan.md
+        mode: review_or_update
+    reason: Repository boundaries, landing guidance, documentation routing, and the implementation plan must stay aligned.
+
+  - id: portal-design-plan-contract
+    scope: repo
+    repo: portal
+    triggers:
+      - path: docs/design-plan.md
+        kind: technical-plan
+    requiredDocs:
+      - path: docs/design-plan.md
+        mode: review_or_update
+      - path: AGENTS.md
+        mode: review_or_update
+      - path: README.md
+        mode: review_or_update
+    reason: Product, data, security, UI, release, and cross-repository target state is owned by one plan.

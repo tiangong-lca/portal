@@ -1,0 +1,16 @@
+.DS_Store
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+*.log
+pnpm-debug.log*
+.env
+.env.*
+!.env.example
+.vercel/
+.edgeone/
+.turbo/
+.docpact/runs/
