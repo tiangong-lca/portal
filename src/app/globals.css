@@ -134,10 +134,72 @@ body {
   margin: 0;
   font-family:
     "Source Sans 3", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
 }
 
 a {
   color: inherit;
+}
+
+::selection {
+  background: color-mix(in oklch, var(--primary) 22%, transparent);
+}
+
+.portal-ledger {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--border) 54%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--border) 36%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 4rem 4rem;
+}
+
+.evidence-rail {
+  border-inline-start: 1px solid var(--border);
+  padding-inline-start: 1.5rem;
+}
+
+.evidence-rail > * {
+  position: relative;
+}
+
+.evidence-rail > *::before {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-start: -1.75rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  background: var(--background);
+  content: "";
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .portal-ledger {
+    background-image: none;
+  }
+
+  .evidence-rail > *::before {
+    border-color: CanvasText;
+  }
 }
 
 @layer base {

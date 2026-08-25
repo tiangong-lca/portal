@@ -7,6 +7,7 @@ import { brandConfig } from "@/server/brand";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:3000"),
   title: {
     default: "天工 LCA 数据门户",
     template: "%s · 天工 LCA",
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <head>
         <script src="/brand/theme-init.js" />
       </head>
-      <body>{children}</body>
+      <body className="flex min-h-screen flex-col">{children}</body>
     </html>
   );
 }
