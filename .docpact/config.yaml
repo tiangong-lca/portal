@@ -1,7 +1,7 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-26"
-lastReviewedCommit: "bootstrap"
+lastReviewedCommit: "346fe4ceedcb79a7ddefa7487962ff6f6c8dc202"
 lastReviewedNote: "Initial governance for the anonymous public Portal repository."
 
 catalog:
