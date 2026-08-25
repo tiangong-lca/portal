@@ -17,6 +17,11 @@
       "source": "public/favicon.ico",
       "target": "public/brand/favicon.ico",
       "sha256": "4a9d078b98cf8d0ed85e9d0ceee80f3d0f79acedf87bcd1ac6219f9b896509e7"
+    },
+    {
+      "source": "public/icons/icon-128x128.png",
+      "target": "public/brand/logo-raster.png",
+      "sha256": "bcb69cbcb896b907d011e7a12f1737ec26cc20171f26e38d0dcd93722bbad47b"
     }
   ]
 }

@@ -70,6 +70,8 @@ Before changing files, run the workspace wrapper with this repository as the exp
 
 Use the scripts declared by the checked-in `package.json`. At minimum, every reviewable change must pass formatting, lint, typecheck, targeted tests, and build when those surfaces exist. UI changes additionally require browser and accessibility verification; server/security changes require contract and negative-path tests.
 
+R0 local tests run the strict CSP candidate in report-only mode so framework hydration remains observable. They are not release evidence. Only `docs/r0/compatibility-matrix.md` may declare R0 status, and it must remain blocked until an exact EdgeOne Preview passes enforcing CSP, runtime, cache, HMAC/Redis, brand, and rollback probes.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know

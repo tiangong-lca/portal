@@ -12,6 +12,7 @@ catalog:
       entryDoc: AGENTS.md
       workflowDocs:
         - docs/design-plan.md
+        - docs/r0/compatibility-matrix.md
       workspaceIntegrationRequired: true
 
 ownership:
@@ -46,6 +47,7 @@ ownership:
           - public/**
           - tests/**
           - scripts/**
+          - .githooks/**
           - .github/workflows/**
       ownerRepo: portal
 
@@ -74,6 +76,7 @@ coverage:
     - public/**
     - tests/**
     - scripts/**
+    - .githooks/**
     - .github/workflows/**
   exclude:
     - .git/**
@@ -118,6 +121,7 @@ routing:
         - playwright.config.ts
         - tests/**
         - scripts/**
+        - .githooks/**
         - .github/workflows/**
     deployment:
       paths:
@@ -135,6 +139,7 @@ docInventory:
     - AGENTS.md
     - README.md
     - docs/design-plan.md
+    - docs/r0/compatibility-matrix.md
     - .docpact/config.yaml
 
 repo:
@@ -227,8 +232,12 @@ rules:
         kind: test-config
       - path: tests/**
         kind: test
+      - path: docs/r0/**
+        kind: validation-doc
       - path: scripts/**
         kind: validation-tool
+      - path: .githooks/**
+        kind: local-gate
       - path: .github/workflows/**
         kind: ci
       - path: edgeone.json
@@ -243,5 +252,7 @@ rules:
       - path: README.md
         mode: review_or_update
       - path: .docpact/config.yaml
+        mode: review_or_update
+      - path: docs/r0/compatibility-matrix.md
         mode: review_or_update
     reason: Proof, environment, and deployment changes must preserve release gates and secret boundaries.

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+/* oxlint-disable next/no-sync-scripts -- The same-origin theme bootstrap must run before first paint and contains no inline code. */
+
 import { brandConfig } from "@/server/brand";
 
 import "./globals.css";
@@ -22,6 +24,9 @@ type RootLayoutProps = Readonly<{
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html data-brand-version={brandConfig.version} lang="zh-CN" suppressHydrationWarning>
+      <head>
+        <script src="/brand/theme-init.js" />
+      </head>
       <body>{children}</body>
     </html>
   );

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "portal-hmac-v1.fixture.v1",
+  "testOnly": true,
+  "rawBody": "{\"query\":\"cement\",\"kind\":\"process\"}",
+  "keyId": "portal-preview-2026q3",
+  "timestamp": 1787673600,
+  "nonce": "EBESExQVFhcYGRobHB0eHw",
+  "secret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+  "method": "POST",
+  "functionPath": "/functions/v1/portal_r0_hmac_verify_v1",
+  "bodyHash": "6qXxtx5V9JNZgdxL1zuQNTE48rjNL7_Uu9JQiwdWqPM",
+  "canonical": "portal-hmac-v1\nportal-preview-2026q3\n1787673600\nEBESExQVFhcYGRobHB0eHw\nPOST\n/functions/v1/portal_r0_hmac_verify_v1\n6qXxtx5V9JNZgdxL1zuQNTE48rjNL7_Uu9JQiwdWqPM",
+  "signature": "o6w-TGKTc88_poV09f0-yMulLtfmp-JElIim5HfL3HI"
+}

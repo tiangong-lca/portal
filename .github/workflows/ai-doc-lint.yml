@@ -1,0 +1,36 @@
+name: ai-doc-lint
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: Base ref for the manual docpact comparison.
+        required: false
+        default: origin/main
+
+permissions:
+  contents: read
+
+jobs:
+  ai-doc-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Fetch branches
+        run: git fetch --force origin '+refs/heads/*:refs/remotes/origin/*'
+
+      - name: Install stable Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install docpact
+        run: cargo install docpact --version 0.1.9 --force
+
+      - name: Run repository docpact gate
+        env:
+          BASE_REF: ${{ inputs.base_ref }}
+        run: scripts/docpact-gate.sh --base "$BASE_REF"

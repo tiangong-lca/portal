@@ -1,0 +1,45 @@
+#!/bin/sh
+set -eu
+
+docpact_version="${DOCPACT_VERSION:-0.1.9}"
+
+use_candidate() {
+  candidate="$1"
+  if [ -n "$candidate" ] && [ -x "$candidate" ] && "$candidate" --version >/dev/null 2>&1; then
+    printf '%s\n' "$candidate"
+    return 0
+  fi
+  return 1
+}
+
+find_docpact() {
+  if [ -n "${DOCPACT_BIN:-}" ]; then
+    use_candidate "$DOCPACT_BIN" && return 0
+    echo "DOCPACT_BIN is not an executable docpact binary: $DOCPACT_BIN" >&2
+    return 127
+  fi
+
+  [ -n "${CARGO_HOME:-}" ] && use_candidate "$CARGO_HOME/bin/docpact" && return 0
+  [ -n "${HOME:-}" ] && use_candidate "$HOME/.cargo/bin/docpact" && return 0
+  use_candidate "/opt/homebrew/bin/docpact" && return 0
+  use_candidate "/usr/local/bin/docpact" && return 0
+
+  if command -v docpact >/dev/null 2>&1; then
+    candidate="$(command -v docpact)"
+    case "$candidate" in
+      */scripts/docpact | scripts/docpact | ./scripts/docpact) ;;
+      *) use_candidate "$candidate" && return 0 ;;
+    esac
+  fi
+
+  echo "docpact was not found. Install: cargo install docpact --version $docpact_version --force" >&2
+  return 127
+}
+
+if [ "${1:-}" = "--print-bin" ]; then
+  find_docpact
+  exit 0
+fi
+
+docpact_bin="$(find_docpact)"
+exec "$docpact_bin" "$@"

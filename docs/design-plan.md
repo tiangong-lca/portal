@@ -800,8 +800,8 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 
 ### 12.2 Web 安全
 
-- CSP 默认拒绝，按实际字体、图片和后端域名放行，禁止 `unsafe-inline`；静态/ISR 路由使用 Next App Router 的 SHA-256 SRI 路径，不能使用会强制动态渲染并禁用 ISR 的全站 nonce；
-- 主题 bootstrap 使用同源外部静态脚本，不内联；只有明确动态且不需要 ISR/CDN 缓存的路由才允许 per-request nonce。SRI、RSC hydration、Streaming 和 ISR 必须作为一个组合在 EdgeOne compatibility spike 验证；
+- CSP 默认拒绝，按实际字体、图片和后端域名放行，禁止 `unsafe-inline`；Next SHA-256 SRI 只覆盖外部资产，不能单独授权 App Router 内联 Flight scripts；全站 nonce 又会强制动态渲染并禁用 ISR；
+- R0 非公开阶段只允许把严格候选策略置于 report-only 以收集证据，不得把 report-only 当作通过。主题 bootstrap 使用同源外部静态脚本；SRI、内联 Flight 处理、RSC hydration、Streaming 和 ISR 必须在 enforce 模式作为一个组合通过 EdgeOne Preview，无法同时满足即阻塞公开发布；
 - `frame-ancestors 'none'`、`X-Content-Type-Options: nosniff`、`Referrer-Policy: strict-origin-when-cross-origin` 和最小 Permissions Policy；
 - 用户内容只作为文本渲染，不用未经清洗的 HTML；
 - URL/localStorage/JSON 导入全部经 Zod 校验；
