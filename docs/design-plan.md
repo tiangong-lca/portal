@@ -20,7 +20,7 @@ checkPaths:
   - scripts/**
   - edgeone.json
 lastReviewedAt: 2026-08-26
-lastReviewedCommit: 329261fb572f13efe83408fd0c46e9fa54d9fd40
+lastReviewedCommit: 012bd05588b5dc1102fad708efa4a4e08c2e5eae
 related:
   - AGENTS.md
   - README.md
@@ -624,7 +624,7 @@ type PublicExchangePage = {
 
 ### 10.3 HMAC-signed Hybrid Search
 
-`tiangong-lca-edge-functions` 复用现有 query rewrite、SageMaker embedding、RPC 和日志收敛内核，新增 `portal_hybrid_search_v1`，而不是放宽现有登录端点或复用全局 `SERVICE_API_KEY`。沿用该仓库的统一发布契约：本地启动与远端部署脚本都传入 `--no-verify-jwt`，等价于关闭平台网关 JWT 检查；`portal_hybrid_search_v1` 与 `portal_data_product_results_v1` Handler 必须首先验证 Portal HMAC，未通过时不得进入业务逻辑。
+`tiangong-lca-edge-functions` 复用现有 query rewrite、SageMaker embedding 和受控检索内核，新增 `portal_hybrid_search_v1`，而不是放宽现有登录端点或复用全局 `SERVICE_API_KEY`。现有 `api.hybrid_search_processes/flows` 仍是登录产品的内部兼容入口：它们按单一 `data_source` 返回 raw `json`、`team_id`/`model_id`，不能直接成为 Portal 契约，也不能在 Edge 拆字段后返回。R2 必须先由 `database-engine` 新增 `api.portal_hybrid_search_v1`，在 Database 内固定联合 100/200、统一排序、public card hydration 与 evidence，再由 Edge 以 publishable key 调用。沿用 Edge 仓库的统一发布契约：本地启动与远端部署脚本都传入 `--no-verify-jwt`，等价于关闭平台网关 JWT 检查；`portal_hybrid_search_v1` 与 `portal_data_product_results_v1` Handler 必须首先验证 Portal HMAC，未通过时不得进入业务逻辑。
 
 凭据采用至少 256-bit CSPRNG 随机 secret，不使用用户密码、Supabase JWT secret 或已有全局 API key。`keyId` 是可记录的非秘密标识，例如 `portal-prod-2026q3`。配置面明确分为：
 
@@ -648,7 +648,7 @@ Edge R1 工作必须扩展 shared Redis adapter，而不是在 Handler 内直接
 
 - `redisSetNxEx(key, value, ttlSeconds)` 同时支持 Upstash 与 Standard Redis，并返回是否成功占位；
 - `redisEvalAtomicGuard(...)` 用 Lua 或等价单次原子事务完成预算扣减与 concurrency lease；
-- Portal guard key 分别使用 `replay`、`budget`、`lease`、`cache` 子命名空间，禁止与 user API key auth cache 共用 key；
+- Portal guard key 分别使用 `replay`、`budget`、`lease`、`cache`、`circuit` 子命名空间，禁止与 user API key auth cache 共用 key；
 - 配置缺失、连接失败、超时或响应无法解析时抛出稳定的 `guard_unavailable`，不得降级为无 guard 执行；
 - adapter 和 Handler 不记录 Redis token、完整 key、nonce、请求体或缓存 value。
 - `supabase/.env.example` 与 Edge README 必须列出 provider、namespace、timeout 和本地/托管配置名称，但不包含任何凭据值。
@@ -719,6 +719,30 @@ Redis 是签名入口的安全依赖，不是可跳过的缓存：nonce 登记�
 - CORS 收敛到 Portal 域名，但不把 CORS 当作权限控制。
 
 HMAC 只阻止未持有 secret 的客户端直接调用 Edge Function，不限制匿名用户通过公开 same-origin BFF 发起合法查询。因此成本边界由 EdgeOne WAF/BFF 请求预算、Edge Function 原子 admission gate、全局日/分钟预算、并发 lease、缓存、熔断与 kill switch 共同组成；任何文档、指标或 UI 都不得把 HMAC 描述成终端用户鉴权或单独的成本控制。
+
+R2 Hybrid 的固定请求不接受 cursor、sort、state、actor、team、`data_source`、模型名、权重、阈值、embedding、visitor hash 或备注：
+
+```ts
+type PortalHybridSearchRequestV1 = {
+  schemaVersion: "portal.hybrid-search-request.v1";
+  kind: "process" | "flow";
+  query: string; // 1–512 code points、UTF-8 <= 2048 bytes、无 C0/C1
+  filters: {
+    accessLevel?: "open" | "metadata_only";
+    geography?: string;
+    classification?: string;
+    referenceYearFrom?: number;
+    referenceYearTo?: number;
+    processSubtype?: string;
+    source?: string;
+  };
+  limit: number; // 1–20
+};
+```
+
+Database R2 façade 固定为 `api.portal_hybrid_search_v1(p_kind, p_query_terms, p_query_embedding, p_filters, p_limit)`。它在 Database 内联合 lexical/semantic 的 100/200 Process/Flow candidates，使用版本化常量 `portal-hybrid-rank-v1` 做一次稳定融合，返回 `portal.public-hybrid-candidate-page.v1`；item 只复用 R1 public card/capability 字段。`match.evidence` 只能包含实际检索产生的 lexical rank、semantic rank 和 semantic distance，不能返回 raw `json`、`search_text`、embedding、team/model/owner/review 字段或猜测命中的具体字段。OpenAI rewrite 只能显示为 `source=model_generated`、`advisory=true` 的 query interpretation，不能当作数据库事实。
+
+R2 最小版本不做 Hybrid cursor：一次最多返回 20 条，需要更多结果时进入现有 lexical GET 页。Edge 只返回 Hybrid 成功 DTO或固定失败原因；`guard_unavailable`、`budget_exhausted`、`concurrency_exhausted`、kill switch、circuit、timeout、contract failure 的 lexical fallback 由 Portal BFF 使用现有 R1 façade执行，Edge 不得在 guard 失败后绕过 guard 调 Database。Hybrid query 与备注不得进入 URL、浏览历史路径、telemetry 或默认 fragment。
 
 ### 10.4 Published LCIA
 
@@ -1230,7 +1254,7 @@ format/lint
 | --- | --- | --- | --- | --- |
 | R0 Bootstrap | 不公开 | 独立仓库、治理、最小 App、EdgeOne compatibility | Portal 首个 main、workspace onboarding | §17.3 全部 compatibility 项有 exact deployment SHA、runtime 输出、官方文档 URL 与 pass 证据 |
 | R1 Public Catalog MVP | 首次公开 | lexical/identifier search、Process/Flow 详情、Versions、Exchanges、公开 LCIA、Citation、2–4 条确定性比较、本地候选集/JSON、品牌配置、SEO/i18n/a11y | Database public catalog + LCIA numeric projection、Worker/Release publication write、HMAC verifier + signed LCIA wrapper、R0 | §23.5 R1 checklist 每项通过；不依赖 Hybrid |
-| R2 Intelligent Discovery | 增量公开 | HMAC-signed Hybrid、query interpretation、evidence-backed reasons、可选 Process Group、显式 Hybrid-query/含备注 fragment 分享 | Portal/Edge Phase 3 promoted main、HMAC/admission contract | §23.6 R2 checklist 每项通过；Hybrid 故障或 guard 拒绝自动回退 lexical |
+| R2 Intelligent Discovery | 增量公开 | HMAC-signed Hybrid、query interpretation、evidence-backed reasons、可选 Process Group、显式 Hybrid-query/含备注 fragment 分享 | Database public Hybrid façade、Portal/Edge Phase 3 promoted main、HMAC/admission contract | §23.6 R2 checklist 每项通过；Hybrid 故障或 guard 拒绝自动回退 lexical |
 | R3 Catalog Expansion | 分项公开 | Database/Data Package、LCIA Method、Relationships、Map、经批准的 Redis 短链 | 每项独立上游 identity/provenance/privacy contract | 每个能力单独 tracked Issue 和验收，不整包放行 |
 
 §23 是完整目标验收；R1 使用 §23.5，R2 使用 §23.6。R2/R3 不能用尚未实现的增强项阻塞 R1，也不能反向放松 R1 的匿名安全、SEO 或可比性门。
@@ -1271,12 +1295,13 @@ format/lint
 
 ### 20.5 Phase 3：HMAC-signed Hybrid 与解释增强
 
-1. Portal 增加 Hybrid BFF adapter，复用 signer，并把 guard/预算/熔断失败收敛为 lexical fallback；
-2. Edge 复用 verifier，为 Hybrid 增加专用入口、原子成本/并发 admission、缓存、熔断和 kill switch；
-3. Query interpretation 与 evidence-backed match reasons；
-4. 将 Hybrid evidence 接入既有比较与空结果放松建议；
-5. 上游提供完整依据时启用 Process Group；
-6. 加入带内容预览与二次确认的 Hybrid-query/含备注 fragment 分享。
+1. Database 新增 Portal public Hybrid façade：固定联合 100/200、版本化融合排序、public card hydration、严格 DTO/evidence 与 anon tests；
+2. Portal 增加 Hybrid BFF adapter，复用 signer，并把 guard/预算/熔断失败收敛为 lexical fallback；
+3. Edge 复用 verifier，为 Hybrid 增加专用入口、原子成本/并发 admission、缓存、熔断和 kill switch；
+4. Query interpretation 与 evidence-backed match reasons；
+5. 将 Hybrid evidence 接入既有比较与空结果放松建议；
+6. 上游提供完整依据时启用 Process Group；
+7. 加入带内容预览与二次确认的 Hybrid-query/含备注 fragment 分享。
 
 退出条件：Hybrid 故障不影响 lexical；无有效 HMAC、Redis guard 不可用、预算/并发耗尽或 kill switch 关闭时均不产生模型调用；比较不在不可比时并列数值；私人备注不离开浏览器；满足 R2 gate。
 
@@ -1302,6 +1327,7 @@ format/lint
 | LCIA projection finalize | `tiangong-lca-release` | M1：PR to `main` | publication-bound finalize/verification、hash/count reconciliation |
 | Portal R1 product + HMAC signer | `tiangong-lca-portal` | M1：PR to `main` | App Router 闭环、same-origin BFF signer、部署级品牌配置 |
 | Edge R1 verifier + LCIA | `tiangong-lca-edge-functions` | M2：feature from `dev`, PR to `dev`, promote to `main` | verifier、keyring、Upstash/Standard Redis 原子 guard adapter、deploy/auth probe、signed LCIA、限流 |
+| Database R2 public Hybrid façade | `database-engine` | M2：feature from `dev`, PR to `dev`, promote to `main` | 联合 100/200 candidates、固定融合排序、public hydration、严格 DTO/evidence、anon tests |
 | Portal R2 Hybrid adapter/UI | `tiangong-lca-portal` | M1：PR to `main` | Hybrid BFF adapter、lexical fallback、解释与分享 UI |
 | Edge R2 Hybrid runtime | `tiangong-lca-edge-functions` | M2：feature from `dev`, PR to `dev`, promote to `main` | signed Hybrid、原子预算/并发、缓存、熔断、kill switch、fallback |
 | Workspace integration | `lca-workspace` | M3：PR to `main` | 各 release 所需 exact main SHA 与跨仓验证 |
@@ -1415,7 +1441,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 
 ### 23.6 R2 Intelligent Discovery release checklist
 
-1. Portal Hybrid adapter 已进入 `portal/main`，`portal_hybrid_search_v1` 已进入 `edge-functions/main`，对应 exact SHA 已通过 workspace integration；
+1. `api.portal_hybrid_search_v1` 已进入 `database-engine/main`，Portal Hybrid adapter 已进入 `portal/main`，`portal_hybrid_search_v1` 已进入 `edge-functions/main`，对应 exact SHA 已通过 workspace integration；
 2. Hybrid 复用 R1 canonical HMAC/keyring/nonce contract；无有效签名的直接 Edge 请求在 rewrite、embedding、模型和数据库之前拒绝；
 3. Redis outage、重复 nonce、预算耗尽、并发竞争、lease 中断/TTL 回收和 `PORTAL_HYBRID_ENABLED=false` 均不产生模型调用；BFF 返回可观测原因并自动执行 lexical fallback；
 4. 匿名 BFF 的 EdgeOne WAF、route/global budget 和 Edge 原子 admission gate 已通过并发/突发负载测试；验收证据明确 HMAC 不是访客鉴权或单独的成本边界；
