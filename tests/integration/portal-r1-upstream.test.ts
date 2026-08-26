@@ -106,6 +106,9 @@ describe("Portal R1 fixture upstream", () => {
 
     expect(flowSearch.items[0]?.key.kind).toBe("flow");
     expect(processDataset?.metadata.kind).toBe("process");
+    expect(
+      processDataset?.metadata.kind === "process" ? processDataset.metadata.cutoffRules : [],
+    ).toEqual([{ language: "en", value: "Cutoff 1%" }]);
     expect(flowDataset?.metadata.kind).toBe("flow");
     expect(versions.items[0]?.isLatest).toBe(true);
     expect(exchanges?.rows[0]?.amount).toBe("1.25");

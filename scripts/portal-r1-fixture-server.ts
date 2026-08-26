@@ -131,15 +131,20 @@ function processSearchResponse() {
   };
 }
 
-function secondProcessDataset() {
+function processDataset(id: string, name: string) {
   return {
     ...catalogFixture.datasetProcess,
-    key: { ...catalogFixture.datasetProcess.key, id: secondProcessId },
+    key: { ...catalogFixture.datasetProcess.key, id },
     metadata: {
       ...catalogFixture.datasetProcess.metadata,
-      names: [{ language: "en", value: "Electricity, low voltage" }],
+      names: [{ language: "en", value: name }],
+      cutoffRules: [{ language: "en", value: "Cutoff 1%" }],
     },
   };
+}
+
+function secondProcessDataset() {
+  return processDataset(secondProcessId, "Electricity, low voltage");
 }
 
 function flowSearchResponse() {
@@ -215,8 +220,7 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
         arguments_.p_version === catalogFixture.datasetProcess.key.version
       ) {
         return {
-          ...catalogFixture.datasetProcess,
-          key: { ...catalogFixture.datasetProcess.key, id: arguments_.p_id },
+          ...processDataset(arguments_.p_id, "Electricity, medium voltage"),
         };
       }
       if (
@@ -231,7 +235,7 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
         arguments_.p_id === catalogFixture.datasetProcess.key.id &&
         arguments_.p_version === catalogFixture.datasetProcess.key.version
       ) {
-        return catalogFixture.datasetProcess;
+        return processDataset(catalogFixture.datasetProcess.key.id, "Electricity, medium voltage");
       }
       if (
         arguments_.p_kind === "flow" &&
