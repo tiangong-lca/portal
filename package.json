@@ -31,7 +31,8 @@
     "test:e2e": "pnpm build && playwright test",
     "fixture:r1": "node --import tsx scripts/portal-r1-fixture-server.ts",
     "check:bundle": "node scripts/check-client-bundle.mjs",
-    "check": "pnpm check:toolchain && pnpm check:brand && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:bundle"
+    "check:bundle-budget": "node scripts/check-route-bundle-budget.mjs",
+    "check": "pnpm check:toolchain && pnpm check:brand && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:bundle-budget && pnpm check:bundle"
   },
   "dependencies": {
     "class-variance-authority": "0.7.1",
