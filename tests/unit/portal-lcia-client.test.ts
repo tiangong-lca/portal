@@ -96,6 +96,16 @@ describe("Portal signed LCIA client", () => {
         nonce: () => hmacFixture.nonce,
       }),
     ).toEqual({ status: "temporarily_unavailable", data: null });
+
+    expect(
+      await queryPublishedLciaRaw(rawBody, {
+        environment,
+        fetchImplementation: vi.fn<typeof fetch>(async () =>
+          Response.json({ ...fixture.lcia, mode: "processes_one_impact" }),
+        ),
+        nonce: () => hmacFixture.nonce,
+      }),
+    ).toEqual({ status: "temporarily_unavailable", data: null });
   });
 
   it("rejects malformed input before making any upstream request", async () => {

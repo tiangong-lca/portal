@@ -49,6 +49,13 @@ function clientOrDefault(client?: PortalRpcClient): PortalRpcClient {
   return client ?? createPortalRpcClient();
 }
 
+function requireBoundResponse<T>(value: T, bound: boolean): T {
+  if (!bound) {
+    throw new PortalDataError("invalid_response");
+  }
+  return value;
+}
+
 async function searchPublicCatalog(
   kind: "process" | "flow",
   input: Omit<CatalogSearchInput, "kind">,
@@ -56,7 +63,10 @@ async function searchPublicCatalog(
 ): Promise<PublicSearchPage> {
   const parsed = parseInput(catalogSearchInputSchema, { ...input, kind });
 
-  return clientOrDefault(client).call(
+  const responseSchema = publicSearchPageSchema.refine(
+    (page) => page.kind === kind && page.items.every((item) => item.key.kind === kind),
+  );
+  const page = await clientOrDefault(client).call(
     kind === "process" ? "portal_search_processes_v1" : "portal_search_flows_v1",
     {
       p_query: parsed.query,
@@ -65,8 +75,12 @@ async function searchPublicCatalog(
       p_cursor: parsed.cursor,
       p_limit: parsed.limit,
     },
-    publicSearchPageSchema,
+    responseSchema,
     { mode: "no-store" },
+  );
+  return requireBoundResponse(
+    page,
+    page.kind === kind && page.items.every((item) => item.key.kind === kind),
   );
 }
 
@@ -90,14 +104,23 @@ export async function getPublicDataset(
 ): Promise<PublicDatasetEnvelope | null> {
   const parsed = parseInput(datasetReferenceInputSchema, input);
 
-  return clientOrDefault(client).call(
+  const responseSchema = publicDatasetEnvelopeSchema
+    .nullable()
+    .refine(
+      (dataset) =>
+        dataset === null ||
+        (dataset.key.kind === parsed.kind &&
+          dataset.key.id === parsed.id &&
+          dataset.key.version === parsed.version),
+    );
+  const dataset = await clientOrDefault(client).call(
     "portal_get_dataset_v1",
     {
       p_kind: parsed.kind,
       p_id: parsed.id,
       p_version: parsed.version,
     },
-    publicDatasetEnvelopeSchema.nullable(),
+    responseSchema,
     {
       mode: "revalidate",
       seconds: 60,
@@ -107,6 +130,13 @@ export async function getPublicDataset(
       ],
     },
   );
+  return requireBoundResponse(
+    dataset,
+    dataset === null ||
+      (dataset.key.kind === parsed.kind &&
+        dataset.key.id === parsed.id &&
+        dataset.key.version === parsed.version),
+  );
 }
 
 export async function listPublicDatasetVersions(
@@ -115,7 +145,13 @@ export async function listPublicDatasetVersions(
 ): Promise<PublicVersionPage> {
   const parsed = parseInput(versionListInputSchema, input);
 
-  return clientOrDefault(client).call(
+  const responseSchema = publicVersionPageSchema.refine(
+    (page) =>
+      page.dataset.kind === parsed.kind &&
+      page.dataset.id === parsed.id &&
+      page.items.every((item) => item.key.kind === parsed.kind && item.key.id === parsed.id),
+  );
+  const page = await clientOrDefault(client).call(
     "portal_list_versions_v1",
     {
       p_kind: parsed.kind,
@@ -123,12 +159,18 @@ export async function listPublicDatasetVersions(
       p_cursor: parsed.cursor,
       p_limit: parsed.limit,
     },
-    publicVersionPageSchema,
+    responseSchema,
     {
       mode: "revalidate",
       seconds: 300,
       tags: [`portal:versions:${parsed.kind}:${parsed.id}`],
     },
+  );
+  return requireBoundResponse(
+    page,
+    page.dataset.kind === parsed.kind &&
+      page.dataset.id === parsed.id &&
+      page.items.every((item) => item.key.kind === parsed.kind && item.key.id === parsed.id),
   );
 }
 
@@ -138,7 +180,14 @@ export async function listPublicProcessExchanges(
 ): Promise<PublicExchangePage | null> {
   const parsed = parseInput(exchangeListInputSchema, input);
 
-  return clientOrDefault(client).call(
+  const responseSchema = publicExchangePageSchema
+    .nullable()
+    .refine(
+      (page) =>
+        page === null ||
+        (page.process.id === parsed.processId && page.process.version === parsed.processVersion),
+    );
+  const page = await clientOrDefault(client).call(
     "portal_list_process_exchanges_v1",
     {
       p_process_id: parsed.processId,
@@ -147,12 +196,17 @@ export async function listPublicProcessExchanges(
       p_cursor: parsed.cursor,
       p_limit: parsed.limit,
     },
-    publicExchangePageSchema.nullable(),
+    responseSchema,
     {
       mode: "revalidate",
       seconds: 300,
       tags: [`portal:exchanges:${parsed.processId}:${parsed.processVersion}`],
     },
+  );
+  return requireBoundResponse(
+    page,
+    page === null ||
+      (page.process.id === parsed.processId && page.process.version === parsed.processVersion),
   );
 }
 
@@ -162,16 +216,18 @@ export async function getPublicFacets(
 ): Promise<PublicFacets> {
   const parsed = parseInput(facetInputSchema, input);
 
-  return clientOrDefault(client).call(
+  const responseSchema = publicFacetsSchema.refine((facets) => facets.kind === parsed.kind);
+  const facets = await clientOrDefault(client).call(
     "portal_facets_v1",
     {
       p_kind: parsed.kind,
       p_query: parsed.query,
       p_filters: parsed.filters,
     },
-    publicFacetsSchema,
+    responseSchema,
     { mode: "no-store" },
   );
+  return requireBoundResponse(facets, facets.kind === parsed.kind);
 }
 
 export async function listPublicSitemapEntries(
@@ -180,18 +236,25 @@ export async function listPublicSitemapEntries(
 ): Promise<PublicSitemapPage> {
   const parsed = parseInput(sitemapInputSchema, input);
 
-  return clientOrDefault(client).call(
+  const responseSchema = publicSitemapPageSchema.refine(
+    (page) => parsed.kind === "all" || page.items.every((item) => item.key.kind === parsed.kind),
+  );
+  const page = await clientOrDefault(client).call(
     "portal_sitemap_entries_v1",
     {
       p_kind: parsed.kind,
       p_cursor: parsed.cursor,
       p_limit: parsed.limit,
     },
-    publicSitemapPageSchema,
+    responseSchema,
     {
       mode: "revalidate",
       seconds: 300,
       tags: [`portal:sitemap:${parsed.kind}`],
     },
+  );
+  return requireBoundResponse(
+    page,
+    parsed.kind === "all" || page.items.every((item) => item.key.kind === parsed.kind),
   );
 }

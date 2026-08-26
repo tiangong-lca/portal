@@ -69,12 +69,13 @@ export async function queryPublishedLciaRaw(
     throw new PortalLciaInputError();
   }
 
+  const parsedInput = publishedLciaInputSchema.safeParse(decoded);
   if (
     decoded === null ||
     typeof decoded !== "object" ||
     Array.isArray(decoded) ||
     !wireInputKeys.every((key) => Object.prototype.hasOwnProperty.call(decoded, key)) ||
-    !publishedLciaInputSchema.safeParse(decoded).success
+    !parsedInput.success
   ) {
     throw new PortalLciaInputError();
   }
@@ -128,7 +129,7 @@ export async function queryPublishedLciaRaw(
     }
 
     const parsed = publishedLciaPageSchema.safeParse(payload);
-    return parsed.success
+    return parsed.success && parsed.data.mode === parsedInput.data.mode
       ? { status: "available", data: parsed.data }
       : { status: "temporarily_unavailable", data: null };
   } catch {

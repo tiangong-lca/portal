@@ -24,6 +24,14 @@ const environment = {
   timeoutMilliseconds: 1000,
 };
 
+function clientReturning(response: unknown): PortalRpcClient {
+  return {
+    async call<T>(): Promise<T> {
+      return response as T;
+    },
+  };
+}
+
 describe("Portal Supabase public RPC client", () => {
   it("uses the explicit api profile and only a publishable API key", async () => {
     const fetchImplementation = vi.fn<typeof fetch>(async (..._arguments) =>
@@ -103,9 +111,105 @@ describe("Portal Supabase public RPC client", () => {
         p_cursor: null,
         p_limit: 20,
       },
-      publicSearchPageSchema,
+      expect.anything(),
       { mode: "no-store" },
     ]);
+  });
+
+  it("fails closed when a valid DTO is bound to a different public request", async () => {
+    const processReference = {
+      kind: "process" as const,
+      id: fixture.datasetProcess.key.id,
+      version: fixture.datasetProcess.key.version,
+    };
+    const otherId = fixture.datasetFlow.key.id;
+
+    await expect(
+      searchPublicProcesses(
+        { query: "electricity" },
+        clientReturning({ ...fixture.search, kind: "flow" }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
+    await expect(
+      searchPublicProcesses(
+        { query: "electricity" },
+        clientReturning({
+          ...fixture.search,
+          items: [
+            {
+              ...fixture.search.items[0],
+              key: { ...fixture.search.items[0]!.key, kind: "flow" },
+            },
+          ],
+        }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
+
+    await expect(
+      getPublicDataset(
+        processReference,
+        clientReturning({
+          ...fixture.datasetProcess,
+          key: { ...fixture.datasetProcess.key, id: otherId },
+        }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
+
+    await expect(
+      listPublicDatasetVersions(
+        { kind: "process", id: processReference.id },
+        clientReturning({
+          ...fixture.versions,
+          dataset: { ...fixture.versions.dataset, id: otherId },
+        }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
+    await expect(
+      listPublicDatasetVersions(
+        { kind: "process", id: processReference.id },
+        clientReturning({
+          ...fixture.versions,
+          items: [
+            {
+              ...fixture.versions.items[0],
+              key: { ...fixture.versions.items[0]!.key, id: otherId },
+            },
+          ],
+        }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
+
+    await expect(
+      listPublicProcessExchanges(
+        { processId: processReference.id, processVersion: processReference.version },
+        clientReturning({
+          ...fixture.exchanges,
+          process: { ...fixture.exchanges.process, id: otherId },
+        }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
+
+    await expect(
+      getPublicFacets(
+        { kind: "process", query: "electricity" },
+        clientReturning({ ...fixture.facets, kind: "flow" }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
+
+    await expect(
+      listPublicSitemapEntries(
+        { kind: "process" },
+        clientReturning({
+          ...fixture.sitemap,
+          items: [
+            {
+              ...fixture.sitemap.items[0],
+              key: { ...fixture.sitemap.items[0]!.key, kind: "flow" },
+            },
+          ],
+        }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
   });
 
   it("binds every catalog adapter to the versioned RPC and intended cache policy", async () => {
