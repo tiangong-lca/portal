@@ -93,8 +93,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                   type="search"
                 />
                 <InputGroupAddon align="inline-end">
-                  <Button size="lg" type="submit">
-                    {t("searchButton")}
+                  <Button aria-label={t("searchButton")} size="lg" type="submit">
+                    <span className="hidden sm:inline">{t("searchButton")}</span>
                     <ArrowRightIcon data-icon="inline-end" />
                   </Button>
                 </InputGroupAddon>

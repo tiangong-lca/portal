@@ -27,7 +27,12 @@
     "switchToEnglish": "切换到中文",
     "footerBoundary": "Anonymous · read-only · no login",
     "footerEvidence": "Only content allowed by public contracts and complete evidence is shown.",
-    "externalAdvanced": "Open the TianGong LCA workspace"
+    "externalAdvanced": "Open the TianGong LCA workspace",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "This public page does not exist, has been withdrawn, or is not currently visible.",
+    "errorTitle": "Page temporarily unavailable",
+    "errorDescription": "The public data service cannot complete this request right now. Try again later.",
+    "retry": "Try again"
   },
   "Home": {
     "eyebrow": "PUBLIC CATALOG / EXACT VERSION",
@@ -48,7 +53,7 @@
     "browseRegion": "Region catalog",
     "browseSource": "Data source catalog",
     "scaleTitle": "Public catalog status",
-    "scaleUnavailable": "The statistics contract is not connected, so scale and update time are not inferred.",
+    "scaleUnavailable": "Public statistics are currently unavailable. Scale and update time remain unprovided rather than inferred.",
     "advancedTitle": "Need modeling, editing, or team workflows?",
     "advancedDescription": "The Portal is for anonymous public discovery. Advanced work continues in the TianGong LCA workspace."
   },
@@ -71,20 +76,20 @@
     "initialDescription": "Natural-language Hybrid Search is not part of R1. The baseline catalog always uses deterministic lexical or identifier search.",
     "emptyTitle": "No public results can be shown",
     "emptyDescription": "Check the identifier, shorten the query, or remove filters. Private data is never used to fill gaps.",
-    "pendingTitle": "The public-catalog data layer is not connected",
-    "pendingDescription": "The interaction and no-JavaScript form are ready. Results will render in the initial HTML after the public façade is connected.",
+    "unavailableTitle": "The public catalog is temporarily unavailable",
+    "unavailableDescription": "Public records cannot be read right now. Try again later or adjust the filters.",
     "resultsFor": "Public results for “{query}”"
   },
   "Browse": {
     "title": "Browse: {dimension}",
     "description": "This directory only uses stable dimensions explicitly supplied by the upstream public contract. The Portal does not infer groups.",
-    "emptyTitle": "Directory content is not connected",
-    "emptyDescription": "The Browse shell has canonical and language-alternate metadata plus indexable HTML. Entries await the sitemap/catalog façade."
+    "emptyTitle": "No entries can be shown in this directory",
+    "emptyDescription": "Try another directory or public search. Groups not supplied upstream are never inferred."
   },
   "Detail": {
     "processTitle": "Process details",
     "flowTitle": "Flow details",
-    "recordPending": "Waiting for the public detail contract to resolve this exact version.",
+    "recordPending": "This exact public version cannot be displayed right now.",
     "identity": "Data identity",
     "context": "Applicability context",
     "evidence": "Public evidence",
@@ -112,6 +117,12 @@
     "exchangesTitle": "Public exchanges",
     "exchangesDescription": "Each value needs Process, Flow, direction, unit, functional-unit, and capability context.",
     "exchangesEmpty": "No Exchange value has complete public context. Missing values are never replaced with zero.",
+    "direction": "Direction",
+    "exchangeKind": "Exchange kind",
+    "policyVersion": "Capability policy",
+    "quantitativeReference": "Quantitative reference",
+    "yes": "Yes",
+    "no": "No",
     "lciaTitle": "Published LCIA results",
     "lciaDescription": "Only immutable values bound to the current public publication are read.",
     "lciaUnavailable": "There is no visible published LCIA projection. The result is unavailable, not zero.",
@@ -130,7 +141,7 @@
     "qualityTitle": "Data quality",
     "qualityEmpty": "No quality scale is drawn without its scale and source rule.",
     "provenanceTitle": "Provenance",
-    "provenanceEmpty": "Source record, import batch, and normalization rule await the public contract."
+    "provenanceEmpty": "The public contract provides no source record, import batch, or normalization rule."
   },
   "Compare": {
     "title": "Deterministic comparison",
@@ -145,7 +156,10 @@
     "statusIncompatible": "Not comparable",
     "statusInsufficient": "Insufficient evidence",
     "metadataOnly": "Only metadata is compared. Missing or incompatible LCIA values are not aligned.",
-    "member": "Candidate {index}"
+    "member": "Candidate {index}",
+    "numericTitle": "Comparable LCIA values",
+    "impactCategory": "Impact category",
+    "numericContext": "These values passed exact Process, functional unit, geography, reference year, method, unit, and publication consistency checks."
   },
   "Collections": {
     "title": "Local collection",
@@ -169,7 +183,9 @@
     "saved": "Saved in this browser",
     "imported": "JSON validated and imported",
     "shared": "An ID-only link was copied",
-    "error": "This local data cannot be used. Check its format and size."
+    "error": "This local data cannot be used. Check its format and size.",
+    "downloadCorrupt": "Download corrupt raw data",
+    "clearCorrupt": "Clear corrupt data"
   },
   "Methodology": {
     "title": "Public-data methodology",

@@ -1,0 +1,267 @@
+import { FilterIcon, SearchIcon } from "lucide-react";
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { localizedText, mapSearchItem } from "@/features/catalog/map-public-data";
+import { SearchResults } from "@/features/catalog/search-results";
+import { isPortalLocale, localePath } from "@/i18n/routing";
+import { localizedMetadata } from "@/lib/seo";
+import {
+  parsePortalSearchUrl,
+  PortalInputError,
+  type PortalSearchUrlInput,
+} from "@/server/contracts/input";
+import { getPublicFacets, searchPublicFlows, searchPublicProcesses } from "@/server/data/catalog";
+import { PortalDataError } from "@/server/data/supabase-rpc";
+
+type SearchParams = Record<string, string | string[] | undefined>;
+
+function searchHref(locale: "zh-CN" | "en", input: PortalSearchUrlInput, cursor: string): string {
+  const parameters = new URLSearchParams({
+    cursor,
+    kind: input.kind,
+    limit: input.limit.toString(),
+    q: input.query,
+    sort: input.sort,
+    v: "1",
+  });
+  if (input.filters.accessLevel) parameters.set("access", input.filters.accessLevel);
+  if (input.filters.geography) parameters.set("geo", input.filters.geography);
+  if (input.filters.classification) parameters.set("classification", input.filters.classification);
+  if (input.filters.referenceYearFrom !== undefined) {
+    parameters.set("yearFrom", input.filters.referenceYearFrom.toString());
+  }
+  if (input.filters.referenceYearTo !== undefined) {
+    parameters.set("yearTo", input.filters.referenceYearTo.toString());
+  }
+  if (input.filters.processSubtype) parameters.set("subtype", input.filters.processSubtype);
+  if (input.filters.source) parameters.set("source", input.filters.source);
+  return `${localePath(locale, "search")}?${parameters.toString()}`;
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/search">): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isPortalLocale(locale)) return {};
+  const t = await getTranslations({ locale, namespace: "Search" });
+  return localizedMetadata({
+    description: t("description"),
+    index: false,
+    locale,
+    path: "search",
+    title: t("title"),
+  });
+}
+
+export default async function SearchPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<SearchParams>;
+}) {
+  const { locale } = await params;
+  if (!isPortalLocale(locale)) notFound();
+  setRequestLocale(locale);
+
+  const rawSearchParams = await searchParams;
+  let parsedSearch;
+  let inputInvalid = false;
+  try {
+    parsedSearch = parsePortalSearchUrl(rawSearchParams);
+  } catch (error) {
+    if (!(error instanceof PortalInputError)) throw error;
+    parsedSearch = parsePortalSearchUrl({});
+    inputInvalid = true;
+  }
+
+  const query = parsedSearch.query;
+  const [t, detail, common] = await Promise.all([
+    getTranslations({ locale, namespace: "Search" }),
+    getTranslations({ locale, namespace: "Detail" }),
+    getTranslations({ locale, namespace: "Common" }),
+  ]);
+  const facetLabels = [t("objectType"), t("access"), t("region"), t("year"), t("source")];
+  let dataUnavailable = false;
+  let nextCursor: string | null = null;
+  let results: ReturnType<typeof mapSearchItem>[] = [];
+  let facets: Awaited<ReturnType<typeof getPublicFacets>> | null = null;
+
+  if (query && !inputInvalid) {
+    try {
+      const { kind: _kind, ...searchInput } = parsedSearch;
+      const [page, facetPage] = await Promise.all([
+        parsedSearch.kind === "process"
+          ? searchPublicProcesses(searchInput)
+          : searchPublicFlows(searchInput),
+        getPublicFacets({ filters: parsedSearch.filters, kind: parsedSearch.kind, query }),
+      ]);
+      results = page.items.map((item) => mapSearchItem(item, locale));
+      nextCursor = page.nextCursor;
+      facets = facetPage;
+    } catch (error) {
+      if (!(error instanceof PortalDataError)) throw error;
+      dataUnavailable = true;
+    }
+  }
+
+  return (
+    <main
+      className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8"
+      id="main-content"
+    >
+      <header className="flex max-w-3xl flex-col gap-2">
+        <Badge variant="outline">LEXICAL / IDENTIFIER</Badge>
+        <h1 className="font-heading text-3xl font-semibold sm:text-4xl">{t("title")}</h1>
+        <p className="text-muted-foreground leading-7">{t("description")}</p>
+      </header>
+
+      <search>
+        <form action={localePath(locale, "search")} className="flex flex-col gap-2" method="get">
+          <input name="v" type="hidden" value="1" />
+          <input name="kind" type="hidden" value={parsedSearch.kind} />
+          <label className="sr-only" htmlFor="catalog-query">
+            {t("label")}
+          </label>
+          <InputGroup className="min-h-12">
+            <InputGroupAddon>
+              <SearchIcon aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              defaultValue={query}
+              id="catalog-query"
+              maxLength={512}
+              name="q"
+              placeholder={t("placeholder")}
+              type="search"
+            />
+            <InputGroupAddon align="inline-end">
+              <Button size="lg" type="submit">
+                {t("submit")}
+              </Button>
+            </InputGroupAddon>
+          </InputGroup>
+          <p className="text-muted-foreground text-xs">{t("privacy")}</p>
+        </form>
+      </search>
+
+      <div aria-label={t("objectType")} className="flex flex-wrap gap-2">
+        {(["process", "flow"] as const).map((kind) => (
+          <Button asChild key={kind} variant={parsedSearch.kind === kind ? "default" : "outline"}>
+            <a
+              href={`${localePath(locale, "search")}?v=1&kind=${kind}&q=${encodeURIComponent(query)}`}
+            >
+              {kind}
+            </a>
+          </Button>
+        ))}
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-[14rem_minmax(0,1fr)_15rem]">
+        <aside aria-labelledby="facet-heading" className="hidden lg:block">
+          <Card size="sm">
+            <CardHeader>
+              <FilterIcon aria-hidden="true" />
+              <CardTitle id="facet-heading">{t("facets")}</CardTitle>
+              <CardDescription>
+                {facets ? t("description") : t("unavailableDescription")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {facets
+                ? facets.groups.map((group) => (
+                    <div className="flex flex-col gap-2" key={group.id}>
+                      <strong>{localizedText(group.label, locale) ?? group.id}</strong>
+                      {group.values.map((value) => (
+                        <span className="text-muted-foreground text-sm" key={value.value}>
+                          {localizedText(value.label, locale) ?? value.value} ({value.count})
+                        </span>
+                      ))}
+                    </div>
+                  ))
+                : facetLabels.map((label) => (
+                    <Button disabled key={label} variant="ghost">
+                      {label}
+                    </Button>
+                  ))}
+            </CardContent>
+          </Card>
+        </aside>
+
+        <section aria-labelledby="results-heading" aria-live="polite" className="min-w-0">
+          <h2 className="sr-only" id="results-heading">
+            {query ? t("resultsFor", { query }) : t("initialTitle")}
+          </h2>
+          {!query ? (
+            <Empty className="min-h-80">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <SearchIcon aria-hidden="true" />
+                </EmptyMedia>
+                <EmptyTitle>{t("initialTitle")}</EmptyTitle>
+                <EmptyDescription>{t("initialDescription")}</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : inputInvalid || dataUnavailable ? (
+            <Alert variant={inputInvalid ? "destructive" : "default"}>
+              <AlertDescription>
+                {inputInvalid ? t("emptyDescription") : t("unavailableDescription")}
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <SearchResults
+              items={results}
+              labels={{
+                collect: detail("collect"),
+                compare: detail("compare"),
+                copied: detail("citationCopied"),
+                copyCitation: detail("copyCitation"),
+                details: common("details"),
+                emptyDescription: t("emptyDescription"),
+                emptyTitle: t("emptyTitle"),
+                metadataOnly: common("metadataOnly"),
+                public: common("public"),
+              }}
+              locale={locale}
+            />
+          )}
+          {nextCursor ? (
+            <nav aria-label={common("next")} className="mt-5 flex justify-end">
+              <Button asChild variant="outline">
+                <a href={searchHref(locale, parsedSearch, nextCursor)}>{common("next")}</a>
+              </Button>
+            </nav>
+          ) : null}
+        </section>
+
+        <aside aria-labelledby="selection-heading">
+          <Card size="sm">
+            <CardHeader>
+              <CardTitle id="selection-heading">{t("selection")}</CardTitle>
+              <CardDescription>{t("selectionEmpty")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Alert>
+                <AlertDescription>0 / 4</AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+        </aside>
+      </div>
+    </main>
+  );
+}

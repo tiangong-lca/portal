@@ -1,5 +1,7 @@
 "use client";
 
+/* oxlint-disable next/no-img-element -- Deployment-configured SVG logos stay external, preserve intrinsic dimensions, and use a reviewed fallback chain. */
+
 import { useState } from "react";
 
 type BrandLogoImageProps = {
@@ -48,14 +50,11 @@ export function BrandLogoImage({
       <span aria-hidden="true" data-brand-logo-fallback-layer>
         TG
       </span>
-      <picture className="absolute inset-0 inline-flex">
-        <source
-          media="(prefers-color-scheme: dark)"
-          srcSet={usingDefaults ? defaultDarkLogo : darkLogo}
-        />
+      <span className="absolute inset-0 inline-flex">
         <img
           alt=""
-          className="size-full object-contain"
+          className="size-full object-contain dark:hidden"
+          data-brand-light-logo
           decoding="async"
           fetchPriority={priority ? "high" : "auto"}
           height={height}
@@ -65,7 +64,20 @@ export function BrandLogoImage({
           src={usingDefaults ? defaultLightLogo : lightLogo}
           width={width}
         />
-      </picture>
+        <img
+          alt=""
+          className="hidden size-full object-contain dark:block"
+          data-brand-dark-logo
+          decoding="async"
+          fetchPriority={priority ? "high" : "auto"}
+          height={height}
+          onError={() =>
+            setFallbackLevel((level) => (level === 0 && configuredUsesDefaults ? 2 : level + 1))
+          }
+          src={usingDefaults ? defaultDarkLogo : darkLogo}
+          width={width}
+        />
+      </span>
     </span>
   );
 }

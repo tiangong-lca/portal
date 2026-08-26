@@ -58,8 +58,14 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
           </ul>
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          <Button asChild aria-label={t("search")} size="icon-lg" variant="outline">
+        <div className="order-2 ml-auto flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
+          <Button
+            asChild
+            aria-label={t("search")}
+            className="size-[44px]"
+            size="icon-lg"
+            variant="outline"
+          >
             <Link href={localePath(locale, "search?v=1")}>
               <SearchIcon aria-hidden="true" />
             </Link>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { localePath, type PortalLocale } from "@/i18n/routing";
+import { brandConfig } from "@/server/brand";
 
 type LocalizedMetadataInput = {
   locale: PortalLocale;
@@ -33,6 +34,14 @@ export function localizedMetadata({
     description,
     openGraph: {
       description,
+      images: [
+        {
+          alt: brandConfig.alt[locale],
+          height: brandConfig.height,
+          url: brandConfig.lightLogo,
+          width: brandConfig.width,
+        },
+      ],
       locale: locale === "zh-CN" ? "zh_CN" : "en",
       title,
       type: "website",

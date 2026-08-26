@@ -1,0 +1,128 @@
+import { BookmarkPlusIcon, GitCompareArrowsIcon } from "lucide-react";
+import Link from "next/link";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import type { CatalogResultViewModel } from "@/features/catalog/view-model";
+import { localePath, type PortalLocale } from "@/i18n/routing";
+
+import { CitationCopy } from "./citation-copy";
+
+type SearchResultLabels = {
+  collect: string;
+  compare: string;
+  copied: string;
+  copyCitation: string;
+  details: string;
+  emptyDescription: string;
+  emptyTitle: string;
+  metadataOnly: string;
+  public: string;
+};
+
+export function SearchResults({
+  items,
+  labels,
+  locale,
+}: {
+  items: CatalogResultViewModel[];
+  labels: SearchResultLabels;
+  locale: PortalLocale;
+}) {
+  if (items.length === 0) {
+    return (
+      <Empty className="min-h-72">
+        <EmptyHeader>
+          <EmptyTitle>{labels.emptyTitle}</EmptyTitle>
+          <EmptyDescription>{labels.emptyDescription}</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+
+  return (
+    <ol className="flex flex-col gap-4">
+      {items.map((item) => {
+        const detailHref = localePath(locale, `${item.kind}/${encodeURIComponent(item.ref)}`);
+        const citation = `TianGong LCA. ${item.name}. ${item.kind} dataset, ${item.ref}. ${new URL(
+          detailHref,
+          process.env.SITE_URL ?? "http://localhost:3000",
+        ).toString()}`;
+
+        return (
+          <li key={`${item.kind}:${item.ref}`}>
+            <Card>
+              <CardHeader>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline">{item.kind}</Badge>
+                  <Badge variant={item.accessLevel === "open" ? "default" : "secondary"}>
+                    {item.accessLevel === "open" ? labels.public : labels.metadataOnly}
+                  </Badge>
+                </div>
+                <CardTitle>{item.name}</CardTitle>
+                <CardDescription className="font-mono text-xs break-all">
+                  {item.ref}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {[
+                    item.referenceProduct,
+                    item.functionalUnit,
+                    item.geography,
+                    item.referenceYear,
+                    item.technology,
+                    item.evidence,
+                  ]
+                    .filter(Boolean)
+                    .map((value, index) => (
+                      <li className="text-sm" key={`${item.ref}:${index}`}>
+                        {value}
+                      </li>
+                    ))}
+                </ul>
+              </CardContent>
+              <CardFooter className="flex flex-wrap gap-2">
+                <Button asChild>
+                  <Link href={detailHref}>{labels.details}</Link>
+                </Button>
+                {item.kind === "process" ? (
+                  <Button asChild variant="outline">
+                    <Link
+                      href={`${localePath(locale, "compare")}?v=1&ids=${encodeURIComponent(item.ref)}`}
+                    >
+                      <GitCompareArrowsIcon data-icon="inline-start" />
+                      {labels.compare}
+                    </Link>
+                  </Button>
+                ) : null}
+                <Button asChild variant="outline">
+                  <Link
+                    href={`${localePath(locale, "collections")}#member=${encodeURIComponent(item.ref)}`}
+                  >
+                    <BookmarkPlusIcon data-icon="inline-start" />
+                    {labels.collect}
+                  </Link>
+                </Button>
+                <CitationCopy
+                  citation={citation}
+                  copiedLabel={labels.copied}
+                  copyLabel={labels.copyCitation}
+                />
+              </CardFooter>
+            </Card>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}

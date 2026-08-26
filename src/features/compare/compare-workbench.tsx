@@ -2,6 +2,7 @@ import { GitCompareArrowsIcon } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
@@ -34,7 +35,26 @@ type CompareLabels = {
   member: (index: number) => string;
   metadataOnly: string;
   notProvided: string;
+  numericContext: string;
+  numericTitle: string;
+  impactCategory: string;
+  method: string;
+  publication: string;
+  package: string;
+  evidence: string;
+  unit: string;
+  value: string;
   status: Record<CompatibilityStatus, string>;
+};
+
+export type ComparableLciaPresentation = {
+  evidenceHash: string;
+  impactName: string;
+  methodRef: string;
+  packageRef: string;
+  publicationRef: string;
+  publishedAt: string;
+  unit: string;
 };
 
 const dimensionLabels: Record<CompatibilityDimension, { en: string; zh: string }> = {
@@ -55,10 +75,12 @@ export function CompareWorkbench({
   candidates,
   labels,
   locale,
+  numericContext,
 }: {
   candidates: CompareCandidate[];
   labels: CompareLabels;
   locale: "zh-CN" | "en";
+  numericContext?: ComparableLciaPresentation;
 }) {
   if (candidates.length < 2) {
     return (
@@ -141,6 +163,54 @@ export function CompareWorkbench({
           </section>
         ))}
       </div>
+      {result.canAlignLcia && numericContext ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>{labels.numericTitle}</CardTitle>
+            <CardDescription>{labels.numericContext}</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                [labels.impactCategory, numericContext.impactName],
+                [labels.method, numericContext.methodRef],
+                [
+                  labels.publication,
+                  `${numericContext.publicationRef} · ${numericContext.publishedAt}`,
+                ],
+                [labels.package, numericContext.packageRef],
+                [labels.evidence, numericContext.evidenceHash],
+              ].map(([label, value]) => (
+                <div className="flex flex-col gap-1" key={label}>
+                  <dt className="text-muted-foreground text-xs uppercase">{label}</dt>
+                  <dd className="font-mono text-xs break-all">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <Table>
+              <TableCaption>{labels.numericTitle}</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead scope="col">{labels.dimension}</TableHead>
+                  <TableHead scope="col">{labels.value}</TableHead>
+                  <TableHead scope="col">{labels.unit}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {candidates.map((candidate) => (
+                  <TableRow key={candidate.ref}>
+                    <TableHead scope="row">{candidate.name}</TableHead>
+                    <TableCell className="font-mono font-semibold">
+                      {candidate.lciaValue?.value}
+                    </TableCell>
+                    <TableCell>{candidate.lciaValue?.unit}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }

@@ -19,16 +19,19 @@ import type { CompareCandidate } from "@/features/compare/compatibility";
 type Locale = "zh-CN" | "en";
 
 export function localizedText(items: LocalizedText, locale: Locale): string | undefined {
-  if (items.length === 0) return undefined;
-  const exact = items.find((item) => item.language.toLowerCase() === locale.toLowerCase());
+  const displayable = items
+    .map((item) => ({ ...item, value: item.value.trim() }))
+    .filter((item) => item.value.length > 0);
+  if (displayable.length === 0) return undefined;
+  const exact = displayable.find((item) => item.language.toLowerCase() === locale.toLowerCase());
   if (exact) return exact.value;
-  const sameBase = items.find(
+  const sameBase = displayable.find(
     (item) =>
       item.language.split("-", 1)[0]?.toLowerCase() === locale.split("-", 1)[0]?.toLowerCase(),
   );
   if (sameBase) return sameBase.value;
-  const english = items.find((item) => item.language.toLowerCase().startsWith("en"));
-  const fallback = english ?? items[0];
+  const english = displayable.find((item) => item.language.toLowerCase().startsWith("en"));
+  const fallback = english ?? displayable[0];
   return fallback ? `${fallback.value} [${fallback.language}]` : undefined;
 }
 
@@ -140,14 +143,18 @@ export function mapExchangePage(
     return [];
   }
   const functionalUnit = `${page.processContext.functionalUnit.amount} ${page.processContext.functionalUnit.unit}`;
+  const processRef = exactRef(page.process.id, page.process.version);
   return page.rows.map((row) => ({
     amount: row.amount,
+    capabilityPolicyVersion: page.processContext.capabilityPolicyVersion,
     direction: row.direction,
     flowName: localizedText(row.flow.name, locale) ?? exactRef(row.flow.id, row.flow.version),
     flowRef: exactRef(row.flow.id, row.flow.version),
     functionalUnit,
     id: row.internalId,
+    isQuantitativeReference: row.isQuantitativeReference,
     kind: row.kind,
+    processRef,
     unit: row.unit,
   }));
 }

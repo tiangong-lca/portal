@@ -24,6 +24,7 @@ export type DatasetDetailViewModel = CatalogResultViewModel & {
 
 export type ExchangeViewModel = {
   id: string;
+  processRef: string;
   flowRef: string;
   flowName: string;
   direction: "input" | "output";
@@ -31,6 +32,8 @@ export type ExchangeViewModel = {
   amount: string;
   unit: string;
   functionalUnit: string;
+  capabilityPolicyVersion: string;
+  isQuantitativeReference: boolean;
 };
 
 export type LciaValueViewModel = {

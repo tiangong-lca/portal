@@ -13,8 +13,23 @@ export const metadata: Metadata = {
     template: "%s · 天工 LCA",
   },
   description: "匿名搜索、理解、比较和引用公开生命周期评价数据。",
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: brandConfig.favicon,
+  },
+  openGraph: {
+    description: "匿名搜索、理解、比较和引用公开生命周期评价数据。",
+    images: [
+      {
+        alt: brandConfig.alt["zh-CN"],
+        height: brandConfig.height,
+        url: brandConfig.lightLogo,
+        width: brandConfig.width,
+      },
+    ],
+    siteName: "天工 LCA 数据门户",
+    title: "天工 LCA 数据门户",
+    type: "website",
   },
 };
 

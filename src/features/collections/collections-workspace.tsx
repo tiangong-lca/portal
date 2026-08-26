@@ -26,6 +26,8 @@ import {
 type CollectionLabels = {
   add: string;
   candidate: string;
+  clearCorrupt: string;
+  downloadCorrupt: string;
   empty: string;
   error: string;
   excluded: string;
@@ -63,10 +65,11 @@ export function CollectionsWorkspace({ labels }: { labels: CollectionLabels }) {
   const [message, setMessage] = useState("");
   const [invalid, setInvalid] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [corruptRaw, setCorruptRaw] = useState<string | null>(null);
 
   useEffect(() => {
+    const raw = localStorage.getItem(collectionsStorageKey);
     try {
-      const raw = localStorage.getItem(collectionsStorageKey);
       let nextState = raw ? parseCollectionJson(raw) : emptyCollectionState;
       if (window.location.hash.startsWith("#collection=")) {
         nextState = mergeRefs(nextState, decodeCollectionFragment(window.location.hash));
@@ -79,15 +82,17 @@ export function CollectionsWorkspace({ labels }: { labels: CollectionLabels }) {
     } catch {
       // oxlint-disable-next-line react-hooks/set-state-in-effect -- Corrupt storage is reported without rendering it.
       setInvalid(true);
+      // oxlint-disable-next-line react-hooks/set-state-in-effect -- Raw corrupt data is quarantined for explicit recovery.
+      setCorruptRaw(raw);
     }
     // oxlint-disable-next-line react-hooks/set-state-in-effect -- Enables persistence only after hydration completes.
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || corruptRaw !== null) return;
     localStorage.setItem(collectionsStorageKey, JSON.stringify(state));
-  }, [hydrated, state]);
+  }, [corruptRaw, hydrated, state]);
 
   const updateMember = (ref: string, patch: Partial<CollectionMember>) => {
     setState((current) => ({
@@ -116,6 +121,39 @@ export function CollectionsWorkspace({ labels }: { labels: CollectionLabels }) {
           <AlertTitle>{labels.error}</AlertTitle>
           <AlertDescription>{labels.error}</AlertDescription>
         </Alert>
+      ) : null}
+      {corruptRaw !== null ? (
+        <div className="flex flex-wrap gap-2">
+          <Button
+            onClick={() => {
+              const blob = new Blob([corruptRaw], { type: "application/json" });
+              const url = URL.createObjectURL(blob);
+              const anchor = document.createElement("a");
+              anchor.download = "tiangong-portal-corrupt-collection.json";
+              anchor.href = url;
+              anchor.click();
+              URL.revokeObjectURL(url);
+            }}
+            type="button"
+            variant="outline"
+          >
+            <DownloadIcon data-icon="inline-start" />
+            {labels.downloadCorrupt}
+          </Button>
+          <Button
+            onClick={() => {
+              localStorage.removeItem(collectionsStorageKey);
+              setCorruptRaw(null);
+              setInvalid(false);
+              setState(emptyCollectionState);
+            }}
+            type="button"
+            variant="destructive"
+          >
+            <Trash2Icon data-icon="inline-start" />
+            {labels.clearCorrupt}
+          </Button>
+        </div>
       ) : null}
 
       <Card>

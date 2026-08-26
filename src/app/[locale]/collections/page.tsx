@@ -50,6 +50,8 @@ export default async function CollectionsPage({ params }: PageProps<"/[locale]/c
         labels={{
           add: t("add"),
           candidate: t("candidate"),
+          clearCorrupt: t("clearCorrupt"),
+          downloadCorrupt: t("downloadCorrupt"),
           empty: t("empty"),
           error: t("error"),
           excluded: t("excluded"),

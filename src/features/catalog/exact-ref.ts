@@ -8,7 +8,7 @@ export function isDatasetUuid(value: string): boolean {
 }
 
 export function isExactDatasetRef(value: string): boolean {
-  return value.length === 47 && exactRefPattern.test(value);
+  return value.length === 46 && exactRefPattern.test(value);
 }
 
 export function parseExactDatasetRef(value: string): { id: string; version: string } | null {
