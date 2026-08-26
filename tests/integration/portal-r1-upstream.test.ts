@@ -21,6 +21,7 @@ import {
   queryPublishedLcia,
   queryPublishedLciaRaw,
 } from "@/server/lcia/client";
+import { getComparablePublishedLciaValues } from "@/server/lcia/compare";
 import { signPortalHmac } from "@/server/r0-compat/hmac";
 import {
   startPortalR1FixtureServer,
@@ -77,6 +78,10 @@ describe("Portal R1 fixture upstream", () => {
       { mode: "no-store" },
     );
     expect(page.items[0]?.key).toEqual({ kind: "process", ...processReference });
+    expect(page.items[1]).toMatchObject({
+      key: { kind: "process", id: "77777777-7777-7777-7777-777777777777", version: "01.00.000" },
+      names: [{ language: "en", value: "Electricity, low voltage" }],
+    });
 
     const flowSearch = await searchPublicFlows({ query: "carbon dioxide" }, client);
     const processDataset = await getPublicDataset({ kind: "process", ...processReference }, client);
@@ -168,6 +173,37 @@ describe("Portal R1 fixture upstream", () => {
       correlationId,
       keyId: environmentFixture.preview.keyId,
     });
+  });
+
+  it("returns one complete same-context numeric row for each selected Process", async () => {
+    const fixture = await start("preview");
+    const secondReference = {
+      id: "77777777-7777-7777-7777-777777777777",
+      version: "01.00.000",
+    };
+    const result = await getComparablePublishedLciaValues(
+      {
+        processRefs: [processReference, secondReference],
+        impactCategoryId: "climate-change",
+      },
+      {
+        query: (input) =>
+          queryPublishedLcia(input, {
+            environment: lciaEnvironment("preview", fixture.origin),
+          }),
+      },
+    );
+
+    expect(result.status).toBe("available");
+    if (result.status !== "available") throw new Error("Expected comparable LCIA fixture");
+    expect(result.data.orderedRows.map((row) => [row.process.id, row.value])).toEqual([
+      [processReference.id, "12.5"],
+      [secondReference.id, "9.75"],
+    ]);
+    expect(new Set(result.data.orderedRows.map((row) => row.unit))).toEqual(new Set(["kg CO2-Eq"]));
+    expect(
+      new Set(result.data.orderedRows.map((row) => `${row.method.id}@${row.method.version}`)),
+    ).toHaveLength(1);
   });
 
   it("rejects tampered raw bytes and replayed canonical signatures", async () => {

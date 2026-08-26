@@ -41,6 +41,7 @@ export type PortalR1FixtureServer = {
 
 const maximumRequestBytes = 64 * 1024;
 const portalDataProductPath = "/functions/v1/portal_data_product_results_v1";
+const secondProcessId = "77777777-7777-7777-7777-777777777777";
 const requiredLciaKeys = ["cursor", "impactCategoryId", "limit", "mode", "processRefs"];
 const forbiddenRpcKeys = new Set([
   "actor",
@@ -115,7 +116,30 @@ function hasForbiddenCredential(request: IncomingMessage): boolean {
 }
 
 function processSearchResponse() {
-  return catalogFixture.search;
+  const firstItem = catalogFixture.search.items[0]!;
+  return {
+    ...catalogFixture.search,
+    items: [
+      firstItem,
+      {
+        ...firstItem,
+        key: { ...firstItem.key, id: secondProcessId },
+        names: [{ language: "en", value: "Electricity, low voltage" }],
+        match: { ...firstItem.match, score: 0.8 },
+      },
+    ],
+  };
+}
+
+function secondProcessDataset() {
+  return {
+    ...catalogFixture.datasetProcess,
+    key: { ...catalogFixture.datasetProcess.key, id: secondProcessId },
+    metadata: {
+      ...catalogFixture.datasetProcess.metadata,
+      names: [{ language: "en", value: "Electricity, low voltage" }],
+    },
+  };
 }
 
 function flowSearchResponse() {
@@ -194,6 +218,13 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
           ...catalogFixture.datasetProcess,
           key: { ...catalogFixture.datasetProcess.key, id: arguments_.p_id },
         };
+      }
+      if (
+        arguments_.p_kind === "process" &&
+        arguments_.p_id === secondProcessId &&
+        arguments_.p_version === catalogFixture.datasetProcess.key.version
+      ) {
+        return secondProcessDataset();
       }
       if (
         arguments_.p_kind === "process" &&
@@ -452,15 +483,41 @@ export async function startPortalR1FixtureServer(
           return;
         }
 
+        const allowedProcessIds = new Set([catalogFixture.datasetProcess.key.id, secondProcessId]);
+        const referenceKeys = references.map(
+          (reference) => `${String(reference.id)}@${String(reference.version)}`,
+        );
         if (
-          !references.some(
+          new Set(referenceKeys).size !== references.length ||
+          !references.every(
             (reference) =>
-              reference.id === catalogFixture.datasetProcess.key.id &&
+              typeof reference.id === "string" &&
+              allowedProcessIds.has(reference.id) &&
               reference.version === catalogFixture.datasetProcess.key.version,
           )
         ) {
           writeJson(response, 404, { code: "published_lcia_unavailable" });
           return;
+        }
+
+        const baseRow = catalogFixture.lcia.rows[0]!;
+        const impactId =
+          input.mode === "process_all_impacts" ? baseRow.impact.id : String(input.impactCategoryId);
+        const rows = references.map((reference) => ({
+          ...baseRow,
+          process: { id: String(reference.id), version: String(reference.version) },
+          impact: {
+            ...baseRow.impact,
+            id: impactId,
+            name:
+              impactId === baseRow.impact.id
+                ? baseRow.impact.name
+                : [{ language: "en", value: impactId }],
+          },
+          value: reference.id === secondProcessId ? "9.75" : baseRow.value,
+        }));
+        if (input.mode === "ranked_processes_one_impact") {
+          rows.sort((left, right) => Number(right.value) - Number(left.value));
         }
 
         receipts.lciaAccepted += 1;
@@ -469,7 +526,12 @@ export async function startPortalR1FixtureServer(
           keyId: verification.keyId,
           ...(verification.correlationId ? { correlationId: verification.correlationId } : {}),
         };
-        writeJson(response, 200, { ...catalogFixture.lcia, mode: input.mode });
+        writeJson(response, 200, {
+          ...catalogFixture.lcia,
+          mode: input.mode,
+          rows,
+          nextCursor: null,
+        });
         return;
       }
 
