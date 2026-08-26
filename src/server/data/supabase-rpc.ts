@@ -3,6 +3,15 @@ import "server-only";
 import type { ZodType } from "zod";
 
 import { readPortalDataEnvironment, type PortalDataEnvironment } from "@/server/data/environment";
+import {
+  createPortalCorrelationId,
+  defaultPortalTelemetryLogger,
+  emitPortalTelemetry,
+  portalLatencyMilliseconds,
+  type PortalTelemetryEvent,
+  type PortalTelemetryLocale,
+  type PortalTelemetryLogger,
+} from "@/server/telemetry/logger";
 
 const maximumResponseBytes = 512 * 1024;
 const rpcNames = new Set([
@@ -62,7 +71,50 @@ export type PortalRpcClient = {
 type PortalRpcClientOptions = {
   environment?: PortalDataEnvironment;
   fetchImplementation?: typeof fetch;
+  logger?: PortalTelemetryLogger;
+  correlationId?: () => string;
+  now?: () => number;
+  locale?: PortalTelemetryLocale;
+  telemetryEnvironment?: Record<string, string | undefined>;
 };
+
+function routeFamily(name: PortalRpcName): PortalTelemetryEvent["routeFamily"] {
+  switch (name) {
+    case "portal_search_processes_v1":
+    case "portal_search_flows_v1":
+      return "catalog_search";
+    case "portal_get_dataset_v1":
+      return "dataset_detail";
+    case "portal_list_versions_v1":
+      return "dataset_versions";
+    case "portal_list_process_exchanges_v1":
+      return "dataset_exchanges";
+    case "portal_facets_v1":
+      return "catalog_facets";
+    case "portal_sitemap_entries_v1":
+      return "sitemap";
+  }
+}
+
+function responseRowCount(payload: unknown): number | null {
+  if (payload === null) {
+    return 0;
+  }
+  if (Array.isArray(payload)) {
+    return payload.length;
+  }
+  if (typeof payload !== "object") {
+    return null;
+  }
+
+  const record = payload as Record<string, unknown>;
+  for (const key of ["rows", "items", "groups"] as const) {
+    if (Array.isArray(record[key])) {
+      return record[key].length;
+    }
+  }
+  return 1;
+}
 
 function cacheInit(policy: PortalFetchCachePolicy): Pick<NextFetchInit, "cache" | "next"> {
   if (policy.mode === "no-store") {
@@ -101,8 +153,16 @@ async function parseBoundedJson(response: Response): Promise<unknown> {
 }
 
 export function createPortalRpcClient(options: PortalRpcClientOptions = {}): PortalRpcClient {
-  const environment = options.environment ?? readPortalDataEnvironment();
+  let environment: PortalDataEnvironment;
+  try {
+    environment = options.environment ?? readPortalDataEnvironment();
+  } catch {
+    throw new PortalDataError("upstream_unavailable");
+  }
   const fetchImplementation = options.fetchImplementation ?? fetch;
+  const logger = options.logger ?? defaultPortalTelemetryLogger;
+  const now = options.now ?? (() => performance.now());
+  const telemetryEnvironment = options.telemetryEnvironment ?? process.env;
 
   return {
     async call<T>(
@@ -114,6 +174,32 @@ export function createPortalRpcClient(options: PortalRpcClientOptions = {}): Por
       if (!rpcNames.has(name)) {
         throw new PortalDataError("invalid_request");
       }
+
+      const startedAt = now();
+      const correlationId = createPortalCorrelationId(undefined, options.correlationId);
+      const recordTelemetry = (
+        status: PortalTelemetryEvent["status"],
+        errorCode: PortalDataErrorCode | null,
+        rowCount: number | null,
+      ) => {
+        emitPortalTelemetry(
+          logger,
+          {
+            correlationId,
+            routeFamily: routeFamily(name),
+            rpcName: name,
+            cachePolicy: cachePolicy.mode,
+            cacheHit: "unknown",
+            backend: "supabase_data_api",
+            latencyMs: portalLatencyMilliseconds(startedAt, now()),
+            rowCount,
+            status,
+            errorCode,
+            ...(options.locale ? { locale: options.locale } : {}),
+          },
+          telemetryEnvironment,
+        );
+      };
 
       const target = new URL(`/rest/v1/rpc/${name}`, environment.supabaseUrl);
       const init: NextFetchInit = {
@@ -136,15 +222,20 @@ export function createPortalRpcClient(options: PortalRpcClientOptions = {}): Por
         response = await fetchImplementation(target, init);
       } catch (error) {
         if (error instanceof PortalDataError) {
+          recordTelemetry("error", error.code, null);
           throw error;
         }
-        throw new PortalDataError("upstream_unavailable");
+        const dataError = new PortalDataError("upstream_unavailable");
+        recordTelemetry("error", dataError.code, null);
+        throw dataError;
       }
 
       if (!response.ok) {
-        throw new PortalDataError(
+        const dataError = new PortalDataError(
           response.status === 400 ? "invalid_request" : "upstream_unavailable",
         );
+        recordTelemetry("error", dataError.code, null);
+        throw dataError;
       }
 
       let payload: unknown;
@@ -152,16 +243,22 @@ export function createPortalRpcClient(options: PortalRpcClientOptions = {}): Por
         payload = await parseBoundedJson(response);
       } catch (error) {
         if (error instanceof PortalDataError) {
+          recordTelemetry("error", error.code, null);
           throw error;
         }
-        throw new PortalDataError("invalid_response");
+        const dataError = new PortalDataError("invalid_response");
+        recordTelemetry("error", dataError.code, null);
+        throw dataError;
       }
 
       const parsed = responseSchema.safeParse(payload);
       if (!parsed.success) {
-        throw new PortalDataError("invalid_response");
+        const dataError = new PortalDataError("invalid_response");
+        recordTelemetry("error", dataError.code, null);
+        throw dataError;
       }
 
+      recordTelemetry("ok", null, responseRowCount(parsed.data));
       return parsed.data;
     },
   };

@@ -32,6 +32,7 @@ const processReference = {
   id: "11111111-1111-1111-1111-111111111111",
   version: "01.00.000",
 };
+const correlationId = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee";
 const runningServers: PortalR1FixtureServer[] = [];
 
 async function start(environment: PortalR1FixtureEnvironmentName) {
@@ -155,6 +156,7 @@ describe("Portal R1 fixture upstream", () => {
 
     const result = await queryPublishedLciaRaw(new TextEncoder().encode(body), {
       environment: lciaEnvironment("preview", fixture.origin),
+      correlationId,
     });
 
     expect(result.status).toBe("available");
@@ -163,6 +165,7 @@ describe("Portal R1 fixture upstream", () => {
     expect(fixture.receipts.lastLcia).toEqual({
       bodyBytes: Buffer.byteLength(body),
       bodySha256: createHash("sha256").update(body).digest("hex"),
+      correlationId,
       keyId: environmentFixture.preview.keyId,
     });
   });

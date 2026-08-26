@@ -4,6 +4,7 @@ import environmentFixture from "../fixtures/portal/r1-environments.json" with { 
 
 type FixtureReceipts = {
   rpcByName: Record<string, number>;
+  lastLcia?: { correlationId?: string } | null;
 };
 
 async function fixtureReceipts(request: APIRequestContext): Promise<FixtureReceipts> {
@@ -16,8 +17,9 @@ test("deduplicates the exact public detail envelope within one render", async ({
   page,
   request,
 }) => {
+  const probeId = `8${crypto.randomUUID().slice(1)}`;
   const before = await fixtureReceipts(request);
-  const response = await page.goto("/zh-CN/process/11111111-1111-1111-1111-111111111111@01.00.000");
+  const response = await page.goto(`/zh-CN/process/${probeId}@01.00.000`);
 
   expect(response?.status()).toBe(200);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
@@ -45,7 +47,11 @@ test("routes signed LCIA through the isolated Preview fixture", async ({ page, r
         body: JSON.stringify(body),
         headers: { "content-type": "application/json" },
       });
-      return { status: response.status, payload: (await response.json()) as unknown };
+      return {
+        status: response.status,
+        payload: (await response.json()) as unknown,
+        correlationId: response.headers.get("x-portal-correlation-id"),
+      };
     },
     {
       mode: "process_all_impacts",
@@ -65,6 +71,11 @@ test("routes signed LCIA through the isolated Preview fixture", async ({ page, r
       rows: [{ value: "12.5", evidenceStatus: "verified" }],
     },
   });
+  expect(result.correlationId).toMatch(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u,
+  );
+  const receipts = await fixtureReceipts(request);
+  expect(receipts.lastLcia?.correlationId).toBe(result.correlationId);
   expect(JSON.stringify(result.payload)).not.toContain(environmentFixture.preview.hmacSecret);
   expect(JSON.stringify(result.payload)).not.toContain("service_role");
 });

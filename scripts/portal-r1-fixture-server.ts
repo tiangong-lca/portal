@@ -12,6 +12,7 @@ export type PortalR1FixtureEnvironmentName = keyof typeof environmentFixture;
 type FixtureRequestReceipt = {
   bodyBytes: number;
   bodySha256: string;
+  correlationId?: string;
   keyId?: string;
   name?: string;
 };
@@ -185,6 +186,17 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
     case "portal_get_dataset_v1":
       if (
         arguments_.p_kind === "process" &&
+        typeof arguments_.p_id === "string" &&
+        /^8[0-9a-f]{7}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u.test(arguments_.p_id) &&
+        arguments_.p_version === catalogFixture.datasetProcess.key.version
+      ) {
+        return {
+          ...catalogFixture.datasetProcess,
+          key: { ...catalogFixture.datasetProcess.key, id: arguments_.p_id },
+        };
+      }
+      if (
+        arguments_.p_kind === "process" &&
         arguments_.p_id === catalogFixture.datasetProcess.key.id &&
         arguments_.p_version === catalogFixture.datasetProcess.key.version
       ) {
@@ -219,12 +231,14 @@ function verifyPortalHmac(
   rawBody: Buffer,
   environment: (typeof environmentFixture)[PortalR1FixtureEnvironmentName],
   usedNonces: Set<string>,
-): { ok: true; keyId: string; nonce: string } | { ok: false; code: string } {
+):
+  { ok: true; keyId: string; nonce: string; correlationId?: string } | { ok: false; code: string } {
   const keyId = request.headers["x-portal-key-id"];
   const timestamp = request.headers["x-portal-timestamp"];
   const nonce = request.headers["x-portal-nonce"];
   const suppliedBodyHash = request.headers["x-portal-body-sha256"];
   const suppliedSignature = request.headers["x-portal-signature"];
+  const correlationId = request.headers["x-portal-correlation-id"];
 
   if (
     typeof keyId !== "string" ||
@@ -236,7 +250,10 @@ function verifyPortalHmac(
     !/^[1-9]\d*$/u.test(timestamp) ||
     !/^[A-Za-z0-9_-]+$/u.test(nonce) ||
     !/^[A-Za-z0-9_-]{43}$/u.test(suppliedBodyHash) ||
-    !/^[A-Za-z0-9_-]{43}$/u.test(suppliedSignature)
+    !/^[A-Za-z0-9_-]{43}$/u.test(suppliedSignature) ||
+    (correlationId !== undefined &&
+      (typeof correlationId !== "string" ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u.test(correlationId)))
   ) {
     return { ok: false, code: "invalid_signature" };
   }
@@ -290,7 +307,12 @@ function verifyPortalHmac(
   }
   usedNonces.add(nonce);
 
-  return { ok: true, keyId, nonce };
+  return {
+    ok: true,
+    keyId,
+    nonce,
+    ...(typeof correlationId === "string" ? { correlationId } : {}),
+  };
 }
 
 function validLciaInput(value: Record<string, unknown>): boolean {
@@ -445,6 +467,7 @@ export async function startPortalR1FixtureServer(
         receipts.lastLcia = {
           ...bodyReceipt(rawBody),
           keyId: verification.keyId,
+          ...(verification.correlationId ? { correlationId: verification.correlationId } : {}),
         };
         writeJson(response, 200, { ...catalogFixture.lcia, mode: input.mode });
         return;

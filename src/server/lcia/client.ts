@@ -4,6 +4,7 @@ import { publishedLciaInputSchema, type PublishedLciaInput } from "@/server/cont
 import { publishedLciaPageSchema, type PublishedLciaPage } from "@/server/contracts/portal";
 import { readPortalLciaEnvironment, type PortalLciaEnvironment } from "@/server/lcia/environment";
 import { createPortalNonce, signPortalHmac } from "@/server/r0-compat/hmac";
+import { validatePortalCorrelationId } from "@/server/telemetry/logger";
 
 export const portalDataProductFunctionPath = "/functions/v1/portal_data_product_results_v1";
 
@@ -30,6 +31,7 @@ type QueryOptions = {
   fetchImplementation?: typeof fetch;
   now?: () => number;
   nonce?: () => string;
+  correlationId?: string;
 };
 
 async function parseResponsePayload(response: Response): Promise<unknown> {
@@ -87,6 +89,7 @@ export async function queryPublishedLciaRaw(
     functionPath: portalDataProductFunctionPath,
   });
   const target = new URL(portalDataProductFunctionPath, environment.edgeOrigin);
+  const correlationId = validatePortalCorrelationId(options.correlationId);
 
   let response: Response;
   try {
@@ -98,6 +101,7 @@ export async function queryPublishedLciaRaw(
         accept: "application/json",
         apikey: environment.publishableKey,
         "content-type": "application/json",
+        ...(correlationId ? { "x-portal-correlation-id": correlationId } : {}),
       },
       cache: "no-store",
       redirect: "error",

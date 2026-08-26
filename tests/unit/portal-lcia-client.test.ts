@@ -26,6 +26,7 @@ const input = {
   cursor: null,
   limit: 20,
 };
+const correlationId = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
 
 describe("Portal signed LCIA client", () => {
   it("signs and forwards one exact raw body without bearer credentials", async () => {
@@ -40,6 +41,7 @@ describe("Portal signed LCIA client", () => {
       fetchImplementation,
       now: () => hmacFixture.timestamp * 1000,
       nonce: () => hmacFixture.nonce,
+      correlationId,
     });
 
     expect(result.status).toBe("available");
@@ -56,6 +58,7 @@ describe("Portal signed LCIA client", () => {
     expect(headers.get("x-portal-key-id")).toBe(environment.keyId);
     expect(headers.get("x-portal-body-sha256")).toMatch(/^[A-Za-z0-9_-]{43}$/u);
     expect(headers.get("x-portal-signature")).toMatch(/^[A-Za-z0-9_-]{43}$/u);
+    expect(headers.get("x-portal-correlation-id")).toBe(correlationId);
     expect(headers.has("authorization")).toBe(false);
     expect(headers.has("cookie")).toBe(false);
     expect(JSON.stringify(init)).not.toContain(environment.secret);
