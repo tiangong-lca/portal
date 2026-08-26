@@ -1,6 +1,7 @@
 import { ArrowDownLeftIcon, ArrowUpRightIcon, NetworkIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -45,48 +46,85 @@ export function ExchangesPanel({
   }
 
   return (
-    <Table>
-      <TableCaption>{caption}</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead scope="col">{labels.flow}</TableHead>
-          <TableHead scope="col">{labels.direction}</TableHead>
-          <TableHead scope="col">{labels.kind}</TableHead>
-          <TableHead scope="col">{labels.amount}</TableHead>
-          <TableHead scope="col">{labels.process}</TableHead>
-          <TableHead scope="col">{labels.functionalUnit}</TableHead>
-          <TableHead scope="col">{labels.policy}</TableHead>
-          <TableHead scope="col">{labels.quantitativeReference}</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+    <>
+      <ul className="flex flex-col gap-3 md:hidden">
         {rows.map((row) => (
-          <TableRow key={row.id}>
-            <TableCell>
-              <strong>{row.flowName}</strong>
-              <br />
-              <span className="text-muted-foreground font-mono text-xs">{row.flowRef}</span>
-            </TableCell>
-            <TableCell>
-              {row.direction === "input" ? (
-                <ArrowDownLeftIcon aria-label="input" />
-              ) : (
-                <ArrowUpRightIcon aria-label="output" />
-              )}
-            </TableCell>
-            <TableCell>
-              <Badge variant="outline">{row.kind}</Badge>
-            </TableCell>
-            <TableCell className="font-mono">
-              {row.amount} {row.unit}
-            </TableCell>
-            <TableCell className="font-mono text-xs">{row.processRef}</TableCell>
-            <TableCell>{row.functionalUnit}</TableCell>
-            <TableCell className="font-mono text-xs">{row.capabilityPolicyVersion}</TableCell>
-            <TableCell>{row.isQuantitativeReference ? labels.yes : labels.no}</TableCell>
-          </TableRow>
+          <li key={row.id}>
+            <Card size="sm">
+              <CardHeader>
+                <CardTitle>{row.flowName}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <dl className="flex flex-col gap-3">
+                  {[
+                    [labels.flow, row.flowRef],
+                    [labels.direction, row.direction],
+                    [labels.kind, row.kind],
+                    [labels.amount, `${row.amount} ${row.unit}`],
+                    [labels.process, row.processRef],
+                    [labels.functionalUnit, row.functionalUnit],
+                    [labels.policy, row.capabilityPolicyVersion],
+                    [
+                      labels.quantitativeReference,
+                      row.isQuantitativeReference ? labels.yes : labels.no,
+                    ],
+                  ].map(([label, value]) => (
+                    <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-2" key={label}>
+                      <dt className="text-muted-foreground text-xs">{label}</dt>
+                      <dd className="text-sm break-all">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </CardContent>
+            </Card>
+          </li>
         ))}
-      </TableBody>
-    </Table>
+      </ul>
+      <div className="hidden md:block">
+        <Table>
+          <TableCaption>{caption}</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead scope="col">{labels.flow}</TableHead>
+              <TableHead scope="col">{labels.direction}</TableHead>
+              <TableHead scope="col">{labels.kind}</TableHead>
+              <TableHead scope="col">{labels.amount}</TableHead>
+              <TableHead scope="col">{labels.process}</TableHead>
+              <TableHead scope="col">{labels.functionalUnit}</TableHead>
+              <TableHead scope="col">{labels.policy}</TableHead>
+              <TableHead scope="col">{labels.quantitativeReference}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>
+                  <strong>{row.flowName}</strong>
+                  <br />
+                  <span className="text-muted-foreground font-mono text-xs">{row.flowRef}</span>
+                </TableCell>
+                <TableCell>
+                  {row.direction === "input" ? (
+                    <ArrowDownLeftIcon aria-label="input" />
+                  ) : (
+                    <ArrowUpRightIcon aria-label="output" />
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">{row.kind}</Badge>
+                </TableCell>
+                <TableCell className="font-mono">
+                  {row.amount} {row.unit}
+                </TableCell>
+                <TableCell className="font-mono text-xs">{row.processRef}</TableCell>
+                <TableCell>{row.functionalUnit}</TableCell>
+                <TableCell className="font-mono text-xs">{row.capabilityPolicyVersion}</TableCell>
+                <TableCell>{row.isQuantitativeReference ? labels.yes : labels.no}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 }

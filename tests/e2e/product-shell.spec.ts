@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { createHash } from "node:crypto";
 
 const processId = "11111111-1111-1111-1111-111111111111";
 const processRef = `${processId}@01.00.000`;
@@ -15,6 +16,14 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
     "href",
     /\/en$/,
+  );
+  const themeScript = await page.request.get("/brand/theme-init.js");
+  const expectedIntegrity = `sha256-${createHash("sha256")
+    .update(await themeScript.body())
+    .digest("base64")}`;
+  await expect(page.locator('script[src="/brand/theme-init.js"]')).toHaveAttribute(
+    "integrity",
+    expectedIntegrity,
   );
 
   await page.getByRole("radio", { name: "深色" }).click();
@@ -73,6 +82,35 @@ test("renders public search, exact details, numeric context, versions, and lates
 
   const missing = await request.get("/en/process/99999999-9999-9999-9999-999999999999@01.00.000");
   expect(missing.status()).toBe(404);
+});
+
+test("completes the HTML-first search to two-member comparison path", async ({ page }) => {
+  await page.goto("/en/search?v=1&kind=process&q=electricity&sort=relevance");
+  const candidates = page.getByRole("checkbox", { name: "Select this Process" });
+  await expect(candidates).toHaveCount(2);
+  await candidates.nth(0).check();
+  await candidates.nth(1).check();
+
+  const processFacet = page.getByRole("link", { name: /Process \(\d+\)/ });
+  await expect(processFacet).toHaveAttribute("href", /q=electricity/);
+  await expect(processFacet).toHaveAttribute("href", /kind=process/);
+  await expect(processFacet).toHaveAttribute("href", /sort=relevance/);
+  await expect(processFacet).not.toHaveAttribute("href", /cursor=/);
+
+  await page.getByRole("button", { name: "Compare selected Processes" }).click();
+  await expect(page).toHaveURL(/\/en\/compare\?/);
+  await expect(page.getByRole("heading", { name: "Deterministic comparison" })).toBeVisible();
+  await expect(
+    page.getByRole("columnheader", { name: "Electricity, medium voltage" }),
+  ).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: "Electricity, low voltage" })).toBeVisible();
+
+  await page.getByLabel("Impact category").fill("climate-change");
+  await page.getByLabel("Impact category").press("Enter");
+  await expect(page.getByRole("heading", { name: "Comparable LCIA values" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "12.5" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "9.75" })).toBeVisible();
+  await expect(page.getByText(/55555555-5555-5555-5555-555555555555@release-2026.1/)).toBeVisible();
 });
 
 test("renders Browse in initial HTML and keeps private work surfaces out of the index", async ({

@@ -91,8 +91,13 @@ export function CollectionsWorkspace({ labels }: { labels: CollectionLabels }) {
 
   useEffect(() => {
     if (!hydrated || corruptRaw !== null) return;
-    localStorage.setItem(collectionsStorageKey, JSON.stringify(state));
-  }, [corruptRaw, hydrated, state]);
+    try {
+      localStorage.setItem(collectionsStorageKey, JSON.stringify(state));
+    } catch {
+      // oxlint-disable-next-line react-hooks/set-state-in-effect -- Storage failure is surfaced locally without sending collection data anywhere.
+      setMessage(labels.error);
+    }
+  }, [corruptRaw, hydrated, labels.error, state]);
 
   const updateMember = (ref: string, patch: Partial<CollectionMember>) => {
     setState((current) => ({
@@ -314,6 +319,7 @@ export function CollectionsWorkspace({ labels }: { labels: CollectionLabels }) {
                 if (file.size > maxCollectionImportBytes)
                   throw new Error("collection_import_too_large");
                 setState(parseCollectionJson(await file.text()));
+                setCorruptRaw(null);
                 setInvalid(false);
                 setMessage(labels.imported);
               } catch {

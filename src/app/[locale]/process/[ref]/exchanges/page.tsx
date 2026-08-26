@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
+import { Button } from "@/components/ui/button";
+import { safePublicCursor } from "@/features/catalog/cursor";
 import { ExchangesPanel } from "@/features/catalog/exchanges-panel";
 import { mapDataset, mapExchangePage } from "@/features/catalog/map-public-data";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
-import { isPortalLocale } from "@/i18n/routing";
+import { isPortalLocale, localePath } from "@/i18n/routing";
 import { absolutePortalUrl, localizedMetadata } from "@/lib/seo";
 import { listPublicProcessExchanges } from "@/server/data/catalog";
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/process/[ref]/exchanges">): Promise<Metadata> {
+  searchParams,
+}: {
+  params: Promise<{ locale: string; ref: string }>;
+  searchParams: Promise<{ cursor?: string | string[] }>;
+}): Promise<Metadata> {
   const { locale, ref } = await params;
   if (!isPortalLocale(locale)) return {};
   const dataset = await resolvePublicDataset("process", locale, ref);
@@ -22,6 +29,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
     description: t("exchangesDescription"),
+    index: !safePublicCursor((await searchParams).cursor),
     locale,
     path: `process/${record.ref}/exchanges`,
     title: `${t("exchangesTitle")} · ${record.name}`,
@@ -30,13 +38,18 @@ export async function generateMetadata({
 
 export default async function ProcessExchangesPage({
   params,
-}: PageProps<"/[locale]/process/[ref]/exchanges">) {
+  searchParams,
+}: {
+  params: Promise<{ locale: string; ref: string }>;
+  searchParams: Promise<{ cursor?: string | string[] }>;
+}) {
   const { locale, ref } = await params;
   if (!isPortalLocale(locale)) return null;
+  const cursor = safePublicCursor((await searchParams).cursor);
   const dataset = await resolvePublicDataset("process", locale, ref);
   const page = dataset.capabilities.exchangesVisible
     ? await listPublicProcessExchanges({
-        cursor: null,
+        cursor,
         exchangeKind: "all",
         limit: 50,
         processId: dataset.key.id,
@@ -77,6 +90,17 @@ export default async function ProcessExchangesPage({
         }}
         rows={rows}
       />
+      {page?.nextCursor ? (
+        <nav aria-label={common("next")} className="flex justify-end">
+          <Button asChild variant="outline">
+            <Link
+              href={`${localePath(locale, `process/${dataset.key.id}@${dataset.key.version}/exchanges`)}?cursor=${encodeURIComponent(page.nextCursor)}`}
+            >
+              {common("next")}
+            </Link>
+          </Button>
+        </nav>
+      ) : null}
     </section>
   );
 }

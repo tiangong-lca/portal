@@ -27,16 +27,19 @@ type SearchResultLabels = {
   emptyTitle: string;
   metadataOnly: string;
   public: string;
+  selectForCompare: string;
 };
 
 export function SearchResults({
   items,
   labels,
   locale,
+  selectable = false,
 }: {
   items: CatalogResultViewModel[];
   labels: SearchResultLabels;
   locale: PortalLocale;
+  selectable?: boolean;
 }) {
   if (items.length === 0) {
     return (
@@ -68,6 +71,17 @@ export function SearchResults({
                     {item.accessLevel === "open" ? labels.public : labels.metadataOnly}
                   </Badge>
                 </div>
+                {selectable && item.kind === "process" ? (
+                  <label className="flex min-h-[44px] w-fit items-center gap-2 text-sm font-medium">
+                    <input
+                      className="accent-primary size-5"
+                      name="ids"
+                      type="checkbox"
+                      value={item.ref}
+                    />
+                    {labels.selectForCompare}
+                  </label>
+                ) : null}
                 <CardTitle>{item.name}</CardTitle>
                 <CardDescription className="font-mono text-xs break-all">
                   {item.ref}
@@ -95,7 +109,7 @@ export function SearchResults({
                 <Button asChild>
                   <Link href={detailHref}>{labels.details}</Link>
                 </Button>
-                {item.kind === "process" ? (
+                {item.kind === "process" && !selectable ? (
                   <Button asChild variant="outline">
                     <Link
                       href={`${localePath(locale, "compare")}?v=1&ids=${encodeURIComponent(item.ref)}`}

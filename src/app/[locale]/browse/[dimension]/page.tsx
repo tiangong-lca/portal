@@ -136,6 +136,7 @@ export default async function BrowsePage({
             emptyTitle: t("emptyTitle"),
             metadataOnly: common("metadataOnly"),
             public: common("public"),
+            selectForCompare: searchT("selectForCompare"),
           }}
           locale={locale}
         />
@@ -148,13 +149,17 @@ export default async function BrowsePage({
                 <CardHeader>
                   <CardTitle>{value.label}</CardTitle>
                   <CardDescription>{value.count}</CardDescription>
-                  <Button asChild variant="outline">
-                    <Link
-                      href={`${localePath(locale, "search")}?v=1&kind=process&${filterName}=${encodeURIComponent(value.value)}`}
-                    >
-                      {common("details")}
-                    </Link>
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    {(["process", "flow"] as const).map((kind) => (
+                      <Button asChild key={kind} variant="outline">
+                        <Link
+                          href={`${localePath(locale, "search")}?v=1&kind=${kind}&${filterName}=${encodeURIComponent(value.value)}`}
+                        >
+                          {kind === "process" ? common("process") : common("flow")}
+                        </Link>
+                      </Button>
+                    ))}
+                  </div>
                 </CardHeader>
               </Card>
             );

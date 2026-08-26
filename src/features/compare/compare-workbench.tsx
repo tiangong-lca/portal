@@ -166,7 +166,9 @@ export function CompareWorkbench({
       {result.canAlignLcia && numericContext ? (
         <Card>
           <CardHeader>
-            <CardTitle>{labels.numericTitle}</CardTitle>
+            <CardTitle>
+              <h2>{labels.numericTitle}</h2>
+            </CardTitle>
             <CardDescription>{labels.numericContext}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">

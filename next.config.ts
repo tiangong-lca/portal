@@ -1,21 +1,20 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
+import { readBrandConfig } from "./src/config/brand";
+import {
+  buildContentSecurityPolicy,
+  contentSecurityPolicyHeader,
+} from "./src/config/content-security-policy";
+
 const isDevelopment = process.env.NODE_ENV !== "production";
 const enforceContentSecurityPolicy = process.env.PORTAL_CSP_MODE === "enforce";
-const contentSecurityPolicy = [
-  "default-src 'self'",
-  `script-src 'self'${isDevelopment ? " 'unsafe-eval'" : ""}`,
-  `style-src 'self'${isDevelopment ? " 'unsafe-inline'" : ""}`,
-  "img-src 'self' blob: data:",
-  "font-src 'self'",
-  "connect-src 'self'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-  ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
-].join("; ");
+const brandConfig = readBrandConfig(process.env);
+const contentSecurityPolicy = buildContentSecurityPolicy({
+  brandAssetOrigin: brandConfig.assetOrigin ? new URL(brandConfig.assetOrigin).origin : undefined,
+  isDevelopment,
+});
+const cspHeader = contentSecurityPolicyHeader(contentSecurityPolicy, enforceContentSecurityPolicy);
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -29,12 +28,7 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
-          {
-            key: enforceContentSecurityPolicy
-              ? "Content-Security-Policy"
-              : "Content-Security-Policy-Report-Only",
-            value: contentSecurityPolicy,
-          },
+          cspHeader,
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },

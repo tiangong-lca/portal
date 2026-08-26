@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { isExactDatasetRef, parseExactDatasetRef } from "@/features/catalog/exact-ref";
+import { parseExactDatasetRef } from "@/features/catalog/exact-ref";
 import { mapCompareCandidate } from "@/features/catalog/map-public-data";
 import {
   applyComparableLcia,
@@ -16,23 +16,12 @@ import {
   type ComparableLciaPresentation,
 } from "@/features/compare/compare-workbench";
 import type { CompareCandidate } from "@/features/compare/compatibility";
+import { parseCompareIds, parseImpactCategoryId } from "@/features/compare/input";
 import { isPortalLocale } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
 import { getPublicDataset } from "@/server/data/catalog";
 import { PortalDataError } from "@/server/data/supabase-rpc";
 import { getComparablePublishedLciaValues } from "@/server/lcia/compare";
-
-function parseIds(value: string | string[] | undefined): string[] {
-  const values = (Array.isArray(value) ? value : [value]).flatMap(
-    (entry) => entry?.split(",") ?? [],
-  );
-  return [...new Set(values.map((entry) => entry.trim()).filter(isExactDatasetRef))].slice(0, 4);
-}
-
-function parseImpactCategoryId(value: string | string[] | undefined): string | null {
-  const candidate = (Array.isArray(value) ? value[0] : value)?.trim();
-  return candidate && Array.from(candidate).length <= 512 ? candidate : null;
-}
 
 export async function generateMetadata({
   params,
@@ -63,7 +52,7 @@ export default async function ComparePage({
   if (!isPortalLocale(locale)) notFound();
   setRequestLocale(locale);
   const query = await searchParams;
-  const ids = parseIds(query.ids);
+  const ids = parseCompareIds(query.ids);
   const impactCategoryId = parseImpactCategoryId(query.impactCategoryId);
   const datasets = await Promise.all(
     ids.map(async (ref) => {

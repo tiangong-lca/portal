@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 
 import { brandConfig } from "@/server/brand";
 
+import { themeInitIntegrity } from "./theme-integrity.generated";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -41,7 +43,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html data-brand-version={brandConfig.version} lang="zh-CN" suppressHydrationWarning>
       <head>
-        <script src="/brand/theme-init.js" />
+        <script crossOrigin="anonymous" integrity={themeInitIntegrity} src="/brand/theme-init.js" />
       </head>
       <body className="flex min-h-screen flex-col">{children}</body>
     </html>

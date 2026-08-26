@@ -1,17 +1,24 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
+import { Button } from "@/components/ui/button";
+import { safePublicCursor } from "@/features/catalog/cursor";
 import { LciaPanel } from "@/features/catalog/lcia-panel";
 import { mapDataset, mapLciaPage } from "@/features/catalog/map-public-data";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
 import type { LciaViewModel } from "@/features/catalog/view-model";
-import { isPortalLocale } from "@/i18n/routing";
+import { isPortalLocale, localePath } from "@/i18n/routing";
 import { absolutePortalUrl, localizedMetadata } from "@/lib/seo";
 import { queryPublishedLcia } from "@/server/lcia/client";
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/process/[ref]/lcia">): Promise<Metadata> {
+  searchParams,
+}: {
+  params: Promise<{ locale: string; ref: string }>;
+  searchParams: Promise<{ cursor?: string | string[] }>;
+}): Promise<Metadata> {
   const { locale, ref } = await params;
   if (!isPortalLocale(locale)) return {};
   const dataset = await resolvePublicDataset("process", locale, ref);
@@ -23,6 +30,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
     description: t("lciaDescription"),
+    index: !safePublicCursor((await searchParams).cursor),
     locale,
     path: `process/${record.ref}/lcia`,
     title: `${t("lciaTitle")} · ${record.name}`,
@@ -31,16 +39,22 @@ export async function generateMetadata({
 
 export default async function ProcessLciaPage({
   params,
-}: PageProps<"/[locale]/process/[ref]/lcia">) {
+  searchParams,
+}: {
+  params: Promise<{ locale: string; ref: string }>;
+  searchParams: Promise<{ cursor?: string | string[] }>;
+}) {
   const { locale, ref } = await params;
   if (!isPortalLocale(locale)) return null;
+  const cursor = safePublicCursor((await searchParams).cursor);
   const dataset = await resolvePublicDataset("process", locale, ref);
   const processRef = `${dataset.key.id}@${dataset.key.version}`;
   let result: LciaViewModel = { status: "unavailable" };
+  let nextCursor: string | null = null;
 
   if (dataset.capabilities.lciaVisible) {
     const response = await queryPublishedLcia({
-      cursor: null,
+      cursor,
       impactCategoryId: null,
       limit: 50,
       mode: "process_all_impacts",
@@ -50,6 +64,7 @@ export default async function ProcessLciaPage({
       response.status === "available"
         ? mapLciaPage(response.data, locale, processRef)
         : { status: response.status };
+    nextCursor = response.status === "available" ? response.data.nextCursor : null;
   }
 
   const [t, common] = await Promise.all([
@@ -82,6 +97,17 @@ export default async function ProcessLciaPage({
         }}
         result={result}
       />
+      {nextCursor ? (
+        <nav aria-label={common("next")} className="flex justify-end">
+          <Button asChild variant="outline">
+            <Link
+              href={`${localePath(locale, `process/${dataset.key.id}@${dataset.key.version}/lcia`)}?cursor=${encodeURIComponent(nextCursor)}`}
+            >
+              {common("next")}
+            </Link>
+          </Button>
+        </nav>
+      ) : null}
     </section>
   );
 }

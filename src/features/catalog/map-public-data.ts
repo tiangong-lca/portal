@@ -164,7 +164,9 @@ export function mapLciaPage(
   locale: Locale,
   expectedProcessRef: string,
 ): LciaViewModel {
-  if (page.rows.length === 0) return { status: "unavailable" };
+  if (page.mode !== "process_all_impacts" || page.rows.length === 0) {
+    return { status: "unavailable" };
+  }
 
   const rows = page.rows.map((row) => ({
     evidenceStatus: row.evidenceStatus,

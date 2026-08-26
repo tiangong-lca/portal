@@ -32,4 +32,12 @@ describe("LCIA presentation mapping", () => {
       status: "unavailable",
     });
   });
+
+  it("rejects a response mode that is not the requested detail projection", () => {
+    const page = publishedLciaPageSchema.parse({
+      ...fixture.lcia,
+      mode: "processes_one_impact",
+    });
+    expect(mapLciaPage(page, "en", processRef)).toEqual({ status: "unavailable" });
+  });
 });

@@ -72,6 +72,8 @@
     "source": "Data source",
     "selection": "Compare selection",
     "selectionEmpty": "Select 2–4 Processes for deterministic comparison.",
+    "selectForCompare": "Select this Process",
+    "compareSelected": "Compare selected Processes",
     "initialTitle": "Enter a public identifier or keyword",
     "initialDescription": "Natural-language Hybrid Search is not part of R1. The baseline catalog always uses deterministic lexical or identifier search.",
     "emptyTitle": "No public results can be shown",

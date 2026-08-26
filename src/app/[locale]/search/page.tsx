@@ -52,6 +52,44 @@ function searchHref(locale: "zh-CN" | "en", input: PortalSearchUrlInput, cursor:
   return `${localePath(locale, "search")}?${parameters.toString()}`;
 }
 
+function facetHref(
+  locale: "zh-CN" | "en",
+  input: PortalSearchUrlInput,
+  groupId: string,
+  value: string,
+): string | null {
+  const queryString = searchHref(locale, input, "facet").split("?", 2)[1];
+  const parameters = new URLSearchParams(queryString);
+  parameters.delete("cursor");
+  const normalizedGroup = groupId.toLowerCase().replaceAll(/[^a-z]/g, "");
+
+  if (normalizedGroup === "kind" || normalizedGroup === "objecttype") {
+    if (value !== "process" && value !== "flow") return null;
+    parameters.set("kind", value);
+    if (value === "flow") parameters.delete("subtype");
+  } else if (normalizedGroup.includes("access")) {
+    if (value !== "open" && value !== "metadata_only") return null;
+    parameters.set("access", value);
+  } else if (normalizedGroup.includes("geography") || normalizedGroup.includes("region")) {
+    parameters.set("geo", value);
+  } else if (normalizedGroup.includes("year")) {
+    if (!/^\d{1,4}$/.test(value)) return null;
+    parameters.set("yearFrom", value);
+    parameters.set("yearTo", value);
+  } else if (normalizedGroup.includes("subtype")) {
+    if (input.kind !== "process") return null;
+    parameters.set("subtype", value);
+  } else if (normalizedGroup.includes("source") || normalizedGroup.includes("database")) {
+    parameters.set("source", value);
+  } else if (normalizedGroup.includes("classification")) {
+    parameters.set("classification", value);
+  } else {
+    return null;
+  }
+
+  return `${localePath(locale, "search")}?${parameters.toString()}`;
+}
+
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/search">): Promise<Metadata> {
@@ -186,11 +224,24 @@ export default async function SearchPage({
                 ? facets.groups.map((group) => (
                     <div className="flex flex-col gap-2" key={group.id}>
                       <strong>{localizedText(group.label, locale) ?? group.id}</strong>
-                      {group.values.map((value) => (
-                        <span className="text-muted-foreground text-sm" key={value.value}>
-                          {localizedText(value.label, locale) ?? value.value} ({value.count})
-                        </span>
-                      ))}
+                      {group.values.map((value) => {
+                        const href = facetHref(locale, parsedSearch, group.id, value.value);
+                        const label = `${localizedText(value.label, locale) ?? value.value} (${value.count})`;
+                        return href ? (
+                          <Button
+                            asChild
+                            className="justify-start"
+                            key={value.value}
+                            variant="ghost"
+                          >
+                            <a href={href}>{label}</a>
+                          </Button>
+                        ) : (
+                          <span className="text-muted-foreground text-sm" key={value.value}>
+                            {label}
+                          </span>
+                        );
+                      })}
                     </div>
                   ))
                 : facetLabels.map((label) => (
@@ -223,21 +274,35 @@ export default async function SearchPage({
               </AlertDescription>
             </Alert>
           ) : (
-            <SearchResults
-              items={results}
-              labels={{
-                collect: detail("collect"),
-                compare: detail("compare"),
-                copied: detail("citationCopied"),
-                copyCitation: detail("copyCitation"),
-                details: common("details"),
-                emptyDescription: t("emptyDescription"),
-                emptyTitle: t("emptyTitle"),
-                metadataOnly: common("metadataOnly"),
-                public: common("public"),
-              }}
-              locale={locale}
-            />
+            <form
+              action={localePath(locale, "compare")}
+              className="flex flex-col gap-4"
+              method="get"
+            >
+              <input name="v" type="hidden" value="1" />
+              <SearchResults
+                items={results}
+                labels={{
+                  collect: detail("collect"),
+                  compare: detail("compare"),
+                  copied: detail("citationCopied"),
+                  copyCitation: detail("copyCitation"),
+                  details: common("details"),
+                  emptyDescription: t("emptyDescription"),
+                  emptyTitle: t("emptyTitle"),
+                  metadataOnly: common("metadataOnly"),
+                  public: common("public"),
+                  selectForCompare: t("selectForCompare"),
+                }}
+                locale={locale}
+                selectable
+              />
+              {results.some((item) => item.kind === "process") ? (
+                <Button className="self-start" type="submit">
+                  {t("compareSelected")}
+                </Button>
+              ) : null}
+            </form>
           )}
           {nextCursor ? (
             <nav aria-label={common("next")} className="mt-5 flex justify-end">
@@ -256,7 +321,7 @@ export default async function SearchPage({
             </CardHeader>
             <CardContent>
               <Alert>
-                <AlertDescription>0 / 4</AlertDescription>
+                <AlertDescription>{t("selectionEmpty")}</AlertDescription>
               </Alert>
             </CardContent>
           </Card>

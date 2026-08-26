@@ -72,6 +72,8 @@
     "source": "数据源",
     "selection": "比较选择",
     "selectionEmpty": "选择 2–4 个 Process 后可进行确定性比较。",
+    "selectForCompare": "选择此 Process",
+    "compareSelected": "比较已选 Process",
     "initialTitle": "输入可公开检索的标识或关键词",
     "initialDescription": "自然语言 Hybrid 搜索不属于 R1；基础目录始终使用确定性 lexical/identifier 查询。",
     "emptyTitle": "没有可显示的公开结果",
