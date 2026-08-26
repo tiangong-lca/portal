@@ -20,10 +20,11 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-26
-lastReviewedCommit: 0ca240e5a705462a0020aaa71f998fd2543d1b67
+lastReviewedCommit: 329261fb572f13efe83408fd0c46e9fa54d9fd40
 related:
   - ../design-plan.md
   - ../../AGENTS.md
+  - csp-isr-spike.md
 ---
 
 # Portal R0 Compatibility Matrix
@@ -46,7 +47,7 @@ R0 remains blocked until every required Preview row has evidence bound to one ex
 | HMAC WebCrypto signer | deterministic `portal-hmac-v1` fixture passes | Edge verifier/rotation/replay pending in Edge #307 | Blocked |
 | Redis NX/EX + Lua | Not owned by Portal | Disposable Upstash + Edge verifier pending | Blocked |
 | Preview/Production isolation | Local marker only | Separate environment/credential rejection pending | Blocked |
-| Strict CSP + hydration + ISR | Candidate policy is report-only; enforcing it blocks Next inline Flight scripts | No acceptable enforcing result | **Blocked** |
+| Strict CSP + hydration + ISR | Exact enforce command at `b94451c` passes 13/19; executable inline Flight blocks break hydration-dependent paths | No supported renderer-level solution; see [retained spike](csp-isr-spike.md) | **Blocked** |
 | Rollback/cold start/latency | Not a local claim | Pending | Blocked |
 
 ## CSP blocker
@@ -55,9 +56,12 @@ Next App Router emits inline `self.__next_f.push(...)` Flight scripts. Next SRI 
 
 An accepted resolution must preserve the security and cache contract, be proven with `PORTAL_CSP_MODE=enforce` and `PORTAL_EXPECT_STRICT_CSP=1`, and record the exact framework/platform evidence. Until then, other implementation may continue but no public deployment is allowed.
 
+The retained [strict CSP and ISR spike](csp-isr-spike.md) records the exact reproduction, released Next source boundary, failed candidate matrix, ISR regeneration evidence, and conditions required to reopen this gate.
+
 ## Authoritative references
 
 - [Next.js Content Security Policy](https://nextjs.org/docs/app/guides/content-security-policy)
 - [Next.js SRI inline Flight limitation](https://github.com/vercel/next.js/issues/95354)
+- [Next.js CSP documentation correction](https://github.com/vercel/next.js/pull/96281)
 - [EdgeOne Build Guide](https://pages.edgeone.ai/document/build-guide)
 - [EdgeOne Cloud Functions](https://pages.edgeone.ai/document/cloud-functions)

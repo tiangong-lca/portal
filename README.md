@@ -17,7 +17,7 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-08-26
-lastReviewedCommit: 0ca240e5a705462a0020aaa71f998fd2543d1b67
+lastReviewedCommit: 329261fb572f13efe83408fd0c46e9fa54d9fd40
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -51,7 +51,8 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 ## 文档
 
-- [产品与技术方案](docs/design-plan.md) —— 当前唯一主文档，覆盖产品、UI、权限、数据契约、SEO、EdgeOne、测试、跨仓交付与仓库 onboarding。
+- [产品与技术方案](docs/design-plan.md) —— 产品、UI、权限、数据契约、SEO、EdgeOne、测试、跨仓交付与仓库 onboarding 的主方案。
+- [R0 compatibility matrix](docs/r0/compatibility-matrix.md) 与 [strict CSP/ISR evidence](docs/r0/csp-isr-spike.md) —— 当前发布门及可复现的平台兼容性证据。
 
 ## 状态
 

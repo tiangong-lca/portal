@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-26"
-lastReviewedCommit: "0ca240e5a705462a0020aaa71f998fd2543d1b67"
-lastReviewedNote: "Reviewed against the R1 public catalog runtime and proof surface; routing and ownership remain unchanged."
+lastReviewedCommit: "329261fb572f13efe83408fd0c46e9fa54d9fd40"
+lastReviewedNote: "Reviewed after the enforcing CSP/ISR spike; retained validation evidence joins the existing proof routing without changing ownership."
 
 catalog:
   repos:
@@ -13,6 +13,7 @@ catalog:
       workflowDocs:
         - docs/design-plan.md
         - docs/r0/compatibility-matrix.md
+        - docs/r0/csp-isr-spike.md
       workspaceIntegrationRequired: true
 
 ownership:
@@ -140,6 +141,7 @@ docInventory:
     - README.md
     - docs/design-plan.md
     - docs/r0/compatibility-matrix.md
+    - docs/r0/csp-isr-spike.md
     - .docpact/config.yaml
 
 repo:
