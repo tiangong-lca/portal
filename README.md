@@ -17,7 +17,7 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-08-26
-lastReviewedCommit: bba412b64865911b8845f9a6a696dbbd29a6f377
+lastReviewedCommit: 0ca240e5a705462a0020aaa71f998fd2543d1b67
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -55,4 +55,4 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 ## 状态
 
-最终实施方案已定稿，Phase 0 repository/runtime bootstrap 正在进行。本地 `main` 已包含 exact-pinned Next.js/TypeScript/Tailwind 工具链、Radix Nova shell、部署级品牌解析与可验证默认资产；format、type-aware lint、typecheck、unit、production build 和隔离端口 Playwright 门已建立。R0 当前仍由 canonical 远端 READ-only、真实 EdgeOne Preview 缺失，以及 Next inline Flight script 与严格 CSP/ISR 的兼容性阻断；详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)。
+本地 `main` 已实现 R1 Public Catalog 产品闭环：`zh-CN`/`en` 首页与 Browse、lexical/identifier Search、Process/Flow 精确版本详情、Versions、Exchanges、publication-bound LCIA、确定性比较、引用与本地候选集均通过匿名 public façade；品牌替换、SEO/JSON-LD、分片 sitemap、键盘/主题/200% zoom、隔离上游 fixture、unit/integration 测试、production Playwright 与浏览器 secret scan 已建立。它仍不是公开发布证据：canonical 远端写权限、真实 EdgeOne Preview、跨仓 required main SHA/integration，以及 Next inline Flight script 与严格 CSP/ISR 的 R0 兼容性门尚未完成；详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md) 与 [R1 release checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist)。

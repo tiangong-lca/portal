@@ -20,7 +20,7 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-26
-lastReviewedCommit: a030a6d5e9437f273e732d33d53c546932c9c5f9
+lastReviewedCommit: 0ca240e5a705462a0020aaa71f998fd2543d1b67
 related:
   - ../design-plan.md
   - ../../AGENTS.md
