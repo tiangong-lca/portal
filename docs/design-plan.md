@@ -1376,9 +1376,9 @@ Portal 已在 workspace delivery profile 中注册为 `portal`，所有新工作
 
 ### 22.2 正常交付顺序
 
-1. 通过 `scripts/workspace-ops task create --repo portal` 创建 executable Issue，并按返回命令 start；
+1. 通过 `<workspace-root>/scripts/workspace-ops task create --repo portal --title <title> --body-file <file>` 创建 executable Issue，并按返回命令 start；
 2. 从 canonical `origin/main` 建立独立 task branch/worktree；
-3. 用 workspace `scripts/docpact route --root <portal-root> --paths <paths>` 读取直接治理文档；
+3. 用 `<workspace-root>/scripts/docpact route --root <portal-root> --paths <paths>` 读取直接治理文档；
 4. 在 Portal owner boundary 内实现并以小提交保存；Database、Edge、Release 和 root 变更进入各自仓库与 Issue；
 5. 运行 Portal repository gates 与 Docpact after-coding lint，推送并由 controller submit PR；
 6. PR 通过 CI/独立 review 后合入 Portal `main`，完成 repository-level delivery；
