@@ -20,7 +20,7 @@ checkPaths:
   - scripts/**
   - edgeone.json
 lastReviewedAt: 2026-08-27
-lastReviewedCommit: 5602dff13e6b8fb1b761b76ac625c2cb925cf77b
+lastReviewedCommit: fe7ccf8e34d7cf17f645d5d622e1d3df401bdbdd
 related:
   - AGENTS.md
   - README.md

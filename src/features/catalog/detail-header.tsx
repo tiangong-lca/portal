@@ -24,6 +24,21 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
     getTranslations({ locale, namespace: "Common" }),
   ]);
   const basePath = `${kind}/${encodeURIComponent(refValue)}`;
+  const navigationItems =
+    kind === "process"
+      ? [
+          [basePath, t("overview")],
+          [`${basePath}/method`, t("method")],
+          [`${basePath}/exchanges`, t("exchanges")],
+          [`${basePath}/lcia`, t("lcia")],
+          [`${basePath}/quality`, t("quality")],
+          [`${basePath}/provenance`, t("provenance")],
+          [`${basePath}/versions`, t("versions")],
+        ]
+      : [
+          [basePath, t("overview")],
+          [`${basePath}/versions`, t("versions")],
+        ];
 
   return (
     <header className="flex flex-col gap-6">
@@ -70,27 +85,20 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
         </Button>
       </div>
 
-      {kind === "process" ? (
-        <nav aria-label={t("processTitle")} className="overflow-x-auto border-y py-2">
-          <ul className="flex min-w-max items-center gap-1">
-            {[
-              [basePath, t("overview")],
-              [`${basePath}/method`, t("method")],
-              [`${basePath}/exchanges`, t("exchanges")],
-              [`${basePath}/lcia`, t("lcia")],
-              [`${basePath}/quality`, t("quality")],
-              [`${basePath}/provenance`, t("provenance")],
-              [`${basePath}/versions`, t("versions")],
-            ].map(([href, label]) => (
-              <li key={href}>
-                <Button asChild size="lg" variant="ghost">
-                  <Link href={localePath(locale, href)}>{label}</Link>
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
+      <nav
+        aria-label={kind === "process" ? t("processTitle") : t("flowTitle")}
+        className="overflow-x-auto border-y py-2"
+      >
+        <ul className="flex min-w-max items-center gap-1">
+          {navigationItems.map(([href, label]) => (
+            <li key={href}>
+              <Button asChild size="lg" variant="ghost">
+                <Link href={localePath(locale, href)}>{label}</Link>
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       <Card id="citation" size="sm">
         <CardHeader>

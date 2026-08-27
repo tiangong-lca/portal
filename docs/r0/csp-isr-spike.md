@@ -21,7 +21,7 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-08-27
-lastReviewedCommit: 6036dce64ff05b76a4f0d0dbbef0e0d2fc3b8d8f
+lastReviewedCommit: fe7ccf8e34d7cf17f645d5d622e1d3df401bdbdd
 related:
   - compatibility-matrix.md
   - ../design-plan.md
