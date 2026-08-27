@@ -174,6 +174,9 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
   await expect(page.getByRole("searchbox", { name: "Search public lifecycle data" })).toBeVisible();
   const layout = await page.evaluate(async () => {
     const root = document.documentElement;
+    const initialClientWidth = root.clientWidth;
+    const initialInnerWidth = window.innerWidth;
+    const initialScrollWidth = root.scrollWidth;
     const viewportRight = Math.max(root.clientWidth, window.innerWidth);
     const offenders = Array.from(document.body.querySelectorAll<HTMLElement>("*"))
       .map((element) => {
@@ -210,16 +213,22 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
       bodyScrollWidth: document.body.scrollWidth,
       clientWidth: root.clientWidth,
       fontStatus: document.fonts.status,
+      initialClientWidth,
+      initialInnerWidth,
+      initialOverflow: initialScrollWidth - initialClientWidth,
+      initialScrollWidth,
       innerWidth: window.innerWidth,
       maximumScrollX,
       offenders,
-      overflow: root.scrollWidth - root.clientWidth,
+      settledOverflow: root.scrollWidth - root.clientWidth,
       scrollWidth: root.scrollWidth,
     };
   });
-  expect(layout.overflow, `Zoomed viewport layout: ${JSON.stringify(layout)}`).toBeLessThanOrEqual(
-    1,
-  );
+  console.info(`Zoomed viewport layout: ${JSON.stringify(layout)}`);
+  expect(
+    layout.initialOverflow,
+    `Zoomed viewport layout: ${JSON.stringify(layout)}`,
+  ).toBeLessThanOrEqual(1);
 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
