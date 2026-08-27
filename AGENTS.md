@@ -24,7 +24,7 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-08-27
-lastReviewedCommit: fc270730d20627e1443467230b05b30d36b99b02
+lastReviewedCommit: 6036dce64ff05b76a4f0d0dbbef0e0d2fc3b8d8f
 related:
   - README.md
   - docs/design-plan.md

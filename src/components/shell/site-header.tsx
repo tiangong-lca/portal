@@ -58,7 +58,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
           </ul>
         </nav>
 
-        <div className="order-2 ml-auto flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
+        <div className="order-2 ml-auto flex w-full min-w-0 basis-full items-center justify-between gap-2 sm:w-auto sm:basis-auto sm:justify-start">
           <Button
             asChild
             aria-label={t("search")}
