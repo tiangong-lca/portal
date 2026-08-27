@@ -21,7 +21,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: a7947a8
+lastReviewedCommit: c4667b1
+lastReviewedNote: "Reviewed for Portal #10: Database contract snapshots, catalog ISR data, Search cards, and Production probes do not change the retained strict CSP/Flight/ISR incompatibility or reopen R0."
 related:
   - compatibility-matrix.md
   - ../design-plan.md
