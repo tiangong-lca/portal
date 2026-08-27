@@ -8,6 +8,11 @@ const forbidden = [
   "SUPABASE_SECRET_KEY",
   "service_role",
   "portal_bundle_secret_sentinel_v1",
+  "s3://",
+  "storage.objects",
+  '"team_id"',
+  '"model_id"',
+  '"search_text"',
 ];
 const searchableExtensions = new Set([".js", ".json", ".map", ".txt"]);
 
@@ -31,6 +36,9 @@ async function collectFiles(directory) {
 const violations = [];
 
 for (const path of await collectFiles(staticRoot)) {
+  if (extname(path) === ".map") {
+    violations.push({ marker: "public-browser-sourcemap", path });
+  }
   const content = await readFile(path, "utf8");
 
   for (const marker of forbidden) {
