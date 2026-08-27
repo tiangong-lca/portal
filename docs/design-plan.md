@@ -19,8 +19,8 @@ checkPaths:
   - tests/**
   - scripts/**
   - edgeone.json
-lastReviewedAt: 2026-08-26
-lastReviewedCommit: 012bd05588b5dc1102fad708efa4a4e08c2e5eae
+lastReviewedAt: 2026-08-27
+lastReviewedCommit: fc270730d20627e1443467230b05b30d36b99b02
 related:
   - AGENTS.md
   - README.md
@@ -639,10 +639,25 @@ secret 使用 Base64URL 编码保存，启动时解码并强校验长度；缺�
 
 | 运行目标 | Provider | 配置 |
 | --- | --- | --- |
-| Supabase Dev / Main | Upstash Redis REST | `REDIS_CLIENT_TYPE=upstash`、`UPSTASH_REDIS_URL`、`UPSTASH_REDIS_TOKEN`、`PORTAL_REDIS_NAMESPACE`、`PORTAL_REDIS_TIMEOUT_MS` |
-| 本地开发与 CI | Standard Redis | `REDIS_CLIENT_TYPE=standard`、`REDIS_URL`、可选 `REDIS_PASSWORD`、`PORTAL_REDIS_NAMESPACE`、`PORTAL_REDIS_TIMEOUT_MS` |
+| Supabase Dev / Main | Upstash Redis REST | `PORTAL_REDIS_CLIENT_TYPE=upstash`、`PORTAL_UPSTASH_REDIS_URL`、`PORTAL_UPSTASH_REDIS_TOKEN`、`PORTAL_REDIS_NAMESPACE`、`PORTAL_REDIS_TIMEOUT_MS` |
+| 本地确定性开发与 CI | Standard Redis | `PORTAL_REDIS_CLIENT_TYPE=standard`、`PORTAL_REDIS_URL`、可选 `PORTAL_REDIS_PASSWORD`、`PORTAL_REDIS_NAMESPACE`、`PORTAL_REDIS_TIMEOUT_MS` |
+| R0 live test / Preview fixture | Upstash Redis REST | `PORTAL_R0_REDIS_CLIENT_TYPE=upstash`、`PORTAL_R0_UPSTASH_REDIS_URL`、`PORTAL_R0_UPSTASH_REDIS_TOKEN`、`PORTAL_R0_REDIS_NAMESPACE=portal:r0:<fixture>:v1`、`PORTAL_R0_REDIS_TIMEOUT_MS` |
 
-Dev 与 Main 使用独立 Upstash database、endpoint、token 和 namespace，并分别存入对应 Supabase project 的 Edge Function Secrets；EdgeOne 不持有 Redis 凭据。`PORTAL_REDIS_NAMESPACE` 固定为 `portal:<environment>:v1`，禁止为空或跨环境复用。`PORTAL_REDIS_TIMEOUT_MS` 默认 500，超时按 guard unavailable 处理。
+当前初始部署使用一套经批准的共享 Upstash Redis REST database、endpoint 与 token 覆盖 R0 live test、Supabase Dev 和 Supabase Main/Production。运维将同一源凭据分别写入对应 Supabase project 的 Edge Function Secrets，但运行时只读取 Portal 专用变量，不得回退到既有 Functions 使用的通用 `REDIS_*`、`UPSTASH_REDIS_*` 或其他 provider 凭据。EdgeOne signer、Portal Next.js runtime 和浏览器均不持有 Redis 凭据。
+
+Upstash 导出的 `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` 只属于运维输入格式，可保存在 git-ignored、mode-0600、只含这两个键的本地凭据文件中。live fixture 或 provisioning 进程把它们映射为相应的 `PORTAL_R0_UPSTASH_REDIS_*` / `PORTAL_UPSTASH_REDIS_*`，完成后清空子进程凭据；Portal build/runtime 与 Supabase Handler 不直接加载该文件，也不得把导出名当作 runtime fallback。
+
+共享存储下的命名空间与签名身份仍必须完全区分：
+
+- R0 仅接受 `portal:r0:<random-fixture>:v1`，使用独立 `PORTAL_R0_*` HMAC、publishable key、预算和短期资源，禁止命名为 dev/main/prod；
+- Dev 固定 `PORTAL_REDIS_NAMESPACE=portal:dev:v1`，只配 Dev 的 Portal HMAC keyring 与 Supabase publishable key；
+- Main/Production 固定 `PORTAL_REDIS_NAMESPACE=portal:main:v1`，只配 Production 的 Portal HMAC keyring 与 Supabase publishable key；
+- Preview 与 Production 的 HMAC keyId/secret、Supabase project 和 EdgeOne signer deployment 继续完全不同，不因共享 Redis credential 而复用；
+- namespace、keyId 或 target 不匹配时启动失败；R0 fixture 完成后只删除其 exact namespace keys 与 R0 Supabase project 中的临时 secret copies，不删除共享 Upstash database，也不单独轮换共享源 token。
+
+`PORTAL_REDIS_NAMESPACE` 是避免 key 冲突与约束代码路径的逻辑前缀，不是 Redis 权限或安全边界。共享 token 的持有者技术上可以读取、修改或删除所有 namespace；token 泄露、误操作、限额耗尽、provider outage 和 token rotation 也会同时影响 test、Dev 与 Production。初始部署接受这一残余风险，并以独立 HMAC、严格 namespace 校验、短 TTL、hash-only cache key、禁止记录完整 key/value、按环境分指标和 guard fail-closed 降低风险。未来切换为独立 Upstash database/token 只允许是配置收敛，不得改变协议或业务语义。
+
+`PORTAL_REDIS_TIMEOUT_MS` 默认 500，超时按 guard unavailable 处理。
 
 Edge R1 工作必须扩展 shared Redis adapter，而不是在 Handler 内直接拼命令：
 
@@ -1117,14 +1132,17 @@ EdgeOne 环境变量按 Production/Preview 分开配置：
 | Logo | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON` |
 | Logo metadata | `PORTAL_LOGO_ALT_ZH/EN`、`PORTAL_LOGO_WIDTH/HEIGHT`、可选 `PORTAL_BRAND_ASSET_ORIGIN` |
 
-Supabase Edge Function 配置按项目隔离；EdgeOne Preview 只调用 Supabase Dev，EdgeOne Production 只调用 Supabase Main：
+Supabase Edge Function 配置按项目分别保存；当前批准的例外仅共享底层 Upstash endpoint/token。EdgeOne Preview 只调用 Supabase Dev，EdgeOne Production 只调用 Supabase Main：
 
 | 类别 | Edge Function 配置 |
 | --- | --- |
 | HMAC verifier | `PORTAL_HMAC_KEY_ID_CURRENT`、`PORTAL_HMAC_SECRET_CURRENT`；轮换期可选 `PORTAL_HMAC_KEY_ID_PREVIOUS`、`PORTAL_HMAC_SECRET_PREVIOUS` |
-| Redis provider | `REDIS_CLIENT_TYPE=upstash`、`UPSTASH_REDIS_URL`、`UPSTASH_REDIS_TOKEN` |
-| Redis guard | `PORTAL_REDIS_NAMESPACE=portal:<environment>:v1`、`PORTAL_REDIS_TIMEOUT_MS=500` |
+| Redis provider | `PORTAL_REDIS_CLIENT_TYPE=upstash`、`PORTAL_UPSTASH_REDIS_URL`、`PORTAL_UPSTASH_REDIS_TOKEN` |
+| Redis guard | Dev：`PORTAL_REDIS_NAMESPACE=portal:dev:v1`；Main/Production：`PORTAL_REDIS_NAMESPACE=portal:main:v1`；`PORTAL_REDIS_TIMEOUT_MS=500` |
+| R0 fixture | 独立 `PORTAL_R0_*` HMAC/publishable/Redis surface，`PORTAL_R0_REDIS_NAMESPACE=portal:r0:<fixture>:v1` |
 | Hybrid gate | `PORTAL_HYBRID_ENABLED=false`，仅在 R2 gate 全绿的目标环境显式设为 `true` |
+
+Dev 使用 `portal:dev:v1`，Main/Production 使用 `portal:main:v1`；两者当前可以保存相同的 `PORTAL_UPSTASH_REDIS_URL/TOKEN`，但不得保存相同的 namespace 或 HMAC keyId/secret。共享 token 不证明 Preview/Production 安全隔离，部署证据只能声明 Supabase target、HMAC identity、namespace 和应用 key construction 隔离，并必须同时记录共享配额、故障域和轮换域风险。
 
 HMAC 与 Redis 凭据是秘密，永不渲染；previous HMAC key 只存在于 Supabase Edge Function Secrets 的轮换窗口，不配置到 EdgeOne signer。品牌变量本质上是公共展示配置，经过校验后进入 HTML/CSS metadata。由于 EdgeOne 单变量值上限为 500 bytes，品牌配置使用独立变量，不使用大段 JSON。变量变化只对新 deployment 生效，因此每次换色/Logo 都生成可回滚的部署记录。
 
@@ -1139,7 +1157,7 @@ Compatibility spike 必须实测：
 - RSC、SSR、ISR、Streaming、`proxy.ts`、Route Handler、Image Optimization；
 - 严格 CSP 下的 SRI、RSC hydration、Streaming 与 ISR 组合；不得用全站 nonce 让页面静态性测试失真；
 - 实际 SSR `process.version`；若低于 Node 22，继续使用 native fetch 且不得引入要求 Node 22+ 的服务端 SDK；
-- 使用独立测试 secret 与一次性 Upstash test database 的可丢弃互操作 fixture，验证 EdgeOne Web Crypto HMAC、Supabase Deno 验签、`SET NX EX`/Lua 原子能力、nonce 防重放和 current/previous key 轮换；fixture 不接业务 RPC/模型、不使用 Dev/Main 凭据，保存证据后删除；
+- 使用独立 `PORTAL_R0_*` HMAC/publishable 凭据和 `portal:r0:<random-fixture>:v1` 可丢弃 namespace；按 §10.3 的共享存储决策映射同一 Upstash endpoint/token，验证 EdgeOne Web Crypto HMAC、Supabase Deno 验签、`SET NX EX`/Lua 原子能力、nonce 防重放、current/previous key 轮换与 exact-key cleanup；fixture 不接业务 RPC/模型、不读取 Dev/Main HMAC 或 namespace，保存证据后删除 exact fixture keys 与 R0 project 的临时 secret copies，禁止删除共享 database 或绕过协调单独轮换共享源 token；
 - Preview/Production 环境变量隔离；
 - 默认浅/深主色与 `tiangong-lca-next` 对齐；Portal 其余 semantic token、自定义主色和替换 Logo 的 Preview smoke；
 - `edgeone.json` headers、404、缓存与 canonical domain；扩展 tombstone 另测 410；
@@ -1213,7 +1231,7 @@ Dashboard 至少覆盖：
 - Hybrid valid signature、tampered body、expired timestamp、duplicate nonce、unknown keyId、old/new rotation、限流、缓存、超时和 lexical fallback；
 - Edge deploy-script contract 与远端 auth probe 证明两个 Portal 函数均关闭网关 JWT 校验，并在任何 JSON、AI 或数据库路径前执行 HMAC verifier；
 - LCIA/Hybrid 在 Redis outage 时均不进入数据库/模型；Hybrid 的原子预算并发竞争、预算耗尽、lease TTL 回收和 kill switch 均不产生模型调用并触发预期 fallback；
-- Supabase Dev/Main 使用不同 Upstash endpoint、token 与 namespace；跨环境 nonce、budget、lease 和 cache key 不可见；
+- Supabase Dev/Main 按 §10.3 共享已批准的 Upstash endpoint/token，但必须使用 `portal:dev:v1` 与 `portal:main:v1`、不同 HMAC keyring 和不同 Supabase project；测试证明 runtime 只生成当前 target prefix、拒绝错误 namespace、不会回退通用 Redis 凭据，并明确不能把 namespace 描述成 Redis 权限隔离；
 - Portal 专用 Supabase Edge Function 下游使用 publishable/anon RPC，测试中禁止构造 service-role client；
 - LCIA 有值时包含单位、方法、Process 版本和 publication；
 - LCIA 缺失时不产生 0。
@@ -1424,7 +1442,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 
 1. R0 的完整 EdgeOne compatibility matrix 已绑定 exact Preview SHA 并全绿；
 2. Database public catalog/capability/LCIA projection 已 promote 到 `database-engine/main`，Worker/Release materialization/finalize 已进入各自 `main`，HMAC verifier 与 `portal_data_product_results_v1` 已 promote 到 `edge-functions/main`；
-3. 正确签名可调用；缺失/错误签名、篡改 body、过期 timestamp、重复 nonce、未知 keyId 均在业务逻辑前拒绝；old/new key 轮换通过；Supabase Dev/Main 的 Upstash endpoint、token 与 namespace 完全隔离；Redis guard 不可用时 LCIA 不调用数据库并显示暂不可用；
+3. 正确签名可调用；缺失/错误签名、篡改 body、过期 timestamp、重复 nonce、未知 keyId 均在业务逻辑前拒绝；old/new key 轮换通过；Preview/Production 使用不同 HMAC keyring、Supabase project 和 `portal:dev:v1` / `portal:main:v1` namespace。初始部署按 §10.3 共享经批准的 Upstash endpoint/token，验收证据明确 namespace 不是安全边界，并记录共享 token、配额、故障与轮换域风险；runtime 不读取通用 Redis 凭据，Redis guard 不可用时 LCIA 不调用数据库并显示暂不可用；
 4. 无终端用户 Cookie/token 的代表性 Process/Flow 100 与 200 查询返回允许元数据；HMAC secret 不出现在浏览器；0/20、owner/team/review fixture 从 search、detail、versions、exchange、facet 和伪造参数入口均不可见；
 5. UUID、CAS、分类码、中文名和英文名 lexical/identifier 查询通过，100/200 使用一个稳定 public-catalog 排序与 cursor；
 6. Process/Flow exact-version 详情、版本列表、撤回 404 和 latest 307 通过；页面不直接读取 raw core table；
