@@ -20,7 +20,7 @@ checkPaths:
   - scripts/**
   - edgeone.json
 lastReviewedAt: 2026-08-27
-lastReviewedCommit: 6036dce64ff05b76a4f0d0dbbef0e0d2fc3b8d8f
+lastReviewedCommit: 5602dff13e6b8fb1b761b76ac625c2cb925cf77b
 related:
   - AGENTS.md
   - README.md
@@ -30,7 +30,7 @@ related:
 
 | 项目 | 约束 |
 | --- | --- |
-| 状态 | 最终实施方案；Phase 0 bootstrap 进行中 |
+| 状态 | 最终实施方案；仓库治理与 workspace onboarding 已完成，R0 exact Preview 与 R1 release checklist 尚未完成 |
 | 产品形态 | 面向匿名用户的公共 LCA 数据检索与展示门户 |
 | 技术形态 | Next.js App Router 前后端同构，部署到 EdgeOne Makers |
 | 数据边界 | 只读消费现有数据；不生产、修改、审核或维护 LCA 数据 |
@@ -1341,11 +1341,11 @@ format/lint
 
 每项必须先有真实上游 identity/field/provenance contract。
 
-## 21. 需要创建的 tracked work
+## 21. Tracked work ownership
 
 | Work package | Owner repo | 分支/PR 目标 | 主要产物 |
 | --- | --- | --- | --- |
-| Portal bootstrap | `tiangong-lca-portal` | M1：`main` | 首个仓库提交、治理、可丢弃 EdgeOne compatibility spike |
+| Portal governance + R0 compatibility | `tiangong-lca-portal` | M1：PR to `main` | 仓库治理、可丢弃 EdgeOne compatibility fixture、exact Preview evidence |
 | Public read façade + capability policy | `database-engine` | M2：feature from `dev`, PR to `dev`, promote to `main` | RPC、许可/capability policy、ACL、RLS、索引、tests、types |
 | Public LCIA numeric projection | `database-engine` | M2：feature from `dev`, PR to `dev`, promote to `main` | immutable projection、locator-free RPC、publication/evidence tests |
 | LCIA projection materialization | `tiangong-lca-worker` | M1：PR to `main` | publish payload/value/context materialization 与 idempotence proof |
@@ -1359,47 +1359,41 @@ format/lint
 
 `tiangong-lca-next` 默认不需要改动；只有确认要抽取共享公共 DTO/package 时才单独立项，不能从 Portal 任务顺手修改。
 
-Tracked delivery 可用一条 workspace coordination item 维护整体路线，但每个表中 work package 都建立 owner repo executable Issue；R1 Edge verifier/LCIA 与 R2 Edge Hybrid 不合并成一个 Issue 或发布门。子仓 PR merge 只代表 repo-complete；只有当前 release 所需 M2 产物进入 `main`、对应 Portal main 完成并由 root 精确 gitlink 集成后，该 release 才 delivery-complete。
+Workspace coordination `tiangong-lca/workspace#739` 维护整体路线；每个表中 work package 仍须建立 owner repo executable Issue。R1 Edge verifier/LCIA 与 R2 Edge Hybrid 不合并成一个 Issue 或发布门。子仓 PR merge 只代表 repo-complete；只有当前 release 所需 M2 产物进入 `main`、对应 Portal `main` 完成并由 root 精确 gitlink 集成后，该 release 才 delivery-complete。
 
-Portal 远端为空且尚未进入 delivery profile，不能在第一次 child commit 前创建 controller-managed Portal Issue。唯一 bootstrap 例外是：先由 workspace controller 创建并 start 一个 root coordination Issue，Issue body 明确记录空远端、受限 bootstrap scope、目标 child remote 和 root onboarding TODO；首个 child commit 只能包含现有方案/README 与最小治理、CI、空壳兼容性 spike，不得夹带产品功能。Root profile/Project `Repo Tag=portal` 可用后，必须通过 controller 创建并 start Portal executable Issue，之后所有实现回归正常 Project→Issue→PR→Integration 流程。
+Portal 已在 workspace delivery profile 中注册为 `portal`，所有新工作均使用正常的 `Project -> Issue -> PR -> Integration` 流程；当前不存在 bootstrap 提交例外。Portal 仓库只承载 Portal-owned implementation，root 只承载 workspace governance 与精确 gitlink integration。
 
-## 22. Portal 仓库与 workspace onboarding
+## 22. Portal 仓库与 workspace integration
 
 ### 22.1 当前状态
 
-- 本地 `tiangong-lca-portal` 已是独立 M1 Git 仓库，`main` 持有受限 bootstrap commits；root 在 onboarding 前仍把该目录视为未跟踪；
-- canonical 远端 `git@github.com:tiangong-lca/portal.git` 已存在、公开且为空；当前执行身份只有 READ permission，无法推送，空仓也不能创建 GitHub fork；
-- 本地 child HEAD 尚未形成可由其他协作者或 root 引用的 remote main SHA；
-- Portal 不在 `.gitmodules`、workspace delivery profile、Docpact catalog、branch matrix 或 repo graph；
-- Portal 已采用 `layout: repo` 的 `.docpact/config.yaml`，strict validation、routing、coverage、doc inventory 与 freshness 均通过；root catalog onboarding 尚未完成。
+- canonical repository 为 `tiangong-lca/portal`，可写 `main` 是唯一长期分支；routine branch 从 `origin/main` 创建并 PR 回 `main`；
+- workspace 已用 HTTPS URL 把 Portal 注册为 `tiangong-lca-portal` mode-160000 submodule，并在 delivery profile、Docpact catalog/ownership/routing、branch matrix、repository map 与 graph 中注册 `portal`；
+- live Project 已有 `Repo Tag=portal`，Portal executable work 由 workspace controller 创建、启动、提交和完成；
+- Portal 使用 `layout: repo` 的 repository-owned Docpact config；root Docpact 只拥有跨仓路由和 gitlink integration；
+- root gitlink 是经过审查的集成输入，不自动跟随 child `main`。每个需要 root integration 的 release 都必须单独 pin exact eligible child SHA；
+- onboarding 完成只证明仓库和交付链可用，不证明 R0、R1、EdgeOne Preview 或 Production readiness。
 
-### 22.2 安全顺序
+### 22.2 正常交付顺序
 
-1. 通过 workspace controller 创建并 start authoritative root coordination Issue，记录 bootstrap 例外；
-2. 保留当前 README 与方案文档；
-3. 在当前目录建立独立 child repo，不覆盖文件；
-4. 添加 `AGENTS.md`、`.gitignore` 和 `layout: repo` 的 `.docpact/config.yaml`；
-5. 验证 child config、rules、coverage；
-6. 创建受限 child `main` 首次提交并推到 SSH origin；
-7. root `.gitmodules` 使用 workspace 既有的 HTTPS 约定 `https://github.com/tiangong-lca/portal.git`，开发者 child origin 可继续使用 SSH；
-8. root 记录精确 child main SHA 的 mode-160000 gitlink；
-9. 更新 root AGENTS repo map、workspace.toml、Docpact catalog/ownership/routing/coverage、branch matrix 和 repo graph；
-10. 验证 Project `Repo Tag=portal` 和 controller 支持；
-11. 独立 root integration commit/PR；
-12. 用 controller 创建并 start Portal executable Issue，产品实现从这里开始。
+1. 通过 `<workspace-root>/scripts/workspace-ops task create --repo portal --title <title> --body-file <file>` 创建 executable Issue，并按返回命令 start；
+2. 从 canonical `origin/main` 建立独立 task branch/worktree；
+3. 用 `<workspace-root>/scripts/docpact route --root <portal-root> --paths <paths>` 读取直接治理文档；
+4. 在 Portal owner boundary 内实现并以小提交保存；Database、Edge、Release 和 root 变更进入各自仓库与 Issue；
+5. 运行 Portal repository gates 与 Docpact after-coding lint，推送并由 controller submit PR；
+6. PR 通过 CI/独立 review 后合入 Portal `main`，完成 repository-level delivery；
+7. 若 Issue 要求 workspace integration，另由 root task pin exact eligible Portal `main` SHA，并在 root PR 合并后用 controller finish；
+8. R0/R1/R2 只有对应 checklist 和所有 required owner/main/integration 记录完整时才 release-complete。
 
-Portal 采用 M1：唯一长期分支 `main`，routine branch 从 main 创建并 PR 回 main。不得在远端还没有首次提交时对非空本地目录盲目执行 `git submodule add`。
+### 22.3 Docpact contract
 
-### 22.3 Docpact onboarding
+- Active layout：`repo`；Portal 是单一 governed unit；
+- Portal config 拥有 product/runtime/governance/proof 路由，root config 拥有跨仓和 exact gitlink 路由；
+- 不使用 baseline 或 waiver 隐藏当前 findings；若出现 drift，按具体 diagnostic 修正文档、规则或实现；
+- 每次变更先 route，完成后运行 strict validation、doctor/coverage（治理改动时）与 merge-base lint；
+- review metadata 必须引用实际审阅的祖先提交，不引用自身 metadata-only commit。
 
-- Maintainer task class：`repository-onboarding`；
-- Primary workflow：`references/workflows/repository-onboarding.md`；
-- 推荐 layout：`repo`，因为 Portal 是单一 governed unit；
-- Baseline：当前仅有两份文档，不建议；先建立小而完整的规则；
-- Waiver：不建议；没有窄、临时、带 owner/expiry 的例外；
-- 不需要 failure-repair workflow，也不需要 CLI fallback。
-
-首次配置后的验证命令：
+当前验证命令：
 
 ```bash
 scripts/docpact validate-config --root /Users/davidli/projects/workspace/tiangong-lca-portal --strict --format json
