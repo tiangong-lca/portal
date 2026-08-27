@@ -38,6 +38,12 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Start with data identity");
   await expect(page.locator('[lang="en"]')).toBeVisible();
+  await expect(page.getByText("Public catalog status", { exact: true })).toBeVisible();
+  await expect(page.getByText("Processes", { exact: true })).toBeVisible();
+  await expect(page.getByText("Flows", { exact: true })).toBeVisible();
+  await expect(page.getByText("Total", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /UUID Electricity, medium voltage/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /CAS Carbon dioxide/ })).toBeVisible();
   expect(await context.cookies()).toEqual([]);
 });
 
@@ -49,6 +55,14 @@ test("renders public search, exact details, numeric context, versions, and lates
   await expect(page.getByRole("heading", { name: "Search the public catalog" })).toBeVisible();
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
   await expect(page.getByText(processRef, { exact: true })).toBeVisible();
+  await expect(page.getByText("Reference product / flow", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Electricity", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Functional unit", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("1 kWh", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Grid mix", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("TianGong", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("reviewed", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("name", { exact: true }).first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Next" })).toHaveAttribute(
     "href",
     /cursor=eyJ2IjoxfQ/,

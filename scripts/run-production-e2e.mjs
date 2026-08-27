@@ -86,4 +86,7 @@ try {
   await stopFixture(fixture);
 }
 
-await run("pnpm", ["exec", "playwright", "test"], { label: "production Playwright" });
+const playwrightArguments = process.argv.slice(2).filter((argument) => argument !== "--");
+await run("pnpm", ["exec", "playwright", "test", ...playwrightArguments], {
+  label: "production Playwright",
+});

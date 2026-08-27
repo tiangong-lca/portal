@@ -16,9 +16,10 @@ type SiteHeaderProps = {
 
 export async function SiteHeader({ locale }: SiteHeaderProps) {
   const t = await getTranslations({ locale, namespace: "Common" });
+  const homeHref = localePath(locale);
 
   const links = [
-    [localePath(locale), t("home")],
+    [homeHref, t("home")],
     [localePath(locale, "browse/process"), t("browse")],
     [localePath(locale, "methodology"), t("methodology")],
     [localePath(locale, "collections"), t("collections")],
@@ -33,7 +34,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
         {t("skipToContent")}
       </a>
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
-        <Link className="flex min-h-11 items-center gap-3" href={localePath(locale)}>
+        <Link className="flex min-h-11 items-center gap-3" href={homeHref} prefetch={false}>
           <BrandLogo locale={locale} priority />
           <span className="hidden flex-col sm:flex">
             <span className="font-heading text-sm font-semibold">{t("brandName")}</span>
@@ -51,7 +52,9 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
             {links.map(([href, label]) => (
               <li key={href}>
                 <Button asChild size="lg" variant="ghost">
-                  <Link href={href}>{label}</Link>
+                  <Link href={href} prefetch={href === homeHref ? false : null}>
+                    {label}
+                  </Link>
                 </Button>
               </li>
             ))}

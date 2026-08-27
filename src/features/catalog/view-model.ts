@@ -12,6 +12,8 @@ export type CatalogResultViewModel = {
   referenceYear?: string;
   technology?: string;
   source?: string;
+  quality?: string;
+  match?: string;
   accessLevel: AccessLevel;
   evidence?: string;
 };

@@ -134,9 +134,17 @@ export default async function BrowsePage({
             details: common("details"),
             emptyDescription: t("emptyDescription"),
             emptyTitle: t("emptyTitle"),
+            functionalUnit: detail("functionalUnit"),
+            geography: detail("geography"),
+            match: searchT("matchEvidence"),
             metadataOnly: common("metadataOnly"),
             public: common("public"),
+            quality: detail("quality"),
+            reference: detail("referenceProduct"),
+            referenceYear: detail("referenceYear"),
             selectForCompare: searchT("selectForCompare"),
+            source: detail("sourceDatabase"),
+            technology: detail("technology"),
           }}
           locale={locale}
         />

@@ -7,11 +7,34 @@ import { notFound } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
+import { localizedText } from "@/features/catalog/map-public-data";
 import { isPortalLocale, localePath } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
+import type { PublicCatalogSummary } from "@/server/contracts/portal";
+import { getPublicCatalogSummary } from "@/server/data/catalog";
+import { PortalDataError } from "@/server/data/supabase-rpc";
+
+export const revalidate = 300;
+
+async function readCatalogSummary(): Promise<PublicCatalogSummary | null> {
+  try {
+    return await getPublicCatalogSummary();
+  } catch (error) {
+    if (error instanceof PortalDataError) return null;
+    throw error;
+  }
+}
 
 export async function generateMetadata({ params }: PageProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
@@ -26,9 +49,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   if (!isPortalLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const [t, common] = await Promise.all([
+  const [t, common, summary] = await Promise.all([
     getTranslations({ locale, namespace: "Home" }),
     getTranslations({ locale, namespace: "Common" }),
+    readCatalogSummary(),
   ]);
   const browseCoordinates = [
     { href: "browse/process", icon: DatabaseIcon, label: t("browseProcess"), token: "PROCESS" },
@@ -36,6 +60,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     { href: "browse/region", icon: MapPinIcon, label: t("browseRegion"), token: "REGION" },
     { href: "browse/source", icon: DatabaseIcon, label: t("browseSource"), token: "SOURCE" },
   ] as const;
+  const countFormatter = new Intl.NumberFormat(locale);
+  const latestModified = summary?.latestModifiedAt
+    ? new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(
+        new Date(summary.latestModifiedAt),
+      )
+    : null;
 
   return (
     <main className="portal-ledger flex-1" id="main-content">
@@ -141,11 +171,87 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <Separator />
 
         <section className="grid gap-4 md:grid-cols-2">
-          <Alert>
-            <DatabaseIcon aria-hidden="true" />
-            <AlertTitle>{t("scaleTitle")}</AlertTitle>
-            <AlertDescription>{t("scaleUnavailable")}</AlertDescription>
-          </Alert>
+          {summary ? (
+            <Card className="md:row-span-2">
+              <CardHeader className="border-b">
+                <DatabaseIcon aria-hidden="true" />
+                <CardTitle>{t("scaleTitle")}</CardTitle>
+                <CardDescription>{t("scaleDescription")}</CardDescription>
+                <CardAction>
+                  <Badge variant="outline">LIVE · 5 MIN</Badge>
+                </CardAction>
+              </CardHeader>
+              <CardContent>
+                <dl className="grid grid-cols-3 gap-4">
+                  {[
+                    { label: t("processCount"), value: summary.counts.process },
+                    { label: t("flowCount"), value: summary.counts.flow },
+                    { label: t("totalCount"), value: summary.counts.total },
+                  ].map(({ label, value }) => (
+                    <div className="flex min-w-0 flex-col gap-1" key={label}>
+                      <dt className="text-muted-foreground font-mono text-xs tracking-[0.08em] uppercase">
+                        {label}
+                      </dt>
+                      <dd className="font-heading text-2xl font-semibold tabular-nums sm:text-3xl">
+                        {countFormatter.format(value)}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                {latestModified ? (
+                  <p className="text-muted-foreground mt-5 font-mono text-xs">
+                    {t("latestModified", { date: latestModified })}
+                  </p>
+                ) : null}
+              </CardContent>
+              {summary.examples.length > 0 ? (
+                <CardFooter className="flex-col items-stretch gap-3">
+                  <p className="font-mono text-xs font-semibold tracking-[0.08em] uppercase">
+                    {t("examplesTitle")}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {summary.examples.map((example) => {
+                      const exampleLabel = localizedText(example.label, locale) ?? example.query;
+                      const exampleKind =
+                        example.queryKind === "uuid"
+                          ? t("exampleUuid")
+                          : example.queryKind === "cas"
+                            ? t("exampleCas")
+                            : t("exampleClass");
+                      const parameters = new URLSearchParams({
+                        kind: example.datasetKind,
+                        q: example.query,
+                        v: "1",
+                      });
+                      return (
+                        <Button
+                          asChild
+                          key={`${example.queryKind}:${example.query}`}
+                          size="sm"
+                          variant="outline"
+                        >
+                          <Link
+                            href={`${localePath(locale, "search")}?${parameters.toString()}`}
+                            prefetch={false}
+                          >
+                            <span>{exampleKind}</span>
+                            <span className="max-w-48 truncate">{exampleLabel}</span>
+                            <ArrowRightIcon data-icon="inline-end" />
+                          </Link>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </CardFooter>
+              ) : null}
+            </Card>
+          ) : (
+            <Alert>
+              <DatabaseIcon aria-hidden="true" />
+              <AlertTitle>{t("scaleTitle")}</AlertTitle>
+              <AlertDescription>{t("scaleUnavailable")}</AlertDescription>
+            </Alert>
+          )}
           <Card size="sm">
             <CardHeader>
               <CardTitle>{t("advancedTitle")}</CardTitle>
