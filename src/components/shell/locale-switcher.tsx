@@ -17,7 +17,7 @@ export function LocaleSwitcher({ currentLocale, label }: LocaleSwitcherProps) {
   const fallbackHref = `/${nextLocale}`;
 
   return (
-    <Button asChild className="size-[44px] sm:w-auto sm:px-2.5" size="lg" variant="ghost">
+    <Button asChild className="size-[44px] p-0 sm:w-auto sm:px-2.5" size="lg" variant="ghost">
       <a
         aria-label={label}
         href={fallbackHref}

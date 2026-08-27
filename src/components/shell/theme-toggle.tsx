@@ -68,17 +68,21 @@ export function ThemeToggle({ labels }: ThemeToggleProps) {
     >
       <ToggleGroupItem
         aria-label={labels.light}
-        className="min-h-[44px] min-w-[44px]"
+        className="size-[44px] min-h-[44px] min-w-[44px] p-0"
         value="light"
       >
         <SunIcon aria-hidden="true" />
       </ToggleGroupItem>
-      <ToggleGroupItem aria-label={labels.dark} className="min-h-[44px] min-w-[44px]" value="dark">
+      <ToggleGroupItem
+        aria-label={labels.dark}
+        className="size-[44px] min-h-[44px] min-w-[44px] p-0"
+        value="dark"
+      >
         <MoonIcon aria-hidden="true" />
       </ToggleGroupItem>
       <ToggleGroupItem
         aria-label={labels.system}
-        className="min-h-[44px] min-w-[44px]"
+        className="size-[44px] min-h-[44px] min-w-[44px] p-0"
         value="system"
       >
         <LaptopIcon aria-hidden="true" />
