@@ -257,4 +257,6 @@ rules:
         mode: review_or_update
       - path: docs/r0/compatibility-matrix.md
         mode: review_or_update
+      - path: docs/r0/csp-isr-spike.md
+        mode: review_or_update
     reason: Proof, environment, and deployment changes must preserve release gates and secret boundaries.
