@@ -5,24 +5,24 @@ const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
 function parseCacheControl(value: string | undefined): Map<string, string | true> {
   expect(value, "Cache-Control header").toBeTruthy();
 
-  return new Map(
-    value!
-      .split(",")
-      .map((directive) => directive.trim())
-      .filter(Boolean)
-      .map((directive) => {
-        const separator = directive.indexOf("=");
-        if (separator === -1) return [directive.toLowerCase(), true] as const;
+  const entries: Array<readonly [string, string | true]> = value!
+    .split(",")
+    .map((directive) => directive.trim())
+    .filter(Boolean)
+    .map((directive) => {
+      const separator = directive.indexOf("=");
+      if (separator === -1) return [directive.toLowerCase(), true] as const;
 
-        return [
-          directive.slice(0, separator).trim().toLowerCase(),
-          directive
-            .slice(separator + 1)
-            .trim()
-            .replace(/^"|"$/g, ""),
-        ] as const;
-      }),
-  );
+      return [
+        directive.slice(0, separator).trim().toLowerCase(),
+        directive
+          .slice(separator + 1)
+          .trim()
+          .replace(/^"|"$/g, ""),
+      ] as const;
+    });
+
+  return new Map(entries);
 }
 
 function numericDirective(directives: Map<string, string | true>, name: string): number {
