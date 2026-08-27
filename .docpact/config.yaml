@@ -257,6 +257,27 @@ rules:
         mode: review_or_update
       - path: docs/r0/compatibility-matrix.md
         mode: review_or_update
+    reason: Proof, environment, and deployment changes must preserve release gates and secret boundaries.
+
+  - id: portal-csp-isr-compatibility-contract
+    scope: repo
+    repo: portal
+    triggers:
+      - path: docs/r0/csp-isr-spike.md
+        kind: validation-doc
+      - path: docs/r0/compatibility-matrix.md
+        kind: release-gate
+      - path: next.config.ts
+        kind: framework-config
+      - path: src/proxy.ts
+        kind: response-policy
+      - path: src/app/r0-compat/**
+        kind: compatibility-route
+      - path: tests/e2e/r0-compat.spec.ts
+        kind: compatibility-test
+    requiredDocs:
       - path: docs/r0/csp-isr-spike.md
         mode: review_or_update
-    reason: Proof, environment, and deployment changes must preserve release gates and secret boundaries.
+      - path: docs/r0/compatibility-matrix.md
+        mode: review_or_update
+    reason: Changes to the strict CSP, App Router rendering, or ISR compatibility boundary must re-evaluate the retained R0 evidence.
