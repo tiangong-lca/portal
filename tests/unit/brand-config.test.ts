@@ -15,7 +15,7 @@ describe("Portal brand config", () => {
     expect(config.darkPrimary).toBe("#9E3FFD");
     expect(config.lightLogo).toBe("/brand/logo.svg");
     expect(config.darkLogo).toBe("/brand/logo-dark.svg");
-    expect(config.logoMark).toBe("/brand/logo.svg");
+    expect(config.logoMark).toBeUndefined();
     expect(Object.keys(config.palette.light.scale)).toHaveLength(11);
     expect(Object.keys(config.palette.dark.scale)).toHaveLength(11);
     expect(

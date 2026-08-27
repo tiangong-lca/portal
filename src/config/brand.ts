@@ -60,7 +60,7 @@ export type BrandConfig = {
   version: string;
   lightLogo: string;
   darkLogo: string;
-  logoMark: string;
+  logoMark?: string;
   favicon: string;
   alt: {
     "zh-CN": string;
@@ -155,7 +155,7 @@ export function readBrandConfig(environment: BrandEnvironment = process.env): Br
     version: raw.version,
     lightLogo,
     darkLogo: normalizeAssetReference(raw.darkLogo, raw.assetOrigin),
-    logoMark: raw.logoMark ? normalizeAssetReference(raw.logoMark, raw.assetOrigin) : lightLogo,
+    ...(raw.logoMark ? { logoMark: normalizeAssetReference(raw.logoMark, raw.assetOrigin) } : {}),
     favicon: normalizeAssetReference(raw.favicon, raw.assetOrigin),
     alt: {
       "zh-CN": raw.altZh,

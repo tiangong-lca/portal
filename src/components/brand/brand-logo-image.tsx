@@ -27,11 +27,10 @@ export function BrandLogoImage({
   priority,
 }: BrandLogoImageProps) {
   const [fallbackLevel, setFallbackLevel] = useState(0);
-  const configuredMark = logoMark ?? lightLogo;
   const configuredUsesDefaults =
     lightLogo === defaultLightLogo &&
     darkLogo === defaultDarkLogo &&
-    configuredMark === defaultLightLogo;
+    (logoMark === undefined || logoMark === defaultLightLogo);
 
   if (fallbackLevel >= 2) {
     return (
@@ -57,19 +56,52 @@ export function BrandLogoImage({
         TG
       </span>
       <span className="absolute inset-0 inline-flex">
-        <img
-          alt=""
-          className="size-full object-contain sm:hidden"
-          data-brand-logo-mark
-          decoding="async"
-          fetchPriority={priority ? "high" : "auto"}
-          height={height}
-          onError={() =>
-            setFallbackLevel((level) => (level === 0 && configuredUsesDefaults ? 2 : level + 1))
-          }
-          src={usingDefaults ? defaultLightLogo : configuredMark}
-          width={width}
-        />
+        {logoMark ? (
+          <img
+            alt=""
+            className="size-full object-contain sm:hidden"
+            data-brand-logo-mark
+            decoding="async"
+            fetchPriority={priority ? "high" : "auto"}
+            height={height}
+            onError={() =>
+              setFallbackLevel((level) => (level === 0 && configuredUsesDefaults ? 2 : level + 1))
+            }
+            src={usingDefaults ? defaultLightLogo : logoMark}
+            width={width}
+          />
+        ) : (
+          <>
+            <img
+              alt=""
+              className="size-full object-contain sm:hidden dark:hidden"
+              data-brand-logo-mark
+              data-brand-logo-mark-theme="light"
+              decoding="async"
+              fetchPriority={priority ? "high" : "auto"}
+              height={height}
+              onError={() =>
+                setFallbackLevel((level) => (level === 0 && configuredUsesDefaults ? 2 : level + 1))
+              }
+              src={usingDefaults ? defaultLightLogo : lightLogo}
+              width={width}
+            />
+            <img
+              alt=""
+              className="hidden size-full object-contain max-sm:dark:block"
+              data-brand-logo-mark
+              data-brand-logo-mark-theme="dark"
+              decoding="async"
+              fetchPriority={priority ? "high" : "auto"}
+              height={height}
+              onError={() =>
+                setFallbackLevel((level) => (level === 0 && configuredUsesDefaults ? 2 : level + 1))
+              }
+              src={usingDefaults ? defaultDarkLogo : darkLogo}
+              width={width}
+            />
+          </>
+        )}
         <img
           alt=""
           className="hidden size-full object-contain sm:block dark:sm:hidden"
