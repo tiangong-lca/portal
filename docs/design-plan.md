@@ -20,7 +20,7 @@ checkPaths:
   - scripts/**
   - edgeone.json
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: 6f63e7b
+lastReviewedCommit: 99da1ed
 lastReviewedNote: "Reviewed for Portal #12: bounded Database sitemap shards, explicit XML handlers, and one 300-second shared-cache owner."
 related:
   - AGENTS.md
