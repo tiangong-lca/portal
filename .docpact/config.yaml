@@ -1,7 +1,7 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-27"
-lastReviewedCommit: "81a9e41afbab229714c8dc33503113fc396976fb"
+lastReviewedCommit: "5602dff13e6b8fb1b761b76ac625c2cb925cf77b"
 lastReviewedNote: "Reviewed after replacing completed bootstrap narration with the active Portal delivery and exact-gitlink integration contract; routing and ownership remain unchanged."
 
 catalog:
