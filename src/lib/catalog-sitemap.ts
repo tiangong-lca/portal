@@ -1,23 +1,34 @@
 import "server-only";
 
 import { localePath, type PortalLocale } from "@/i18n/routing";
+import {
+  catalogSitemapShardCount,
+  parseCatalogSitemapKind,
+  parseCatalogSitemapShardSegment,
+  rootCatalogSitemapShardPath,
+  type CatalogSitemapKind,
+} from "@/lib/catalog-sitemap-path";
 import { getPublicSitemapManifest, getPublicSitemapShard } from "@/server/data/catalog";
 
-export type CatalogSitemapKind = "process" | "flow";
+export type { CatalogSitemapKind } from "@/lib/catalog-sitemap-path";
+export {
+  catalogSitemapShardCount,
+  parseCatalogSitemapKind,
+  parseCatalogSitemapShardSegment,
+} from "@/lib/catalog-sitemap-path";
 
 type PublicSitemapManifest = Awaited<ReturnType<typeof getPublicSitemapManifest>>;
 type PublicSitemapShard = Awaited<ReturnType<typeof getPublicSitemapShard>>;
 type PublicSitemapItem = PublicSitemapShard["items"][number];
 
-export const catalogSitemapShardCount = 64;
 export const maximumCatalogSitemapItems = 4096;
+export const maximumCatalogSitemapUrls = 50_000;
 export const maximumCatalogSitemapXmlBytes = 5 * 1024 * 1024;
 export const catalogSitemapSuccessCacheControl = "public, max-age=0, s-maxage=300, must-revalidate";
 export const catalogSitemapFailureCacheControl = "no-store";
 
 const textEncoder = new TextEncoder();
 const loopbackHosts = new Set(["localhost", "127.0.0.1", "[::1]"]);
-const shardSegmentPattern = /^(0|[1-9]|[1-5][0-9]|6[0-3])\.xml$/u;
 
 export class CatalogSitemapError extends Error {
   constructor() {
@@ -40,24 +51,6 @@ function resolveDependencies(
     loadManifest: overrides.loadManifest ?? (() => getPublicSitemapManifest()),
     loadShard: overrides.loadShard ?? ((input) => getPublicSitemapShard(input)),
   };
-}
-
-export function parseCatalogSitemapKind(value: string): CatalogSitemapKind | null {
-  return value === "process" || value === "flow" ? value : null;
-}
-
-export function parseCatalogSitemapIndexSegment(value: string): "sitemap.xml" | null {
-  return value === "sitemap.xml" ? value : null;
-}
-
-export function parseCatalogSitemapShardSegment(value: string): number | null {
-  const match = shardSegmentPattern.exec(value);
-  if (!match) return null;
-
-  const parsed = Number(match[1]);
-  return Number.isSafeInteger(parsed) && parsed >= 0 && parsed < catalogSitemapShardCount
-    ? parsed
-    : null;
 }
 
 export function readCatalogSitemapSiteOrigin(
@@ -123,7 +116,7 @@ export function assertCatalogSitemapXmlWithinLimit(xml: string): string {
 
 export function renderCatalogSitemapIndex(kind: CatalogSitemapKind, origin: string): string {
   const entries = Array.from({ length: catalogSitemapShardCount }, (_, shardIndex) => {
-    const location = absoluteUrl(origin, `/catalog/${kind}/sitemap/${shardIndex}.xml`);
+    const location = absoluteUrl(origin, rootCatalogSitemapShardPath(kind, shardIndex));
     return `  <sitemap><loc>${escapeXml(location)}</loc></sitemap>`;
   }).join("\n");
 
@@ -140,7 +133,7 @@ export function renderCatalogSitemapShard(
   origin: string,
   items: readonly PublicSitemapItem[],
 ): string {
-  if (items.length > maximumCatalogSitemapItems) {
+  if (items.length > maximumCatalogSitemapItems || items.length * 2 > maximumCatalogSitemapUrls) {
     throw new CatalogSitemapError();
   }
 
@@ -159,16 +152,18 @@ export function renderCatalogSitemapShard(
     const zhCnUrl = escapeXml(localizedDatasetUrl(origin, "zh-CN", item));
     const enUrl = escapeXml(localizedDatasetUrl(origin, "en", item));
     const lastModified = escapeXml(item.modifiedAt);
-    return [
-      "  <url>",
-      `    <loc>${zhCnUrl}</loc>`,
-      `    <xhtml:link rel="alternate" hreflang="zh-CN" href="${zhCnUrl}" />`,
-      `    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />`,
-      `    <lastmod>${lastModified}</lastmod>`,
-      "    <changefreq>weekly</changefreq>",
-      "    <priority>0.8</priority>",
-      "  </url>",
-    ].join("\n");
+    return [zhCnUrl, enUrl]
+      .map((location) =>
+        [
+          "  <url>",
+          `    <loc>${location}</loc>`,
+          `    <xhtml:link rel="alternate" hreflang="zh-CN" href="${zhCnUrl}" />`,
+          `    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />`,
+          `    <lastmod>${lastModified}</lastmod>`,
+          "  </url>",
+        ].join("\n"),
+      )
+      .join("\n");
   });
 
   return assertCatalogSitemapXmlWithinLimit(
@@ -248,13 +243,16 @@ function failureResponse(status: 404 | 503): Response {
   });
 }
 
+export function createCatalogSitemapNotFoundResponse(): Response {
+  return failureResponse(404);
+}
+
 export async function createCatalogSitemapIndexResponse(
   kindValue: string,
-  indexSegment: string,
   dependencyOverrides: Partial<CatalogSitemapDependencies> = {},
 ): Promise<Response> {
   const kind = parseCatalogSitemapKind(kindValue);
-  if (!kind || !parseCatalogSitemapIndexSegment(indexSegment)) return failureResponse(404);
+  if (!kind) return failureResponse(404);
 
   try {
     return xmlResponse(await buildCatalogSitemapIndex(kind, dependencyOverrides));

@@ -29,8 +29,8 @@ export default function robots(): MetadataRoute.Robots {
     ],
     sitemap: [
       new URL("/sitemap.xml", siteUrl).toString(),
-      new URL("/catalog/process/sitemap.xml", siteUrl).toString(),
-      new URL("/catalog/flow/sitemap.xml", siteUrl).toString(),
+      new URL("/catalog-process-sitemap.xml", siteUrl).toString(),
+      new URL("/catalog-flow-sitemap.xml", siteUrl).toString(),
     ],
   };
 }
