@@ -16,9 +16,7 @@ const allowedLicenses = new Set([
   "Python-2.0",
 ]);
 
-const packageScopedLicenses = new Map([
-  ["LGPL-3.0-or-later", [/^@img\/sharp-libvips-/]],
-]);
+const packageScopedLicenses = new Map([["LGPL-3.0-or-later", [/^@img\/sharp-libvips-/]]]);
 
 const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 const environment = { ...process.env, NO_COLOR: "1" };
