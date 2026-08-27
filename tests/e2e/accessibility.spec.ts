@@ -108,3 +108,15 @@ test("keeps keyboard focus visible in forced-colors mode", async ({ page }) => {
   expect(outline.style).not.toBe("none");
   expect(outline.width).toBeGreaterThanOrEqual(2);
 });
+
+test("does not identify the footer link by color alone", async ({ page }) => {
+  await page.goto("/en");
+  const methodologyLink = page.getByRole("contentinfo").getByRole("link", {
+    name: "Methodology",
+  });
+
+  await expect(methodologyLink).toBeVisible();
+  expect(
+    await methodologyLink.evaluate((element) => getComputedStyle(element).textDecorationLine),
+  ).toContain("underline");
+});
