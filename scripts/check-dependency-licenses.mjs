@@ -18,13 +18,19 @@ const allowedLicenses = new Set([
 
 const packageScopedLicenses = new Map([["LGPL-3.0-or-later", [/^@img\/sharp-libvips-/]]]);
 
-const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+const pnpmArguments = ["licenses", "list", "--json", "--long"];
+const isWindows = process.platform === "win32";
 const environment = { ...process.env, NO_COLOR: "1" };
 delete environment.FORCE_COLOR;
-const result = spawnSync(command, ["licenses", "list", "--json", "--long"], {
-  encoding: "utf8",
-  env: environment,
-});
+const result = spawnSync(
+  isWindows ? `pnpm ${pnpmArguments.join(" ")}` : "pnpm",
+  isWindows ? [] : pnpmArguments,
+  {
+    encoding: "utf8",
+    env: environment,
+    shell: isWindows,
+  },
+);
 
 if (result.status !== 0) {
   process.stderr.write(result.stderr || "Unable to enumerate dependency licenses.\n");
