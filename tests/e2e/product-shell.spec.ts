@@ -3,7 +3,8 @@ import { createHash } from "node:crypto";
 
 const processId = "11111111-1111-1111-1111-111111111111";
 const processRef = `${processId}@01.00.000`;
-const flowRef = "22222222-2222-2222-2222-222222222222@01.00.000";
+const flowId = "22222222-2222-2222-2222-222222222222";
+const flowRef = `${flowId}@01.00.000`;
 
 test("serves localized anonymous discovery with persistent theme and SEO alternates", async ({
   context,
@@ -76,12 +77,25 @@ test("renders public search, exact details, numeric context, versions, and lates
   await page.goto(`/en/flow/${flowRef}`);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Carbon dioxide");
 
+  const flowVersions = await request.get(`/en/flow/${flowRef}/versions`);
+  expect(flowVersions.ok()).toBe(true);
+  expect(await flowVersions.text()).toContain(flowRef);
+  await page.goto(`/en/flow/${flowRef}/versions`);
+  await expect(page.getByRole("heading", { name: "Version history" })).toBeVisible();
+  await expect(page.getByText(flowRef, { exact: true }).first()).toBeVisible();
+
   const latest = await request.get(`/en/process/${processId}`, { maxRedirects: 0 });
   expect(latest.status()).toBe(307);
   expect(latest.headers().location).toContain(`/en/process/${processRef}`);
 
+  const latestFlow = await request.get(`/en/flow/${flowId}`, { maxRedirects: 0 });
+  expect(latestFlow.status()).toBe(307);
+  expect(latestFlow.headers().location).toContain(`/en/flow/${flowRef}`);
+
   const missing = await request.get("/en/process/99999999-9999-9999-9999-999999999999@01.00.000");
   expect(missing.status()).toBe(404);
+  const missingFlow = await request.get("/en/flow/99999999-9999-9999-9999-999999999999@01.00.000");
+  expect(missingFlow.status()).toBe(404);
 });
 
 test("completes the HTML-first search to two-member comparison path", async ({ page }) => {
