@@ -328,6 +328,7 @@ DTO 不返回：
 | `/:locale/process/:uuid@:version/versions` | 版本列表与 diff 摘要 | SSR/RSC + Data Cache | `index,follow` |
 | `/:locale/process/:uuid` | 最新版本别名 | 动态 307 到精确版本 | 不单独索引 |
 | `/:locale/flow/:uuid@:version` | Flow 详情 | SSR/RSC + Data Cache | `index,follow` |
+| `/:locale/flow/:uuid@:version/versions` | Flow 版本列表与精确链接 | SSR/RSC + Data Cache | `index,follow` |
 | `/:locale/compare?ids=...` | 2–4 条比较 | SSR/RSC + Client island | `noindex,follow` |
 | `/:locale/browse/:dimension` | 受控目录浏览 | ISR/RSC | 仅规范目录页可索引 |
 | `/:locale/collections` | 本地候选集 | Client island | `noindex,nofollow` |
@@ -653,9 +654,15 @@ Upstash 导出的 `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` 只属�
 - Dev 固定 `PORTAL_REDIS_NAMESPACE=portal:dev:v1`，只配 Dev 的 Portal HMAC keyring 与 Supabase publishable key；
 - Main/Production 固定 `PORTAL_REDIS_NAMESPACE=portal:main:v1`，只配 Production 的 Portal HMAC keyring 与 Supabase publishable key；
 - Preview 与 Production 的 HMAC keyId/secret、Supabase project 和 EdgeOne signer deployment 继续完全不同，不因共享 Redis credential 而复用；
-- namespace、keyId 或 target 不匹配时启动失败；R0 fixture 完成后只删除其 exact namespace keys 与 R0 Supabase project 中的临时 secret copies，不删除共享 Upstash database，也不单独轮换共享源 token。
+- 普通 feature Preview 只调用 persistent Supabase Dev；R0 compatibility deployment 是显式例外，只能调用已从 Main parent 实时验证、非默认、非 persistent、无业务数据且不等于 Dev/Main ref 的 disposable Supabase Preview branch；
+- R0 deploy/cleanup 以 `PORTAL_R0_PROJECT_REF`、`PORTAL_R0_RUNTIME_TARGET=preview`、branch/Git/PR identity、exact deployment SHA 和 24 小时内 expiry 绑定 target；Dev/Main deploy tooling 则把受控 target 映射到 exact project ref、`portal:dev:v1` / `portal:main:v1` 与对应 HMAC keyring。Handler 只接受平台注入的 current-project URL/key registry；namespace、project、keyId 或 target 不匹配时 fail closed；
+- R0 fixture 完成后只删除其 exact namespace keys 与 disposable Preview branch 中的临时 secret copies，不删除共享 Upstash database，也不单独轮换共享源 token。
 
 `PORTAL_REDIS_NAMESPACE` 是避免 key 冲突与约束代码路径的逻辑前缀，不是 Redis 权限或安全边界。共享 token 的持有者技术上可以读取、修改或删除所有 namespace；token 泄露、误操作、限额耗尽、provider outage 和 token rotation 也会同时影响 test、Dev 与 Production。初始部署接受这一残余风险，并以独立 HMAC、严格 namespace 校验、短 TTL、hash-only cache key、禁止记录完整 key/value、按环境分指标和 guard fail-closed 降低风险。未来切换为独立 Upstash database/token 只允许是配置收敛，不得改变协议或业务语义。
+
+共享 Redis 风险由 workspace coordination `tiangong-lca/workspace#739` 持有，Portal 完成 onboarding 后转由关联的 Portal R1 release Issue 共同持有，并在每次 Production deployment 前重新确认。出现 token 暴露或疑似泄露、跨环境 key 写入、共享配额/故障影响 Production、无法协调的紧急 rotation、合规要求变化，或 provider 已能提供独立 credential 时，Production no-go，必须切换独立 Upstash database/token 或完成单独批准的风险处置。共享 token 的轮换是覆盖 R0/Dev/Main secret copies 的同一协调事件，不能按单一环境局部执行。
+
+R0 live fixture 在第一次 Redis mutation 前写入 mode-0600 cleanup receipt；receipt 只含 schema version、exact R0 namespace、fixture 时间与 key-derivation version，不含 endpoint、token、HMAC、nonce、请求体、完整 key 或 value。受控 fixture driver 必须能由 receipt 和固定测试输入枚举它创建的每个 exact key；cleanup 逐键删除并确认读取为空，禁止使用无界 `SCAN`、模糊 prefix delete 或 database delete。成功后删除 receipt；中断或失败时保留 receipt 和固定恢复命令，直至 cleanup 验证通过或所有 fixture key 的受控 TTL 到期并完成复核。
 
 `PORTAL_REDIS_TIMEOUT_MS` 默认 500，超时按 guard unavailable 处理。
 
@@ -1132,7 +1139,7 @@ EdgeOne 环境变量按 Production/Preview 分开配置：
 | Logo | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON` |
 | Logo metadata | `PORTAL_LOGO_ALT_ZH/EN`、`PORTAL_LOGO_WIDTH/HEIGHT`、可选 `PORTAL_BRAND_ASSET_ORIGIN` |
 
-Supabase Edge Function 配置按项目分别保存；当前批准的例外仅共享底层 Upstash endpoint/token。EdgeOne Preview 只调用 Supabase Dev，EdgeOne Production 只调用 Supabase Main：
+Supabase Edge Function 配置按项目分别保存；当前批准的例外仅共享底层 Upstash endpoint/token。普通 EdgeOne feature Preview 只调用 persistent Supabase Dev，EdgeOne Production 只调用 Supabase Main；R0 compatibility Preview 按 §10.3 只调用 disposable Supabase Preview branch：
 
 | 类别 | Edge Function 配置 |
 | --- | --- |
@@ -1158,7 +1165,7 @@ Compatibility spike 必须实测：
 - 严格 CSP 下的 SRI、RSC hydration、Streaming 与 ISR 组合；不得用全站 nonce 让页面静态性测试失真；
 - 实际 SSR `process.version`；若低于 Node 22，继续使用 native fetch 且不得引入要求 Node 22+ 的服务端 SDK；
 - 使用独立 `PORTAL_R0_*` HMAC/publishable 凭据和 `portal:r0:<random-fixture>:v1` 可丢弃 namespace；按 §10.3 的共享存储决策映射同一 Upstash endpoint/token，验证 EdgeOne Web Crypto HMAC、Supabase Deno 验签、`SET NX EX`/Lua 原子能力、nonce 防重放、current/previous key 轮换与 exact-key cleanup；fixture 不接业务 RPC/模型、不读取 Dev/Main HMAC 或 namespace，保存证据后删除 exact fixture keys 与 R0 project 的临时 secret copies，禁止删除共享 database 或绕过协调单独轮换共享源 token；
-- Preview/Production 环境变量隔离；
+- 除 §10.3 明确共享的 Upstash endpoint/token 外，Preview/Production 的 Supabase target、HMAC、publishable key、namespace 和 EdgeOne deployment 配置隔离；
 - 默认浅/深主色与 `tiangong-lca-next` 对齐；Portal 其余 semantic token、自定义主色和替换 Logo 的 Preview smoke；
 - `edgeone.json` headers、404、缓存与 canonical domain；扩展 tombstone 另测 410；
 - 回滚、冷启动和跨区域数据库时延。
@@ -1416,7 +1423,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 - capability 允许的公开 Exchanges/LCIA 匿名可见；
 - 0/20、私有、团队和审核数据从所有入口不可见；
 - 伪造 filter/state/actor/team 无法扩大范围；
-- HMAC 缺失、错误、篡改、过期、重放或未知 keyId 均在 JSON/AI/数据库业务逻辑前拒绝；Preview/Production 隔离和 current/previous 轮换通过；
+- HMAC 缺失、错误、篡改、过期、重放或未知 keyId 均在 JSON/AI/数据库业务逻辑前拒绝；Preview/Production 的 HMAC、Supabase target、publishable key、namespace 和 EdgeOne deployment 隔离及 current/previous 轮换通过；§10.3 共享的 Upstash endpoint/token 不得被描述为 Redis 权限隔离；
 - 浏览器、部署产物、日志和错误响应无 service role、secret 或 locator。
 
 ### 23.3 SEO
