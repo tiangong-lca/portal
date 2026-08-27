@@ -207,7 +207,9 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
     await new Promise<void>((resolve) => {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
     });
-    const maximumScrollX = Math.max(immediateScrollX, window.scrollX);
+    window.scrollTo(Number.MAX_SAFE_INTEGER, previousY);
+    const settledScrollX = window.scrollX;
+    const maximumScrollX = Math.max(immediateScrollX, settledScrollX);
     window.scrollTo(0, previousY);
 
     return {
@@ -222,6 +224,7 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
       innerWidth: window.innerWidth,
       maximumScrollX,
       offenders,
+      settledScrollX,
       settledOverflow: root.scrollWidth - root.clientWidth,
       scrollWidth: root.scrollWidth,
     };
