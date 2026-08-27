@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-27"
-lastReviewedCommit: "5602dff13e6b8fb1b761b76ac625c2cb925cf77b"
-lastReviewedNote: "Reviewed after replacing completed bootstrap narration with the active Portal delivery and exact-gitlink integration contract; routing and ownership remain unchanged."
+lastReviewedCommit: "8d5fcfae70651562f91ad9622a1cfdc64d051e3d"
+lastReviewedNote: "Reviewed after adding Flow version parity and cursor-safe five-minute catalog sitemap indexes/shards; routing and ownership remain unchanged."
 
 catalog:
   repos:
