@@ -1,19 +1,9 @@
 import { readdir, readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 
+import forbidden from "../tests/fixtures/security/browser-private-markers.json" with { type: "json" };
+
 const staticRoot = join(process.cwd(), ".next", "static");
-const forbidden = [
-  "PORTAL_EDGE_HMAC_SECRET",
-  "R0_COMPAT_HMAC_SECRET",
-  "SUPABASE_SECRET_KEY",
-  "service_role",
-  "portal_bundle_secret_sentinel_v1",
-  "s3://",
-  "storage.objects",
-  '"team_id"',
-  '"model_id"',
-  '"search_text"',
-];
 const searchableExtensions = new Set([".js", ".json", ".map", ".txt"]);
 
 async function collectFiles(directory) {
