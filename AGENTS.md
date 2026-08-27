@@ -48,8 +48,10 @@ related:
 
 ## Repository and delivery model
 
+- Canonical repository: `tiangong-lca/portal`. The repository has a writable `main` and is registered under the workspace `portal` delivery adapter.
 - Branch model: M1. `main` is the only long-lived branch; routine branches start from and PR back to `main`.
 - Tracked work follows the workspace controller and `Project -> Issue -> PR -> Integration`.
+- Canonical and tracked-delivery onboarding proves only that Portal changes can be reviewed and integrated. It does not prove R0, R1, EdgeOne Preview, or Production readiness.
 - Commits are small, coherent, validated checkpoints. Do not mix Database, Edge, or root integration changes into Portal commits.
 - A merged Portal PR is repository-complete only; workspace delivery may still require exact root gitlink integration.
 
