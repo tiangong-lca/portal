@@ -170,6 +170,16 @@ function flowSearchResponse() {
           precision: "unknown",
         },
         referenceYear: null,
+        context: {
+          reference: {
+            kind: "reference_flow_property",
+            name: catalogFixture.datasetFlow.metadata.referenceFlowProperty?.name ?? [],
+          },
+          functionalUnit: null,
+          technology: [],
+          source: catalogFixture.datasetFlow.metadata.source,
+          quality: { reviewStatus: null },
+        },
         modifiedAt: catalogFixture.datasetFlow.modifiedAt,
         match: { kind: "lexical", score: 0.9, reasonCodes: ["name"] },
       },
@@ -246,6 +256,8 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
       return processSearchResponse();
     case "portal_search_flows_v1":
       return flowSearchResponse();
+    case "portal_catalog_summary_v1":
+      return Object.keys(arguments_).length === 0 ? catalogFixture.catalogSummary : undefined;
     case "portal_get_dataset_v1":
       if (
         arguments_.p_kind === "process" &&

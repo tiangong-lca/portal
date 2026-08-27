@@ -21,6 +21,8 @@
     "generate:theme-integrity": "node scripts/generate-theme-integrity.mjs",
     "check:toolchain": "node scripts/validate-build-toolchain.mjs",
     "check:brand": "node --import tsx scripts/validate-brand-config.mjs",
+    "sync:database-contracts": "node scripts/sync-database-contracts.mjs --write",
+    "check:database-contracts": "node scripts/sync-database-contracts.mjs --check",
     "typecheck": "next typegen && tsc --noEmit",
     "lint": "oxlint --deny-warnings --type-aware --import-plugin --react-plugin --vitest-plugin --jsx-a11y-plugin --nextjs-plugin src tests scripts next.config.ts playwright.config.ts vitest.config.ts",
     "format": "prettier --write . --ignore-unknown --ignore-path .gitignore",
@@ -28,14 +30,14 @@
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "pnpm build && playwright test",
+    "test:e2e": "node scripts/run-production-e2e.mjs",
     "fixture:r1": "node --import tsx scripts/portal-r1-fixture-server.ts",
     "check:bundle": "node scripts/check-client-bundle.mjs",
     "check:bundle-budget": "node scripts/check-route-bundle-budget.mjs",
     "check:licenses": "node scripts/check-dependency-licenses.mjs",
     "check:vulnerabilities": "pnpm audit --audit-level high",
     "check:supply-chain": "pnpm check:licenses && pnpm check:vulnerabilities",
-    "check": "pnpm check:toolchain && pnpm check:brand && pnpm check:licenses && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:bundle-budget && pnpm check:bundle"
+    "check": "pnpm check:toolchain && pnpm check:brand && pnpm check:database-contracts && pnpm check:licenses && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:bundle-budget && pnpm check:bundle"
   },
   "dependencies": {
     "class-variance-authority": "0.7.1",

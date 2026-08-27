@@ -10,6 +10,7 @@ import {
 import {
   getPublicDataset,
   getPublicFacets,
+  getPublicCatalogSummary,
   getPublicSitemapManifest,
   getPublicSitemapShard,
   listPublicDatasetVersions,
@@ -342,6 +343,7 @@ describe("Portal Supabase public RPC client", () => {
       policy: unknown;
     }> = [];
     const responseByName: Record<string, unknown> = {
+      portal_catalog_summary_v1: fixture.catalogSummary,
       portal_get_dataset_v1: fixture.datasetProcess,
       portal_list_versions_v1: fixture.versions,
       portal_list_process_exchanges_v1: fixture.exchanges,
@@ -363,6 +365,7 @@ describe("Portal Supabase public RPC client", () => {
       version: fixture.datasetProcess.key.version,
     };
 
+    await getPublicCatalogSummary(client);
     await getPublicDataset(reference, client);
     await listPublicDatasetVersions({ kind: reference.kind, id: reference.id }, client);
     await listPublicProcessExchanges(
@@ -375,6 +378,7 @@ describe("Portal Supabase public RPC client", () => {
     await getPublicSitemapShard({ shardCursor: manifest.shards[0]!.shardCursor }, client);
 
     expect(calls.map(({ name }) => name)).toEqual([
+      "portal_catalog_summary_v1",
       "portal_get_dataset_v1",
       "portal_list_versions_v1",
       "portal_list_process_exchanges_v1",
@@ -384,6 +388,7 @@ describe("Portal Supabase public RPC client", () => {
       "portal_sitemap_shard_v1",
     ]);
     expect(calls.map(({ policy }) => policy)).toEqual([
+      expect.objectContaining({ mode: "revalidate", seconds: 300 }),
       expect.objectContaining({ mode: "revalidate", seconds: 60 }),
       expect.objectContaining({ mode: "revalidate", seconds: 300 }),
       expect.objectContaining({ mode: "revalidate", seconds: 300 }),
@@ -392,7 +397,8 @@ describe("Portal Supabase public RPC client", () => {
       { mode: "no-store" },
       { mode: "no-store" },
     ]);
-    expect(calls[0]?.arguments_).toEqual({
+    expect(calls[0]?.arguments_).toEqual({});
+    expect(calls[1]?.arguments_).toEqual({
       p_kind: "process",
       p_id: reference.id,
       p_version: reference.version,

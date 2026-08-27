@@ -15,6 +15,7 @@ const telemetryEventSchema = z.strictObject({
   correlationId: correlationIdSchema,
   routeFamily: z.enum([
     "catalog_search",
+    "catalog_summary",
     "catalog_facets",
     "dataset_detail",
     "dataset_versions",
@@ -26,6 +27,7 @@ const telemetryEventSchema = z.strictObject({
     .enum([
       "portal_search_processes_v1",
       "portal_search_flows_v1",
+      "portal_catalog_summary_v1",
       "portal_get_dataset_v1",
       "portal_list_versions_v1",
       "portal_list_process_exchanges_v1",
