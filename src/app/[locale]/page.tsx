@@ -41,11 +41,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     <main className="portal-ledger flex-1" id="main-content">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <section className="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.5fr)] lg:items-end">
-          <div className="flex max-w-4xl flex-col gap-6">
+          <div className="flex max-w-4xl min-w-0 flex-col gap-6">
             <p className="text-primary font-mono text-xs font-semibold tracking-[0.18em] uppercase">
               {t("eyebrow")}
             </p>
-            <h1 className="font-heading text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
+            <h1 className="font-heading text-4xl leading-[1.05] font-semibold tracking-tight text-balance break-words sm:text-6xl lg:text-7xl">
               {t("title")}
             </h1>
             <p className="text-muted-foreground max-w-3xl text-base leading-7 sm:text-lg sm:leading-8">
@@ -53,7 +53,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </p>
           </div>
 
-          <div className="evidence-rail flex flex-col gap-5">
+          <div className="evidence-rail flex min-w-0 flex-col gap-5">
             {[common("public"), common("exactVersion"), common("footerBoundary")].map((label) => (
               <div className="flex flex-col gap-1" key={label}>
                 <span className="font-mono text-xs tracking-[0.12em] uppercase">{label}</span>
