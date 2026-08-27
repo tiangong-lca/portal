@@ -159,6 +159,37 @@ describe("Portal Supabase public RPC client", () => {
         { mode: "no-store" },
       ),
     ).rejects.toMatchObject({ code: "invalid_response" });
+
+    let pulls = 0;
+    let cancelled = false;
+    const chunkedBody = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        pulls += 1;
+        if (pulls <= 100) {
+          controller.enqueue(new Uint8Array(700 * 1024));
+        } else {
+          controller.close();
+        }
+      },
+      cancel() {
+        cancelled = true;
+      },
+    });
+    const chunkedClient = createPortalRpcClient({
+      environment,
+      fetchImplementation: vi.fn<typeof fetch>(async () => new Response(chunkedBody)),
+      logger: vi.fn<PortalTelemetryLogger>(),
+    });
+    await expect(
+      chunkedClient.call(
+        "portal_sitemap_shard_v1",
+        { p_shard_cursor: fixture.sitemapShard.shardCursor },
+        publicSitemapShardSchema,
+        { mode: "no-store" },
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
+    expect(cancelled).toBe(true);
+    expect(pulls).toBeLessThan(100);
   });
 
   it("keeps catalog RPC parameters allowlisted", async () => {
@@ -396,23 +427,34 @@ describe("Portal Supabase public RPC client", () => {
     ).rejects.toBeInstanceOf(PortalDataError);
   });
 
-  it("rejects secret and service-role credentials in the publishable-key slot", () => {
-    expect(() =>
+  it("accepts only modern publishable keys in the public credential slot", () => {
+    expect(
       readPortalDataEnvironment({
         SUPABASE_URL: environment.supabaseUrl,
-        SUPABASE_PUBLISHABLE_KEY: "sb_secret_abcdefghijklmnopqrstuvwxyz",
-      }),
-    ).toThrow("secret keys are forbidden");
+        SUPABASE_PUBLISHABLE_KEY: environment.publishableKey,
+      }).publishableKey,
+    ).toBe(environment.publishableKey);
 
-    const serviceRolePayload = btoa(JSON.stringify({ role: "service_role" }))
-      .replaceAll("+", "-")
-      .replaceAll("/", "_")
-      .replace(/=+$/u, "");
-    expect(() =>
-      readPortalDataEnvironment({
-        SUPABASE_URL: environment.supabaseUrl,
-        SUPABASE_PUBLISHABLE_KEY: `header.${serviceRolePayload}.signature`,
-      }),
-    ).toThrow("service-role keys are forbidden");
+    const jwt = (role: string) => {
+      const payload = btoa(JSON.stringify({ role }))
+        .replaceAll("+", "-")
+        .replaceAll("/", "_")
+        .replace(/=+$/u, "");
+      return `header.${payload}.signature`;
+    };
+    for (const forbidden of [
+      "sb_secret_abcdefghijklmnopqrstuvwxyz",
+      jwt("service_role"),
+      jwt("authenticated"),
+      jwt("anon"),
+      "ordinary-user-token",
+    ]) {
+      expect(() =>
+        readPortalDataEnvironment({
+          SUPABASE_URL: environment.supabaseUrl,
+          SUPABASE_PUBLISHABLE_KEY: forbidden,
+        }),
+      ).toThrow("Only Supabase publishable keys are allowed");
+    }
   });
 });
