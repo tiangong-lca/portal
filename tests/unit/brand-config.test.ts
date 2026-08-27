@@ -30,15 +30,15 @@ describe("Portal brand config", () => {
 
   it("normalizes custom primary colors and dimensions", () => {
     const config = readBrandConfig({
-      PORTAL_LIGHT_PRIMARY: "#abcdef",
-      PORTAL_DARK_PRIMARY: "#123456",
+      PORTAL_LIGHT_PRIMARY: "#006699",
+      PORTAL_DARK_PRIMARY: "#b65cff",
       PORTAL_LOGO_MARK: "/brand/logo-raster.png",
       PORTAL_LOGO_WIDTH: "256",
       PORTAL_LOGO_HEIGHT: "128",
     });
 
-    expect(config.lightPrimary).toBe("#ABCDEF");
-    expect(config.darkPrimary).toBe("#123456");
+    expect(config.lightPrimary).toBe("#006699");
+    expect(config.darkPrimary).toBe("#B65CFF");
     expect(config.width).toBe(256);
     expect(config.height).toBe(128);
     expect(config.logoMark).toBe("/brand/logo-raster.png");
@@ -47,6 +47,15 @@ describe("Portal brand config", () => {
   it("fails closed for malformed colors", () => {
     expect(() => readBrandConfig({ PORTAL_LIGHT_PRIMARY: "purple" })).toThrow(
       "Expected a color in #RRGGBB format",
+    );
+  });
+
+  it("fails closed when a primary surface disappears into its theme background", () => {
+    expect(() => readBrandConfig({ PORTAL_LIGHT_PRIMARY: "#FFFFFF" })).toThrow(
+      "Brand light primary surface contrast is below 3:1",
+    );
+    expect(() => readBrandConfig({ PORTAL_DARK_PRIMARY: "#000000" })).toThrow(
+      "Brand dark primary surface contrast is below 3:1",
     );
   });
 

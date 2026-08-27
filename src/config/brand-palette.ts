@@ -97,6 +97,7 @@ export function assertBrandPaletteContrast(palette: BrandThemePalette, theme: "l
   const background = theme === "light" ? lightBackground : darkBackground;
   const checks = [
     ["primary", palette.primary, palette.foreground, 4.5],
+    ["primary surface", palette.primary, background, 3],
     ["hover", palette.hover, palette.foreground, 4.5],
     ["active", palette.active, palette.foreground, 4.5],
     ["link", palette.link, background, 4.5],
