@@ -20,7 +20,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: 99da1ed
+lastReviewedCommit: c4667b1
+lastReviewedNote: "Reviewed for Portal #10: contract/UI/test changes do not provide selected-host R0 Preview, enforcing CSP/ISR, rollback, or cleanup evidence; R0 remains blocked."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
