@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-27"
-lastReviewedCommit: "8d5fcfae70651562f91ad9622a1cfdc64d051e3d"
-lastReviewedNote: "Reviewed after adding Flow version parity and cursor-safe five-minute catalog sitemap indexes/shards; routing and ownership remain unchanged."
+lastReviewedCommit: "fe7ccf8e34d7cf17f645d5d622e1d3df401bdbdd"
+lastReviewedNote: "Reviewed after adding Flow version parity and reverting sitemap sharding pending a bounded Database manifest contract; routing and ownership remain unchanged."
 
 catalog:
   repos:
