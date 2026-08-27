@@ -10,6 +10,8 @@ import { publicSearchPageSchema } from "@/server/contracts/portal";
 import {
   getPublicDataset,
   getPublicFacets,
+  getPublicSitemapManifest,
+  getPublicSitemapShard,
   listPublicDatasetVersions,
   listPublicProcessExchanges,
   listPublicSitemapEntries,
@@ -103,6 +105,11 @@ describe("Portal R1 fixture upstream", () => {
     );
     const facets = await getPublicFacets({ kind: "all", query: "electricity" }, client);
     const sitemap = await listPublicSitemapEntries({}, client);
+    const sitemapManifest = await getPublicSitemapManifest(client);
+    const sitemapShard = await getPublicSitemapShard(
+      { shardCursor: sitemapManifest.shards[0]!.shardCursor },
+      client,
+    );
 
     expect(flowSearch.items[0]?.key.kind).toBe("flow");
     expect(processDataset?.metadata.kind).toBe("process");
@@ -114,13 +121,17 @@ describe("Portal R1 fixture upstream", () => {
     expect(exchanges?.rows[0]?.amount).toBe("1.25");
     expect(facets.kind).toBe("all");
     expect(sitemap.items.map((item) => item.key.kind)).toEqual(["flow", "process"]);
-    expect(fixture.receipts.rpcAccepted).toBe(8);
+    expect(sitemapManifest.shards).toHaveLength(64);
+    expect(sitemapShard.items.map((item) => item.key.kind)).toEqual(["flow", "process"]);
+    expect(fixture.receipts.rpcAccepted).toBe(10);
     expect(fixture.receipts.rpcByName).toMatchObject({
       portal_get_dataset_v1: 2,
       portal_search_flows_v1: 1,
       portal_search_processes_v1: 1,
+      portal_sitemap_manifest_v1: 1,
+      portal_sitemap_shard_v1: 1,
     });
-    expect(fixture.receipts.lastRpc).toMatchObject({ name: "portal_sitemap_entries_v1" });
+    expect(fixture.receipts.lastRpc).toMatchObject({ name: "portal_sitemap_shard_v1" });
 
     const missingProfile = await fetch(`${fixture.origin}/rest/v1/rpc/portal_search_processes_v1`, {
       method: "POST",
@@ -148,7 +159,7 @@ describe("Portal R1 fixture upstream", () => {
     const receiptProbe = await fetch(`${fixture.origin}/receipts`);
     expect(await receiptProbe.json()).toMatchObject({
       schemaVersion: "portal.r1-fixture-receipts.v1",
-      rpcAccepted: 8,
+      rpcAccepted: 10,
     });
   });
 

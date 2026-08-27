@@ -23,36 +23,16 @@ const supabaseOriginSchema = z
   )
   .transform((url) => url.origin);
 
-function decodeJwtPayload(value: string): unknown {
-  const payload = value.split(".")[1];
-  if (!payload) {
-    return null;
-  }
-
-  try {
-    const standard = payload.replaceAll("-", "+").replaceAll("_", "/");
-    return JSON.parse(atob(standard.padEnd(Math.ceil(standard.length / 4) * 4, "="))) as unknown;
-  } catch {
-    return null;
-  }
-}
-
 const publishableKeySchema = z
   .string()
   .trim()
   .min(16)
   .max(4096)
   .refine((value) => !/\s/u.test(value), "Publishable key must not contain whitespace")
-  .refine((value) => !value.startsWith("sb_secret_"), "Supabase secret keys are forbidden")
-  .refine((value) => {
-    const payload = decodeJwtPayload(value);
-    return !(
-      payload !== null &&
-      typeof payload === "object" &&
-      "role" in payload &&
-      payload.role === "service_role"
-    );
-  }, "Supabase service-role keys are forbidden");
+  .refine(
+    (value) => value.startsWith("sb_publishable_") && value.length > "sb_publishable_".length,
+    "Only Supabase publishable keys are allowed",
+  );
 
 const rawEnvironmentSchema = z.strictObject({
   supabaseUrl: supabaseOriginSchema,

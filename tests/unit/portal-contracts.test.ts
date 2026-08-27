@@ -7,9 +7,15 @@ import {
   publicDatasetEnvelopeSchema,
   publicExchangePageSchema,
   publicPublicationSchema,
+  publicSitemapManifestSchema,
+  publicSitemapShardSchema,
   publicSourceSchema,
   publishedLciaPageSchema,
 } from "@/server/contracts/portal";
+
+function uuidForOrdinal(ordinal: number): string {
+  return `00000000-0000-4000-8000-${ordinal.toString(16).padStart(12, "0")}`;
+}
 
 describe("Portal public DTO contracts", () => {
   it("accepts fixtures for every Database Portal schema", () => {
@@ -25,7 +31,72 @@ describe("Portal public DTO contracts", () => {
     expect(portalContractSchemas.facets.parse(fixture.facets).groups).toHaveLength(1);
     expect(portalContractSchemas.versions.parse(fixture.versions).items).toHaveLength(1);
     expect(portalContractSchemas.sitemap.parse(fixture.sitemap).items).toHaveLength(1);
+    expect(
+      portalContractSchemas.sitemapManifest.parse(fixture.sitemapManifest).shards,
+    ).toHaveLength(64);
+    expect(portalContractSchemas.sitemapShard.parse(fixture.sitemapShard).items).toHaveLength(1);
     expect(portalContractSchemas.lcia.parse(fixture.lcia).rows).toHaveLength(1);
+  });
+
+  it("enforces the fixed unique manifest and bounded unique shard contracts", () => {
+    expect(
+      publicSitemapManifestSchema.safeParse({
+        ...fixture.sitemapManifest,
+        shards: fixture.sitemapManifest.shards.slice(0, 63),
+      }).success,
+    ).toBe(false);
+
+    const duplicateManifest = structuredClone(fixture.sitemapManifest);
+    duplicateManifest.shards[1]!.shardCursor = duplicateManifest.shards[0]!.shardCursor;
+    expect(publicSitemapManifestSchema.safeParse(duplicateManifest).success).toBe(false);
+    expect(
+      publicSitemapManifestSchema.safeParse({
+        ...fixture.sitemapManifest,
+        shards: [
+          { ...fixture.sitemapManifest.shards[0], maxItems: 4095 },
+          ...fixture.sitemapManifest.shards.slice(1),
+        ],
+      }).success,
+    ).toBe(false);
+    expect(
+      publicSitemapManifestSchema.safeParse({
+        ...fixture.sitemapManifest,
+        shards: [
+          { ...fixture.sitemapManifest.shards[0], bucket: 0 },
+          ...fixture.sitemapManifest.shards.slice(1),
+        ],
+      }).success,
+    ).toBe(false);
+
+    const duplicateIdentity = {
+      ...fixture.sitemapShard,
+      items: [
+        fixture.sitemapShard.items[0],
+        {
+          ...fixture.sitemapShard.items[0],
+          key: { ...fixture.sitemapShard.items[0]!.key, version: "02.00.000" },
+        },
+      ],
+    };
+    expect(publicSitemapShardSchema.safeParse(duplicateIdentity).success).toBe(false);
+    expect(
+      publicSitemapShardSchema.safeParse({
+        ...fixture.sitemapShard,
+        shardCursor: "cursor with spaces",
+      }).success,
+    ).toBe(false);
+
+    const overflowItems = Array.from({ length: 4097 }, (_, index) => ({
+      key: {
+        kind: "process" as const,
+        id: uuidForOrdinal(index + 1),
+        version: "01.00.000",
+      },
+      modifiedAt: "2026-08-25T12:00:00Z",
+    }));
+    expect(
+      publicSitemapShardSchema.safeParse({ ...fixture.sitemapShard, items: overflowItems }).success,
+    ).toBe(false);
   });
 
   it("fails closed on root and nested property pollution", () => {

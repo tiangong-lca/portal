@@ -19,8 +19,9 @@ checkPaths:
   - tests/**
   - scripts/**
   - edgeone.json
-lastReviewedAt: 2026-08-27
-lastReviewedCommit: 3fda0f1
+lastReviewedAt: 2026-08-28
+lastReviewedCommit: 6f63e7b
+lastReviewedNote: "Reviewed for Portal #12: bounded Database sitemap shards, explicit XML handlers, and one 300-second shared-cache owner."
 related:
   - AGENTS.md
   - README.md
@@ -541,6 +542,7 @@ Portal 不形成第三方 API 产品。Route Handler 或 Server Action 仅允许
 - `SUPABASE_URL`；
 - `SUPABASE_PUBLISHABLE_KEY`；
 - `SITE_URL`；
+- `PORTAL_SITEMAP_CACHE_MODE`，默认 `no-store`；仅经托管 CDN 证明后使用 `shared-300`；
 - `PORTAL_EDGE_KEY_ID`；
 - `PORTAL_EDGE_HMAC_SECRET`；
 - 可选的 Edge endpoint 与超时配置。
@@ -559,7 +561,8 @@ EdgeOne 签名端只持有一个当前 `keyId/secret`。Supabase Edge Function �
 - `api.portal_list_versions_v1(kind, id, cursor, limit)`；
 - `api.portal_list_process_exchanges_v1(process_id, process_version, exchange_kind, cursor, limit)`；
 - `api.portal_facets_v1(kind, query, filters)`；
-- `api.portal_sitemap_entries_v1(kind, cursor, limit)`。
+- `api.portal_sitemap_manifest_v1()`；
+- `api.portal_sitemap_shard_v1(shard_cursor)`。
 
 Exchange façade 返回 `portal.public-exchange-page.v1`：
 
@@ -615,7 +618,8 @@ type PublicExchangePage = {
 - Search façade 在数据库内联合 100/200，返回同一算法生成的 `rankKey + kind + id + version` cursor；Portal 不分别请求 `tg/co` 后拼接不可比较分数；
 - 不接受 `this_user_id`、`team_id_filter`、`my`、`te` 或任意状态码；
 - Filter、Sort、Kind、Limit 全部 allowlist；
-- `limit <= 50`，sitemap 批处理另设受控上限；
+- `limit <= 50`；sitemap manifest 固定返回 64 个按位置排序、全局互斥的 opaque cursor，Portal 只能原样回传，不能解码、合成或放入公开 URL；
+- sitemap shard 最多 4,096 条、JSON 最多 2 MiB、Database statement timeout 4 秒；Process/Flow 可以混合返回，Portal 只按公开路由中的 kind 过滤；
 - 列表使用 cursor/keyset；混合排名游标包含 score + stable ID；
 - DTO 做字段投影，200 不返回未经授权的数值；
 - `SECURITY DEFINER` 仅在确有必要时使用，固定 `search_path`，`REVOKE ... FROM PUBLIC`，精确 signature 仅 grant 给 `anon`/`authenticated`；
@@ -801,8 +805,11 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 - 不索引：任意 Search、Compare、Collections、Map 参数组合；
 - Facet URL 使用 `noindex,follow`，避免 query × filter 的无限索引空间；
 - zh-CN/en 互相声明 `hreflang`，根路径提供 `x-default`；
-- sitemap 分片生成，只包含当前公开且允许索引的 canonical URL；
+- 根级 `/catalog-{process|flow}-sitemap.xml` 各返回一个固定 64 项的 sitemap index；同一根级文件以唯一规范参数 `?shard={0..63}` 返回对应 XML shard，确保文件作用域覆盖 `/zh-CN/**` 与 `/en/**`；
+- shard 数字只接受规范化 `0..63`，Portal 按 manifest 数组位置选择 opaque cursor 并原样调用 Database；cursor 不进入 URL、XML、响应或日志；
+- sitemap 分片只包含当前公开且允许索引的 canonical URL；每个 shard 最多 4,096 个 identity，并为 zh-CN/en 各生成一条 reciprocal `<url>`，总计最多 8,192 URLs，最终 UTF-8 XML 必须严格小于 5 MiB；
 - 最新版本进入 sitemap，历史版本由 Versions 页面发现；
+- 成功响应默认 `no-store`，确保未验证的平台也满足零陈旧；只有 exact deployment 证明 cache key 精确包含规范 `shard` 参数、到期同步 revalidate、错误不缓存且不自动返回 stale 后，才设置 `PORTAL_SITEMAP_CACHE_MODE=shared-300` 并使用 `public, max-age=0, s-maxage=300, must-revalidate`；Vercel 的 `s-maxage` 会后台异步更新，因此当前禁止该模式；缺失参数表示 index，唯一参数只接受规范十进制 `0..63`，其他 query 全部在 Database 调用前返回 `404/no-store`；配置、上游、DTO 或字节门失败返回 `503/no-store`；禁止 query cache-bust、`stale-while-revalidate` 与 `stale-if-error`；
 - robots 不用于保护数据，真正的权限仍在 Database/Edge。
 
 ### 11.3 缓存与新鲜度
@@ -811,8 +818,8 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 
 | 层 | 只负责 | 明确不负责 |
 | --- | --- | --- |
-| EdgeOne CDN | hash 静态资源、构建产物和平台路由 | 不缓存 Search 或详情动态 HTML，不判断数据可见性 |
-| Next Route/Data Cache | 首页/目录 ISR、详情 DTO、Exchange 页和 LCIA 短缓存、request dedupe | 不缓存用户/团队数据，不缓存 Hybrid 原文 |
+| 经验证的共享 CDN | hash 静态资源、构建产物，以及显式启用后的 sitemap XML | 不缓存 Search 或详情动态 HTML，不判断数据可见性；未证明同步 revalidate/no-stale 时不得缓存 sitemap |
+| Next Route/Data Cache | 首页/目录 ISR、详情 DTO、Exchange 页和 LCIA 短缓存、request dedupe | 不缓存用户/团队数据、Hybrid 原文或 sitemap manifest/shard RPC |
 | Edge Redis | HMAC nonce、route budget、concurrency lease，以及 Hybrid rewrite/embedding/公共结果的 hash-key 短缓存 | 不缓存页面 HTML、候选集或 Database 权限事实；不决定数据可见性 |
 
 | 内容 | 策略 | 最大陈旧时间 |
@@ -824,11 +831,11 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 | Exchanges 分页 DTO | Next Data Cache + tag | 5 分钟；visibility=false 时不得渲染 |
 | 当前公开 LCIA publication | 短 TTL/tag cache | 5 分钟 |
 | Search 页面 | Next `no-store`；Edge 可对公共 hash query 短缓存 | 不跨用户状态 |
-| sitemap | 分片 ISR | 5 分钟 |
+| sitemap | 显式 XML Route Handler；上游始终 `no-store`；响应默认 `no-store`，只有实测通过的平台启用唯一一层 300 秒共享缓存 | 默认 0；启用后最多 5 分钟 |
 
 详情 HTML 为动态 SSR，先读取 visibility envelope，再使用可缓存 DTO。EdgeOne headers 必须阻止 CDN 把动态详情/Search HTML 缓存成长期对象。撤回和能力收紧在 60 秒 visibility SLA 内停止展示；LCIA publication 与 sitemap 在 5 分钟内更新。
 
-MVP 使用 TTL；若以后引入受保护的 on-demand revalidation，它只失效 Next tag/CDN cache，不改变数据。部署自动清空 EdgeOne 静态 cache；数据发布不能依赖重新部署清 cache。
+MVP 使用 TTL；若以后引入受保护的 on-demand revalidation，它只失效 Next tag/CDN cache，不改变数据。部署自动清空 EdgeOne 静态 cache；数据发布不能依赖重新部署清 cache。Sitemap 的 route/data contract 保持平台中立，但缓存语义不是跨 CDN 等价：每个实际 CDN 都必须重新证明 300 秒、同步 revalidation、错误不缓存且不自动添加 stale 行为；证明前保持 `no-store`。
 
 Cache key 必须包含 locale、kind、id、version、public capability、publication 和规范化 filter/cursor，不能跨版本、语言或权限范围污染。
 
@@ -1135,6 +1142,7 @@ EdgeOne 环境变量按 Production/Preview 分开配置：
 | --- | --- |
 | HMAC signer | `PORTAL_EDGE_KEY_ID`、`PORTAL_EDGE_HMAC_SECRET` |
 | 公共数据 | `SUPABASE_URL`、`SUPABASE_PUBLISHABLE_KEY`、`SITE_URL` |
+| Sitemap cache | `PORTAL_SITEMAP_CACHE_MODE=no-store`；仅在该平台通过 no-stale 验收后改为 `shared-300` |
 | 主色 | `PORTAL_LIGHT_PRIMARY`、`PORTAL_DARK_PRIMARY`、`PORTAL_BRAND_VERSION` |
 | Logo | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON` |
 | Logo metadata | `PORTAL_LOGO_ALT_ZH/EN`、`PORTAL_LOGO_WIDTH/HEIGHT`、可选 `PORTAL_BRAND_ASSET_ORIGIN` |
@@ -1170,7 +1178,7 @@ Compatibility spike 必须实测：
 - `edgeone.json` headers、404、缓存与 canonical domain；扩展 tombstone 另测 410；
 - 回滚、冷启动和跨区域数据库时延。
 
-平台限制纳入验收：Cloud Function 包不超过 128 MB，请求/响应 body 不超过 6 MB，默认 30 秒、最多 120 秒。Portal 自身设更小预算：详情响应目标不超过 512 KB，Hybrid 8 秒超时，不通过提高平台上限掩盖慢查询。
+平台限制纳入验收：Cloud Function 包不超过 128 MB，请求/响应 body 不超过 6 MB，默认 30 秒、最多 120 秒。Portal 自身设更小预算：详情响应目标不超过 512 KB，sitemap XML 严格小于 5 MiB，Hybrid 8 秒超时，不通过提高平台上限掩盖慢查询。
 
 ## 18. 性能、可靠性与可观测性
 
@@ -1251,7 +1259,7 @@ Dashboard 至少覆盖：
 - JavaScript 关闭后核心页面可读；
 - axe 无 serious/critical；
 - 纯键盘、屏幕阅读器、200% zoom、reduced motion 人工走查；
-- canonical、hreflang、JSON-LD、robots、sitemap 分片；
+- canonical、hreflang、JSON-LD、robots、64-way sitemap index/shard、XML 解析、5 MiB 门、300 秒 cache 与 404/503 no-store；
 - Search/Compare/Collections 不被索引；
 - 浏览器 bundle 和 sourcemap 不含 secret/service role；
 - CSP 不含 `unsafe-inline`，主题 bootstrap script 的构建时 SHA-256 hash 与实际响应字节一致；
@@ -1295,7 +1303,7 @@ format/lint
 
 ### 20.3 Phase 1：Database 公共读契约
 
-1. exact detail / versions / exchange page / list / search / facets / sitemap façade；
+1. exact detail / versions / exchange page / list / search / facets / fixed 64-way sitemap manifest/shard façade；
 2. 许可到 capability 的版本化 fail-closed policy；未知/矛盾许可保持 metadata-only；
 3. publication-bound LCIA decimal projection 与 `portal_get_published_lcia_values_v1`；
 4. cursor、ACL/RLS、索引和 anon SQL tests；
@@ -1424,7 +1432,8 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 
 - 首页、目录、详情与公开 LCIA 的重要内容在初始 HTML；
 - 每个详情页有唯一 canonical、hreflang、结构化数据和正确状态码；
-- sitemap 分片仅含允许索引的公开对象；
+- 两个 catalog sitemap index 各固定列出 64 个数字 shard；分片仅含允许索引的最新公开对象，128 个公开 shard 的 union 无重复或遗漏；
+- sitemap 上游 RPC 始终 `no-store`，成功 XML 严格小于 5 MiB；响应默认 `no-store`，只有托管平台通过同步 300 秒/no-stale 验收才启用唯一一层共享 CDN cache；404/503 不缓存；
 - Search/Compare/Collections 不进入索引；
 - 撤回/能力收紧在 60 秒 visibility SLA 内停止展示；publication 与 sitemap 在 5 分钟内更新。
 
@@ -1451,7 +1460,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 8. 每个公开 LCIA result 同时具备 §10.2 所列 Process、功能单位、地理/精度、参考年、Method、impact、value/unit 和 publication/package context；无 publication 时显示 unavailable 而非 0；
 9. 2–4 条比较先通过功能单位、单位、方法、地区精度、时间与边界矩阵；只有允许组合才并列 LCIA，Exchange 与 LCIA 使用各自上下文；
 10. Citation 固定 exact version；本地候选集/JSON 经 schema 校验，不把备注发送到服务器；默认 fragment 只含 member IDs；
-11. 首页、Browse、Process/Flow 详情和公开 LCIA 摘要进入初始 HTML；canonical、zh-CN/en hreflang、Dataset JSON-LD、robots 和 5 分钟 sitemap 分片通过；Search/Compare/Collections 为 noindex；
+11. 首页、Browse、Process/Flow 详情和公开 LCIA 摘要进入初始 HTML；canonical、zh-CN/en hreflang、Dataset JSON-LD、robots，以及根级固定 64-way、双语 reciprocal、严格 5 MiB 的 sitemap index/shard 通过；sitemap 默认 `no-store`，仅在托管平台证明同步 300 秒/no-stale 后启用单一共享缓存；Search/Compare/Collections 为 noindex；
 12. 默认浅色 `#5C246A`、深色 `#9E3FFD`；其他 semantic token 遵循 shadcn/Tailwind 最佳实践；自定义主色、Light/Dark Logo、favicon、alt、尺寸、fallback、manifest/OG metadata 和品牌回滚全部通过；
 13. WCAG 2.2 AA 自动检查无 serious/critical，并完成键盘、屏幕阅读器、200% zoom、浅/深主题和三断点人工走查；
 14. 浏览器 bundle、sourcemap、响应和日志中无 HMAC secret、service role、数据库 secret、内部 locator 或 Hybrid body；GET lexical `q` 的 24 小时 access-log 提示与 Referrer Policy 生效；

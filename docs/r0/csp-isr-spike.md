@@ -20,8 +20,8 @@ checkPaths:
   - src/proxy.ts
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-08-27
-lastReviewedCommit: 3fda0f1
+lastReviewedAt: 2026-08-28
+lastReviewedCommit: 7f60160
 related:
   - compatibility-matrix.md
   - ../design-plan.md

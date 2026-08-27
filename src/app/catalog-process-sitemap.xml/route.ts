@@ -1,0 +1,8 @@
+import { createRootCatalogSitemapResponse } from "@/lib/catalog-sitemap";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export function GET(request: Request): Promise<Response> {
+  return createRootCatalogSitemapResponse("process", request);
+}

@@ -206,6 +206,34 @@ function sitemapResponse(kind: unknown) {
   };
 }
 
+function sitemapManifestResponse(arguments_: Record<string, unknown>) {
+  return Object.keys(arguments_).length === 0 ? catalogFixture.sitemapManifest : undefined;
+}
+
+function sitemapShardResponse(arguments_: Record<string, unknown>) {
+  if (Object.keys(arguments_).length !== 1 || typeof arguments_.p_shard_cursor !== "string") {
+    return undefined;
+  }
+
+  const descriptorIndex = catalogFixture.sitemapManifest.shards.findIndex(
+    (descriptor) => descriptor.shardCursor === arguments_.p_shard_cursor,
+  );
+  if (descriptorIndex === -1) {
+    return undefined;
+  }
+
+  const processItem = catalogFixture.sitemapShard.items[0]!;
+  const flowItem = {
+    key: catalogFixture.datasetFlow.key,
+    modifiedAt: catalogFixture.datasetFlow.modifiedAt,
+  };
+  return {
+    ...catalogFixture.sitemapShard,
+    shardCursor: arguments_.p_shard_cursor,
+    items: descriptorIndex === 0 ? [flowItem, processItem] : [],
+  };
+}
+
 function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown {
   switch (name) {
     case "portal_search_processes_v1":
@@ -256,6 +284,10 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
       return { ...catalogFixture.facets, kind: arguments_.p_kind };
     case "portal_sitemap_entries_v1":
       return sitemapResponse(arguments_.p_kind);
+    case "portal_sitemap_manifest_v1":
+      return sitemapManifestResponse(arguments_);
+    case "portal_sitemap_shard_v1":
+      return sitemapShardResponse(arguments_);
     default:
       return undefined;
   }
