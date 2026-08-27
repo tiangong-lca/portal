@@ -8,6 +8,7 @@
 :root {
   --primary: var(--brand-light-primary);
   --primary-foreground: #ffffff;
+  --link: var(--brand-light-primary);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -46,6 +47,7 @@
   --foreground: oklch(0.985 0 0);
   --primary: var(--brand-dark-primary);
   --primary-foreground: #ffffff;
+  --link: color-mix(in oklch, var(--brand-dark-primary) 68%, white);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
@@ -80,6 +82,7 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-link: var(--link);
   --font-heading:
     "Source Sans 3", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-sans:
@@ -137,8 +140,10 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-a {
-  color: inherit;
+@layer base {
+  a {
+    color: inherit;
+  }
 }
 
 ::selection {

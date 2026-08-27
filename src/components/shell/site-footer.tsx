@@ -14,7 +14,7 @@ export async function SiteFooter({ locale }: { locale: PortalLocale }) {
         <p className="font-mono text-xs tracking-[0.12em] uppercase">{t("footerBoundary")}</p>
         <p className="sm:ml-auto">{t("footerEvidence")}</p>
         <Link
-          className="text-primary underline-offset-4 hover:underline"
+          className="text-link underline-offset-4 hover:underline"
           href={localePath(locale, "methodology")}
         >
           {t("methodology")}
