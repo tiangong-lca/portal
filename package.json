@@ -32,7 +32,10 @@
     "fixture:r1": "node --import tsx scripts/portal-r1-fixture-server.ts",
     "check:bundle": "node scripts/check-client-bundle.mjs",
     "check:bundle-budget": "node scripts/check-route-bundle-budget.mjs",
-    "check": "pnpm check:toolchain && pnpm check:brand && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:bundle-budget && pnpm check:bundle"
+    "check:licenses": "node scripts/check-dependency-licenses.mjs",
+    "check:vulnerabilities": "pnpm audit --audit-level high",
+    "check:supply-chain": "pnpm check:licenses && pnpm check:vulnerabilities",
+    "check": "pnpm check:toolchain && pnpm check:brand && pnpm check:licenses && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:bundle-budget && pnpm check:bundle"
   },
   "dependencies": {
     "class-variance-authority": "0.7.1",
