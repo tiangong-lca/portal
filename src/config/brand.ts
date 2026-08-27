@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+import {
+  assertBrandPaletteContrast,
+  createBrandThemePalette,
+  type BrandThemePalette,
+} from "./brand-palette";
+
 const hexColorSchema = z
   .string()
   .trim()
@@ -54,7 +60,7 @@ export type BrandConfig = {
   version: string;
   lightLogo: string;
   darkLogo: string;
-  logoMark: string;
+  logoMark?: string;
   favicon: string;
   alt: {
     "zh-CN": string;
@@ -62,6 +68,10 @@ export type BrandConfig = {
   };
   width: number;
   height: number;
+  palette: {
+    dark: BrandThemePalette;
+    light: BrandThemePalette;
+  };
   assetOrigin?: string;
 };
 
@@ -134,6 +144,10 @@ export function readBrandConfig(environment: BrandEnvironment = process.env): Br
   });
 
   const lightLogo = normalizeAssetReference(raw.lightLogo, raw.assetOrigin);
+  const lightPalette = createBrandThemePalette(raw.lightPrimary, "light");
+  const darkPalette = createBrandThemePalette(raw.darkPrimary, "dark");
+  assertBrandPaletteContrast(lightPalette, "light");
+  assertBrandPaletteContrast(darkPalette, "dark");
 
   return {
     lightPrimary: raw.lightPrimary,
@@ -141,7 +155,7 @@ export function readBrandConfig(environment: BrandEnvironment = process.env): Br
     version: raw.version,
     lightLogo,
     darkLogo: normalizeAssetReference(raw.darkLogo, raw.assetOrigin),
-    logoMark: raw.logoMark ? normalizeAssetReference(raw.logoMark, raw.assetOrigin) : lightLogo,
+    ...(raw.logoMark ? { logoMark: normalizeAssetReference(raw.logoMark, raw.assetOrigin) } : {}),
     favicon: normalizeAssetReference(raw.favicon, raw.assetOrigin),
     alt: {
       "zh-CN": raw.altZh,
@@ -149,10 +163,33 @@ export function readBrandConfig(environment: BrandEnvironment = process.env): Br
     },
     width: raw.width,
     height: raw.height,
+    palette: {
+      dark: darkPalette,
+      light: lightPalette,
+    },
     ...(raw.assetOrigin ? { assetOrigin: raw.assetOrigin } : {}),
   };
 }
 
 export function renderBrandCss(config: BrandConfig): string {
-  return `:root {\n  --brand-light-primary: ${config.lightPrimary};\n  --brand-dark-primary: ${config.darkPrimary};\n}\n`;
+  const variables = (["light", "dark"] as const).flatMap((theme) => {
+    const palette = config.palette[theme];
+    return [
+      ...brandScaleVariables(theme, palette),
+      `  --brand-${theme}-primary: ${palette.primary};`,
+      `  --brand-${theme}-primary-hover: ${palette.hover};`,
+      `  --brand-${theme}-primary-active: ${palette.active};`,
+      `  --brand-${theme}-primary-subtle: ${palette.subtle};`,
+      `  --brand-${theme}-primary-foreground: ${palette.foreground};`,
+      `  --brand-${theme}-link: ${palette.link};`,
+      `  --brand-${theme}-ring: ${palette.ring};`,
+    ];
+  });
+  return `:root {\n${variables.join("\n")}\n}\n`;
+}
+
+function brandScaleVariables(theme: "light" | "dark", palette: BrandThemePalette): string[] {
+  return Object.entries(palette.scale).map(
+    ([step, color]) => `  --brand-${theme}-${step}: ${color};`,
+  );
 }

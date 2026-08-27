@@ -14,6 +14,7 @@ const routeBudgets = [
     maximumGzipBytes: 180 * 1024,
     manifests: [
       "[locale]/flow/[ref]/page",
+      "[locale]/flow/[ref]/versions/page",
       "[locale]/process/[ref]/page",
       "[locale]/process/[ref]/exchanges/page",
       "[locale]/process/[ref]/lcia/page",

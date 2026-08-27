@@ -14,6 +14,7 @@ export function BrandLogo({ locale = "zh-CN", priority = false }: BrandLogoProps
       darkLogo={brandConfig.darkLogo}
       height={brandConfig.height}
       lightLogo={brandConfig.lightLogo}
+      logoMark={brandConfig.logoMark}
       priority={priority}
       width={brandConfig.width}
     />

@@ -17,7 +17,7 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-08-27
-lastReviewedCommit: fe7ccf8e34d7cf17f645d5d622e1d3df401bdbdd
+lastReviewedCommit: 3fda0f1
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -58,6 +58,6 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 Canonical `tiangong-lca/portal` 已有可写的 `main`，并已作为 `portal` 纳入 workspace 的 M1 分支策略、delivery adapter、Docpact 路由与精确 root gitlink integration 流程。Root gitlink 不自动跟随 child `main`；每个需要 workspace integration 的 release 仍须单独 pin 经审阅的 exact Portal SHA。仓库接入完成不代表 R0、R1、EdgeOne Preview 或 Production 已就绪。
 
-当前 `main` 已建立 R1 Public Catalog 的主要骨架：`zh-CN`/`en` 首页与 Browse、lexical/identifier Search、Process/Flow 精确版本详情与 Versions、Exchanges、publication-bound LCIA、确定性比较、引用、本地候选集、基础品牌配置与 SEO/JSON-LD、隔离上游 fixture、unit/integration 测试、针对 production build 的本地 Playwright 与浏览器 secret scan。当前 catalog sitemap 仍是每种对象最多 49,000 条的单文件实现；完整搜索卡/generated type drift、真实首页统计与示例、完整品牌色阶/对比度/Logo mark、自动与人工无障碍、no-JS、Core Web Vitals/SLA、漏洞与许可证门仍未完成，因此不能称为 R1 产品闭环。
+当前 `main` 已建立 R1 Public Catalog 的主要骨架：`zh-CN`/`en` 首页与 Browse、lexical/identifier Search、Process/Flow 精确版本详情与 Versions、Exchanges、publication-bound LCIA、确定性比较、引用、本地候选集、SEO/JSON-LD、OKLCH 50–950 品牌色阶与对比度语义、移动 Logo mark、axe/no-JS/forced-colors/三断点自动门、本地 CWV/cache/security probes、依赖漏洞与许可证门、隔离上游 fixture 以及 production Playwright。当前 catalog sitemap 仍是每种对象最多 49,000 条的单文件实现；完整搜索卡/generated type drift、真实首页统计与示例、部署后自定义品牌视觉/回滚、人工屏幕阅读器走查、真实 CWV/SLA 与最终上游集成仍未完成，因此不能称为 R1 产品闭环。
 
 当前发布阻塞包括：真实 EdgeOne Preview 与严格 CSP/ISR 组合证据缺失，Database/Edge required changes 尚未全部 promote 到各自 `main`，Release finalize 尚未进入 `main`，上述 Portal R1 gap 尚未关闭，以及最终 R1 exact-SHA root integration 尚未执行。初始 test/Dev/Production 按批准决策共享一套 Upstash endpoint/token，但使用独立 R0/Dev/Main namespace 与完全不同的 HMAC；namespace 不是安全边界，共享配额、故障域和轮换域风险必须进入发布证据。因此 R0 仍为 blocked，任何公共或 Production 发布仍是 no-go。详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)、[Redis/HMAC contract](docs/design-plan.md#103-hmac-signed-hybrid-search) 与 [R1 release checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist)。

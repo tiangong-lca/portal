@@ -16,7 +16,7 @@ export default function manifest(): MetadataRoute.Manifest {
       {
         purpose: "any",
         sizes: `${Math.round(brandConfig.width)}x${Math.round(brandConfig.height)}`,
-        src: brandConfig.lightLogo,
+        src: brandConfig.logoMark ?? brandConfig.lightLogo,
       },
     ],
     name: "TianGong LCA Data Portal",

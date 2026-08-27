@@ -7,6 +7,7 @@ import { useState } from "react";
 type BrandLogoImageProps = {
   alt: string;
   lightLogo: string;
+  logoMark?: string;
   darkLogo: string;
   width: number;
   height: number;
@@ -19,13 +20,17 @@ const defaultDarkLogo = "/brand/logo-dark.svg";
 export function BrandLogoImage({
   alt,
   lightLogo,
+  logoMark,
   darkLogo,
   width,
   height,
   priority,
 }: BrandLogoImageProps) {
   const [fallbackLevel, setFallbackLevel] = useState(0);
-  const configuredUsesDefaults = lightLogo === defaultLightLogo && darkLogo === defaultDarkLogo;
+  const configuredUsesDefaults =
+    lightLogo === defaultLightLogo &&
+    darkLogo === defaultDarkLogo &&
+    (logoMark === undefined || logoMark === defaultLightLogo);
 
   if (fallbackLevel >= 2) {
     return (
@@ -51,9 +56,55 @@ export function BrandLogoImage({
         TG
       </span>
       <span className="absolute inset-0 inline-flex">
+        {logoMark ? (
+          <img
+            alt=""
+            className="size-full object-contain sm:hidden"
+            data-brand-logo-mark
+            decoding="async"
+            fetchPriority={priority ? "high" : "auto"}
+            height={height}
+            onError={() =>
+              setFallbackLevel((level) => (level === 0 && configuredUsesDefaults ? 2 : level + 1))
+            }
+            src={usingDefaults ? defaultLightLogo : logoMark}
+            width={width}
+          />
+        ) : (
+          <>
+            <img
+              alt=""
+              className="size-full object-contain sm:hidden dark:hidden"
+              data-brand-logo-mark
+              data-brand-logo-mark-theme="light"
+              decoding="async"
+              fetchPriority={priority ? "high" : "auto"}
+              height={height}
+              onError={() =>
+                setFallbackLevel((level) => (level === 0 && configuredUsesDefaults ? 2 : level + 1))
+              }
+              src={usingDefaults ? defaultLightLogo : lightLogo}
+              width={width}
+            />
+            <img
+              alt=""
+              className="hidden size-full object-contain max-sm:dark:block"
+              data-brand-logo-mark
+              data-brand-logo-mark-theme="dark"
+              decoding="async"
+              fetchPriority={priority ? "high" : "auto"}
+              height={height}
+              onError={() =>
+                setFallbackLevel((level) => (level === 0 && configuredUsesDefaults ? 2 : level + 1))
+              }
+              src={usingDefaults ? defaultDarkLogo : darkLogo}
+              width={width}
+            />
+          </>
+        )}
         <img
           alt=""
-          className="size-full object-contain dark:hidden"
+          className="hidden size-full object-contain sm:block dark:sm:hidden"
           data-brand-light-logo
           decoding="async"
           fetchPriority={priority ? "high" : "auto"}
@@ -66,7 +117,7 @@ export function BrandLogoImage({
         />
         <img
           alt=""
-          className="hidden size-full object-contain dark:block"
+          className="hidden size-full object-contain dark:sm:block"
           data-brand-dark-logo
           decoding="async"
           fetchPriority={priority ? "high" : "auto"}

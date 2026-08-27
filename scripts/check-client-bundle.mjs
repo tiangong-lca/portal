@@ -1,14 +1,9 @@
 import { readdir, readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 
+import forbidden from "../tests/fixtures/security/browser-private-markers.json" with { type: "json" };
+
 const staticRoot = join(process.cwd(), ".next", "static");
-const forbidden = [
-  "PORTAL_EDGE_HMAC_SECRET",
-  "R0_COMPAT_HMAC_SECRET",
-  "SUPABASE_SECRET_KEY",
-  "service_role",
-  "portal_bundle_secret_sentinel_v1",
-];
 const searchableExtensions = new Set([".js", ".json", ".map", ".txt"]);
 
 async function collectFiles(directory) {
@@ -31,6 +26,9 @@ async function collectFiles(directory) {
 const violations = [];
 
 for (const path of await collectFiles(staticRoot)) {
+  if (extname(path) === ".map") {
+    violations.push({ marker: "public-browser-sourcemap", path });
+  }
   const content = await readFile(path, "utf8");
 
   for (const marker of forbidden) {

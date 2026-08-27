@@ -36,6 +36,9 @@ jobs:
       - name: Run static and unit gates
         run: pnpm check
 
+      - name: Audit high-impact dependency vulnerabilities
+        run: pnpm check:vulnerabilities
+
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 
