@@ -1,16 +1,41 @@
+import { createHash } from "node:crypto";
+
 import { expect, test, type APIRequestContext } from "@playwright/test";
 
 import environmentFixture from "../fixtures/portal/r1-environments.json" with { type: "json" };
 
-type FixtureReceipts = {
-  rpcByName: Record<string, number>;
-  lastLcia?: { correlationId?: string } | null;
+type FixtureLciaReceipt = {
+  schemaVersion: "portal.r1-fixture-lcia-receipt.v1";
+  receipt: { correlationId: string };
 };
 
-async function fixtureReceipts(request: APIRequestContext): Promise<FixtureReceipts> {
-  const response = await request.get("http://127.0.0.1:4328/receipts");
+type FixtureRpcReceipt = {
+  schemaVersion: "portal.r1-fixture-rpc-receipt.v1";
+  count: number;
+  receipt: { bodySha256: string; name: string };
+};
+
+async function fixtureRpcReceipt(
+  request: APIRequestContext,
+  name: string,
+  bodySha256: string,
+): Promise<FixtureRpcReceipt> {
+  const response = await request.get(
+    `http://127.0.0.1:4328/receipts/rpc/${encodeURIComponent(name)}/${bodySha256}`,
+  );
   expect(response.ok()).toBe(true);
-  return (await response.json()) as FixtureReceipts;
+  return (await response.json()) as FixtureRpcReceipt;
+}
+
+async function fixtureLciaReceipt(
+  request: APIRequestContext,
+  correlationId: string,
+): Promise<FixtureLciaReceipt> {
+  const response = await request.get(
+    `http://127.0.0.1:4328/receipts/lcia/${encodeURIComponent(correlationId)}`,
+  );
+  expect(response.ok()).toBe(true);
+  return (await response.json()) as FixtureLciaReceipt;
 }
 
 test("deduplicates the exact public detail envelope within one render", async ({
@@ -18,17 +43,24 @@ test("deduplicates the exact public detail envelope within one render", async ({
   request,
 }) => {
   const probeId = `8${crypto.randomUUID().slice(1)}`;
-  const before = await fixtureReceipts(request);
   const response = await page.goto(`/zh-CN/process/${probeId}@01.00.000`);
 
   expect(response?.status()).toBe(200);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Electricity, medium voltage",
   );
-  const after = await fixtureReceipts(request);
-  expect(
-    (after.rpcByName.portal_get_dataset_v1 ?? 0) - (before.rpcByName.portal_get_dataset_v1 ?? 0),
-  ).toBe(1);
+  const expectedBody = JSON.stringify({
+    p_kind: "process",
+    p_id: probeId,
+    p_version: "01.00.000",
+  });
+  const bodySha256 = createHash("sha256").update(expectedBody).digest("hex");
+  const receipt = await fixtureRpcReceipt(request, "portal_get_dataset_v1", bodySha256);
+  expect(receipt).toMatchObject({
+    schemaVersion: "portal.r1-fixture-rpc-receipt.v1",
+    count: 1,
+    receipt: { bodySha256, name: "portal_get_dataset_v1" },
+  });
 });
 
 test("routes signed LCIA through the isolated Preview fixture", async ({ page, request }) => {
@@ -74,8 +106,34 @@ test("routes signed LCIA through the isolated Preview fixture", async ({ page, r
   expect(result.correlationId).toMatch(
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u,
   );
-  const receipts = await fixtureReceipts(request);
-  expect(receipts.lastLcia?.correlationId).toBe(result.correlationId);
+  const receipt = await fixtureLciaReceipt(request, result.correlationId!);
+  expect(receipt.receipt.correlationId).toBe(result.correlationId);
   expect(JSON.stringify(result.payload)).not.toContain(environmentFixture.preview.hmacSecret);
   expect(JSON.stringify(result.payload)).not.toContain("service_role");
+});
+
+test("keeps concurrent LCIA receipts addressable by correlation ID", async ({ request }) => {
+  const correlationIds = [crypto.randomUUID(), crypto.randomUUID()];
+  const body = {
+    mode: "process_all_impacts",
+    processRefs: [{ id: "11111111-1111-1111-1111-111111111111", version: "01.00.000" }],
+    impactCategoryId: null,
+    cursor: null,
+    limit: 20,
+  };
+
+  const responses = await Promise.all(
+    correlationIds.map((correlationId) =>
+      request.post("/internal/lcia", {
+        data: body,
+        headers: { "x-portal-correlation-id": correlationId },
+      }),
+    ),
+  );
+  expect(responses.map((response) => response.status())).toEqual([200, 200]);
+
+  const receipts = await Promise.all(
+    correlationIds.map((correlationId) => fixtureLciaReceipt(request, correlationId)),
+  );
+  expect(receipts.map((receipt) => receipt.receipt.correlationId)).toEqual(correlationIds);
 });

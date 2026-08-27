@@ -17,6 +17,11 @@ type FixtureRequestReceipt = {
   name?: string;
 };
 
+type FixtureRpcReceipt = {
+  count: number;
+  receipt: FixtureRequestReceipt;
+};
+
 export type PortalR1FixtureReceipts = {
   rpcAccepted: number;
   rpcByName: Record<string, number>;
@@ -40,6 +45,7 @@ export type PortalR1FixtureServer = {
 };
 
 const maximumRequestBytes = 64 * 1024;
+const maximumCorrelationReceipts = 128;
 const portalDataProductPath = "/functions/v1/portal_data_product_results_v1";
 const secondProcessId = "77777777-7777-7777-7777-777777777777";
 const requiredLciaKeys = ["cursor", "impactCategoryId", "limit", "mode", "processRefs"];
@@ -429,6 +435,8 @@ export async function startPortalR1FixtureServer(
     lastLcia: null,
   };
   const usedNonces = new Set<string>();
+  const lciaReceiptsByCorrelationId = new Map<string, FixtureRequestReceipt>();
+  const rpcReceiptsByFingerprint = new Map<string, FixtureRpcReceipt>();
   const server = createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url ?? "/", "http://fixture.local");
@@ -443,6 +451,38 @@ export async function startPortalR1FixtureServer(
         writeJson(response, 200, {
           ...receipts,
           schemaVersion: "portal.r1-fixture-receipts.v1",
+        });
+        return;
+      }
+      if (request.method === "GET" && requestUrl.pathname.startsWith("/receipts/lcia/")) {
+        const correlationId = requestUrl.pathname.slice("/receipts/lcia/".length);
+        if (
+          !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u.test(correlationId)
+        ) {
+          writeJson(response, 404, { code: "fixture_receipt_not_found" });
+          return;
+        }
+        const receipt = lciaReceiptsByCorrelationId.get(correlationId);
+        if (!receipt) {
+          writeJson(response, 404, { code: "fixture_receipt_not_found" });
+          return;
+        }
+        writeJson(response, 200, {
+          schemaVersion: "portal.r1-fixture-lcia-receipt.v1",
+          receipt,
+        });
+        return;
+      }
+      if (request.method === "GET" && requestUrl.pathname.startsWith("/receipts/rpc/")) {
+        const match = /^\/receipts\/rpc\/([a-z0-9_]+)\/([0-9a-f]{64})$/u.exec(requestUrl.pathname);
+        const receipt = match ? rpcReceiptsByFingerprint.get(`${match[1]}:${match[2]}`) : undefined;
+        if (!receipt) {
+          writeJson(response, 404, { code: "fixture_receipt_not_found" });
+          return;
+        }
+        writeJson(response, 200, {
+          schemaVersion: "portal.r1-fixture-rpc-receipt.v1",
+          ...receipt,
         });
         return;
       }
@@ -479,7 +519,20 @@ export async function startPortalR1FixtureServer(
 
         receipts.rpcAccepted += 1;
         receipts.rpcByName[name] = (receipts.rpcByName[name] ?? 0) + 1;
-        receipts.lastRpc = { ...bodyReceipt(rawBody), name };
+        const receipt = { ...bodyReceipt(rawBody), name };
+        receipts.lastRpc = receipt;
+        const fingerprint = `${name}:${receipt.bodySha256}`;
+        const previous = rpcReceiptsByFingerprint.get(fingerprint);
+        rpcReceiptsByFingerprint.delete(fingerprint);
+        rpcReceiptsByFingerprint.set(fingerprint, {
+          count: (previous?.count ?? 0) + 1,
+          receipt,
+        });
+        while (rpcReceiptsByFingerprint.size > maximumCorrelationReceipts) {
+          const oldest = rpcReceiptsByFingerprint.keys().next().value as string | undefined;
+          if (!oldest) break;
+          rpcReceiptsByFingerprint.delete(oldest);
+        }
         writeJson(response, 200, payload);
         return;
       }
@@ -557,11 +610,21 @@ export async function startPortalR1FixtureServer(
         }
 
         receipts.lciaAccepted += 1;
-        receipts.lastLcia = {
+        const receipt = {
           ...bodyReceipt(rawBody),
           keyId: verification.keyId,
           ...(verification.correlationId ? { correlationId: verification.correlationId } : {}),
         };
+        receipts.lastLcia = receipt;
+        if (verification.correlationId) {
+          lciaReceiptsByCorrelationId.delete(verification.correlationId);
+          lciaReceiptsByCorrelationId.set(verification.correlationId, receipt);
+          while (lciaReceiptsByCorrelationId.size > maximumCorrelationReceipts) {
+            const oldest = lciaReceiptsByCorrelationId.keys().next().value as string | undefined;
+            if (!oldest) break;
+            lciaReceiptsByCorrelationId.delete(oldest);
+          }
+        }
         writeJson(response, 200, {
           ...catalogFixture.lcia,
           mode: input.mode,
