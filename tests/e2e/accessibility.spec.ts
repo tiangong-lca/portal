@@ -94,3 +94,17 @@ test("exposes stable landmarks and controls at three responsive widths", async (
     expect(maximumScrollX).toBeLessThanOrEqual(1);
   }
 });
+
+test("keeps keyboard focus visible in forced-colors mode", async ({ page }) => {
+  await page.emulateMedia({ forcedColors: "active" });
+  await page.goto("/en");
+  await page.keyboard.press("Tab");
+  const skipLink = page.getByRole("link", { name: "Skip to main content" });
+  await expect(skipLink).toBeFocused();
+  const outline = await skipLink.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { style: style.outlineStyle, width: Number.parseFloat(style.outlineWidth) };
+  });
+  expect(outline.style).not.toBe("none");
+  expect(outline.width).toBeGreaterThanOrEqual(2);
+});
