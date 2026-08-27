@@ -59,7 +59,7 @@ function dependencies(
 describe("catalog sitemap Route Handler domain", () => {
   it("renders a fixed 64-entry sitemap index without exposing opaque cursors", async () => {
     const fixture = dependencies();
-    const response = await createCatalogSitemapIndexResponse("process", fixture);
+    const response = await createCatalogSitemapIndexResponse("process", "sitemap.xml", fixture);
     const body = await response.text();
 
     expect(response.status).toBe(200);
@@ -94,10 +94,17 @@ describe("catalog sitemap Route Handler domain", () => {
     const fixture = dependencies();
     const invalidSegments = ["-1.xml", "64.xml", "01.xml", "1.0.xml", "cursor-7", "7"];
 
-    const invalidKind = await createCatalogSitemapIndexResponse("private", fixture);
+    const invalidKind = await createCatalogSitemapIndexResponse("private", "sitemap.xml", fixture);
     expect(invalidKind.status).toBe(404);
     expect(invalidKind.headers.get("cache-control")).toBe(catalogSitemapFailureCacheControl);
     expect(invalidKind.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+
+    const invalidIndex = await createCatalogSitemapIndexResponse(
+      "process",
+      "sitemap.json",
+      fixture,
+    );
+    expect(invalidIndex.status).toBe(404);
 
     for (const segment of invalidSegments) {
       expect(parseCatalogSitemapShardSegment(segment)).toBeNull();
@@ -114,6 +121,7 @@ describe("catalog sitemap Route Handler domain", () => {
     const missingConfiguration = dependencies({ environment: {} });
     const missingResponse = await createCatalogSitemapIndexResponse(
       "process",
+      "sitemap.xml",
       missingConfiguration,
     );
     expect(missingResponse.status).toBe(503);
@@ -127,7 +135,11 @@ describe("catalog sitemap Route Handler domain", () => {
         throw new Error("private upstream detail");
       }),
     });
-    const upstreamResponse = await createCatalogSitemapIndexResponse("flow", upstreamFailure);
+    const upstreamResponse = await createCatalogSitemapIndexResponse(
+      "flow",
+      "sitemap.xml",
+      upstreamFailure,
+    );
     expect(upstreamResponse.status).toBe(503);
     expect(await upstreamResponse.text()).not.toContain("private upstream detail");
   });

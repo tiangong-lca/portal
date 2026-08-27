@@ -46,6 +46,10 @@ export function parseCatalogSitemapKind(value: string): CatalogSitemapKind | nul
   return value === "process" || value === "flow" ? value : null;
 }
 
+export function parseCatalogSitemapIndexSegment(value: string): "sitemap.xml" | null {
+  return value === "sitemap.xml" ? value : null;
+}
+
 export function parseCatalogSitemapShardSegment(value: string): number | null {
   const match = shardSegmentPattern.exec(value);
   if (!match) return null;
@@ -246,10 +250,11 @@ function failureResponse(status: 404 | 503): Response {
 
 export async function createCatalogSitemapIndexResponse(
   kindValue: string,
+  indexSegment: string,
   dependencyOverrides: Partial<CatalogSitemapDependencies> = {},
 ): Promise<Response> {
   const kind = parseCatalogSitemapKind(kindValue);
-  if (!kind) return failureResponse(404);
+  if (!kind || !parseCatalogSitemapIndexSegment(indexSegment)) return failureResponse(404);
 
   try {
     return xmlResponse(await buildCatalogSitemapIndex(kind, dependencyOverrides));

@@ -5,8 +5,8 @@ export const revalidate = 0;
 
 export async function GET(
   _request: Request,
-  context: RouteContext<"/catalog/[kind]/sitemap.xml">,
+  context: RouteContext<"/catalog/[kind]/[index]">,
 ): Promise<Response> {
-  const { kind } = await context.params;
-  return createCatalogSitemapIndexResponse(kind);
+  const { index, kind } = await context.params;
+  return createCatalogSitemapIndexResponse(kind, index);
 }
