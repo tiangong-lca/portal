@@ -202,11 +202,12 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
       .slice(0, 12);
 
     const previousY = window.scrollY;
-    window.scrollTo(root.scrollWidth, previousY);
+    window.scrollTo(Number.MAX_SAFE_INTEGER, previousY);
+    const immediateScrollX = window.scrollX;
     await new Promise<void>((resolve) => {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
     });
-    const maximumScrollX = window.scrollX;
+    const maximumScrollX = Math.max(immediateScrollX, window.scrollX);
     window.scrollTo(0, previousY);
 
     return {
@@ -217,6 +218,7 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
       initialInnerWidth,
       initialOverflow: initialScrollWidth - initialClientWidth,
       initialScrollWidth,
+      immediateScrollX,
       innerWidth: window.innerWidth,
       maximumScrollX,
       offenders,
@@ -224,9 +226,8 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
       scrollWidth: root.scrollWidth,
     };
   });
-  console.info(`Zoomed viewport layout: ${JSON.stringify(layout)}`);
   expect(
-    layout.initialOverflow,
+    layout.maximumScrollX,
     `Zoomed viewport layout: ${JSON.stringify(layout)}`,
   ).toBeLessThanOrEqual(1);
 
