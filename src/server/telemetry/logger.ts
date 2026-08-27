@@ -31,13 +31,15 @@ const telemetryEventSchema = z.strictObject({
       "portal_list_process_exchanges_v1",
       "portal_facets_v1",
       "portal_sitemap_entries_v1",
+      "portal_sitemap_manifest_v1",
+      "portal_sitemap_shard_v1",
     ])
     .nullable(),
   cachePolicy: z.enum(["no-store", "revalidate"]),
   cacheHit: z.literal("unknown"),
   backend: z.enum(["supabase_data_api", "portal_edge_lcia", "portal_bff"]),
   latencyMs: z.number().int().min(0).max(120_000),
-  rowCount: z.number().int().min(0).max(1000).nullable(),
+  rowCount: z.number().int().min(0).max(4096).nullable(),
   status: z.enum(["ok", "unavailable", "temporarily_unavailable", "rejected", "error"]),
   errorCode: z
     .enum([

@@ -143,6 +143,36 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
   const sitemapBody = await sitemap.text();
   expect(sitemap.ok()).toBe(true);
   expect(sitemapBody).toContain("hreflang");
+
+  const processIndex = await request.get("/catalog/process/sitemap.xml");
+  const processIndexBody = await processIndex.text();
+  expect(processIndex.ok()).toBe(true);
+  expect(processIndex.headers()["content-type"]).toBe("application/xml; charset=utf-8");
+  expect(processIndex.headers()["cache-control"]).toBe(
+    "public, max-age=0, s-maxage=300, must-revalidate",
+  );
+  expect(processIndexBody.match(/<sitemap>/gu)).toHaveLength(64);
+  expect(processIndexBody).toContain("/catalog/process/sitemap/0.xml");
+  expect(processIndexBody).not.toContain("portal-sitemap-v1-");
+
+  const processShard = await request.get("/catalog/process/sitemap/0.xml");
+  const processShardBody = await processShard.text();
+  expect(processShard.ok()).toBe(true);
+  expect(processShardBody).toContain("<urlset");
+  expect(processShardBody).toContain("/zh-CN/process/");
+  expect(processShardBody).toContain('hreflang="en"');
+  expect(processShardBody).not.toContain("/flow/");
+  expect(processShardBody).not.toContain("portal-sitemap-v1-");
+  expect(
+    await page.evaluate((xml) => {
+      const document_ = new DOMParser().parseFromString(xml, "application/xml");
+      return document_.querySelector("parsererror") === null;
+    }, processShardBody),
+  ).toBe(true);
+
+  const invalidShard = await request.get("/catalog/process/sitemap/01.xml");
+  expect(invalidShard.status()).toBe(404);
+  expect(invalidShard.headers()["cache-control"]).toBe("no-store");
 });
 
 test("keeps the local collection local and shares member IDs only", async ({ context, page }) => {

@@ -30,6 +30,7 @@ export const portalYearSchema = z.number().int().min(0).max(9999);
 export const portalNullableYearSchema = portalYearSchema.nullable();
 export const portalCursorSchema = z.string().min(1).max(4096);
 export const portalNullableCursorSchema = portalCursorSchema.nullable();
+export const portalSitemapShardCursorSchema = portalCursorSchema.regex(/^[A-Za-z0-9_-]+$/);
 
 export const localizedTextItemSchema = z.strictObject({
   language: z.string().min(2).max(35).regex(languagePattern),
@@ -316,17 +317,44 @@ export const publicVersionPageSchema = z.strictObject({
   nextCursor: portalNullableCursorSchema,
 });
 
+export const publicSitemapItemSchema = z.strictObject({
+  key: publicDatasetKeySchema,
+  modifiedAt: portalDateTimeSchema,
+});
+
 export const publicSitemapPageSchema = z.strictObject({
   schemaVersion: z.literal("portal.public-sitemap-page.v1"),
-  items: z
-    .array(
-      z.strictObject({
-        key: publicDatasetKeySchema,
-        modifiedAt: portalDateTimeSchema,
-      }),
-    )
-    .max(1000),
+  items: z.array(publicSitemapItemSchema).max(1000),
   nextCursor: portalNullableCursorSchema,
+});
+
+export const publicSitemapShardDescriptorSchema = z.strictObject({
+  shardCursor: portalSitemapShardCursorSchema,
+  maxItems: z.literal(4096),
+});
+
+export const publicSitemapManifestSchema = z.strictObject({
+  schemaVersion: z.literal("portal.public-sitemap-manifest.v1"),
+  shards: z
+    .array(publicSitemapShardDescriptorSchema)
+    .length(64)
+    .refine(
+      (shards) => new Set(shards.map((shard) => shard.shardCursor)).size === shards.length,
+      "sitemap shard cursors must be unique",
+    ),
+});
+
+export const publicSitemapShardSchema = z.strictObject({
+  schemaVersion: z.literal("portal.public-sitemap-shard.v1"),
+  shardCursor: portalSitemapShardCursorSchema,
+  items: z
+    .array(publicSitemapItemSchema)
+    .max(4096)
+    .refine(
+      (items) =>
+        new Set(items.map((item) => `${item.key.kind}:${item.key.id}`)).size === items.length,
+      "sitemap shard identities must be unique",
+    ),
 });
 
 export const publishedLciaPageSchema = z.strictObject({
@@ -390,6 +418,8 @@ export const portalContractSchemas = {
   facets: publicFacetsSchema,
   search: publicSearchPageSchema,
   sitemap: publicSitemapPageSchema,
+  sitemapManifest: publicSitemapManifestSchema,
+  sitemapShard: publicSitemapShardSchema,
   versions: publicVersionPageSchema,
   lcia: publishedLciaPageSchema,
 } as const;
@@ -405,4 +435,6 @@ export type PublicSearchPage = z.infer<typeof publicSearchPageSchema>;
 export type PublicFacets = z.infer<typeof publicFacetsSchema>;
 export type PublicVersionPage = z.infer<typeof publicVersionPageSchema>;
 export type PublicSitemapPage = z.infer<typeof publicSitemapPageSchema>;
+export type PublicSitemapManifest = z.infer<typeof publicSitemapManifestSchema>;
+export type PublicSitemapShard = z.infer<typeof publicSitemapShardSchema>;
 export type PublishedLciaPage = z.infer<typeof publishedLciaPageSchema>;

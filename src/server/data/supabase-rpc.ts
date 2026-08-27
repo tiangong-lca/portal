@@ -13,7 +13,8 @@ import {
   type PortalTelemetryLogger,
 } from "@/server/telemetry/logger";
 
-const maximumResponseBytes = 512 * 1024;
+const defaultMaximumResponseBytes = 512 * 1024;
+const sitemapShardMaximumResponseBytes = 2 * 1024 * 1024;
 const rpcNames = new Set([
   "portal_search_processes_v1",
   "portal_search_flows_v1",
@@ -22,6 +23,8 @@ const rpcNames = new Set([
   "portal_list_process_exchanges_v1",
   "portal_facets_v1",
   "portal_sitemap_entries_v1",
+  "portal_sitemap_manifest_v1",
+  "portal_sitemap_shard_v1",
 ]);
 
 export type PortalRpcName =
@@ -31,7 +34,9 @@ export type PortalRpcName =
   | "portal_list_versions_v1"
   | "portal_list_process_exchanges_v1"
   | "portal_facets_v1"
-  | "portal_sitemap_entries_v1";
+  | "portal_sitemap_entries_v1"
+  | "portal_sitemap_manifest_v1"
+  | "portal_sitemap_shard_v1";
 
 export type PortalFetchCachePolicy =
   { mode: "no-store" } | { mode: "revalidate"; seconds: number; tags: string[] };
@@ -92,8 +97,16 @@ function routeFamily(name: PortalRpcName): PortalTelemetryEvent["routeFamily"] {
     case "portal_facets_v1":
       return "catalog_facets";
     case "portal_sitemap_entries_v1":
+    case "portal_sitemap_manifest_v1":
+    case "portal_sitemap_shard_v1":
       return "sitemap";
   }
+}
+
+function maximumResponseBytes(name: PortalRpcName): number {
+  return name === "portal_sitemap_shard_v1"
+    ? sitemapShardMaximumResponseBytes
+    : defaultMaximumResponseBytes;
 }
 
 function responseRowCount(payload: unknown): number | null {
@@ -108,7 +121,7 @@ function responseRowCount(payload: unknown): number | null {
   }
 
   const record = payload as Record<string, unknown>;
-  for (const key of ["rows", "items", "groups"] as const) {
+  for (const key of ["rows", "items", "groups", "shards"] as const) {
     if (Array.isArray(record[key])) {
       return record[key].length;
     }
@@ -130,18 +143,18 @@ function cacheInit(policy: PortalFetchCachePolicy): Pick<NextFetchInit, "cache" 
   };
 }
 
-async function parseBoundedJson(response: Response): Promise<unknown> {
+async function parseBoundedJson(response: Response, maximumBytes: number): Promise<unknown> {
   const contentLength = response.headers.get("content-length");
   if (
     contentLength !== null &&
     /^\d+$/u.test(contentLength) &&
-    Number(contentLength) > maximumResponseBytes
+    Number(contentLength) > maximumBytes
   ) {
     throw new PortalDataError("invalid_response");
   }
 
   const bytes = await response.arrayBuffer();
-  if (bytes.byteLength > maximumResponseBytes) {
+  if (bytes.byteLength > maximumBytes) {
     throw new PortalDataError("invalid_response");
   }
 
@@ -240,7 +253,7 @@ export function createPortalRpcClient(options: PortalRpcClientOptions = {}): Por
 
       let payload: unknown;
       try {
-        payload = await parseBoundedJson(response);
+        payload = await parseBoundedJson(response, maximumResponseBytes(name));
       } catch (error) {
         if (error instanceof PortalDataError) {
           recordTelemetry("error", error.code, null);

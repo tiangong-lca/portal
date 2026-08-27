@@ -2,10 +2,16 @@ import { describe, expect, it, vi } from "vitest";
 
 import fixture from "../fixtures/portal/catalog-v1.json";
 
-import { publicDatasetEnvelopeSchema, publicSearchPageSchema } from "@/server/contracts/portal";
 import {
-  getPublicFacets,
+  publicDatasetEnvelopeSchema,
+  publicSearchPageSchema,
+  publicSitemapShardSchema,
+} from "@/server/contracts/portal";
+import {
   getPublicDataset,
+  getPublicFacets,
+  getPublicSitemapManifest,
+  getPublicSitemapShard,
   listPublicDatasetVersions,
   listPublicProcessExchanges,
   listPublicSitemapEntries,
@@ -17,6 +23,7 @@ import {
   PortalDataError,
   type PortalRpcClient,
 } from "@/server/data/supabase-rpc";
+import type { PortalTelemetryLogger } from "@/server/telemetry/logger";
 
 const environment = {
   supabaseUrl: "https://project.supabase.co",
@@ -30,6 +37,17 @@ function clientReturning(response: unknown): PortalRpcClient {
       return response as T;
     },
   };
+}
+
+function sitemapItems(count: number) {
+  return Array.from({ length: count }, (_, index) => ({
+    key: {
+      kind: "process" as const,
+      id: `00000000-0000-4000-8000-${(index + 1).toString(16).padStart(12, "0")}`,
+      version: "01.00.000",
+    },
+    modifiedAt: "2026-08-25T12:00:00Z",
+  }));
 }
 
 describe("Portal Supabase public RPC client", () => {
@@ -80,6 +98,67 @@ describe("Portal Supabase public RPC client", () => {
       (RequestInit & { next?: { revalidate?: number; tags?: string[] } }) | undefined;
     expect(init?.cache).toBe("force-cache");
     expect(init?.next).toEqual({ revalidate: 60, tags: ["portal:visibility:test"] });
+  });
+
+  it("accepts a valid sitemap shard above the legacy limit but rejects responses above 2 MiB", async () => {
+    const manifestLogger = vi.fn<PortalTelemetryLogger>();
+    const manifestClient = createPortalRpcClient({
+      environment,
+      fetchImplementation: vi.fn<typeof fetch>(async () => Response.json(fixture.sitemapManifest)),
+      logger: manifestLogger,
+    });
+    await expect(getPublicSitemapManifest(manifestClient)).resolves.toEqual(
+      fixture.sitemapManifest,
+    );
+    expect(manifestLogger).toHaveBeenCalledWith(
+      expect.objectContaining({
+        rpcName: "portal_sitemap_manifest_v1",
+        rowCount: 64,
+      }),
+    );
+
+    const payload = { ...fixture.sitemapShard, items: sitemapItems(4096) };
+    const serialized = JSON.stringify(payload);
+    const serializedBytes = new TextEncoder().encode(serialized).byteLength;
+    expect(serializedBytes).toBeGreaterThan(512 * 1024);
+    expect(serializedBytes).toBeLessThan(2 * 1024 * 1024);
+
+    const logger = vi.fn<PortalTelemetryLogger>();
+    const client = createPortalRpcClient({
+      environment,
+      fetchImplementation: vi.fn<typeof fetch>(
+        async () => new Response(serialized, { headers: { "content-type": "application/json" } }),
+      ),
+      logger,
+    });
+    const shard = await getPublicSitemapShard(
+      { shardCursor: fixture.sitemapShard.shardCursor },
+      client,
+    );
+    expect(shard.items).toHaveLength(4096);
+    expect(logger).toHaveBeenCalledWith(
+      expect.objectContaining({
+        routeFamily: "sitemap",
+        rpcName: "portal_sitemap_shard_v1",
+        rowCount: 4096,
+      }),
+    );
+
+    const oversizedClient = createPortalRpcClient({
+      environment,
+      fetchImplementation: vi.fn<typeof fetch>(
+        async () => new Response("x".repeat(2 * 1024 * 1024 + 1)),
+      ),
+      logger: vi.fn<PortalTelemetryLogger>(),
+    });
+    await expect(
+      oversizedClient.call(
+        "portal_sitemap_shard_v1",
+        { p_shard_cursor: fixture.sitemapShard.shardCursor },
+        publicSitemapShardSchema,
+        { mode: "no-store" },
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
   });
 
   it("keeps catalog RPC parameters allowlisted", async () => {
@@ -210,6 +289,19 @@ describe("Portal Supabase public RPC client", () => {
         }),
       ),
     ).rejects.toMatchObject({ code: "invalid_response" });
+
+    await expect(
+      getPublicSitemapShard(
+        { shardCursor: fixture.sitemapShard.shardCursor },
+        clientReturning({ ...fixture.sitemapShard, shardCursor: "portal-sitemap-v1-01" }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_response" });
+    await expect(
+      getPublicSitemapShard(
+        { shardCursor: "cursor with spaces" },
+        clientReturning(fixture.sitemapShard),
+      ),
+    ).rejects.toMatchObject({ code: "invalid_request" });
   });
 
   it("binds every catalog adapter to the versioned RPC and intended cache policy", async () => {
@@ -224,6 +316,8 @@ describe("Portal Supabase public RPC client", () => {
       portal_list_process_exchanges_v1: fixture.exchanges,
       portal_facets_v1: fixture.facets,
       portal_sitemap_entries_v1: fixture.sitemap,
+      portal_sitemap_manifest_v1: fixture.sitemapManifest,
+      portal_sitemap_shard_v1: fixture.sitemapShard,
     };
     const client: PortalRpcClient = {
       async call<T>(...callArguments: Parameters<PortalRpcClient["call"]>): Promise<T> {
@@ -246,6 +340,8 @@ describe("Portal Supabase public RPC client", () => {
     );
     await getPublicFacets({ kind: "all", query: "electricity" }, client);
     await listPublicSitemapEntries({}, client);
+    const manifest = await getPublicSitemapManifest(client);
+    await getPublicSitemapShard({ shardCursor: manifest.shards[0]!.shardCursor }, client);
 
     expect(calls.map(({ name }) => name)).toEqual([
       "portal_get_dataset_v1",
@@ -253,6 +349,8 @@ describe("Portal Supabase public RPC client", () => {
       "portal_list_process_exchanges_v1",
       "portal_facets_v1",
       "portal_sitemap_entries_v1",
+      "portal_sitemap_manifest_v1",
+      "portal_sitemap_shard_v1",
     ]);
     expect(calls.map(({ policy }) => policy)).toEqual([
       expect.objectContaining({ mode: "revalidate", seconds: 60 }),
@@ -260,11 +358,17 @@ describe("Portal Supabase public RPC client", () => {
       expect.objectContaining({ mode: "revalidate", seconds: 300 }),
       { mode: "no-store" },
       expect.objectContaining({ mode: "revalidate", seconds: 300 }),
+      { mode: "no-store" },
+      { mode: "no-store" },
     ]);
     expect(calls[0]?.arguments_).toEqual({
       p_kind: "process",
       p_id: reference.id,
       p_version: reference.version,
+    });
+    expect(calls.at(-2)?.arguments_).toEqual({});
+    expect(calls.at(-1)?.arguments_).toEqual({
+      p_shard_cursor: fixture.sitemapManifest.shards[0]!.shardCursor,
     });
   });
 

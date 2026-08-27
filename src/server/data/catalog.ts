@@ -15,13 +15,18 @@ import {
   publicExchangePageSchema,
   publicFacetsSchema,
   publicSearchPageSchema,
+  publicSitemapManifestSchema,
   publicSitemapPageSchema,
+  publicSitemapShardSchema,
   publicVersionPageSchema,
+  portalSitemapShardCursorSchema,
   type PublicDatasetEnvelope,
   type PublicExchangePage,
   type PublicFacets,
   type PublicSearchPage,
+  type PublicSitemapManifest,
   type PublicSitemapPage,
+  type PublicSitemapShard,
   type PublicVersionPage,
 } from "@/server/contracts/portal";
 import {
@@ -257,4 +262,30 @@ export async function listPublicSitemapEntries(
     page,
     parsed.kind === "all" || page.items.every((item) => item.key.kind === parsed.kind),
   );
+}
+
+export function getPublicSitemapManifest(client?: PortalRpcClient): Promise<PublicSitemapManifest> {
+  return clientOrDefault(client).call(
+    "portal_sitemap_manifest_v1",
+    {},
+    publicSitemapManifestSchema,
+    { mode: "no-store" },
+  );
+}
+
+export async function getPublicSitemapShard(
+  input: { readonly shardCursor: string },
+  client?: PortalRpcClient,
+): Promise<PublicSitemapShard> {
+  const shardCursor = parseInput(portalSitemapShardCursorSchema, input?.shardCursor);
+  const responseSchema = publicSitemapShardSchema.refine(
+    (shard) => shard.shardCursor === shardCursor,
+  );
+  const shard = await clientOrDefault(client).call(
+    "portal_sitemap_shard_v1",
+    { p_shard_cursor: shardCursor },
+    responseSchema,
+    { mode: "no-store" },
+  );
+  return requireBoundResponse(shard, shard.shardCursor === shardCursor);
 }
