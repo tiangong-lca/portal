@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-27"
-lastReviewedCommit: "6036dce64ff05b76a4f0d0dbbef0e0d2fc3b8d8f"
-lastReviewedNote: "Reviewed after the mobile text-zoom containment fix and actual-scroll-range regression metric; neither change alters ownership or documentation routing."
+lastReviewedCommit: "81a9e41afbab229714c8dc33503113fc396976fb"
+lastReviewedNote: "Reviewed after replacing completed bootstrap narration with the active Portal delivery and exact-gitlink integration contract; routing and ownership remain unchanged."
 
 catalog:
   repos:
