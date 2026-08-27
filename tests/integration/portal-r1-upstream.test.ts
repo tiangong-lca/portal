@@ -225,6 +225,7 @@ describe("Portal R1 fixture upstream", () => {
     const fixture = await start("preview");
     const client = createPortalRpcClient({
       environment: dataEnvironment("preview", fixture.origin),
+      logger: () => undefined,
     });
     const ids = Array.from(
       { length: 129 },
