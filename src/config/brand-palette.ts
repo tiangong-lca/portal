@@ -70,7 +70,9 @@ export function createBrandThemePalette(seed: string, theme: "light" | "dark"): 
     theme === "light"
       ? [scale[500], scale[600], scale[700], scale[800], scale[900]]
       : [scale[500], scale[400], scale[300], scale[200], scale[100], scale[50]];
-  const stateCandidates = [scale[600], scale[700], scale[800], scale[400], scale[300]];
+  const stateCandidates = [
+    ...new Set([scale[600], scale[700], scale[800], scale[400], scale[300]]),
+  ].filter((candidate) => candidate !== scale[500]);
   const hover = accessibleColor(stateCandidates, foreground, 4.5, `${theme} hover`);
   const active = accessibleColor(
     stateCandidates.filter((candidate) => candidate !== hover),
@@ -100,6 +102,8 @@ export function assertBrandPaletteContrast(palette: BrandThemePalette, theme: "l
     ["primary surface", palette.primary, background, 3],
     ["hover", palette.hover, palette.foreground, 4.5],
     ["active", palette.active, palette.foreground, 4.5],
+    ["hover state", palette.hover, palette.primary, 1.1],
+    ["active state", palette.active, palette.hover, 1.1],
     ["link", palette.link, background, 4.5],
     ["ring", palette.ring, background, 3],
   ] as const;
@@ -108,5 +112,9 @@ export function assertBrandPaletteContrast(palette: BrandThemePalette, theme: "l
     if (wcagContrast(foreground, backgroundColor) < minimum) {
       throw new Error(`Brand ${theme} ${label} contrast is below ${minimum}:1`);
     }
+  }
+
+  if (new Set(Object.values(palette.scale)).size !== brandScaleSteps.length) {
+    throw new Error(`Brand ${theme} scale must contain ${brandScaleSteps.length} distinct colors`);
   }
 }

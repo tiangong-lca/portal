@@ -59,6 +59,15 @@ describe("Portal brand config", () => {
     );
   });
 
+  it("fails closed when an extreme seed collapses the scale or interactive states", () => {
+    expect(() => readBrandConfig({ PORTAL_LIGHT_PRIMARY: "#000000" })).toThrow(
+      "Brand light scale must contain 11 distinct colors",
+    );
+    expect(() => readBrandConfig({ PORTAL_DARK_PRIMARY: "#FFFFFF" })).toThrow(
+      "Brand dark scale must contain 11 distinct colors",
+    );
+  });
+
   it("requires an exact HTTPS allowlist origin for remote assets", () => {
     expect(() => readBrandConfig({ PORTAL_LIGHT_LOGO: "https://assets.example/logo.svg" })).toThrow(
       "outside PORTAL_BRAND_ASSET_ORIGIN",
@@ -94,13 +103,13 @@ describe("Portal brand config", () => {
   it("renders deployment colors into a standalone CSS artifact", () => {
     const css = renderBrandCss(
       readBrandConfig({
-        PORTAL_LIGHT_PRIMARY: "#112233",
-        PORTAL_DARK_PRIMARY: "#AABBCC",
+        PORTAL_LIGHT_PRIMARY: "#006699",
+        PORTAL_DARK_PRIMARY: "#B65CFF",
       }),
     );
 
-    expect(css).toContain("--brand-light-primary: #112233");
-    expect(css).toContain("--brand-dark-primary: #AABBCC");
+    expect(css).toContain("--brand-light-primary: #006699");
+    expect(css).toContain("--brand-dark-primary: #B65CFF");
     expect(css).toContain("--brand-light-50:");
     expect(css).toContain("--brand-light-950:");
     expect(css).toContain("--brand-dark-primary-foreground:");
