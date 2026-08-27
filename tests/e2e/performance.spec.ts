@@ -5,6 +5,7 @@ const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
 type Vitals = {
   cls: number;
   inp: number;
+  interactionObserved: boolean;
   inpSupported: boolean;
   lcp: number;
   ttfb: number;
@@ -15,10 +16,14 @@ async function installVitalsObserver(page: Page) {
     const values = {
       cls: 0,
       inp: 0,
-      inpSupported: PerformanceObserver.supportedEntryTypes.includes("event"),
+      interactionObserved: false,
+      inpSupported:
+        PerformanceObserver.supportedEntryTypes.includes("event") &&
+        PerformanceObserver.supportedEntryTypes.includes("first-input"),
       lcp: 0,
     };
     (window as unknown as { __portalVitals: typeof values }).__portalVitals = values;
+    localStorage.setItem("tiangong.portal.theme.v1", "light");
 
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
@@ -34,16 +39,40 @@ async function installVitalsObserver(page: Page) {
     }).observe({ buffered: true, type: "layout-shift" });
 
     if (values.inpSupported) {
+      const recordInteraction = (entry: PerformanceEntry, includeWithoutInteractionId = false) => {
+        const interaction = entry as PerformanceEntry & { interactionId?: number };
+        if (!includeWithoutInteractionId && (interaction.interactionId ?? 0) === 0) return;
+        values.interactionObserved = true;
+        values.inp = Math.max(values.inp, entry.duration);
+      };
+
       new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) values.inp = Math.max(values.inp, entry.duration);
+        for (const entry of list.getEntries()) recordInteraction(entry);
       }).observe({ durationThreshold: 16, type: "event" } as PerformanceObserverInit);
+
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) recordInteraction(entry, true);
+      }).observe({ buffered: true, type: "first-input" });
     }
   });
 }
 
 async function collectVitals(page: Page, route: string): Promise<Vitals> {
   await page.goto(route, { waitUntil: "networkidle" });
-  await page.getByRole("radio", { name: "Light" }).click();
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
+  const darkTheme = page.getByRole("radio", { name: "Dark" });
+  await darkTheme.click();
+  await expect(darkTheme).toBeChecked();
+  await expect(page.locator("html")).toHaveClass(/dark/);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { __portalVitals: Omit<Vitals, "ttfb"> }).__portalVitals
+            .interactionObserved,
+      ),
+    )
+    .toBe(true);
   await page.evaluate(
     () =>
       new Promise<void>((resolve) =>
@@ -96,6 +125,7 @@ for (const { label, route, ttfbBudget } of [
     console.info(`${label} local CWV p75 ${JSON.stringify(evidence)}`);
 
     expect(samples.every(({ inpSupported }) => inpSupported)).toBe(true);
+    expect(samples.every(({ interactionObserved }) => interactionObserved)).toBe(true);
     expect(evidence.lcpP75, JSON.stringify(evidence)).toBeGreaterThan(0);
     expect(evidence.lcpP75, JSON.stringify(evidence)).toBeLessThanOrEqual(2500);
     expect(evidence.inpP75, JSON.stringify(evidence)).toBeLessThanOrEqual(200);
