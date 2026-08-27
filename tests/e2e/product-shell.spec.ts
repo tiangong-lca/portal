@@ -159,12 +159,12 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
   expect(processShardLocations).toEqual(
     Array.from(
       { length: 64 },
-      (_, index) => `http://127.0.0.1:4317/catalog-process-sitemap-${index}.xml`,
+      (_, index) => `http://127.0.0.1:4317/catalog-process-sitemap.xml?shard=${index}`,
     ),
   );
   expect(processIndexBody).not.toContain("portal-sitemap-v1-");
 
-  const processShard = await request.get("/catalog-process-sitemap-0.xml");
+  const processShard = await request.get("/catalog-process-sitemap.xml?shard=0");
   const processShardBody = await processShard.text();
   expect(processShard.ok()).toBe(true);
   expect(processShardBody).toContain("<urlset");
@@ -181,17 +181,13 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
     }, processShardBody),
   ).toBe(true);
 
-  const invalidShard = await request.get("/catalog-process-sitemap-01.xml");
+  const invalidShard = await request.get("/catalog-process-sitemap.xml?shard=01");
   expect(invalidShard.status()).toBe(404);
   expect(invalidShard.headers()["cache-control"]).toBe("no-store");
 
-  const queryVariant = await request.get("/catalog-process-sitemap-0.xml?bust=1");
+  const queryVariant = await request.get("/catalog-process-sitemap.xml?shard=0&bust=1");
   expect(queryVariant.status()).toBe(404);
   expect(queryVariant.headers()["cache-control"]).toBe("no-store");
-
-  const internalRoute = await request.get("/internal/catalog-sitemap/process/0.xml");
-  expect(internalRoute.status()).toBe(404);
-  expect(internalRoute.headers()["cache-control"]).toBe("no-store");
 });
 
 test("keeps the local collection local and shares member IDs only", async ({ context, page }) => {

@@ -4,7 +4,9 @@ import { localePath, type PortalLocale } from "@/i18n/routing";
 import {
   catalogSitemapShardCount,
   parseCatalogSitemapKind,
+  parseCatalogSitemapShardSearch,
   parseCatalogSitemapShardSegment,
+  rootCatalogSitemapIndexPath,
   rootCatalogSitemapShardPath,
   type CatalogSitemapKind,
 } from "@/lib/catalog-sitemap-path";
@@ -295,4 +297,28 @@ export async function createCatalogSitemapShardResponse(
   } catch {
     return failureResponse(503);
   }
+}
+
+export async function createRootCatalogSitemapResponse(
+  kind: CatalogSitemapKind,
+  request: Request,
+  dependencyOverrides: Partial<CatalogSitemapDependencies> = {},
+): Promise<Response> {
+  let url: URL;
+  try {
+    url = new URL(request.url);
+  } catch {
+    return failureResponse(404);
+  }
+  if (url.pathname !== rootCatalogSitemapIndexPath(kind)) {
+    return failureResponse(404);
+  }
+  if (url.search === "") {
+    return createCatalogSitemapIndexResponse(kind, dependencyOverrides);
+  }
+
+  const shardIndex = parseCatalogSitemapShardSearch(url.search);
+  return shardIndex === null
+    ? failureResponse(404)
+    : createCatalogSitemapShardResponse(kind, `${shardIndex}.xml`, dependencyOverrides);
 }

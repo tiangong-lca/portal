@@ -7,6 +7,7 @@ import {
   catalogSitemapSharedCacheControl,
   catalogSitemapShardCount,
   createCatalogSitemapIndexResponse,
+  createRootCatalogSitemapResponse,
   createCatalogSitemapShardResponse,
   maximumCatalogSitemapItems,
   maximumCatalogSitemapXmlBytes,
@@ -17,8 +18,7 @@ import {
   type CatalogSitemapDependencies,
 } from "@/lib/catalog-sitemap";
 import {
-  isRootCatalogSitemapCandidate,
-  parseRootCatalogSitemapPath,
+  parseCatalogSitemapShardSearch,
   rootCatalogSitemapIndexPath,
   rootCatalogSitemapShardPath,
 } from "@/lib/catalog-sitemap-path";
@@ -76,8 +76,8 @@ describe("catalog sitemap Route Handler domain", () => {
     expect(response.headers.get("content-type")).toBe("application/xml; charset=utf-8");
     expect(response.headers.get("cache-control")).toBe(catalogSitemapSharedCacheControl);
     expect(body.match(/<sitemap>/gu)).toHaveLength(64);
-    expect(body).toContain("https://portal.example/catalog-process-sitemap-0.xml");
-    expect(body).toContain("https://portal.example/catalog-process-sitemap-63.xml");
+    expect(body).toContain("https://portal.example/catalog-process-sitemap.xml?shard=0");
+    expect(body).toContain("https://portal.example/catalog-process-sitemap.xml?shard=63");
     expect(body).not.toContain("cursor-");
     expect(fixture.loadManifest).toHaveBeenCalledTimes(1);
     expect(fixture.loadShard).not.toHaveBeenCalled();
@@ -240,24 +240,24 @@ describe("catalog sitemap Route Handler domain", () => {
 
   it("maps only canonical root-level index and shard paths", () => {
     expect(rootCatalogSitemapIndexPath("process")).toBe("/catalog-process-sitemap.xml");
-    expect(rootCatalogSitemapShardPath("flow", 63)).toBe("/catalog-flow-sitemap-63.xml");
-    expect(parseRootCatalogSitemapPath("/catalog-process-sitemap.xml")).toEqual({
-      kind: "process",
-      type: "index",
-    });
-    expect(parseRootCatalogSitemapPath("/catalog-flow-sitemap-0.xml")).toEqual({
-      kind: "flow",
-      type: "shard",
-      shardIndex: 0,
-    });
-    for (const invalid of [
-      "/catalog-process-sitemap-01.xml",
-      "/catalog-process-sitemap-64.xml",
-      "/catalog-private-sitemap.xml",
-      "/catalog/process/sitemap.xml",
-    ]) {
-      expect(isRootCatalogSitemapCandidate(invalid)).toBe(invalid.startsWith("/catalog-"));
-      expect(parseRootCatalogSitemapPath(invalid)).toBeNull();
+    expect(rootCatalogSitemapShardPath("flow", 63)).toBe("/catalog-flow-sitemap.xml?shard=63");
+    expect(parseCatalogSitemapShardSearch("?shard=0")).toBe(0);
+    expect(parseCatalogSitemapShardSearch("?shard=63")).toBe(63);
+    for (const invalid of ["?shard=01", "?shard=64", "?shard=1.0", "?shard=0&bust=1"]) {
+      expect(parseCatalogSitemapShardSearch(invalid)).toBeNull();
     }
+  });
+
+  it("rejects root route query variants before upstream work", async () => {
+    const fixture = dependencies();
+    const invalid = await createRootCatalogSitemapResponse(
+      "process",
+      new Request("https://portal.example/catalog-process-sitemap.xml?shard=01"),
+      fixture,
+    );
+    expect(invalid.status).toBe(404);
+    expect(invalid.headers.get("cache-control")).toBe("no-store");
+    expect(fixture.loadManifest).not.toHaveBeenCalled();
+    expect(fixture.loadShard).not.toHaveBeenCalled();
   });
 });

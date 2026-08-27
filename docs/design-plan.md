@@ -805,11 +805,11 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 - 不索引：任意 Search、Compare、Collections、Map 参数组合；
 - Facet URL 使用 `noindex,follow`，避免 query × filter 的无限索引空间；
 - zh-CN/en 互相声明 `hreflang`，根路径提供 `x-default`；
-- 根级 `/catalog-{process|flow}-sitemap.xml` 各返回一个固定 64 项的 sitemap index；根级 `/catalog-{process|flow}-sitemap-{0..63}.xml` 返回对应 XML shard，确保文件作用域覆盖 `/zh-CN/**` 与 `/en/**`；
+- 根级 `/catalog-{process|flow}-sitemap.xml` 各返回一个固定 64 项的 sitemap index；同一根级文件以唯一规范参数 `?shard={0..63}` 返回对应 XML shard，确保文件作用域覆盖 `/zh-CN/**` 与 `/en/**`；
 - shard 数字只接受规范化 `0..63`，Portal 按 manifest 数组位置选择 opaque cursor 并原样调用 Database；cursor 不进入 URL、XML、响应或日志；
 - sitemap 分片只包含当前公开且允许索引的 canonical URL；每个 shard 最多 4,096 个 identity，并为 zh-CN/en 各生成一条 reciprocal `<url>`，总计最多 8,192 URLs，最终 UTF-8 XML 必须严格小于 5 MiB；
 - 最新版本进入 sitemap，历史版本由 Versions 页面发现；
-- 成功响应默认 `no-store`，确保未验证的平台也满足零陈旧；只有 exact deployment 证明到期同步 revalidate、错误不缓存且不自动返回 stale 后，才设置 `PORTAL_SITEMAP_CACHE_MODE=shared-300` 并使用 `public, max-age=0, s-maxage=300, must-revalidate`；Vercel 的 `s-maxage` 会后台异步更新，因此当前禁止该模式；非法路由返回 `404/no-store`，配置、上游、DTO 或字节门失败返回 `503/no-store`；禁止 query cache-bust、`stale-while-revalidate` 与 `stale-if-error`；
+- 成功响应默认 `no-store`，确保未验证的平台也满足零陈旧；只有 exact deployment 证明 cache key 精确包含规范 `shard` 参数、到期同步 revalidate、错误不缓存且不自动返回 stale 后，才设置 `PORTAL_SITEMAP_CACHE_MODE=shared-300` 并使用 `public, max-age=0, s-maxage=300, must-revalidate`；Vercel 的 `s-maxage` 会后台异步更新，因此当前禁止该模式；缺失参数表示 index，唯一参数只接受规范十进制 `0..63`，其他 query 全部在 Database 调用前返回 `404/no-store`；配置、上游、DTO 或字节门失败返回 `503/no-store`；禁止 query cache-bust、`stale-while-revalidate` 与 `stale-if-error`；
 - robots 不用于保护数据，真正的权限仍在 Database/Edge。
 
 ### 11.3 缓存与新鲜度

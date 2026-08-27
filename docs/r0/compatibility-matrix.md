@@ -39,7 +39,7 @@ R0 remains blocked until every required Preview row has evidence bound to one ex
 | SSR runtime | `/r0-compat/ssr` reports local `process.version` | Must record deployed `process.version` | Blocked |
 | ISR | `/r0-compat/isr` emits `s-maxage=60` and stable cached body | Pending cache/refresh probe | Blocked |
 | Streaming | dynamic Suspense route passes under report-only CSP | Pending chunk-timing probe | Blocked |
-| Proxy | `src/proxy.ts` adds the expected R0 response header and preserves canonical root-level sitemap rewrites | Pending | Blocked |
+| Proxy | `src/proxy.ts` adds the expected R0 response header | Pending | Blocked |
 | Route Handler | dynamic JSON contract and no-store pass | Pending | Blocked |
 | Image Optimization | raster brand probe resolves through `/_next/image` | Pending | Blocked |
 | 404 / robots / noindex | local status and headers pass | Pending | Blocked |
