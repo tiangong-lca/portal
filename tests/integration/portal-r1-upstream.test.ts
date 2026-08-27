@@ -189,6 +189,82 @@ describe("Portal R1 fixture upstream", () => {
     });
   });
 
+  it("bounds correlation-addressable LCIA receipts without last-writer coupling", async () => {
+    const fixture = await start("preview");
+    const input = {
+      mode: "process_all_impacts" as const,
+      processRefs: [processReference],
+      impactCategoryId: null,
+      cursor: null,
+      limit: 20,
+    };
+    const correlationIds = Array.from({ length: 129 }, () => crypto.randomUUID());
+
+    for (const receiptId of correlationIds) {
+      await expect(
+        queryPublishedLcia(input, {
+          environment: lciaEnvironment("preview", fixture.origin),
+          correlationId: receiptId,
+        }),
+      ).resolves.toMatchObject({ status: "available" });
+    }
+
+    const evicted = await fetch(`${fixture.origin}/receipts/lcia/${correlationIds[0]}`);
+    expect(evicted.status).toBe(404);
+    expect(await evicted.json()).toEqual({ code: "fixture_receipt_not_found" });
+
+    const retained = await fetch(`${fixture.origin}/receipts/lcia/${correlationIds.at(-1)}`);
+    expect(retained.status).toBe(200);
+    expect(await retained.json()).toEqual({
+      schemaVersion: "portal.r1-fixture-lcia-receipt.v1",
+      receipt: expect.objectContaining({ correlationId: correlationIds.at(-1) }),
+    });
+  });
+
+  it("bounds request-fingerprint RPC receipts without global counter races", async () => {
+    const fixture = await start("preview");
+    const client = createPortalRpcClient({
+      environment: dataEnvironment("preview", fixture.origin),
+      logger: () => undefined,
+    });
+    const ids = Array.from(
+      { length: 129 },
+      (_, index) => `8${index.toString(16).padStart(7, "0")}-0000-4000-8000-000000000000`,
+    );
+
+    for (const id of ids) {
+      await expect(
+        getPublicDataset({ kind: "process", id, version: processReference.version }, client),
+      ).resolves.toMatchObject({ key: { id } });
+    }
+
+    const bodyHash = (id: string) =>
+      createHash("sha256")
+        .update(
+          JSON.stringify({
+            p_kind: "process",
+            p_id: id,
+            p_version: processReference.version,
+          }),
+        )
+        .digest("hex");
+    const receiptUrl = (id: string) =>
+      `${fixture.origin}/receipts/rpc/portal_get_dataset_v1/${bodyHash(id)}`;
+
+    const evicted = await fetch(receiptUrl(ids[0]!));
+    expect(evicted.status).toBe(404);
+    const retained = await fetch(receiptUrl(ids.at(-1)!));
+    expect(retained.status).toBe(200);
+    expect(await retained.json()).toEqual({
+      schemaVersion: "portal.r1-fixture-rpc-receipt.v1",
+      count: 1,
+      receipt: expect.objectContaining({
+        bodySha256: bodyHash(ids.at(-1)!),
+        name: "portal_get_dataset_v1",
+      }),
+    });
+  });
+
   it("returns one complete same-context numeric row for each selected Process", async () => {
     const fixture = await start("preview");
     const secondReference = {

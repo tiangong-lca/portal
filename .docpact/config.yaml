@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-28"
-lastReviewedCommit: "7d68ca4"
-lastReviewedNote: "Reviewed for Portal #12 after adding bounded sitemap contracts, explicit XML routes, and proof; routing and ownership remain unchanged."
+lastReviewedCommit: "99da1ed"
+lastReviewedNote: "Reviewed for Portal #15 after making fixture receipts bounded and request-addressable; routing, ownership, product, and deployment contracts remain unchanged."
 
 catalog:
   repos:
