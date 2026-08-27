@@ -4,13 +4,14 @@ import {
   assertCatalogSitemapXmlWithinLimit,
   CatalogSitemapError,
   catalogSitemapFailureCacheControl,
+  catalogSitemapSharedCacheControl,
   catalogSitemapShardCount,
-  catalogSitemapSuccessCacheControl,
   createCatalogSitemapIndexResponse,
   createCatalogSitemapShardResponse,
   maximumCatalogSitemapItems,
   maximumCatalogSitemapXmlBytes,
   parseCatalogSitemapShardSegment,
+  readCatalogSitemapCacheControl,
   readCatalogSitemapSiteOrigin,
   renderCatalogSitemapShard,
   type CatalogSitemapDependencies,
@@ -51,7 +52,10 @@ function dependencies(
   overrides: Partial<CatalogSitemapDependencies> = {},
 ): CatalogSitemapDependencies {
   return {
-    environment: { SITE_URL: "https://portal.example" },
+    environment: {
+      SITE_URL: "https://portal.example",
+      PORTAL_SITEMAP_CACHE_MODE: "shared-300",
+    },
     loadManifest: vi.fn<CatalogSitemapDependencies["loadManifest"]>(async () => manifest),
     loadShard: vi.fn<CatalogSitemapDependencies["loadShard"]>(async ({ shardCursor }) => ({
       schemaVersion: "portal.public-sitemap-shard.v1" as const,
@@ -70,7 +74,7 @@ describe("catalog sitemap Route Handler domain", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("application/xml; charset=utf-8");
-    expect(response.headers.get("cache-control")).toBe(catalogSitemapSuccessCacheControl);
+    expect(response.headers.get("cache-control")).toBe(catalogSitemapSharedCacheControl);
     expect(body.match(/<sitemap>/gu)).toHaveLength(64);
     expect(body).toContain("https://portal.example/catalog-process-sitemap-0.xml");
     expect(body).toContain("https://portal.example/catalog-process-sitemap-63.xml");
@@ -85,7 +89,7 @@ describe("catalog sitemap Route Handler domain", () => {
     const body = await response.text();
 
     expect(response.status).toBe(200);
-    expect(response.headers.get("cache-control")).toBe(catalogSitemapSuccessCacheControl);
+    expect(response.headers.get("cache-control")).toBe(catalogSitemapSharedCacheControl);
     expect(fixture.loadShard).toHaveBeenCalledWith({ shardCursor: "cursor-7" });
     expect(body.match(/<url>/gu)).toHaveLength(2);
     expect(body.match(/<loc>/gu)).toHaveLength(2);
@@ -209,6 +213,29 @@ describe("catalog sitemap Route Handler domain", () => {
         CatalogSitemapError,
       );
     }
+  });
+
+  it("defaults to no-store and enables shared caching only on a proven non-Vercel target", async () => {
+    expect(readCatalogSitemapCacheControl({})).toBe("no-store");
+    expect(readCatalogSitemapCacheControl({ PORTAL_SITEMAP_CACHE_MODE: "shared-300" })).toBe(
+      catalogSitemapSharedCacheControl,
+    );
+    expect(() =>
+      readCatalogSitemapCacheControl({
+        PORTAL_SITEMAP_CACHE_MODE: "shared-300",
+        VERCEL: "1",
+      }),
+    ).toThrow(CatalogSitemapError);
+    expect(() =>
+      readCatalogSitemapCacheControl({ PORTAL_SITEMAP_CACHE_MODE: "unbounded" }),
+    ).toThrow(CatalogSitemapError);
+
+    const noStoreFixture = dependencies({
+      environment: { SITE_URL: "https://portal.example" },
+    });
+    const response = await createCatalogSitemapIndexResponse("process", noStoreFixture);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
   });
 
   it("maps only canonical root-level index and shard paths", () => {

@@ -24,7 +24,7 @@ type PublicSitemapItem = PublicSitemapShard["items"][number];
 export const maximumCatalogSitemapItems = 4096;
 export const maximumCatalogSitemapUrls = 50_000;
 export const maximumCatalogSitemapXmlBytes = 5 * 1024 * 1024;
-export const catalogSitemapSuccessCacheControl = "public, max-age=0, s-maxage=300, must-revalidate";
+export const catalogSitemapSharedCacheControl = "public, max-age=0, s-maxage=300, must-revalidate";
 export const catalogSitemapFailureCacheControl = "no-store";
 
 const textEncoder = new TextEncoder();
@@ -81,6 +81,17 @@ export function readCatalogSitemapSiteOrigin(
   }
 
   return url.origin;
+}
+
+export function readCatalogSitemapCacheControl(
+  environment: Record<string, string | undefined> = process.env,
+): string {
+  const mode = environment.PORTAL_SITEMAP_CACHE_MODE ?? "no-store";
+  if (mode === "no-store") return "no-store";
+  if (mode === "shared-300" && environment.VERCEL !== "1") {
+    return catalogSitemapSharedCacheControl;
+  }
+  throw new CatalogSitemapError();
 }
 
 function escapeXml(value: string): string {
@@ -221,11 +232,11 @@ export async function buildCatalogSitemapShard(
   );
 }
 
-function xmlResponse(xml: string): Response {
+function xmlResponse(xml: string, cacheControl: string): Response {
   return new Response(xml, {
     status: 200,
     headers: {
-      "Cache-Control": catalogSitemapSuccessCacheControl,
+      "Cache-Control": cacheControl,
       "Content-Type": "application/xml; charset=utf-8",
     },
   });
@@ -255,7 +266,10 @@ export async function createCatalogSitemapIndexResponse(
   if (!kind) return failureResponse(404);
 
   try {
-    return xmlResponse(await buildCatalogSitemapIndex(kind, dependencyOverrides));
+    const cacheControl = readCatalogSitemapCacheControl(
+      dependencyOverrides.environment ?? process.env,
+    );
+    return xmlResponse(await buildCatalogSitemapIndex(kind, dependencyOverrides), cacheControl);
   } catch {
     return failureResponse(503);
   }
@@ -271,7 +285,13 @@ export async function createCatalogSitemapShardResponse(
   if (!kind || shardIndex === null) return failureResponse(404);
 
   try {
-    return xmlResponse(await buildCatalogSitemapShard(kind, shardIndex, dependencyOverrides));
+    const cacheControl = readCatalogSitemapCacheControl(
+      dependencyOverrides.environment ?? process.env,
+    );
+    return xmlResponse(
+      await buildCatalogSitemapShard(kind, shardIndex, dependencyOverrides),
+      cacheControl,
+    );
   } catch {
     return failureResponse(503);
   }

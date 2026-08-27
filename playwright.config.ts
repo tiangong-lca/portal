@@ -41,6 +41,7 @@ export default defineConfig({
       gracefulShutdown: { signal: "SIGTERM", timeout: 5000 },
       env: {
         SITE_URL: portalE2eUrl,
+        PORTAL_SITEMAP_CACHE_MODE: "shared-300",
         SUPABASE_URL: portalFixtureUrl,
         SUPABASE_PUBLISHABLE_KEY: previewFixture.publishableKey,
         PORTAL_SUPABASE_TIMEOUT_MS: "2000",
