@@ -19,8 +19,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-08-26
-lastReviewedCommit: 329261fb572f13efe83408fd0c46e9fa54d9fd40
+lastReviewedAt: 2026-08-27
+lastReviewedCommit: 192e21daf4bf90ec17e3fd93e39763ece318e6e6
 related:
   - ../design-plan.md
   - ../../AGENTS.md

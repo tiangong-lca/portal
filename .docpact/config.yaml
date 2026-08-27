@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-27"
-lastReviewedCommit: "45be463741fb223c34f8214d3f07750701f2609e"
-lastReviewedNote: "Reviewed after the mobile text-zoom containment fix; the CSS-only product change does not alter ownership or documentation routing."
+lastReviewedCommit: "192e21daf4bf90ec17e3fd93e39763ece318e6e6"
+lastReviewedNote: "Reviewed after the mobile text-zoom containment fix and actual-scroll-range regression metric; neither change alters ownership or documentation routing."
 
 catalog:
   repos:
