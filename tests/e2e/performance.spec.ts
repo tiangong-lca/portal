@@ -5,13 +5,19 @@ const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
 type Vitals = {
   cls: number;
   inp: number;
+  inpSupported: boolean;
   lcp: number;
   ttfb: number;
 };
 
 async function installVitalsObserver(page: Page) {
   await page.addInitScript(() => {
-    const values = { cls: 0, inp: 0, lcp: 0 };
+    const values = {
+      cls: 0,
+      inp: 0,
+      inpSupported: PerformanceObserver.supportedEntryTypes.includes("event"),
+      lcp: 0,
+    };
     (window as unknown as { __portalVitals: typeof values }).__portalVitals = values;
 
     new PerformanceObserver((list) => {
@@ -27,7 +33,7 @@ async function installVitalsObserver(page: Page) {
       }
     }).observe({ buffered: true, type: "layout-shift" });
 
-    if (PerformanceObserver.supportedEntryTypes.includes("event")) {
+    if (values.inpSupported) {
       new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) values.inp = Math.max(values.inp, entry.duration);
       }).observe({ durationThreshold: 16, type: "event" } as PerformanceObserverInit);
@@ -89,6 +95,7 @@ for (const { label, route, ttfbBudget } of [
     };
     console.info(`${label} local CWV p75 ${JSON.stringify(evidence)}`);
 
+    expect(samples.every(({ inpSupported }) => inpSupported)).toBe(true);
     expect(evidence.lcpP75, JSON.stringify(evidence)).toBeGreaterThan(0);
     expect(evidence.lcpP75, JSON.stringify(evidence)).toBeLessThanOrEqual(2500);
     expect(evidence.inpP75, JSON.stringify(evidence)).toBeLessThanOrEqual(200);
