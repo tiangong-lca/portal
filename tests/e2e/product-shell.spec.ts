@@ -172,10 +172,54 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
     document.documentElement.style.fontSize = "200%";
   });
   await expect(page.getByRole("searchbox", { name: "Search public lifecycle data" })).toBeVisible();
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  const layout = await page.evaluate(async () => {
+    const root = document.documentElement;
+    const viewportRight = Math.max(root.clientWidth, window.innerWidth);
+    const offenders = Array.from(document.body.querySelectorAll<HTMLElement>("*"))
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+
+        return {
+          className: element.className.toString().slice(0, 160),
+          clientWidth: element.clientWidth,
+          fontFamily: style.fontFamily,
+          left: Math.round(rect.left * 10) / 10,
+          overflowWrap: style.overflowWrap,
+          right: Math.round(rect.right * 10) / 10,
+          scrollWidth: element.scrollWidth,
+          tagName: element.tagName.toLowerCase(),
+          text: element.textContent?.trim().replace(/\s+/g, " ").slice(0, 120) ?? "",
+          width: Math.round(rect.width * 10) / 10,
+          wordBreak: style.wordBreak,
+        };
+      })
+      .filter(({ left, right }) => left < -1 || right > viewportRight + 1)
+      .sort((left, right) => right.right - viewportRight - (left.right - viewportRight))
+      .slice(0, 12);
+
+    const previousY = window.scrollY;
+    window.scrollTo(root.scrollWidth, previousY);
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    });
+    const maximumScrollX = window.scrollX;
+    window.scrollTo(0, previousY);
+
+    return {
+      bodyScrollWidth: document.body.scrollWidth,
+      clientWidth: root.clientWidth,
+      fontStatus: document.fonts.status,
+      innerWidth: window.innerWidth,
+      maximumScrollX,
+      offenders,
+      overflow: root.scrollWidth - root.clientWidth,
+      scrollWidth: root.scrollWidth,
+    };
+  });
+  expect(layout.overflow, `Zoomed viewport layout: ${JSON.stringify(layout)}`).toBeLessThanOrEqual(
+    1,
   );
-  expect(overflow).toBeLessThanOrEqual(1);
 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
