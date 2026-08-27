@@ -143,6 +143,17 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
   const sitemapBody = await sitemap.text();
   expect(sitemap.ok()).toBe(true);
   expect(sitemapBody).toContain("hreflang");
+
+  const processSitemapIndex = await request.get("/catalog/process/sitemap.xml");
+  expect(processSitemapIndex.ok()).toBe(true);
+  expect(processSitemapIndex.headers()["cache-control"]).toContain("s-maxage=300");
+  expect(await processSitemapIndex.text()).toContain("/catalog/process/sitemap/0.xml");
+  const processSitemapShard = await request.get("/catalog/process/sitemap/0.xml");
+  expect(processSitemapShard.ok()).toBe(true);
+  const processSitemapBody = await processSitemapShard.text();
+  expect(processSitemapBody).toContain(processRef);
+  expect(processSitemapBody).toContain('hreflang="en"');
+  expect((await request.get("/catalog/process/sitemap/not-a-shard.xml")).status()).toBe(404);
 });
 
 test("keeps the local collection local and shares member IDs only", async ({ context, page }) => {
