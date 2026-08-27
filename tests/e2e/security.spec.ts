@@ -1,14 +1,18 @@
 import { expect, test } from "@playwright/test";
 
 import hmacFixture from "../fixtures/hmac/portal-hmac-v1.json" with { type: "json" };
+import environmentFixture from "../fixtures/portal/r1-environments.json" with { type: "json" };
 
 const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
 const forbiddenResponseMarkers = [
   "PORTAL_EDGE_HMAC_SECRET",
+  "R0_COMPAT_HMAC_SECRET",
   "SUPABASE_SECRET_KEY",
   "service_role",
   "portal_bundle_secret_sentinel_v1",
   hmacFixture.secret,
+  environmentFixture.preview.hmacSecret,
+  environmentFixture.production.hmacSecret,
   "s3://",
   "storage.objects",
   '"team_id"',
