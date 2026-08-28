@@ -21,7 +21,7 @@ checkPaths:
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-28
 lastReviewedCommit: f756a07
-lastReviewedNote: "Reviewed for Portal #10: locale root documents and global 404 pass locally but do not provide selected-host R0 Preview or reopen CSP/ISR; R0 remains blocked."
+lastReviewedNote: "Reviewed for Portal #19: local R2 Hybrid/fallback and sharing evidence do not provide selected-host R0 Preview or reopen CSP/ISR; R0 remains blocked."
 related:
   - ../design-plan.md
   - ../../AGENTS.md

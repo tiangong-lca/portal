@@ -2,7 +2,7 @@ version: 1
 layout: repo
 lastReviewedAt: "2026-08-28"
 lastReviewedCommit: "f756a07"
-lastReviewedNote: "Reviewed for Portal #10: generated Database contract snapshots and their format/drift gates are now explicit product-owned paths; existing ownership and deployment boundaries remain unchanged."
+lastReviewedNote: "Reviewed for Portal #19: R2 Hybrid BFF/UI, fallback, sharing, and proof paths remain within existing product/runtime ownership and routing."
 
 catalog:
   repos:
