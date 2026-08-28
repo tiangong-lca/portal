@@ -67,7 +67,13 @@ export default async function CollectionsPage({ params }: PageProps<"/[locale]/c
           saved: t("saved"),
           selected: t("selected"),
           share: t("share"),
+          shareCancel: t("shareCancel"),
+          shareConfirm: t("shareConfirm"),
+          shareDisclosure: t("shareDisclosure"),
+          sharePreview: t("sharePreview"),
+          shareWithNotes: t("shareWithNotes"),
           shared: t("shared"),
+          sharedWithNotes: t("sharedWithNotes"),
         }}
       />
     </main>

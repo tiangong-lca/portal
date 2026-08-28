@@ -1,6 +1,14 @@
 "use client";
 
-import { DownloadIcon, LinkIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import {
+  DownloadIcon,
+  EyeIcon,
+  LinkIcon,
+  PlusIcon,
+  Trash2Icon,
+  UploadIcon,
+  XIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,8 +22,10 @@ import { isExactDatasetRef } from "@/features/catalog/exact-ref";
 
 import {
   collectionsStorageKey,
+  decodeDisclosedCollectionFragment,
   decodeCollectionFragment,
   emptyCollectionState,
+  encodeDisclosedCollectionFragment,
   encodeCollectionFragment,
   maxCollectionImportBytes,
   parseCollectionJson,
@@ -43,7 +53,13 @@ type CollectionLabels = {
   saved: string;
   selected: string;
   share: string;
+  shareCancel: string;
+  shareConfirm: string;
+  shareDisclosure: string;
+  sharePreview: string;
+  shareWithNotes: string;
   shared: string;
+  sharedWithNotes: string;
 };
 
 function mergeRefs(state: CollectionState, refs: string[]): CollectionState {
@@ -59,6 +75,22 @@ function mergeRefs(state: CollectionState, refs: string[]): CollectionState {
   };
 }
 
+function mergeDisclosedState(
+  current: CollectionState,
+  disclosed: CollectionState,
+): CollectionState {
+  const existing = new Set(current.members.map((member) => member.ref));
+  return {
+    ...current,
+    researchName: current.researchName || disclosed.researchName,
+    purpose: current.purpose || disclosed.purpose,
+    members: [
+      ...current.members,
+      ...disclosed.members.filter((member) => !existing.has(member.ref)),
+    ],
+  };
+}
+
 export function CollectionsWorkspace({ labels }: { labels: CollectionLabels }) {
   const [state, setState] = useState<CollectionState>(emptyCollectionState);
   const [newRef, setNewRef] = useState("");
@@ -66,12 +98,18 @@ export function CollectionsWorkspace({ labels }: { labels: CollectionLabels }) {
   const [invalid, setInvalid] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [corruptRaw, setCorruptRaw] = useState<string | null>(null);
+  const [disclosurePreview, setDisclosurePreview] = useState(false);
 
   useEffect(() => {
     const raw = localStorage.getItem(collectionsStorageKey);
     try {
       let nextState = raw ? parseCollectionJson(raw) : emptyCollectionState;
-      if (window.location.hash.startsWith("#collection=")) {
+      if (window.location.hash.startsWith("#collection-notes=")) {
+        nextState = mergeDisclosedState(
+          nextState,
+          decodeDisclosedCollectionFragment(window.location.hash),
+        );
+      } else if (window.location.hash.startsWith("#collection=")) {
         nextState = mergeRefs(nextState, decodeCollectionFragment(window.location.hash));
       } else if (window.location.hash.startsWith("#member=")) {
         const ref = decodeURIComponent(window.location.hash.slice("#member=".length));
@@ -349,7 +387,52 @@ export function CollectionsWorkspace({ labels }: { labels: CollectionLabels }) {
           <LinkIcon data-icon="inline-start" />
           {labels.share}
         </Button>
+        <Button
+          disabled={state.members.length === 0}
+          onClick={() => setDisclosurePreview(true)}
+          type="button"
+          variant="outline"
+        >
+          <EyeIcon data-icon="inline-start" />
+          {labels.shareWithNotes}
+        </Button>
       </div>
+      {disclosurePreview ? (
+        <Card size="sm">
+          <CardHeader>
+            <h2 className="font-heading text-base font-medium">{labels.sharePreview}</h2>
+            <CardDescription>{labels.shareDisclosure}</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <pre className="bg-muted max-h-80 overflow-auto rounded-lg p-3 text-xs break-words whitespace-pre-wrap">
+              {JSON.stringify(state, null, 2)}
+            </pre>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                onClick={async () => {
+                  try {
+                    const fragment = encodeDisclosedCollectionFragment(state);
+                    const url = `${window.location.origin}${window.location.pathname}${fragment}`;
+                    await navigator.clipboard.writeText(url);
+                    setMessage(labels.sharedWithNotes);
+                    setDisclosurePreview(false);
+                  } catch {
+                    setMessage(labels.error);
+                  }
+                }}
+                type="button"
+              >
+                <LinkIcon data-icon="inline-start" />
+                {labels.shareConfirm}
+              </Button>
+              <Button onClick={() => setDisclosurePreview(false)} type="button" variant="ghost">
+                <XIcon data-icon="inline-start" />
+                {labels.shareCancel}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
       <p aria-live="polite" className="text-muted-foreground min-h-5 text-sm">
         {message}
       </p>
