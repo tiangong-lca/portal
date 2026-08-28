@@ -22,6 +22,7 @@ const telemetryEventSchema = z.strictObject({
     "dataset_exchanges",
     "sitemap",
     "lcia_bff",
+    "hybrid_bff",
   ]),
   rpcName: z
     .enum([
@@ -39,10 +40,10 @@ const telemetryEventSchema = z.strictObject({
     .nullable(),
   cachePolicy: z.enum(["no-store", "revalidate"]),
   cacheHit: z.literal("unknown"),
-  backend: z.enum(["supabase_data_api", "portal_edge_lcia", "portal_bff"]),
+  backend: z.enum(["supabase_data_api", "portal_edge_lcia", "portal_edge_hybrid", "portal_bff"]),
   latencyMs: z.number().int().min(0).max(120_000),
   rowCount: z.number().int().min(0).max(4096).nullable(),
-  status: z.enum(["ok", "unavailable", "temporarily_unavailable", "rejected", "error"]),
+  status: z.enum(["ok", "fallback", "unavailable", "temporarily_unavailable", "rejected", "error"]),
   errorCode: z
     .enum([
       "invalid_request",
@@ -52,6 +53,21 @@ const telemetryEventSchema = z.strictObject({
       "unsupported_media_type",
       "body_too_large",
       "lcia_temporarily_unavailable",
+      "method_not_allowed",
+      "request_too_large",
+      "portal_auth_unavailable",
+      "portal_auth_failed",
+      "hybrid_disabled",
+      "guard_unavailable",
+      "replay_rejected",
+      "budget_exhausted",
+      "concurrency_exhausted",
+      "circuit_open",
+      "hybrid_timeout",
+      "hybrid_upstream_unavailable",
+      "contract_failure",
+      "internal_error",
+      "hybrid_fallback_unavailable",
     ])
     .nullable(),
   locale: z.enum(["zh-CN", "en"]).optional(),

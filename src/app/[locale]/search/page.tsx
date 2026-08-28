@@ -304,6 +304,7 @@ export default async function SearchPage({
                 }}
                 locale={locale}
                 selectable
+                siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
               />
               {results.some((item) => item.kind === "process") ? (
                 <Button className="self-start" type="submit">
