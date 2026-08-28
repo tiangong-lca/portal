@@ -26,9 +26,11 @@ export type PortalR1FixtureReceipts = {
   rpcAccepted: number;
   rpcByName: Record<string, number>;
   lciaAccepted: number;
+  hybridAccepted: number;
   rejected: number;
   lastRpc: FixtureRequestReceipt | null;
   lastLcia: FixtureRequestReceipt | null;
+  lastHybrid: FixtureRequestReceipt | null;
 };
 
 type StartOptions = {
@@ -47,6 +49,7 @@ export type PortalR1FixtureServer = {
 const maximumRequestBytes = 64 * 1024;
 const maximumCorrelationReceipts = 128;
 const portalDataProductPath = "/functions/v1/portal_data_product_results_v1";
+const portalHybridPath = "/functions/v1/portal_hybrid_search_v1";
 const secondProcessId = "77777777-7777-7777-7777-777777777777";
 const requiredLciaKeys = ["cursor", "impactCategoryId", "limit", "mode", "processRefs"];
 const forbiddenRpcKeys = new Set([
@@ -316,6 +319,7 @@ function verifyPortalHmac(
   rawBody: Buffer,
   environment: (typeof environmentFixture)[PortalR1FixtureEnvironmentName],
   usedNonces: Set<string>,
+  functionPath: string,
 ):
   { ok: true; keyId: string; nonce: string; correlationId?: string } | { ok: false; code: string } {
   const keyId = request.headers["x-portal-key-id"];
@@ -378,7 +382,7 @@ function verifyPortalHmac(
     timestamp,
     nonce,
     "POST",
-    portalDataProductPath,
+    functionPath,
     bodyHash,
   ].join("\n");
   const expectedSignature = createHmac("sha256", Buffer.from(environment.hmacSecret, "base64url"))
@@ -397,6 +401,98 @@ function verifyPortalHmac(
     keyId,
     nonce,
     ...(typeof correlationId === "string" ? { correlationId } : {}),
+  };
+}
+
+function validHybridInput(value: Record<string, unknown>): boolean {
+  if (Object.keys(value).sort().join("\n") !== "filters\nkind\nlimit\nquery\nschemaVersion") {
+    return false;
+  }
+  // oxlint-disable-next-line no-control-regex -- The fixture mirrors the exact Edge C0/C1 rejection contract.
+  const queryHasControl = /[\u0000-\u001f\u007f-\u009f]/u.test(String(value.query));
+  if (
+    value.schemaVersion !== "portal.hybrid-search-request.v1" ||
+    (value.kind !== "process" && value.kind !== "flow") ||
+    typeof value.query !== "string" ||
+    value.query.trim().length === 0 ||
+    Array.from(value.query.trim()).length > 512 ||
+    Buffer.byteLength(value.query.trim(), "utf8") > 2048 ||
+    queryHasControl ||
+    value.filters === null ||
+    typeof value.filters !== "object" ||
+    Array.isArray(value.filters) ||
+    !Number.isInteger(value.limit) ||
+    Number(value.limit) < 1 ||
+    Number(value.limit) > 20
+  ) {
+    return false;
+  }
+
+  const allowedFilterKeys = new Set([
+    "accessLevel",
+    "geography",
+    "classification",
+    "referenceYearFrom",
+    "referenceYearTo",
+    "processSubtype",
+    "source",
+  ]);
+  const filters = value.filters as Record<string, unknown>;
+  if (
+    Object.keys(filters).some((key) => !allowedFilterKeys.has(key)) ||
+    (value.kind === "flow" && filters.processSubtype !== undefined)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function hybridFailure(query: string): { code: string; status: number } | null {
+  const match =
+    /^fixture:(hybrid_disabled|guard_unavailable|budget_exhausted|concurrency_exhausted|circuit_open|hybrid_timeout|contract_failure)$/u.exec(
+      query.trim(),
+    );
+  if (!match?.[1]) return null;
+  const status =
+    match[1] === "budget_exhausted" || match[1] === "concurrency_exhausted" ? 429 : 503;
+  return { code: match[1], status };
+}
+
+function hybridSearchResponse(input: Record<string, unknown>) {
+  const kind = input.kind as "process" | "flow";
+  const sourcePage = kind === "process" ? processSearchResponse() : flowSearchResponse();
+  const limit = Number(input.limit);
+  return {
+    schemaVersion: "portal.hybrid-search-page.v1",
+    kind,
+    queryFingerprint: "c".repeat(64),
+    interpretation: {
+      source: "model_generated",
+      advisory: true,
+      semanticQuery:
+        kind === "process" ? "public low-carbon production evidence" : "public flow evidence",
+      terms:
+        kind === "process"
+          ? [
+              { language: "en", value: "low-carbon production" },
+              { language: "zh-CN", value: "低碳生产" },
+            ]
+          : [{ language: "en", value: "public flow" }],
+    },
+    items: sourcePage.items.slice(0, limit).map((item, index) => ({
+      ...item,
+      match: {
+        kind: "hybrid",
+        algorithmVersion: "portal-hybrid-rank-v1",
+        score: Math.max(0, 0.9 - index * 0.1),
+        reasonCodes: ["lexical_public_projection", "semantic_public_projection"],
+        evidence: {
+          lexicalRank: index + 1,
+          semanticRank: index + 1,
+          semanticDistance: index === 0 ? "0.125" : "0.25",
+        },
+      },
+    })),
   };
 }
 
@@ -442,9 +538,11 @@ export async function startPortalR1FixtureServer(
     rpcAccepted: 0,
     rpcByName: {},
     lciaAccepted: 0,
+    hybridAccepted: 0,
     rejected: 0,
     lastRpc: null,
     lastLcia: null,
+    lastHybrid: null,
   };
   const usedNonces = new Set<string>();
   const lciaReceiptsByCorrelationId = new Map<string, FixtureRequestReceipt>();
@@ -556,7 +654,13 @@ export async function startPortalR1FixtureServer(
           return;
         }
 
-        const verification = verifyPortalHmac(request, rawBody, environment, usedNonces);
+        const verification = verifyPortalHmac(
+          request,
+          rawBody,
+          environment,
+          usedNonces,
+          portalDataProductPath,
+        );
         if (!verification.ok) {
           receipts.rejected += 1;
           writeJson(response, 403, { code: verification.code });
@@ -643,6 +747,51 @@ export async function startPortalR1FixtureServer(
           rows,
           nextCursor: null,
         });
+        return;
+      }
+
+      if (requestUrl.pathname === portalHybridPath) {
+        if (request.headers.apikey !== environment.publishableKey) {
+          receipts.rejected += 1;
+          writeJson(response, 403, { code: "portal_auth_failed", message: "Request rejected" });
+          return;
+        }
+
+        const verification = verifyPortalHmac(
+          request,
+          rawBody,
+          environment,
+          usedNonces,
+          portalHybridPath,
+        );
+        if (!verification.ok) {
+          receipts.rejected += 1;
+          writeJson(response, 401, { code: "portal_auth_failed", message: "Request rejected" });
+          return;
+        }
+
+        const input = parseJsonObject(rawBody);
+        if (!input || !validHybridInput(input)) {
+          receipts.rejected += 1;
+          writeJson(response, 400, { code: "invalid_request", message: "Invalid request" });
+          return;
+        }
+        const failure = hybridFailure(String(input.query));
+        if (failure) {
+          writeJson(response, failure.status, {
+            code: failure.code,
+            message: "Hybrid fixture unavailable",
+          });
+          return;
+        }
+
+        receipts.hybridAccepted += 1;
+        receipts.lastHybrid = {
+          ...bodyReceipt(rawBody),
+          keyId: verification.keyId,
+          ...(verification.correlationId ? { correlationId: verification.correlationId } : {}),
+        };
+        writeJson(response, 200, hybridSearchResponse(input));
         return;
       }
 
