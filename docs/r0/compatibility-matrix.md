@@ -21,7 +21,7 @@ checkPaths:
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-28
 lastReviewedCommit: c4667b1
-lastReviewedNote: "Reviewed for Portal #10: contract/UI/test changes do not provide selected-host R0 Preview, enforcing CSP/ISR, rollback, or cleanup evidence; R0 remains blocked."
+lastReviewedNote: "Reviewed for Portal #10: locale root documents and global 404 pass locally but do not provide selected-host R0 Preview or reopen CSP/ISR; R0 remains blocked."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -43,7 +43,7 @@ R0 remains blocked until every required Preview row has evidence bound to one ex
 | Proxy | `src/proxy.ts` adds the expected R0 response header | Pending | Blocked |
 | Route Handler | dynamic JSON contract and no-store pass | Pending | Blocked |
 | Image Optimization | raster brand probe resolves through `/_next/image` | Pending | Blocked |
-| 404 / robots / noindex | local status and headers pass | Pending | Blocked |
+| locale document / 404 / robots / noindex | zh-CN/en raw HTML and hydrated DOM use exact `lang`; localized/global 404 return product UI with `404` and valid language | Pending selected-host multi-root/global-404 probe | Blocked |
 | Brand defaults/assets/fallback | unit SHA receipt, env parse, production browser fallback pass | Custom color/logo Preview smoke pending | Blocked |
 | HMAC WebCrypto signer | deterministic `portal-hmac-v1` fixture passes | Edge verifier/rotation/replay pending in Edge #307 | Blocked |
 | Redis NX/EX + Lua | Not owned by Portal | Disposable Upstash + Edge verifier pending | Blocked |

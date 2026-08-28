@@ -22,7 +22,7 @@ checkPaths:
   - edgeone.json
 lastReviewedAt: 2026-08-28
 lastReviewedCommit: deee2ec
-lastReviewedNote: "Reviewed for Portal #10: byte-identical Database contracts, complete Search cards, real catalog summary, local R1 validation, and hosted qualification boundaries align."
+lastReviewedNote: "Reviewed for Portal #10: Database contracts, complete catalog evidence, locale-correct root documents, local validation, and hosted boundaries align."
 related:
   - AGENTS.md
   - README.md
@@ -797,6 +797,7 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 ### 11.1 HTML-first
 
 - 首页、目录、详情元数据和公开 LCIA 摘要必须存在于初始 HTML；
+- 每个 `/:locale` 初始响应的 `<html lang>` 必须等于已验证的路由 locale；不能依赖水合后脚本修正，也不能通过读取请求 header 把 SSG/ISR 全部转为动态渲染；
 - 关闭 JavaScript 后仍能完成 identifier/lexical 搜索提交、翻页、详情阅读和 tab 跳转；Hybrid 明确不属于无 JS 基线；
 - `generateMetadata` 读取同一 server query，生成 title、description、canonical、Open Graph 与 alternates；
 - 每个公开版本输出 Schema.org `Dataset` JSON-LD；Database 目录输出 `DataCatalog`；
@@ -1039,9 +1040,11 @@ MVP 不引入重量级状态管理、客户端查询缓存、Chart 或 Map 依�
 ### 15.2 Next 配置
 
 - App Router；
+- `app/[locale]/layout.tsx` 是本地化页面的动态根布局，并通过 `generateStaticParams` 保留 zh-CN/en 静态生成；根跳转、R0 probe 与全局 404 使用独立 root document，共享同一个主题/品牌 bootstrap；
 - 不使用 `output: "export"`；
 - EdgeOne 输出目录 `.next`；
 - 静态与 ISR 路由启用 `experimental.sri.algorithm="sha256"`，并由 R0 Preview 证明 EdgeOne 对该 experimental 能力兼容；
+- 多 root layout 的 unmatched URL 使用 Next `experimental.globalNotFound` 输出完整、带语言和 `noindex` 的 404 document；该 experimental 能力与 SRI 一并进入 R0 compatibility gate；
 - TypeScript 7 使用 Next 16 默认 TypeScript CLI 路径，并在 compatibility spike 验证；不为默认已启用的行为保留冗余 experimental 配置；
 - `next-env.d.ts` 由 `next dev/build/typegen` 生成并纳入 `tsconfig`，但不提交到 Git；
 - 不依赖 Next config redirects/rewrites，跨路径规则使用 `proxy.ts` 或 `edgeone.json`；
@@ -1258,6 +1261,7 @@ Dashboard 至少覆盖：
 ### 19.3 浏览器与 SEO
 
 - Playwright 覆盖 zh-CN/en、浅/深主题、三种断点；
+- zh-CN/en 的原始初始响应与水合后 DOM 都具有 exact `<html lang>`；本地化 404 与全局 404 返回真实 `404`、有效 document language 和产品错误界面；
 - 默认浅/深主色与 `tiangong-lca-next` snapshot 一致；其余 Portal semantic token、自定义主色、Light/Dark Logo、favicon、manifest/OG metadata 和失败 fallback 的视觉回归通过；
 - 无 cookie、无登录完成搜索→详情→比较→引用；
 - JavaScript 关闭后核心页面可读；
@@ -1435,6 +1439,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 ### 23.3 SEO
 
 - 首页、目录、详情与公开 LCIA 的重要内容在初始 HTML；
+- zh-CN/en 的初始 `<html lang>` 与路由一致，未知 URL 的 404 document 具有有效语言且保持 `noindex`；
 - 每个详情页有唯一 canonical、hreflang、结构化数据和正确状态码；
 - 两个 catalog sitemap index 各固定列出 64 个数字 shard；分片仅含允许索引的最新公开对象，128 个公开 shard 的 union 无重复或遗漏；
 - sitemap 上游 RPC 始终 `no-store`，成功 XML 严格小于 5 MiB；响应默认 `no-store`，只有托管平台通过同步 300 秒/no-stale 验收才启用唯一一层共享 CDN cache；404/503 不缓存；
