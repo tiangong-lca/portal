@@ -19,5 +19,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/(zh-CN|en)/:path*", "/r0-compat/:path*"],
+  matcher: ["/r0-compat/:path*", "/((?!internal|_next|_vercel|.*\\..*).*)"],
 };

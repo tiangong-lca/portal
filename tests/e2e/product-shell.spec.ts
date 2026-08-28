@@ -12,6 +12,7 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
 }) => {
   await page.goto("/");
   await expect(page).toHaveURL(/\/zh-CN$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("从数据身份出发");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/zh-CN$/);
   await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
@@ -36,8 +37,10 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
 
   await page.getByRole("link", { name: "Switch to English" }).click();
   await expect(page).toHaveURL(/\/en$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Start with data identity");
-  await expect(page.locator('[lang="en"]')).toBeVisible();
+  const englishHtml = await (await page.request.get("/en")).text();
+  expect(englishHtml).toMatch(/<html[^>]*\slang="en"/u);
   await expect(page.getByText("Public catalog status", { exact: true })).toBeVisible();
   await expect(page.getByText("Processes", { exact: true })).toBeVisible();
   await expect(page.getByText("Flows", { exact: true })).toBeVisible();
