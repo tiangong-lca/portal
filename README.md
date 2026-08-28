@@ -17,7 +17,7 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: f756a07
+lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
 lastReviewedNote: "Reviewed for Portal #19: local R1/R2 contracts, strict Hybrid fallback, explicit fragment disclosure, and deferred hosted qualification are current."
 related:
   - AGENTS.md

@@ -21,7 +21,7 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: f756a07
+lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
 lastReviewedNote: "Reviewed for Portal #19: R2 Hybrid BFF/fallback, advisory evidence, explicit fragment disclosure, local validation, and hosted boundaries align."
 related:
   - AGENTS.md

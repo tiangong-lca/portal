@@ -21,7 +21,7 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: f756a07
+lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
 lastReviewedNote: "Reviewed for Portal #19: the client-enhanced R2 Hybrid route and fragment sharing do not change ISR HTML, Flight delivery, the retained strict CSP incompatibility, or the blocked R0 decision."
 related:
   - compatibility-matrix.md

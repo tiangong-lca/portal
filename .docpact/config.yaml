@@ -1,7 +1,7 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-28"
-lastReviewedCommit: "f756a07"
+lastReviewedCommit: "cd08545626af89c710bf23ece40b7d5664e97288"
 lastReviewedNote: "Reviewed for Portal #19: R2 Hybrid BFF/UI, fallback, sharing, and proof paths remain within existing product/runtime ownership and routing."
 
 catalog:
