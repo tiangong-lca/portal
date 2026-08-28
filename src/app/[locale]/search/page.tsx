@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/empty";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { localizedText, mapSearchItem } from "@/features/catalog/map-public-data";
+import { HybridSearchPanel } from "@/features/catalog/hybrid-search-panel";
 import { SearchResults } from "@/features/catalog/search-results";
 import { isPortalLocale, localePath } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
@@ -128,8 +129,9 @@ export default async function SearchPage({
   }
 
   const query = parsedSearch.query;
-  const [t, detail, common] = await Promise.all([
+  const [t, hybrid, detail, common] = await Promise.all([
     getTranslations({ locale, namespace: "Search" }),
+    getTranslations({ locale, namespace: "Hybrid" }),
     getTranslations({ locale, namespace: "Detail" }),
     getTranslations({ locale, namespace: "Common" }),
   ]);
@@ -138,6 +140,26 @@ export default async function SearchPage({
   let nextCursor: string | null = null;
   let results: ReturnType<typeof mapSearchItem>[] = [];
   let facets: Awaited<ReturnType<typeof getPublicFacets>> | null = null;
+  const resultLabels = {
+    collect: detail("collect"),
+    compare: detail("compare"),
+    copied: detail("citationCopied"),
+    copyCitation: detail("copyCitation"),
+    details: common("details"),
+    emptyDescription: t("emptyDescription"),
+    emptyTitle: t("emptyTitle"),
+    functionalUnit: detail("functionalUnit"),
+    geography: detail("geography"),
+    match: t("matchEvidence"),
+    metadataOnly: common("metadataOnly"),
+    public: common("public"),
+    quality: detail("quality"),
+    reference: detail("referenceProduct"),
+    referenceYear: detail("referenceYear"),
+    selectForCompare: t("selectForCompare"),
+    source: detail("sourceDatabase"),
+    technology: detail("technology"),
+  };
 
   if (query && !inputInvalid) {
     try {
@@ -196,6 +218,43 @@ export default async function SearchPage({
           <p className="text-muted-foreground text-xs">{t("privacy")}</p>
         </form>
       </search>
+
+      <HybridSearchPanel
+        initialFilters={parsedSearch.filters}
+        initialKind={parsedSearch.kind}
+        labels={{
+          advisoryDescription: hybrid("advisoryDescription"),
+          advisoryTitle: hybrid("advisoryTitle"),
+          compareSelected: t("compareSelected"),
+          description: hybrid("description"),
+          emptyDescription: hybrid("emptyDescription"),
+          emptyTitle: hybrid("emptyTitle"),
+          error: hybrid("error"),
+          fallbackDescription: hybrid("fallbackDescription"),
+          fallbackTitle: hybrid("fallbackTitle"),
+          flow: hybrid("flow"),
+          kind: hybrid("kind"),
+          privacy: hybrid("privacy"),
+          process: hybrid("process"),
+          queryLabel: hybrid("queryLabel"),
+          queryPlaceholder: hybrid("queryPlaceholder"),
+          resultsTitle: hybrid("resultsTitle"),
+          running: hybrid("running"),
+          semanticQuery: hybrid("semanticQuery"),
+          shareCancel: hybrid("shareCancel"),
+          shareConfirm: hybrid("shareConfirm"),
+          shareDisclosure: hybrid("shareDisclosure"),
+          sharePreview: hybrid("sharePreview"),
+          shareQuery: hybrid("shareQuery"),
+          shared: hybrid("shared"),
+          submit: hybrid("submit"),
+          terms: hybrid("terms"),
+          title: hybrid("title"),
+        }}
+        locale={locale}
+        resultLabels={resultLabels}
+        siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
+      />
 
       <div aria-label={t("objectType")} className="flex flex-wrap gap-2">
         {(["process", "flow"] as const).map((kind) => (
@@ -282,26 +341,7 @@ export default async function SearchPage({
               <input name="v" type="hidden" value="1" />
               <SearchResults
                 items={results}
-                labels={{
-                  collect: detail("collect"),
-                  compare: detail("compare"),
-                  copied: detail("citationCopied"),
-                  copyCitation: detail("copyCitation"),
-                  details: common("details"),
-                  emptyDescription: t("emptyDescription"),
-                  emptyTitle: t("emptyTitle"),
-                  functionalUnit: detail("functionalUnit"),
-                  geography: detail("geography"),
-                  match: t("matchEvidence"),
-                  metadataOnly: common("metadataOnly"),
-                  public: common("public"),
-                  quality: detail("quality"),
-                  reference: detail("referenceProduct"),
-                  referenceYear: detail("referenceYear"),
-                  selectForCompare: t("selectForCompare"),
-                  source: detail("sourceDatabase"),
-                  technology: detail("technology"),
-                }}
+                labels={resultLabels}
                 locale={locale}
                 selectable
                 siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}

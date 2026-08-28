@@ -17,7 +17,7 @@ import { localePath, type PortalLocale } from "@/i18n/routing";
 
 import { CitationCopy } from "./citation-copy";
 
-type SearchResultLabels = {
+export type SearchResultLabels = {
   collect: string;
   compare: string;
   copied: string;
