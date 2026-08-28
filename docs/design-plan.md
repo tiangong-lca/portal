@@ -22,7 +22,7 @@ checkPaths:
   - edgeone.json
 lastReviewedAt: 2026-08-28
 lastReviewedCommit: c4667b1
-lastReviewedNote: "Reviewed for Portal #10: byte-identical Database contracts, complete Search cards, real catalog summary, Production read probes, and Database #543 blocker align with R1 gates."
+lastReviewedNote: "Reviewed for Portal #10: byte-identical Database contracts, complete Search cards, real catalog summary, local R1 validation, and hosted qualification boundaries align."
 related:
   - AGENTS.md
   - README.md
@@ -1385,7 +1385,6 @@ Portal 已在 workspace delivery profile 中注册为 `portal`，所有新工作
 - Portal 使用 `layout: repo` 的 repository-owned Docpact config；root Docpact 只拥有跨仓路由和 gitlink integration；
 - root gitlink 是经过审查的集成输入，不自动跟随 child `main`。每个需要 root integration 的 release 都必须单独 pin exact eligible child SHA；
 - onboarding 完成只证明仓库和交付链可用，不证明 R0、R1、EdgeOne Preview 或 Production readiness。
-- Database R1 public catalog/card context/catalog summary/sitemap 已进入 Production-compatible `database-engine/main@d9b131b7e911100b67a0ed3427a549d30d622433`；Edge R1 verifier/LCIA 已进入 `edge-functions/main@eaa63f5b8f9f6463f383b1385ba1233db558d3f9`、完成 Production 安全探针并由 workspace root pin。Release finalize、所选 Portal host signer 与真实 public LCIA 200/cache-hit 仍未完成。
 
 ### 22.2 正常交付顺序
 
@@ -1471,8 +1470,6 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 14. 浏览器 bundle、sourcemap、响应和日志中无 HMAC secret、service role、数据库 secret、内部 locator 或 Hybrid body；GET lexical `q` 的 24 小时 access-log 提示与 Referrer Policy 生效；
 15. §18.1 的 R1 路由性能预算、§11.3 的 60 秒 visibility SLA/5 分钟 LCIA 与 sitemap SLA/cache isolation、§18.3 的错误与 fallback 指标均通过；
 16. Portal、Database、Edge 的 PR/validation evidence 完整；所有 required main SHA 已由 root exact gitlink integration 验证，workspace coordination 和 child Issues 处于正确终态。
-
-当前 Portal #10 已在本地/CI fixture 证明 generated contract drift、完整 Search card context、真实首页 summary 与 42/42 production Playwright；Production 只读探针保留一个上游 blocker：Database #543 的 summary `classification/flow` 示例在 `portal_search_flows_v1` 触发 8 秒 statement timeout。该问题必须在 Database owner repo 修复、promote 并完成 Production readback；Portal 不提高 8 秒 timeout、不推断替代示例，也不把 `accessLevel` 误当作 100/200 状态证据。Release #60 与所选托管平台证据仍分别阻塞真实 LCIA 200/cache-hit 和 hosted quality gate。
 
 ### 23.6 R2 Intelligent Discovery release checklist
 

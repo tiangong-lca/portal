@@ -27,7 +27,7 @@ checkPaths:
   - edgeone.json
 lastReviewedAt: 2026-08-28
 lastReviewedCommit: c4667b1
-lastReviewedNote: "Reviewed for Portal #10: exact Database contract snapshots, Production-live probe isolation, anonymous/server-only boundaries, and validation commands align."
+lastReviewedNote: "Reviewed for Portal #10: exact Database contract snapshots, local R1 validation, anonymous/server-only boundaries, and separately deferred hosted probes align."
 related:
   - README.md
   - docs/design-plan.md
