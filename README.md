@@ -17,7 +17,7 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: deee2ec
+lastReviewedCommit: f756a07
 lastReviewedNote: "Reviewed for Portal #10: local R1 contracts, locale-correct HTML, catalog evidence, and separately deferred hosted qualification are current."
 related:
   - AGENTS.md

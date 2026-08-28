@@ -21,7 +21,7 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: c4667b1
+lastReviewedCommit: f756a07
 lastReviewedNote: "Reviewed for Portal #10: locale root documents and global 404 preserve local ISR but do not change the retained strict CSP/Flight incompatibility or reopen R0."
 related:
   - compatibility-matrix.md
