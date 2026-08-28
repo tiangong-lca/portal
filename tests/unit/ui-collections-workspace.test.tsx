@@ -23,7 +23,13 @@ const labels = {
   saved: "Saved",
   selected: "Selected",
   share: "Share",
+  shareCancel: "Cancel share",
+  shareConfirm: "Confirm share",
+  shareDisclosure: "Disclosure warning",
+  sharePreview: "Share preview",
+  shareWithNotes: "Share notes",
   shared: "Shared",
+  sharedWithNotes: "Shared notes",
 };
 
 afterEach(() => {

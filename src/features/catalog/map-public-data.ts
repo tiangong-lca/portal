@@ -6,6 +6,7 @@ import type {
   PublicSearchPage,
   PublicVersionPage,
 } from "@/server/contracts/portal";
+import type { PortalHybridCandidate } from "@/server/hybrid/contracts";
 
 import type {
   CatalogResultViewModel,
@@ -72,6 +73,38 @@ export function mapSearchItem(
     geography: formatGeography(item.geography, locale),
     kind: item.key.kind,
     match: item.match.reasonCodes.join(", "),
+    name: localizedText(item.names, locale) ?? exactRef(item.key.id, item.key.version),
+    quality: context.quality.reviewStatus ?? undefined,
+    ref: exactRef(item.key.id, item.key.version),
+    referenceProduct: localizedText(context.reference.name, locale),
+    referenceYear: item.referenceYear?.toString(),
+    source: source || undefined,
+    technology: localizedText(context.technology, locale),
+  };
+}
+
+export function mapHybridItem(item: PortalHybridCandidate, locale: Locale): CatalogResultViewModel {
+  const context = item.context;
+  const source =
+    localizedText(context.source.providerName, locale) ??
+    [context.source.databaseId, context.source.databaseVersion].filter(Boolean).join(" · ");
+  const evidence = [
+    item.match.evidence.lexicalRank === null ? null : `lexical #${item.match.evidence.lexicalRank}`,
+    item.match.evidence.semanticRank === null
+      ? null
+      : `semantic #${item.match.evidence.semanticRank} · distance ${item.match.evidence.semanticDistance}`,
+    `score ${item.match.score}`,
+  ]
+    .filter(Boolean)
+    .join("; ");
+  return {
+    accessLevel: item.accessLevel,
+    functionalUnit: context.functionalUnit
+      ? `${context.functionalUnit.amount} ${context.functionalUnit.unit}`
+      : undefined,
+    geography: formatGeography(item.geography, locale),
+    kind: item.key.kind,
+    match: `${item.match.reasonCodes.join(", ")} (${evidence})`,
     name: localizedText(item.names, locale) ?? exactRef(item.key.id, item.key.version),
     quality: context.quality.reviewStatus ?? undefined,
     ref: exactRef(item.key.id, item.key.version),

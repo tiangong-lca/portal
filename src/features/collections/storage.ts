@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { isExactDatasetRef } from "@/features/catalog/exact-ref";
+import { decodeFragmentText, encodeFragmentText } from "@/lib/fragment-codec";
 
 export const collectionsStorageKey = "tiangong.portal.collections.v1";
 export const maxCollectionImportBytes = 1_000_000;
@@ -49,26 +50,10 @@ export function parseCollectionJson(raw: string): CollectionState {
   return parsed;
 }
 
-function toBase64Url(value: string): string {
-  const bytes = new TextEncoder().encode(value);
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
-}
-
-function fromBase64Url(value: string): string {
-  const padded = value
-    .replaceAll("-", "+")
-    .replaceAll("_", "/")
-    .padEnd(Math.ceil(value.length / 4) * 4, "=");
-  const binary = atob(padded);
-  return new TextDecoder().decode(Uint8Array.from(binary, (character) => character.charCodeAt(0)));
-}
-
 export function encodeCollectionFragment(members: CollectionMember[]): string {
   if (members.length > maxSharedMembers) throw new Error("collection_share_member_limit");
   const payload = JSON.stringify({ members: members.map((member) => member.ref), v: 1 });
-  const fragment = `#collection=${toBase64Url(payload)}`;
+  const fragment = `#collection=${encodeFragmentText(payload)}`;
   if (fragment.length > maxFragmentLength) throw new Error("collection_share_fragment_limit");
   return fragment;
 }
@@ -82,6 +67,32 @@ export function decodeCollectionFragment(fragment: string): string[] {
       v: z.literal(1),
     })
     .strict()
-    .parse(JSON.parse(fromBase64Url(value)));
+    .parse(JSON.parse(decodeFragmentText(value)));
   return [...new Set(parsed.members)];
+}
+
+const disclosedCollectionPayloadSchema = z
+  .strictObject({
+    state: collectionStateSchema,
+    v: z.literal(2),
+  })
+  .refine((value) => value.state.members.length <= maxSharedMembers, {
+    message: "collection_share_member_limit",
+    path: ["state", "members"],
+  });
+
+export function encodeDisclosedCollectionFragment(state: CollectionState): string {
+  const payload = disclosedCollectionPayloadSchema.parse({ state, v: 2 });
+  const fragment = `#collection-notes=${encodeFragmentText(JSON.stringify(payload))}`;
+  if (fragment.length > maxFragmentLength) throw new Error("collection_share_fragment_limit");
+  return fragment;
+}
+
+export function decodeDisclosedCollectionFragment(fragment: string): CollectionState {
+  if (!fragment.startsWith("#collection-notes=") || fragment.length > maxFragmentLength) {
+    throw new Error("collection_share_invalid");
+  }
+  return disclosedCollectionPayloadSchema.parse(
+    JSON.parse(decodeFragmentText(fragment.slice("#collection-notes=".length))),
+  ).state;
 }

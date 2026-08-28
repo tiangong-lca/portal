@@ -20,8 +20,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: f756a07
-lastReviewedNote: "Reviewed for Portal #10: locale root documents and global 404 pass locally but do not provide selected-host R0 Preview or reopen CSP/ISR; R0 remains blocked."
+lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
+lastReviewedNote: "Reviewed for Portal #19: local R2 Hybrid/fallback and sharing evidence do not provide selected-host R0 Preview or reopen CSP/ISR; R0 remains blocked."
 related:
   - ../design-plan.md
   - ../../AGENTS.md

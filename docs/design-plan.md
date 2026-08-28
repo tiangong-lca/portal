@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: f756a07
-lastReviewedNote: "Reviewed for Portal #10: Database contracts, complete catalog evidence, locale-correct root documents, local validation, and hosted boundaries align."
+lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
+lastReviewedNote: "Reviewed for Portal #19: R2 Hybrid BFF/fallback, advisory evidence, explicit fragment disclosure, local validation, and hosted boundaries align."
 related:
   - AGENTS.md
   - README.md
@@ -1077,6 +1077,9 @@ tiangong-lca-portal/
 │   │   │   ├── collections/
 │   │   │   ├── browse/[dimension]/
 │   │   │   └── methodology/
+│   │   ├── internal/
+│   │   │   ├── hybrid/
+│   │   │   └── lcia/
 │   │   ├── robots.ts
 │   │   └── sitemap.ts
 │   ├── components/
@@ -1086,14 +1089,14 @@ tiangong-lca-portal/
 │   ├── config/
 │   │   └── brand.ts
 │   ├── features/
-│   │   ├── search/
-│   │   ├── dataset-detail/
-│   │   ├── compare/
-│   │   └── collections/
+│   │   ├── catalog/
+│   │   ├── collections/
+│   │   └── compare/
 │   ├── server/
 │   │   ├── contracts/
 │   │   ├── data/
 │   │   ├── search/
+│   │   ├── hybrid/
 │   │   └── lcia/
 │   ├── i18n/
 │   └── lib/

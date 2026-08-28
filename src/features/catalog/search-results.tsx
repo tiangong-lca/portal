@@ -17,7 +17,7 @@ import { localePath, type PortalLocale } from "@/i18n/routing";
 
 import { CitationCopy } from "./citation-copy";
 
-type SearchResultLabels = {
+export type SearchResultLabels = {
   collect: string;
   compare: string;
   copied: string;
@@ -43,11 +43,13 @@ export function SearchResults({
   labels,
   locale,
   selectable = false,
+  siteOrigin,
 }: {
   items: CatalogResultViewModel[];
   labels: SearchResultLabels;
   locale: PortalLocale;
   selectable?: boolean;
+  siteOrigin: string;
 }) {
   if (items.length === 0) {
     return (
@@ -66,7 +68,7 @@ export function SearchResults({
         const detailHref = localePath(locale, `${item.kind}/${encodeURIComponent(item.ref)}`);
         const citation = `TianGong LCA. ${item.name}. ${item.kind} dataset, ${item.ref}. ${new URL(
           detailHref,
-          process.env.SITE_URL ?? "http://localhost:3000",
+          siteOrigin,
         ).toString()}`;
         const context = [
           { label: labels.reference, value: item.referenceProduct },

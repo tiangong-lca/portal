@@ -147,6 +147,7 @@ export default async function BrowsePage({
             technology: detail("technology"),
           }}
           locale={locale}
+          siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
         />
       ) : facetValues.length > 0 ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
