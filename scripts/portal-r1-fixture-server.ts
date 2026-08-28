@@ -546,6 +546,7 @@ export async function startPortalR1FixtureServer(
   };
   const usedNonces = new Set<string>();
   const lciaReceiptsByCorrelationId = new Map<string, FixtureRequestReceipt>();
+  const hybridReceiptsByCorrelationId = new Map<string, FixtureRequestReceipt>();
   const rpcReceiptsByFingerprint = new Map<string, FixtureRpcReceipt>();
   const server = createServer(async (request, response) => {
     try {
@@ -579,6 +580,25 @@ export async function startPortalR1FixtureServer(
         }
         writeJson(response, 200, {
           schemaVersion: "portal.r1-fixture-lcia-receipt.v1",
+          receipt,
+        });
+        return;
+      }
+      if (request.method === "GET" && requestUrl.pathname.startsWith("/receipts/hybrid/")) {
+        const correlationId = requestUrl.pathname.slice("/receipts/hybrid/".length);
+        if (
+          !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u.test(correlationId)
+        ) {
+          writeJson(response, 404, { code: "fixture_receipt_not_found" });
+          return;
+        }
+        const receipt = hybridReceiptsByCorrelationId.get(correlationId);
+        if (!receipt) {
+          writeJson(response, 404, { code: "fixture_receipt_not_found" });
+          return;
+        }
+        writeJson(response, 200, {
+          schemaVersion: "portal.r2-fixture-hybrid-receipt.v1",
           receipt,
         });
         return;
@@ -786,11 +806,21 @@ export async function startPortalR1FixtureServer(
         }
 
         receipts.hybridAccepted += 1;
-        receipts.lastHybrid = {
+        const receipt = {
           ...bodyReceipt(rawBody),
           keyId: verification.keyId,
           ...(verification.correlationId ? { correlationId: verification.correlationId } : {}),
         };
+        receipts.lastHybrid = receipt;
+        if (verification.correlationId) {
+          hybridReceiptsByCorrelationId.delete(verification.correlationId);
+          hybridReceiptsByCorrelationId.set(verification.correlationId, receipt);
+          while (hybridReceiptsByCorrelationId.size > maximumCorrelationReceipts) {
+            const oldest = hybridReceiptsByCorrelationId.keys().next().value as string | undefined;
+            if (!oldest) break;
+            hybridReceiptsByCorrelationId.delete(oldest);
+          }
+        }
         writeJson(response, 200, hybridSearchResponse(input));
         return;
       }
