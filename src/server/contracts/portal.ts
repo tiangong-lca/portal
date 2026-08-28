@@ -2,12 +2,34 @@ import "server-only";
 
 import { z } from "zod";
 
+import type {
+  CasExample as DatabaseCatalogCasExample,
+  ClassificationExample as DatabaseCatalogClassificationExample,
+  TianGongPortalPublicCatalogSummaryV1 as DatabasePublicCatalogSummary,
+  UuidExample as DatabaseCatalogUuidExample,
+} from "../../../contracts/database-engine/portal/generated/portal.public-catalog-summary.v1";
+import type { TianGongPortalPublicSearchPageV1 as DatabasePublicSearchPage } from "../../../contracts/database-engine/portal/generated/portal.public-search-page.v1";
+
+export type PublicCatalogSummary = Omit<DatabasePublicCatalogSummary, "examples"> & {
+  examples: Array<
+    DatabaseCatalogUuidExample | DatabaseCatalogCasExample | DatabaseCatalogClassificationExample
+  >;
+};
+
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const versionPattern = /^\d{2}\.\d{2}\.\d{3}$/;
 const realPattern =
   /^(?=(?:[^0-9]*[0-9]){1,38}[^0-9]*$)(?:0|-?(?:[1-9]\d*(?:\.\d*[1-9])?|0\.\d*[1-9]))$/;
 const publicHttpsUriPattern = /^https:\/\/[^/?#@\s]+(?:\/[^?#\s]*)?$/;
 const languagePattern = /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;
+
+function excludesC0C1Controls(value: string): boolean {
+  for (const character of value) {
+    const codePoint = character.codePointAt(0)!;
+    if (codePoint <= 0x1f || (codePoint >= 0x7f && codePoint <= 0x9f)) return false;
+  }
+  return true;
+}
 
 export const portalUuidSchema = z.string().regex(uuidPattern);
 export const portalVersionSchema = z.string().regex(versionPattern);
@@ -97,6 +119,20 @@ export const publicSourceSchema = z.strictObject({
   providerName: localizedTextSchema,
   licenseId: portalNullableNonEmptyStringSchema,
   licenseUrl: portalPublicHttpsUriSchema.nullable(),
+});
+export const publicCardReferenceSchema = z.strictObject({
+  kind: z.enum(["reference_product", "reference_flow_property"]),
+  name: localizedTextSchema,
+});
+export const publicCardQualitySchema = z.strictObject({
+  reviewStatus: portalNullableNonEmptyStringSchema,
+});
+export const publicCardContextSchema = z.strictObject({
+  reference: publicCardReferenceSchema,
+  functionalUnit: completeFunctionalUnitSchema.nullable(),
+  technology: localizedTextSchema,
+  source: publicSourceSchema,
+  quality: publicCardQualitySchema,
 });
 
 const publicNamedReferencePresentSchema = z.strictObject({
@@ -264,16 +300,83 @@ export const publicSearchItemSchema = z.strictObject({
   summary: localizedTextSchema,
   geography: geographySchema,
   referenceYear: portalNullableYearSchema,
+  context: publicCardContextSchema,
   modifiedAt: portalDateTimeSchema,
   match: searchMatchSchema,
 });
-export const publicSearchPageSchema = z.strictObject({
+const publicSearchPageRuntimeSchema = z.strictObject({
   schemaVersion: z.literal("portal.public-search-page.v1"),
   kind: portalDatasetKindSchema,
   queryFingerprint: portalSha256Schema,
   items: z.array(publicSearchItemSchema).max(50),
   nextCursor: portalNullableCursorSchema,
 });
+export const publicSearchPageSchema: z.ZodType<DatabasePublicSearchPage> =
+  publicSearchPageRuntimeSchema;
+
+const catalogSummaryLabelItemSchema = z.strictObject({
+  language: z.string().min(2).max(35).regex(languagePattern),
+  value: z.string().min(1).max(160),
+});
+const catalogSummaryLabelSchema = z
+  .tuple([catalogSummaryLabelItemSchema])
+  .rest(catalogSummaryLabelItemSchema)
+  .refine((items) => items.length <= 2, "example label must contain at most two items");
+const catalogSummaryExampleSchema = z.discriminatedUnion("queryKind", [
+  z.strictObject({
+    queryKind: z.literal("uuid"),
+    datasetKind: portalDatasetKindSchema,
+    query: portalUuidSchema,
+    label: catalogSummaryLabelSchema,
+  }),
+  z.strictObject({
+    queryKind: z.literal("cas"),
+    datasetKind: z.literal("flow"),
+    query: z
+      .string()
+      .max(12)
+      .regex(/^[0-9]{2,7}-[0-9]{2}-[0-9]$/),
+    label: catalogSummaryLabelSchema,
+  }),
+  z.strictObject({
+    queryKind: z.literal("classification"),
+    datasetKind: portalDatasetKindSchema,
+    query: z
+      .string()
+      .min(1)
+      .max(128)
+      .refine(excludesC0C1Controls, "classification example contains a control character"),
+    label: catalogSummaryLabelSchema,
+  }),
+]);
+const publicCatalogSummaryRuntimeSchema = z.strictObject({
+  schemaVersion: z.literal("portal.public-catalog-summary.v1"),
+  counts: z
+    .strictObject({
+      process: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
+      flow: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
+      total: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
+    })
+    .refine((counts) => counts.process + counts.flow === counts.total, {
+      message: "catalog count total must equal process plus flow",
+      path: ["total"],
+    }),
+  latestModifiedAt: portalDateTimeSchema.nullable(),
+  examples: z
+    .array(catalogSummaryExampleSchema)
+    .max(3)
+    .refine(
+      (examples) => new Set(examples.map((example) => example.queryKind)).size === examples.length,
+      "catalog example kinds must be unique",
+    )
+    .refine(
+      (examples) =>
+        new Set(examples.map((example) => JSON.stringify(example))).size === examples.length,
+      "catalog examples must be unique",
+    ),
+});
+export const publicCatalogSummarySchema: z.ZodType<PublicCatalogSummary> =
+  publicCatalogSummaryRuntimeSchema;
 
 export const publicFacetsSchema = z.strictObject({
   schemaVersion: z.literal("portal.public-facets.v1"),
@@ -409,6 +512,9 @@ export const portalContractSchemas = {
     capabilities: publicCapabilitiesSchema,
     fieldOrigin: fieldOriginSchema,
     source: publicSourceSchema,
+    cardReference: publicCardReferenceSchema,
+    cardQuality: publicCardQualitySchema,
+    cardContext: publicCardContextSchema,
     namedReference: publicNamedReferenceSchema,
     compliance: publicComplianceDeclarationSchema,
     administration: publicAdministrationSchema,
@@ -417,6 +523,7 @@ export const portalContractSchemas = {
   exchanges: publicExchangePageSchema,
   facets: publicFacetsSchema,
   search: publicSearchPageSchema,
+  catalogSummary: publicCatalogSummarySchema,
   sitemap: publicSitemapPageSchema,
   sitemapManifest: publicSitemapManifestSchema,
   sitemapShard: publicSitemapShardSchema,

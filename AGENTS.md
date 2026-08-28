@@ -17,6 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - .docpact/config.yaml
   - package.json
+  - .prettierignore
+  - contracts/database-engine/portal/**
   - src/**
   - public/**
   - tests/**
@@ -24,7 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: 99da1ed
+lastReviewedCommit: f756a07
+lastReviewedNote: "Reviewed for Portal #10: exact Database snapshots, locale-correct root documents, local R1 validation, and separately deferred hosted probes align."
 related:
   - README.md
   - docs/design-plan.md
@@ -71,6 +74,10 @@ Before changing files, run the workspace wrapper with this repository as the exp
 ## Validation contract
 
 Use the scripts declared by the checked-in `package.json`. At minimum, every reviewable change must pass formatting, lint, typecheck, targeted tests, and build when those surfaces exist. UI changes additionally require browser and accessibility verification; server/security changes require contract and negative-path tests.
+
+Localized routes own their root document under `app/[locale]`: the initial HTML must set `<html lang>` to the exact validated route locale without request APIs that would turn SSG/ISR into dynamic rendering. Non-localized probes and the global 404 use separate root documents and must preserve the same brand bootstrap, CSP, and noindex boundaries.
+
+`contracts/database-engine/portal/**` is a byte-identical generated snapshot of one exact promoted Database commit. `pnpm check:database-contracts` verifies its closed inventory, source commit, byte lengths, and SHA-256 manifest; an explicit `--database-root` check additionally compares every file to the authoritative Database Git object. Prettier must ignore this directory because reformatting would destroy the byte identity. The explicit `PORTAL_LIVE_PROBE=true` Production integration test is read-only and default-skipped; normal local/CI tests never contact Production.
 
 R0 local tests run the strict CSP candidate in report-only mode so framework hydration remains observable. They are not release evidence. Only `docs/r0/compatibility-matrix.md` may declare R0 status, and it must remain blocked until an exact EdgeOne Preview passes enforcing CSP, runtime, cache, HMAC/Redis, brand, and rollback probes.
 

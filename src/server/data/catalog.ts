@@ -12,6 +12,7 @@ import {
 } from "@/server/contracts/input";
 import {
   publicDatasetEnvelopeSchema,
+  publicCatalogSummarySchema,
   publicExchangePageSchema,
   publicFacetsSchema,
   publicSearchPageSchema,
@@ -21,6 +22,7 @@ import {
   publicVersionPageSchema,
   portalSitemapShardCursorSchema,
   type PublicDatasetEnvelope,
+  type PublicCatalogSummary,
   type PublicExchangePage,
   type PublicFacets,
   type PublicSearchPage,
@@ -101,6 +103,14 @@ export function searchPublicFlows(
   client?: PortalRpcClient,
 ): Promise<PublicSearchPage> {
   return searchPublicCatalog("flow", input, client);
+}
+
+export function getPublicCatalogSummary(client?: PortalRpcClient): Promise<PublicCatalogSummary> {
+  return clientOrDefault(client).call("portal_catalog_summary_v1", {}, publicCatalogSummarySchema, {
+    mode: "revalidate",
+    seconds: 300,
+    tags: ["portal:catalog-summary"],
+  });
 }
 
 export async function getPublicDataset(

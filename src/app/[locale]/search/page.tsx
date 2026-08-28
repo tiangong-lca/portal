@@ -290,9 +290,17 @@ export default async function SearchPage({
                   details: common("details"),
                   emptyDescription: t("emptyDescription"),
                   emptyTitle: t("emptyTitle"),
+                  functionalUnit: detail("functionalUnit"),
+                  geography: detail("geography"),
+                  match: t("matchEvidence"),
                   metadataOnly: common("metadataOnly"),
                   public: common("public"),
+                  quality: detail("quality"),
+                  reference: detail("referenceProduct"),
+                  referenceYear: detail("referenceYear"),
                   selectForCompare: t("selectForCompare"),
+                  source: detail("sourceDatabase"),
+                  technology: detail("technology"),
                 }}
                 locale={locale}
                 selectable

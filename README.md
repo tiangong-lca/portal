@@ -17,7 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: 99da1ed
+lastReviewedCommit: f756a07
+lastReviewedNote: "Reviewed for Portal #10: local R1 contracts, locale-correct HTML, catalog evidence, and separately deferred hosted qualification are current."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -58,6 +59,6 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 Canonical `tiangong-lca/portal` 已有可写的 `main`，并已作为 `portal` 纳入 workspace 的 M1 分支策略、delivery adapter、Docpact 路由与精确 root gitlink integration 流程。Root gitlink 不自动跟随 child `main`；每个需要 workspace integration 的 release 仍须单独 pin 经审阅的 exact Portal SHA。仓库接入完成不代表 R0、R1、EdgeOne Preview 或 Production 已就绪。
 
-当前 `main` 已建立 R1 Public Catalog 的主要骨架：`zh-CN`/`en` 首页与 Browse、lexical/identifier Search、Process/Flow 精确版本详情与 Versions、Exchanges、publication-bound LCIA、确定性比较、引用、本地候选集、SEO/JSON-LD、OKLCH 50–950 品牌色阶与对比度语义、移动 Logo mark、axe/no-JS/forced-colors/三断点自动门、本地 CWV/cache/security probes、依赖漏洞与许可证门、隔离上游 fixture 以及 production Playwright。Catalog sitemap 使用固定 64-way Database manifest、根级双语 reciprocal XML shard 与严格 5 MiB 输出门；默认 `no-store`，只有真实 CDN 证明 300 秒内同步失效且不返回 stale 后才启用共享缓存。完整搜索卡/generated type drift、真实首页统计与示例、部署后自定义品牌视觉/回滚、人工屏幕阅读器走查、真实 CWV/SLA 与最终上游集成仍未完成，因此不能称为 R1 产品闭环。
+当前实现已建立 R1 Public Catalog 的本地主要闭环：`zh-CN`/`en` 首页与 Browse、lexical/identifier Search、Process/Flow 精确版本详情与 Versions、Exchanges、publication-bound LCIA、确定性比较、引用、本地候选集、locale-correct 初始 `<html lang>`、SEO/JSON-LD、OKLCH 50–950 品牌色阶与对比度语义、移动 Logo mark、axe/no-JS/forced-colors/三断点自动门、本地 CWV/cache/security probes、依赖漏洞与许可证门、隔离上游 fixture 以及本地 production-build Playwright。Portal 按 exact Database commit 保存 13 份 JSON Schema 与 13 份 generated `.d.ts` 的 byte-identical snapshot，并以 manifest/上游 Git 对比阻止 drift；Search 卡严格消费完整 public context，首页使用 5 分钟 ISR 显示权威 Process/Flow 计数、最近公开变更与可执行 UUID/CAS/分类示例。Catalog sitemap 使用固定 64-way Database manifest、根级双语 reciprocal XML shard 与严格 5 MiB 输出门；默认 `no-store`，只有真实 CDN 证明 300 秒内同步失效且不返回 stale 后才启用共享缓存。Portal PR、最终 exact-SHA root integration 与本地真实浏览器验收完成后，才可称为本地 R1 交付完成。
 
-当前发布阻塞包括：真实 EdgeOne Preview 与严格 CSP/ISR 组合证据缺失，Database/Edge required changes 尚未全部 promote 到各自 `main`，Release finalize 尚未进入 `main`，上述 Portal R1 gap 尚未关闭，以及最终 R1 exact-SHA root integration 尚未执行。初始 test/Dev/Production 按批准决策共享一套 Upstash endpoint/token，但使用独立 R0/Dev/Main namespace 与完全不同的 HMAC；namespace 不是安全边界，共享配额、故障域和轮换域风险必须进入发布证据。因此 R0 仍为 blocked，任何公共或 Production 发布仍是 no-go。详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)、[Redis/HMAC contract](docs/design-plan.md#103-hmac-signed-hybrid-search) 与 [R1 release checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist)。
+发布、promotion、托管平台和部署证据不属于当前本地里程碑。Portal #8/#13、Database #543 与 Release #60 保留这些 hosted-only 工作；本地交付不把它们当成阻塞，也不声称它们已经通过。真实 R0 Preview、严格 CSP/ISR 组合、部署后品牌回滚、真实 publication 200/cache-hit、托管 CWV/SLA 与 CDN 缓存语义仍须在未来发布资格审查中完成；在此之前 R0 保持 blocked，不能声称公共或 Production readiness。初始 test/Dev/Production 按批准决策共享一套 Upstash endpoint/token，但使用独立 R0/Dev/Main namespace 与完全不同的 HMAC；namespace 不是安全边界，共享配额、故障域和轮换域风险必须进入未来发布证据。详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)、[Redis/HMAC contract](docs/design-plan.md#103-hmac-signed-hybrid-search) 与 [R1 release checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist)。

@@ -4,6 +4,7 @@ import fixture from "../fixtures/portal/catalog-v1.json";
 
 import {
   portalContractSchemas,
+  publicCatalogSummarySchema,
   publicDatasetEnvelopeSchema,
   publicExchangePageSchema,
   publicPublicationSchema,
@@ -27,6 +28,7 @@ describe("Portal public DTO contracts", () => {
     );
     expect(portalContractSchemas.dataset.parse(fixture.datasetFlow).metadata.kind).toBe("flow");
     expect(portalContractSchemas.search.parse(fixture.search).items).toHaveLength(1);
+    expect(portalContractSchemas.catalogSummary.parse(fixture.catalogSummary).counts.total).toBe(3);
     expect(portalContractSchemas.exchanges.parse(fixture.exchanges).rows).toHaveLength(1);
     expect(portalContractSchemas.facets.parse(fixture.facets).groups).toHaveLength(1);
     expect(portalContractSchemas.versions.parse(fixture.versions).items).toHaveLength(1);
@@ -36,6 +38,41 @@ describe("Portal public DTO contracts", () => {
     ).toHaveLength(64);
     expect(portalContractSchemas.sitemapShard.parse(fixture.sitemapShard).items).toHaveLength(1);
     expect(portalContractSchemas.lcia.parse(fixture.lcia).rows).toHaveLength(1);
+  });
+
+  it("requires complete search-card context and exact bounded catalog-summary evidence", () => {
+    const missingContext = structuredClone(fixture.search);
+    Reflect.deleteProperty(missingContext.items[0]!, "context");
+    expect(portalContractSchemas.search.safeParse(missingContext).success).toBe(false);
+
+    const pollutedContext = structuredClone(fixture.search);
+    Object.assign(pollutedContext.items[0]!.context, { owner: "private-user" });
+    expect(portalContractSchemas.search.safeParse(pollutedContext).success).toBe(false);
+
+    expect(
+      publicCatalogSummarySchema.safeParse({
+        ...fixture.catalogSummary,
+        counts: { ...fixture.catalogSummary.counts, total: 4 },
+      }).success,
+    ).toBe(false);
+    expect(
+      publicCatalogSummarySchema.safeParse({
+        ...fixture.catalogSummary,
+        examples: [fixture.catalogSummary.examples[0], fixture.catalogSummary.examples[0]],
+      }).success,
+    ).toBe(false);
+    expect(
+      publicCatalogSummarySchema.safeParse({
+        ...fixture.catalogSummary,
+        examples: [{ ...fixture.catalogSummary.examples[0], label: [] }],
+      }).success,
+    ).toBe(false);
+    expect(
+      publicCatalogSummarySchema.safeParse({
+        ...fixture.catalogSummary,
+        serviceLocator: "private://catalog-projection",
+      }).success,
+    ).toBe(false);
   });
 
   it("enforces the fixed unique manifest and bounded unique shard contracts", () => {

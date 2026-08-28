@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 
 /* oxlint-disable next/no-sync-scripts -- The same-origin theme bootstrap must run before first paint and contains no inline code. */
 
+import type { PortalLocale } from "@/i18n/routing";
 import { brandConfig } from "@/server/brand";
 
 import { themeInitIntegrity } from "./theme-integrity.generated";
 
-import "./globals.css";
-
-export const metadata: Metadata = {
+export const portalMetadata: Metadata = {
   metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:3000"),
   title: {
     default: "天工 LCA 数据门户",
@@ -35,13 +34,14 @@ export const metadata: Metadata = {
   },
 };
 
-type RootLayoutProps = Readonly<{
+type RootDocumentProps = Readonly<{
   children: React.ReactNode;
+  lang: PortalLocale;
 }>;
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export function RootDocument({ children, lang }: RootDocumentProps) {
   return (
-    <html data-brand-version={brandConfig.version} lang="zh-CN" suppressHydrationWarning>
+    <html data-brand-version={brandConfig.version} lang={lang} suppressHydrationWarning>
       <head>
         <script crossOrigin="anonymous" integrity={themeInitIntegrity} src="/brand/theme-init.js" />
       </head>

@@ -10,6 +10,7 @@ import { publicSearchPageSchema } from "@/server/contracts/portal";
 import {
   getPublicDataset,
   getPublicFacets,
+  getPublicCatalogSummary,
   getPublicSitemapManifest,
   getPublicSitemapShard,
   listPublicDatasetVersions,
@@ -86,6 +87,7 @@ describe("Portal R1 fixture upstream", () => {
     });
 
     const flowSearch = await searchPublicFlows({ query: "carbon dioxide" }, client);
+    const catalogSummary = await getPublicCatalogSummary(client);
     const processDataset = await getPublicDataset({ kind: "process", ...processReference }, client);
     const flowDataset = await getPublicDataset(
       {
@@ -112,6 +114,10 @@ describe("Portal R1 fixture upstream", () => {
     );
 
     expect(flowSearch.items[0]?.key.kind).toBe("flow");
+    expect(catalogSummary).toMatchObject({
+      counts: { process: 2, flow: 1, total: 3 },
+      schemaVersion: "portal.public-catalog-summary.v1",
+    });
     expect(processDataset?.metadata.kind).toBe("process");
     expect(
       processDataset?.metadata.kind === "process" ? processDataset.metadata.cutoffRules : [],
@@ -123,9 +129,10 @@ describe("Portal R1 fixture upstream", () => {
     expect(sitemap.items.map((item) => item.key.kind)).toEqual(["flow", "process"]);
     expect(sitemapManifest.shards).toHaveLength(64);
     expect(sitemapShard.items.map((item) => item.key.kind)).toEqual(["flow", "process"]);
-    expect(fixture.receipts.rpcAccepted).toBe(10);
+    expect(fixture.receipts.rpcAccepted).toBe(11);
     expect(fixture.receipts.rpcByName).toMatchObject({
       portal_get_dataset_v1: 2,
+      portal_catalog_summary_v1: 1,
       portal_search_flows_v1: 1,
       portal_search_processes_v1: 1,
       portal_sitemap_manifest_v1: 1,
@@ -159,7 +166,7 @@ describe("Portal R1 fixture upstream", () => {
     const receiptProbe = await fetch(`${fixture.origin}/receipts`);
     expect(await receiptProbe.json()).toMatchObject({
       schemaVersion: "portal.r1-fixture-receipts.v1",
-      rpcAccepted: 10,
+      rpcAccepted: 11,
     });
   });
 

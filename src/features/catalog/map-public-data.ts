@@ -60,14 +60,25 @@ export function mapSearchItem(
   item: PublicSearchPage["items"][number],
   locale: Locale,
 ): CatalogResultViewModel {
+  const context = item.context;
+  const source =
+    localizedText(context.source.providerName, locale) ??
+    [context.source.databaseId, context.source.databaseVersion].filter(Boolean).join(" · ");
   return {
     accessLevel: item.accessLevel,
-    evidence: item.match.reasonCodes.join(", "),
+    functionalUnit: context.functionalUnit
+      ? `${context.functionalUnit.amount} ${context.functionalUnit.unit}`
+      : undefined,
     geography: formatGeography(item.geography, locale),
     kind: item.key.kind,
+    match: item.match.reasonCodes.join(", "),
     name: localizedText(item.names, locale) ?? exactRef(item.key.id, item.key.version),
+    quality: context.quality.reviewStatus ?? undefined,
     ref: exactRef(item.key.id, item.key.version),
+    referenceProduct: localizedText(context.reference.name, locale),
     referenceYear: item.referenceYear?.toString(),
+    source: source || undefined,
+    technology: localizedText(context.technology, locale),
   };
 }
 

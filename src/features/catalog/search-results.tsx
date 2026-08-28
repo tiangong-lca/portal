@@ -25,9 +25,17 @@ type SearchResultLabels = {
   details: string;
   emptyDescription: string;
   emptyTitle: string;
+  functionalUnit: string;
+  geography: string;
+  match: string;
   metadataOnly: string;
   public: string;
+  quality: string;
+  reference: string;
+  referenceYear: string;
   selectForCompare: string;
+  source: string;
+  technology: string;
 };
 
 export function SearchResults({
@@ -60,6 +68,16 @@ export function SearchResults({
           detailHref,
           process.env.SITE_URL ?? "http://localhost:3000",
         ).toString()}`;
+        const context = [
+          { label: labels.reference, value: item.referenceProduct },
+          { label: labels.functionalUnit, value: item.functionalUnit },
+          { label: labels.geography, value: item.geography },
+          { label: labels.referenceYear, value: item.referenceYear },
+          { label: labels.technology, value: item.technology },
+          { label: labels.source, value: item.source },
+          { label: labels.quality, value: item.quality },
+          { label: labels.match, value: item.match },
+        ].filter((entry): entry is { label: string; value: string } => Boolean(entry.value));
 
         return (
           <li key={`${item.kind}:${item.ref}`}>
@@ -88,22 +106,16 @@ export function SearchResults({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {[
-                    item.referenceProduct,
-                    item.functionalUnit,
-                    item.geography,
-                    item.referenceYear,
-                    item.technology,
-                    item.evidence,
-                  ]
-                    .filter(Boolean)
-                    .map((value, index) => (
-                      <li className="text-sm" key={`${item.ref}:${index}`}>
-                        {value}
-                      </li>
-                    ))}
-                </ul>
+                <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {context.map(({ label, value }) => (
+                    <div className="flex min-w-0 flex-col gap-1" key={`${item.ref}:${label}`}>
+                      <dt className="text-muted-foreground font-mono text-xs tracking-[0.08em] uppercase">
+                        {label}
+                      </dt>
+                      <dd className="text-sm break-words">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
               </CardContent>
               <CardFooter className="flex flex-wrap gap-2">
                 <Button asChild>

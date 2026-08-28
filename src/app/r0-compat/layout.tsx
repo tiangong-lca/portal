@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 
+import { RootDocument } from "../root-document";
+
+import "../globals.css";
+
 export const metadata: Metadata = {
   title: "R0 compatibility matrix",
   robots: {
@@ -9,5 +13,5 @@ export const metadata: Metadata = {
 };
 
 export default function R0CompatLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return <RootDocument lang="en">{children}</RootDocument>;
 }

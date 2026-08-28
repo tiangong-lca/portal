@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-28"
-lastReviewedCommit: "99da1ed"
-lastReviewedNote: "Reviewed for Portal #15 after making fixture receipts bounded and request-addressable; routing, ownership, product, and deployment contracts remain unchanged."
+lastReviewedCommit: "f756a07"
+lastReviewedNote: "Reviewed for Portal #10: generated Database contract snapshots and their format/drift gates are now explicit product-owned paths; existing ownership and deployment boundaries remain unchanged."
 
 catalog:
   repos:
@@ -37,6 +37,7 @@ ownership:
           - next.config.ts
           - postcss.config.mjs
           - prettier.config.mjs
+          - .prettierignore
           - vitest.config.ts
           - vitest.setup.ts
           - playwright.config.ts
@@ -44,6 +45,7 @@ ownership:
           - .node-version
           - .npmrc
           - .env.example
+          - contracts/database-engine/portal/**
           - src/**
           - public/**
           - tests/**
@@ -66,6 +68,7 @@ coverage:
     - next.config.ts
     - postcss.config.mjs
     - prettier.config.mjs
+    - .prettierignore
     - vitest.config.ts
     - vitest.setup.ts
     - playwright.config.ts
@@ -73,6 +76,7 @@ coverage:
     - .node-version
     - .npmrc
     - .env.example
+    - contracts/database-engine/portal/**
     - src/**
     - public/**
     - tests/**
@@ -113,6 +117,8 @@ routing:
         - tsconfig.json
         - next.config.ts
         - postcss.config.mjs
+        - .prettierignore
+        - contracts/database-engine/portal/**
         - src/**
         - public/**
     proof:
@@ -205,6 +211,10 @@ rules:
         kind: style-config
       - path: prettier.config.mjs
         kind: format-config
+      - path: .prettierignore
+        kind: format-config
+      - path: contracts/database-engine/portal/**
+        kind: generated-database-contract
       - path: .node-version
         kind: runtime-version
       - path: .npmrc

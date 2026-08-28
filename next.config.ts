@@ -19,6 +19,7 @@ const cspHeader = contentSecurityPolicyHeader(contentSecurityPolicy, enforceCont
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
+    globalNotFound: true,
     sri: {
       algorithm: "sha256",
     },
