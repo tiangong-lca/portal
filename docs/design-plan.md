@@ -21,7 +21,7 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: c4667b1
+lastReviewedCommit: deee2ec
 lastReviewedNote: "Reviewed for Portal #10: byte-identical Database contracts, complete Search cards, real catalog summary, local R1 validation, and hosted qualification boundaries align."
 related:
   - AGENTS.md

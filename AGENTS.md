@@ -26,7 +26,7 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-08-28
-lastReviewedCommit: c4667b1
+lastReviewedCommit: deee2ec
 lastReviewedNote: "Reviewed for Portal #10: exact Database contract snapshots, local R1 validation, anonymous/server-only boundaries, and separately deferred hosted probes align."
 related:
   - README.md
