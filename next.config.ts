@@ -6,6 +6,7 @@ import {
   buildContentSecurityPolicy,
   contentSecurityPolicyHeader,
 } from "./src/config/content-security-policy";
+import { resolvePortalBuildSha } from "./src/config/deployment-build";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 const enforceContentSecurityPolicy = process.env.PORTAL_CSP_MODE === "enforce";
@@ -15,9 +16,13 @@ const contentSecurityPolicy = buildContentSecurityPolicy({
   isDevelopment,
 });
 const cspHeader = contentSecurityPolicyHeader(contentSecurityPolicy, enforceContentSecurityPolicy);
+const deploymentSha = resolvePortalBuildSha(process.env);
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  env: {
+    PORTAL_DEPLOYMENT_SHA: deploymentSha,
+  },
   experimental: {
     globalNotFound: true,
     sri: {
