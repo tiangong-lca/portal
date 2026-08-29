@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-29"
-lastReviewedCommit: "9dc24a87eb4eaa5b98e2a063ea7f28e3036e5052"
-lastReviewedNote: "Reviewed for Portal #22: EdgeOne main/Production TDD, Proxy adapter compatibility, immutable build evidence and hosted proof paths remain within existing product/runtime ownership and routing."
+lastReviewedCommit: "16cbb293c9db159fc765ca82baee085cdaede2f7"
+lastReviewedNote: "Reviewed for Portal #24: EdgeOne main/Production TDD, native routing, application locale fallback, immutable build evidence and hosted proof paths remain within existing product/runtime ownership and routing."
 
 catalog:
   repos:
@@ -279,8 +279,10 @@ rules:
         kind: release-gate
       - path: next.config.ts
         kind: framework-config
-      - path: src/proxy.ts
+      - path: edgeone.json
         kind: response-policy
+      - path: src/app/[locale]/layout.tsx
+        kind: locale-policy
       - path: src/app/r0-compat/**
         kind: compatibility-route
       - path: tests/e2e/r0-compat.spec.ts
