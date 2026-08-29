@@ -5,7 +5,7 @@ import { routing } from "@/i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 
-export function proxy(request: NextRequest) {
+function middleware(request: NextRequest) {
   if (!request.nextUrl.pathname.startsWith("/r0-compat")) {
     return handleI18nRouting(request);
   }
@@ -17,6 +17,9 @@ export function proxy(request: NextRequest) {
 
   return response;
 }
+
+export { middleware };
+export default middleware;
 
 export const config = {
   matcher: ["/r0-compat/:path*", "/((?!internal|_next|_vercel|.*\\..*).*)"],
