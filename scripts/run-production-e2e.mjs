@@ -2,8 +2,20 @@ import { spawn } from "node:child_process";
 
 import environmentFixture from "../tests/fixtures/portal/r1-environments.json" with { type: "json" };
 
-const fixtureOrigin = "http://127.0.0.1:4328";
-const portalOrigin = "http://127.0.0.1:4317";
+function readPort(name, fallback) {
+  const value = process.env[name] ?? String(fallback);
+  if (!/^\d+$/u.test(value)) throw new Error(`${name} must be a decimal TCP port.`);
+  const port = Number(value);
+  if (!Number.isSafeInteger(port) || port < 1 || port > 65_535) {
+    throw new Error(`${name} must be between 1 and 65535.`);
+  }
+  return port;
+}
+
+const fixturePort = readPort("PORTAL_FIXTURE_PORT", 4328);
+const portalPort = readPort("PORTAL_E2E_PORT", 4317);
+const fixtureOrigin = `http://127.0.0.1:${String(fixturePort)}`;
+const portalOrigin = `http://127.0.0.1:${String(portalPort)}`;
 
 function wait(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -66,7 +78,7 @@ const fixture = spawn(
     "--host",
     "127.0.0.1",
     "--port",
-    "4328",
+    String(fixturePort),
   ],
   { cwd: process.cwd(), env: process.env, stdio: "inherit" },
 );
