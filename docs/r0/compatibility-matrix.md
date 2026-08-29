@@ -15,13 +15,13 @@ checkPaths:
   - docs/r0/compatibility-matrix.md
   - edgeone.json
   - next.config.ts
-  - src/proxy.ts
+  - src/app/[locale]/layout.tsx
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 9dc24a87eb4eaa5b98e2a063ea7f28e3036e5052
-lastReviewedNote: "Reviewed for Portal #22: exact f039918 Production evidence, named/default Proxy candidate, immutable build SHA and the retained strict CSP/ISR release gate are current."
+lastReviewedCommit: 16cbb293c9db159fc765ca82baee085cdaede2f7
+lastReviewedNote: "Reviewed for Portal #24: exact Proxy failure/rollback evidence, native routing candidate, immutable build SHA and the retained strict CSP/ISR release gate are current."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -40,10 +40,10 @@ R0 remains blocked until every required row has evidence bound to one exact Port
 | SSR runtime | `/r0-compat/ssr` reports local `process.version` | 200, `v20.19.3`, private/no-store on exact deployment | Pass |
 | ISR | `/r0-compat/isr` emits `s-maxage=60` and stable cached body | Consecutive bodies are byte-identical with `s-maxage=60`; regeneration probe remains pending | Partial |
 | Streaming | dynamic Suspense route passes under report-only CSP | 200/private/no-store; exact chunk-boundary probe pending | Partial |
-| Middleware/Proxy | Named/default `src/proxy.ts` candidate preserves local locale/R0 semantics; 45/45 production-browser paths pass | named-only Proxy crashed on `cdef8a0`; legacy middleware skipped semantics on `f039918`; named/default candidate awaits exact deployment | Blocked |
+| EdgeOne routing | No Next Proxy/middleware artifact; bounded native redirects/headers and application locale/404 fallback pass locally | named-only Proxy failed on `cdef8a0`; legacy middleware skipped semantics on `f039918`; named/default Proxy failed on `ffb730a`; native candidate awaits exact deployment | Blocked |
 | Route Handler | dynamic JSON contract and no-store pass | 200/no-store, but `f039918` reported stale `cdef8a0`; immutable build-SHA candidate awaits exact deployment | Blocked |
 | Image Optimization | raster brand probe resolves through `/_next/image` | Pending | Blocked |
-| locale document / 404 / robots / noindex | zh-CN/en raw HTML and hydrated DOM use exact `lang`; localized/global 404 return product UI with `404` and valid language | direct zh-CN/en and robots pass; root redirect and unmatched locale routing fail without Proxy semantics | Partial |
+| locale document / 404 / robots / noindex | zh-CN/en raw HTML and hydrated DOM use exact `lang`; invalid locale and global 404 return product UI with `404` and valid language without Proxy | direct zh-CN/en and robots pass on rollback deployment; native root redirect and application fallback await exact deployment | Partial |
 | Brand defaults/assets/fallback | unit SHA receipt, env parse, production browser fallback pass | Custom color/logo Production smoke pending | Blocked |
 | HMAC WebCrypto signer | deterministic `portal-hmac-v1` fixture passes | Edge verifier/rotation/replay pending in Edge #319 | Blocked |
 | Redis NX/EX + Lua | Not owned by Portal | Disposable Upstash + Edge verifier pending | Blocked |

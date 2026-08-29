@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 9dc24a87eb4eaa5b98e2a063ea7f28e3036e5052
-lastReviewedNote: "Reviewed for Portal #22: main-only EdgeOne Production TDD, named/default Proxy exports, immutable build evidence, deployment configuration and retained release gates align."
+lastReviewedCommit: 16cbb293c9db159fc765ca82baee085cdaede2f7
+lastReviewedNote: "Reviewed for Portal #24: main-only EdgeOne Production TDD, native redirects/headers, application locale fallback, immutable build evidence and retained release gates align."
 related:
   - AGENTS.md
   - README.md
@@ -1045,7 +1045,7 @@ MVP 不引入重量级状态管理、客户端查询缓存、Chart 或 Map 依�
 - 多 root layout 的 unmatched URL 使用 Next `experimental.globalNotFound` 输出完整、带语言和 `noindex` 的 404 document；该 experimental 能力与 SRI 一并进入 R0 compatibility gate；
 - TypeScript 7 使用 Next 16 默认 TypeScript CLI 路径，并在 compatibility spike 验证；不为默认已启用的行为保留冗余 experimental 配置；
 - `next-env.d.ts` 由 `next dev/build/typegen` 生成并纳入 `tsconfig`，但不提交到 Git；
-- 不依赖 Next config redirects/rewrites；跨路径规则使用 Next 16 `proxy.ts`，同一 handler 同时导出 named `proxy` 与 default 以兼容当前 EdgeOne OpenNext loader；禁止回退到已实测不执行 locale/probe 语义的 legacy `middleware.ts`；
+- 不部署 Next `proxy.ts`/legacy middleware；根路径与已知无 locale 路径使用 bounded `edgeone.json` exact/wildcard redirects，R0 routing evidence 使用静态 headers，invalid locale/404 由 App Router layout fail closed 到默认 zh-CN document；
 - 图片使用 `next/image`，仅配置必要远端域名；
 - `next typegen && tsc --noEmit` 是独立 typecheck；
 - Client boundary 通过 lint 和 bundle 检查防止 server-only 模块泄漏。
@@ -1064,7 +1064,6 @@ tiangong-lca-portal/
 │   ├── fonts/
 │   └── brand/
 ├── src/
-│   ├── proxy.ts
 │   ├── app/
 │   │   ├── [locale]/
 │   │   │   ├── page.tsx
@@ -1172,13 +1171,13 @@ HMAC 与 Redis 凭据是秘密，永不渲染；previous HMAC key 只存在于 S
 
 ### 17.3 平台约束
 
-EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization。`dp4k6q62p30g@cdef8a0` 使用 `@edgeone/opennextjs-pages` 时，named-only Next 16 `proxy.ts` 对所有 matched path 返回 `Middleware execution failed: a is not a function`；`dp6z4vd02d2n@f039918` 的 legacy `middleware.ts` 虽消除 500，却不执行 locale redirect 或 R0 probe headers。当前边界因此是唯一 `src/proxy.ts`，同一 handler 同时导出 named `proxy` 与 default；exact main/Production deployment 必须同时证明两种语义。构建从 checkout Git HEAD 注入 immutable SHA，`PORTAL_DEPLOYMENT_SHA` 只在 Git 元数据不可用时兜底，不再要求每次手工更新。
+EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization；但当前 `@edgeone/opennextjs-pages` 的 Next 16 Proxy 适配存在已复现缺陷。`dp4k6q62p30g@cdef8a0` 的 named-only `proxy.ts` 与 `dpphjhb8yld6@ffb730a` 的 named/default `proxy.ts` 均对 matched path 返回 `Middleware execution failed: a is not a function`；`dp6z4vd02d2n@f039918` 的 legacy `middleware.ts` 虽消除 500，却不执行 locale redirect 或 R0 headers。当前目标状态因此不部署 Next Proxy/middleware：只使用 EdgeOne 官方 `edgeone.json` exact/wildcard redirects/headers 与 App Router locale/404 fallback。Production 已回滚至 `dp6z4vd02d2n`，新方案必须由下一次 exact main deployment 证明。构建从 checkout Git HEAD 注入 immutable SHA，`PORTAL_DEPLOYMENT_SHA` 只在 Git 元数据不可用时兜底，不再要求每次手工更新。
 
 Compatibility spike 必须实测：
 
 - Node 24 + pnpm 11 build；
 - Next 16 + React 19 + TypeScript 7 typecheck/build；
-- RSC、SSR、ISR、Streaming、named/default `proxy.ts` adapter contract、Route Handler、Image Optimization；
+- RSC、SSR、ISR、Streaming、EdgeOne native redirects/headers、application locale/404 fallback、Route Handler、Image Optimization；
 - 严格 CSP 下的 SRI、RSC hydration、Streaming 与 ISR 组合；不得用全站 nonce 让页面静态性测试失真；
 - 实际 SSR `process.version`；当前日志为 Nodejs20.19，继续使用 native fetch 且不得引入要求 Node 22+ 的服务端 SDK；
 - 使用独立 `PORTAL_R0_*` HMAC/publishable 凭据和 `portal:r0:<random-fixture>:v1` 可丢弃 namespace；按 §10.3 的共享存储决策映射同一 Upstash endpoint/token，验证 EdgeOne Web Crypto HMAC、Supabase Deno 验签、`SET NX EX`/Lua 原子能力、nonce 防重放、current/previous key 轮换与 exact-key cleanup；fixture 不接业务 RPC/模型、不读取 Dev/Main HMAC 或 namespace，保存证据后删除 exact fixture keys 与 R0 project 的临时 secret copies，禁止删除共享 database 或绕过协调单独轮换共享源 token；
@@ -1310,7 +1309,7 @@ format/lint
 3. 完成 EdgeOne Next SSR compatibility spike；
 4. 把 Portal 作为 M1 子模块纳入 workspace。
 
-退出条件：远端有可引用 main SHA；§17.3 列出的 RSC、SSR、ISR、Streaming、Middleware/Proxy、Route Handler、Image、状态/缓存、回滚、runtime 与 Dev/Main 凭据隔离全部在一个 exact EdgeOne main deployment 通过并保存证据；root 治理与 delivery profile 可路由 Portal。Production HMAC probe 必须验证真实 signer/verifier/keyring/Redis guard。任一项未验证都保持索引关闭，而不是留给公开流量发现。
+退出条件：远端有可引用 main SHA；§17.3 列出的 RSC、SSR、ISR、Streaming、EdgeOne native routing、application locale/404 fallback、Route Handler、Image、状态/缓存、回滚、runtime 与 Dev/Main 凭据隔离全部在一个 exact EdgeOne main deployment 通过并保存证据；root 治理与 delivery profile 可路由 Portal。Production HMAC probe 必须验证真实 signer/verifier/keyring/Redis guard。任一项未验证都保持索引关闭，而不是留给公开流量发现。
 
 ### 20.3 Phase 1：Database 公共读契约
 

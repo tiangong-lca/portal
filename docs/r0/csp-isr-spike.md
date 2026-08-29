@@ -17,12 +17,12 @@ checkPaths:
   - docs/r0/csp-isr-spike.md
   - docs/r0/compatibility-matrix.md
   - next.config.ts
-  - src/proxy.ts
+  - edgeone.json
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 9dc24a87eb4eaa5b98e2a063ea7f28e3036e5052
-lastReviewedNote: "Reviewed for Portal #22: the named/default Proxy correction and immutable build evidence do not change ISR HTML, Flight delivery, the retained strict CSP incompatibility, or the blocked public-release decision."
+lastReviewedCommit: 16cbb293c9db159fc765ca82baee085cdaede2f7
+lastReviewedNote: "Reviewed for Portal #24: native redirects/headers and application locale fallback do not change ISR HTML, Flight delivery, the retained strict CSP incompatibility, or the blocked public-release decision."
 related:
   - compatibility-matrix.md
   - ../design-plan.md
