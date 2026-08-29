@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
-import { notFound } from "next/navigation";
 
 import { SiteFooter } from "@/components/shell/site-footer";
 import { SiteHeader } from "@/components/shell/site-header";
-import { isPortalLocale, locales } from "@/i18n/routing";
+import { defaultLocale, isPortalLocale, locales } from "@/i18n/routing";
 
 import { RootDocument, portalMetadata } from "../root-document";
 
@@ -19,8 +18,8 @@ export function generateStaticParams() {
 }
 
 export default async function PortalLocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
-  const { locale } = await params;
-  if (!isPortalLocale(locale)) notFound();
+  const { locale: requestedLocale } = await params;
+  const locale = isPortalLocale(requestedLocale) ? requestedLocale : defaultLocale;
 
   setRequestLocale(locale);
   const messages = await getMessages({ locale });

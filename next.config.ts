@@ -42,7 +42,10 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/r0-compat/:path*",
-        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "X-Portal-Routing", value: "edgeone-native-v1" },
+        ],
       },
     ];
   },

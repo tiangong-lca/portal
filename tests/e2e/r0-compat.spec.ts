@@ -2,7 +2,9 @@ import { expect, test } from "@playwright/test";
 
 const strictCspExpected = process.env.PORTAL_EXPECT_STRICT_CSP === "1";
 
-test("serves the R0 matrix through Proxy with the strict CSP candidate", async ({ page }) => {
+test("serves the R0 matrix through native routing with the strict CSP candidate", async ({
+  page,
+}) => {
   const cspErrors: string[] = [];
   page.on("console", (message) => {
     if (message.type() === "error" && message.text().toLowerCase().includes("content security")) {
@@ -14,7 +16,7 @@ test("serves the R0 matrix through Proxy with the strict CSP candidate", async (
 
   expect(response).not.toBeNull();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  expect(response!.headers()["x-portal-proxy"]).toBe("r0-v1");
+  expect(response!.headers()["x-portal-routing"]).toBe("edgeone-native-v1");
   expect(response!.headers()["x-robots-tag"]).toContain("noindex");
 
   const cspHeaderName = strictCspExpected
@@ -106,7 +108,7 @@ test("returns the product not-found surface for unknown paths", async ({ page })
   const response = await page.goto("/does-not-exist-r0");
 
   expect(response!.status()).toBe(404);
-  await expect(page).toHaveURL(/\/zh-CN\/does-not-exist-r0$/);
+  await expect(page).toHaveURL(/\/does-not-exist-r0$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   await expect(page.getByRole("heading", { name: "页面不存在" })).toBeVisible();
 
