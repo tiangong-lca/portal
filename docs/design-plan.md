@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
-lastReviewedNote: "Reviewed for Portal #8: main-only EdgeOne Production TDD, the OpenNext middleware compatibility boundary, exact runtime evidence, deployment configuration and retained release gates align."
+lastReviewedCommit: 9dc24a87eb4eaa5b98e2a063ea7f28e3036e5052
+lastReviewedNote: "Reviewed for Portal #22: main-only EdgeOne Production TDD, named/default Proxy exports, immutable build evidence, deployment configuration and retained release gates align."
 related:
   - AGENTS.md
   - README.md
@@ -1045,7 +1045,7 @@ MVP 不引入重量级状态管理、客户端查询缓存、Chart 或 Map 依�
 - 多 root layout 的 unmatched URL 使用 Next `experimental.globalNotFound` 输出完整、带语言和 `noindex` 的 404 document；该 experimental 能力与 SRI 一并进入 R0 compatibility gate；
 - TypeScript 7 使用 Next 16 默认 TypeScript CLI 路径，并在 compatibility spike 验证；不为默认已启用的行为保留冗余 experimental 配置；
 - `next-env.d.ts` 由 `next dev/build/typegen` 生成并纳入 `tsconfig`，但不提交到 Git；
-- 不依赖 Next config redirects/rewrites，跨路径规则使用当前 EdgeOne-compatible `middleware.ts` 或 `edgeone.json`；EdgeOne adapter 支持 Node proxy 后再恢复 `proxy.ts`；
+- 不依赖 Next config redirects/rewrites；跨路径规则使用 Next 16 `proxy.ts`，同一 handler 同时导出 named `proxy` 与 default 以兼容当前 EdgeOne OpenNext loader；禁止回退到已实测不执行 locale/probe 语义的 legacy `middleware.ts`；
 - 图片使用 `next/image`，仅配置必要远端域名；
 - `next typegen && tsc --noEmit` 是独立 typecheck；
 - Client boundary 通过 lint 和 bundle 检查防止 server-only 模块泄漏。
@@ -1172,13 +1172,13 @@ HMAC 与 Redis 凭据是秘密，永不渲染；previous HMAC key 只存在于 S
 
 ### 17.3 平台约束
 
-EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization。实际 deployment `dp4k6q62p30g` 使用 `@edgeone/opennextjs-pages`：Next 16 Node `proxy.ts` 构建成功但运行时对所有 matched path 返回 `Middleware execution failed: a is not a function`。Portal 因此使用 Next 仍支持的 legacy `middleware.ts` Edge runtime，并同时导出 named/default handler；只有 exact EdgeOne deployment 证明 native Node proxy 可用后才恢复 `proxy.ts`。
+EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization。`dp4k6q62p30g@cdef8a0` 使用 `@edgeone/opennextjs-pages` 时，named-only Next 16 `proxy.ts` 对所有 matched path 返回 `Middleware execution failed: a is not a function`；`dp6z4vd02d2n@f039918` 的 legacy `middleware.ts` 虽消除 500，却不执行 locale redirect 或 R0 probe headers。当前边界因此是唯一 `src/proxy.ts`，同一 handler 同时导出 named `proxy` 与 default；exact main/Production deployment 必须同时证明两种语义。构建从 checkout Git HEAD 注入 immutable SHA，`PORTAL_DEPLOYMENT_SHA` 只在 Git 元数据不可用时兜底，不再要求每次手工更新。
 
 Compatibility spike 必须实测：
 
 - Node 24 + pnpm 11 build；
 - Next 16 + React 19 + TypeScript 7 typecheck/build；
-- RSC、SSR、ISR、Streaming、legacy `middleware.ts`/future `proxy.ts`、Route Handler、Image Optimization；
+- RSC、SSR、ISR、Streaming、named/default `proxy.ts` adapter contract、Route Handler、Image Optimization；
 - 严格 CSP 下的 SRI、RSC hydration、Streaming 与 ISR 组合；不得用全站 nonce 让页面静态性测试失真；
 - 实际 SSR `process.version`；当前日志为 Nodejs20.19，继续使用 native fetch 且不得引入要求 Node 22+ 的服务端 SDK；
 - 使用独立 `PORTAL_R0_*` HMAC/publishable 凭据和 `portal:r0:<random-fixture>:v1` 可丢弃 namespace；按 §10.3 的共享存储决策映射同一 Upstash endpoint/token，验证 EdgeOne Web Crypto HMAC、Supabase Deno 验签、`SET NX EX`/Lua 原子能力、nonce 防重放、current/previous key 轮换与 exact-key cleanup；fixture 不接业务 RPC/模型、不读取 Dev/Main HMAC 或 namespace，保存证据后删除 exact fixture keys 与 R0 project 的临时 secret copies，禁止删除共享 database 或绕过协调单独轮换共享源 token；

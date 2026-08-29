@@ -17,8 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
-lastReviewedNote: "Reviewed for Portal #8: main-only EdgeOne Production TDD, the OpenNext middleware compatibility boundary, hosted runtime evidence, and remaining release gates are current."
+lastReviewedCommit: 9dc24a87eb4eaa5b98e2a063ea7f28e3036e5052
+lastReviewedNote: "Reviewed for Portal #22: main-only EdgeOne Production TDD, the Proxy export boundary, immutable deployment evidence, and remaining release gates are current."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -63,4 +63,4 @@ Canonical `tiangong-lca/portal` 已有可写的 `main`，并已作为 `portal` �
 
 R2 Intelligent Discovery 在本地复用同一 HMAC signer，通过同源 POST 调用专用 `portal_hybrid_search_v1`；成功时只展示 advisory query interpretation 与 Database evidence-backed public cards，disabled/guard/budget/concurrency/circuit/timeout/contract failure 时自动调用现有 lexical façade。自然语言、embedding、完整候选 ID、备注和 secret 不进入 URL 或 telemetry。默认 fragment 仍只含 member IDs；Hybrid query 或备注只有经过完整披露预览和第二次确认才生成 browser-local fragment。确定性 fixture、production-browser、动态 axe、比较与独立接收浏览器覆盖这些边界。
 
-EdgeOne Production 现绑定 `portal/main` 与 `portal.tiangong.earth`，同一环境承担 hosted TDD 和最终发布；feature/PR 不创建独立 EdgeOne Preview。调试期间保持 `PORTAL_PUBLIC_INDEXING=disabled`、sitemap `no-store`、CSP report-only，只有 exact main deployment 的 runtime/cache/security/rollback gates 全绿后才开启索引。当前 EdgeOne OpenNext adapter 不能执行 Next 16 Node `proxy.ts`，因此 Portal 使用 Next 仍支持的 legacy `middleware.ts` Edge runtime 兼容入口；Node SSR runtime 已实测为 20.19。Portal #8/#13、Database #543、Edge #319 与 Release #59/#60 继续持有 hosted signer、严格 CSP/ISR、品牌回滚、真实 publication、Hybrid/WAF/load/latency、CWV/SLA 与 CDN cache 证据；这些未完成项不能被称为公共 release readiness。初始 Dev/Main 按批准决策共享一套 Upstash endpoint/token，但使用独立 namespace 与 HMAC；namespace 不是安全边界。详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)、[Redis/HMAC contract](docs/design-plan.md#103-hmac-signed-hybrid-search)、[R1 checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist) 与 [R2 checklist](docs/design-plan.md#236-r2-intelligent-discovery-release-checklist)。
+EdgeOne Production 现绑定 `portal/main` 与 `portal.tiangong.earth`，同一环境承担 hosted TDD 和最终发布；feature/PR 不创建独立 EdgeOne Preview。调试期间保持 `PORTAL_PUBLIC_INDEXING=disabled`、sitemap `no-store`、CSP report-only，只有 exact main deployment 的 runtime/cache/security/rollback gates 全绿后才开启索引。EdgeOne deployment `dp6z4vd02d2n` 证明 legacy `middleware.ts` 虽可消除崩溃却不会执行 locale/probe 语义；Portal #22 因此恢复 Next 16 `proxy.ts`，并同时导出 named/default handler 适配当前 OpenNext loader。构建从 checkout Git HEAD 注入 immutable SHA，手填 `PORTAL_DEPLOYMENT_SHA` 仅作无 Git 元数据时的兜底。Node SSR runtime 已实测为 20.19.3。Portal #13/#22、Database #543、Edge #319 与 Release #59/#60 继续持有 hosted signer、严格 CSP/ISR、品牌回滚、真实 publication、Hybrid/WAF/load/latency、CWV/SLA 与 CDN cache 证据；这些未完成项不能被称为公共 release readiness。初始 Dev/Main 按批准决策共享一套 Upstash endpoint/token，但使用独立 namespace 与 HMAC；namespace 不是安全边界。详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)、[Redis/HMAC contract](docs/design-plan.md#103-hmac-signed-hybrid-search)、[R1 checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist) 与 [R2 checklist](docs/design-plan.md#236-r2-intelligent-discovery-release-checklist)。
