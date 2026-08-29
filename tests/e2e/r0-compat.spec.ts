@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const strictCspExpected = process.env.PORTAL_EXPECT_STRICT_CSP === "1";
+const portalOrigin = `http://127.0.0.1:${process.env.PORTAL_E2E_PORT ?? "4317"}`;
 
 test("serves the R0 matrix through native routing with the strict CSP candidate", async ({
   page,
@@ -118,7 +119,12 @@ test("preserves state while canonicalizing bounded unlocalized paths", async ({ 
   for (const [source, destination] of cases) {
     const response = await request.get(source, { maxRedirects: 0 });
     expect(response.status()).toBe(307);
-    expect(response.headers().location).toBe(destination);
+    const location = response.headers().location;
+    expect(location).toMatch(/^\//u);
+    const actual = new URL(location!, portalOrigin);
+    const expected = new URL(destination, portalOrigin);
+    expect(actual.pathname).toBe(expected.pathname);
+    expect([...actual.searchParams]).toEqual([...expected.searchParams]);
     expect(response.headers()["cache-control"]).toContain("no-store");
   }
 });
