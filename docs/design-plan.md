@@ -22,7 +22,7 @@ checkPaths:
   - edgeone.json
 lastReviewedAt: 2026-08-28
 lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
-lastReviewedNote: "Reviewed for Portal #19: R2 Hybrid BFF/fallback, advisory evidence, explicit fragment disclosure, local validation, and hosted boundaries align."
+lastReviewedNote: "Reviewed for Portal #8: main-only EdgeOne Production TDD, the OpenNext middleware compatibility boundary, exact runtime evidence, deployment configuration and retained release gates align."
 related:
   - AGENTS.md
   - README.md
@@ -32,7 +32,7 @@ related:
 
 | 项目 | 约束 |
 | --- | --- |
-| 状态 | 最终实施方案；仓库治理与 workspace onboarding 已完成，R0 exact Preview 与 R1 release checklist 尚未完成 |
+| 状态 | 最终实施方案；仓库治理与 workspace onboarding 已完成，EdgeOne main/Production hosted TDD 已开始，R0/R1 release checklist 尚未完成 |
 | 产品形态 | 面向匿名用户的公共 LCA 数据检索与展示门户 |
 | 技术形态 | Next.js App Router 前后端同构，部署到 EdgeOne Makers |
 | 数据边界 | 只读消费现有数据；不生产、修改、审核或维护 LCA 数据 |
@@ -550,7 +550,7 @@ Portal 不形成第三方 API 产品。Route Handler 或 Server Action 仅允许
 - `PORTAL_EDGE_HMAC_SECRET`；
 - 可选的 Edge endpoint 与超时配置。
 
-EdgeOne 签名端只持有一个当前 `keyId/secret`。Supabase Edge Function 验证端在正常状态只持有 current，在无停机轮换窗口短期持有 current + previous keyring；Preview/Production 使用完全不同的 keyId/secret。签名密钥绝不进入 `NEXT_PUBLIC_*`、HTML、Cookie、浏览器 bundle、日志或错误响应。Portal 绝不配置 `service_role`、Supabase secret key 或用户凭据。Publishable key 虽可公开，仍保持 server-only，因为浏览器没有直连需求。
+EdgeOne Production 签名端只持有一个当前 `keyId/secret`。Supabase Edge Function 验证端在正常状态只持有 current，在无停机轮换窗口短期持有 current + previous keyring；本地/CI Dev fixture 与 Main/Production 使用完全不同的 keyId/secret。签名密钥绝不进入 `NEXT_PUBLIC_*`、HTML、Cookie、浏览器 bundle、日志或错误响应。Portal 绝不配置 `service_role`、Supabase secret key 或用户凭据。Publishable key 虽可公开，仍保持 server-only，因为浏览器没有直连需求。
 
 若 EdgeOne compatibility spike 证明 SSR 运行时为 Node 22+，仍可评估 `@supabase/supabase-js`；它不是 MVP 必需依赖，也不得改变权限模型。
 
@@ -649,27 +649,25 @@ secret 使用 Base64URL 编码保存，启动时解码并强校验长度；缺�
 | --- | --- | --- |
 | Supabase Dev / Main | Upstash Redis REST | `PORTAL_REDIS_CLIENT_TYPE=upstash`、`PORTAL_UPSTASH_REDIS_URL`、`PORTAL_UPSTASH_REDIS_TOKEN`、`PORTAL_REDIS_NAMESPACE`、`PORTAL_REDIS_TIMEOUT_MS` |
 | 本地确定性开发与 CI | Standard Redis | `PORTAL_REDIS_CLIENT_TYPE=standard`、`PORTAL_REDIS_URL`、可选 `PORTAL_REDIS_PASSWORD`、`PORTAL_REDIS_NAMESPACE`、`PORTAL_REDIS_TIMEOUT_MS` |
-| R0 live test / Preview fixture | Upstash Redis REST | `PORTAL_R0_REDIS_CLIENT_TYPE=upstash`、`PORTAL_R0_UPSTASH_REDIS_URL`、`PORTAL_R0_UPSTASH_REDIS_TOKEN`、`PORTAL_R0_REDIS_NAMESPACE=portal:r0:<fixture>:v1`、`PORTAL_R0_REDIS_TIMEOUT_MS` |
+| EdgeOne hosted R0 security probes | Upstash Redis REST | 复用 Main 的 `PORTAL_REDIS_*`、`PORTAL_UPSTASH_REDIS_*` 与 `portal:main:v1`，只通过真实 Production signed routes 生成 TTL-bounded exact keys |
 
-当前初始部署使用一套经批准的共享 Upstash Redis REST database、endpoint 与 token 覆盖 R0 live test、Supabase Dev 和 Supabase Main/Production。运维将同一源凭据分别写入对应 Supabase project 的 Edge Function Secrets，但运行时只读取 Portal 专用变量，不得回退到既有 Functions 使用的通用 `REDIS_*`、`UPSTASH_REDIS_*` 或其他 provider 凭据。EdgeOne signer、Portal Next.js runtime 和浏览器均不持有 Redis 凭据。
+当前初始部署使用一套经批准的共享 Upstash Redis REST database、endpoint 与 token 覆盖 Supabase Dev 和 Supabase Main/Production。运维将同一源凭据分别写入对应 Supabase project 的 Edge Function Secrets，但运行时只读取 Portal 专用变量，不得回退到既有 Functions 使用的通用 `REDIS_*`、`UPSTASH_REDIS_*` 或其他 provider 凭据。EdgeOne signer、Portal Next.js runtime 和浏览器均不持有 Redis 凭据。
 
-Upstash 导出的 `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` 只属于运维输入格式，可保存在 git-ignored、mode-0600、只含这两个键的本地凭据文件中。live fixture 或 provisioning 进程把它们映射为相应的 `PORTAL_R0_UPSTASH_REDIS_*` / `PORTAL_UPSTASH_REDIS_*`，完成后清空子进程凭据；Portal build/runtime 与 Supabase Handler 不直接加载该文件，也不得把导出名当作 runtime fallback。
+Upstash 导出的 `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` 只属于运维输入格式，可保存在 git-ignored、mode-0600、只含这两个键的本地凭据文件中。Provisioning 进程把它们映射为 `PORTAL_UPSTASH_REDIS_*`，完成后清空子进程凭据；Portal build/runtime 与 Supabase Handler 不直接加载该文件，也不得把导出名当作 runtime fallback。
 
 共享存储下的命名空间与签名身份仍必须完全区分：
 
-- R0 仅接受 `portal:r0:<random-fixture>:v1`，使用独立 `PORTAL_R0_*` HMAC、publishable key、预算和短期资源，禁止命名为 dev/main/prod；
 - Dev 固定 `PORTAL_REDIS_NAMESPACE=portal:dev:v1`，只配 Dev 的 Portal HMAC keyring 与 Supabase publishable key；
 - Main/Production 固定 `PORTAL_REDIS_NAMESPACE=portal:main:v1`，只配 Production 的 Portal HMAC keyring 与 Supabase publishable key；
-- Preview 与 Production 的 HMAC keyId/secret、Supabase project 和 EdgeOne signer deployment 继续完全不同，不因共享 Redis credential 而复用；
-- 普通 feature Preview 只调用 persistent Supabase Dev；R0 compatibility deployment 是显式例外，只能调用已从 Main parent 实时验证、非默认、非 persistent、无业务数据且不等于 Dev/Main ref 的 disposable Supabase Preview branch；
-- R0 deploy/cleanup 以 `PORTAL_R0_PROJECT_REF`、`PORTAL_R0_RUNTIME_TARGET=preview`、branch/Git/PR identity、exact deployment SHA 和 24 小时内 expiry 绑定 target；Dev/Main deploy tooling 则把受控 target 映射到 exact project ref、`portal:dev:v1` / `portal:main:v1` 与对应 HMAC keyring。Handler 只接受平台注入的 current-project URL/key registry；namespace、project、keyId 或 target 不匹配时 fail closed；
-- R0 fixture 完成后只删除其 exact namespace keys 与 disposable Preview branch 中的临时 secret copies，不删除共享 Upstash database，也不单独轮换共享源 token。
+- Dev fixture 与 Main/Production 的 HMAC keyId/secret、Supabase project 和 signer identity 继续完全不同，不因共享 Redis credential 而复用；EdgeOne 只部署 Main signer；
+- EdgeOne hosted probes 只调用 Main/Production，必须使用 exact deployment SHA、Main project ref、Production current key 和 `portal:main:v1`；Handler 只接受平台注入的 current-project URL/key registry；namespace、project、keyId 或 target 不匹配时 fail closed；
+- hosted probe 只生成协议正常产生且 TTL-bounded 的 replay/budget/lease/cache keys；禁止广域扫描、模糊 prefix delete、删除共享 Upstash database 或为单次测试轮换共享源 token。
 
 `PORTAL_REDIS_NAMESPACE` 是避免 key 冲突与约束代码路径的逻辑前缀，不是 Redis 权限或安全边界。共享 token 的持有者技术上可以读取、修改或删除所有 namespace；token 泄露、误操作、限额耗尽、provider outage 和 token rotation 也会同时影响 test、Dev 与 Production。初始部署接受这一残余风险，并以独立 HMAC、严格 namespace 校验、短 TTL、hash-only cache key、禁止记录完整 key/value、按环境分指标和 guard fail-closed 降低风险。未来切换为独立 Upstash database/token 只允许是配置收敛，不得改变协议或业务语义。
 
 共享 Redis 风险由 workspace coordination `tiangong-lca/workspace#739` 持有，Portal 完成 onboarding 后转由关联的 Portal R1 release Issue 共同持有，并在每次 Production deployment 前重新确认。出现 token 暴露或疑似泄露、跨环境 key 写入、共享配额/故障影响 Production、无法协调的紧急 rotation、合规要求变化，或 provider 已能提供独立 credential 时，Production no-go，必须切换独立 Upstash database/token 或完成单独批准的风险处置。共享 token 的轮换是覆盖 R0/Dev/Main secret copies 的同一协调事件，不能按单一环境局部执行。
 
-R0 live fixture 在第一次 Redis mutation 前写入 mode-0600 cleanup receipt；receipt 只含 schema version、exact R0 namespace、fixture 时间与 key-derivation version，不含 endpoint、token、HMAC、nonce、请求体、完整 key 或 value。受控 fixture driver 必须能由 receipt 和固定测试输入枚举它创建的每个 exact key；cleanup 逐键删除并确认读取为空，禁止使用无界 `SCAN`、模糊 prefix delete 或 database delete。成功后删除 receipt；中断或失败时保留 receipt 和固定恢复命令，直至 cleanup 验证通过或所有 fixture key 的受控 TTL 到期并完成复核。
+Hosted R0 probe 在第一次 Redis mutation 前写入 mode-0600 receipt；receipt 只含 schema version、exact Production route、fixture 时间与 key-derivation version，不含 endpoint、token、HMAC、nonce、请求体、完整 key 或 value。受控 probe 必须能由固定输入推导其 exact key 并等待受控 TTL 到期或逐键确认回收，禁止使用无界 `SCAN`、模糊 prefix delete 或 database delete。
 
 `PORTAL_REDIS_TIMEOUT_MS` 默认 500，超时按 guard unavailable 处理。
 
@@ -729,7 +727,7 @@ Redis 是签名入口的安全依赖，不是可跳过的缓存：nonce 登记�
 2. EdgeOne 新 deployment 把唯一的 `PORTAL_EDGE_KEY_ID` / `PORTAL_EDGE_HMAC_SECRET` 切到 new；
 3. 观察 24 小时无 old 请求，同时保留回滚到上一 EdgeOne deployment 的能力；
 4. 从 Edge Function Secrets 删除 previous，再次部署并验证；
-5. Preview 与 Production 独立执行，禁止跨环境复用 keyId 或 secret。
+5. Dev fixture 与 Main/Production 独立执行，禁止跨环境复用 keyId 或 secret；EdgeOne 只切换 Production current key。
 
 若 EdgeOne 不能提供可验证、覆盖式的 client-address/origin trust contract，MVP 不信任客户端自报的 `X-Forwarded-For`：只使用 EdgeOne WAF、签名身份、全局/并发预算和可验证的平台 request metadata；per-visitor 限流继续作为上线前验证项。
 
@@ -858,7 +856,7 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 ### 12.2 Web 安全
 
 - CSP 默认拒绝，按实际字体、图片和后端域名放行，禁止 `unsafe-inline`；Next SHA-256 SRI 只覆盖外部资产，不能单独授权 App Router 内联 Flight scripts；全站 nonce 又会强制动态渲染并禁用 ISR；
-- R0 非公开阶段只允许把严格候选策略置于 report-only 以收集证据，不得把 report-only 当作通过。主题 bootstrap 使用同源外部静态脚本；SRI、内联 Flight 处理、RSC hydration、Streaming 和 ISR 必须在 enforce 模式作为一个组合通过 EdgeOne Preview，无法同时满足即阻塞公开发布；
+- R0 非公开阶段只允许把严格候选策略置于 report-only 以收集证据，不得把 report-only 当作通过。主题 bootstrap 使用同源外部静态脚本；SRI、内联 Flight 处理、RSC hydration、Streaming 和 ISR 必须在 enforce 模式作为一个组合通过 exact EdgeOne main/Production deployment，无法同时满足即阻塞开启公开索引；
 - `frame-ancestors 'none'`、`X-Content-Type-Options: nosniff`、`Referrer-Policy: strict-origin-when-cross-origin` 和最小 Permissions Policy；
 - 用户内容只作为文本渲染，不用未经清洗的 HTML；
 - URL/localStorage/JSON 导入全部经 Zod 校验；
@@ -1043,11 +1041,11 @@ MVP 不引入重量级状态管理、客户端查询缓存、Chart 或 Map 依�
 - `app/[locale]/layout.tsx` 是本地化页面的动态根布局，并通过 `generateStaticParams` 保留 zh-CN/en 静态生成；根跳转、R0 probe 与全局 404 使用独立 root document，共享同一个主题/品牌 bootstrap；
 - 不使用 `output: "export"`；
 - EdgeOne 输出目录 `.next`；
-- 静态与 ISR 路由启用 `experimental.sri.algorithm="sha256"`，并由 R0 Preview 证明 EdgeOne 对该 experimental 能力兼容；
+- 静态与 ISR 路由启用 `experimental.sri.algorithm="sha256"`，并由 exact EdgeOne main/Production deployment 证明平台对该 experimental 能力兼容；
 - 多 root layout 的 unmatched URL 使用 Next `experimental.globalNotFound` 输出完整、带语言和 `noindex` 的 404 document；该 experimental 能力与 SRI 一并进入 R0 compatibility gate；
 - TypeScript 7 使用 Next 16 默认 TypeScript CLI 路径，并在 compatibility spike 验证；不为默认已启用的行为保留冗余 experimental 配置；
 - `next-env.d.ts` 由 `next dev/build/typegen` 生成并纳入 `tsconfig`，但不提交到 Git；
-- 不依赖 Next config redirects/rewrites，跨路径规则使用 `proxy.ts` 或 `edgeone.json`；
+- 不依赖 Next config redirects/rewrites，跨路径规则使用当前 EdgeOne-compatible `middleware.ts` 或 `edgeone.json`；EdgeOne adapter 支持 Node proxy 后再恢复 `proxy.ts`；
 - 图片使用 `next/image`，仅配置必要远端域名；
 - `next typegen && tsc --noEmit` 是独立 typecheck；
 - Client boundary 通过 lint 和 bundle 检查防止 server-only 模块泄漏。
@@ -1119,10 +1117,12 @@ tiangong-lca-portal/
 
 - 使用 EdgeOne Makers Git integration 作为唯一发布者；
 - Production 绑定 Portal `main`；
-- feature/PR 使用 Preview 环境；
+- feature/PR 只运行 GitHub/local gates，不创建独立 EdgeOne Preview；
+- 每个 PR 合并到 `main` 后自动部署到 `portal.tiangong.earth`，该 Production 域名同时承担 hosted TDD 与最终发布；
+- TDD 阶段固定 `PORTAL_PUBLIC_INDEXING=disabled`，所有门通过后才以新 deployment 开启索引；
 - GitHub Actions 只做 lint、typecheck、test、build 和安全检查，不再次部署；
 - 每次部署使用不可变 commit SHA，回滚到上一成功 deployment；
-- Preview 与 Production 使用独立环境变量和 Supabase target。
+- EdgeOne 只持有 Production 环境变量并只调用 Supabase Main；本地/CI fixture 与 Main 凭据仍严格分离。
 
 ### 17.2 构建配置
 
@@ -1135,9 +1135,9 @@ tiangong-lca-portal/
   "outputDirectory": ".next",
   "nodeVersion": "24.18.0",
   "cloudFunctions": {
-    "overseasRegions": ["na-ashburn"],
-    "nodejs": {
-      "maxDuration": 30
+    "maxDuration": 30,
+    "regions": {
+      "overseas": ["na-ashburn"]
     }
   }
 }
@@ -1145,7 +1145,7 @@ tiangong-lca-portal/
 
 `na-ashburn` 与当前 Supabase/Edge 的 US East 入口接近，是初始候选。是否增加中国大陆 region 必须依据 ICP、目标域名和实测后决定；不能仅凭用户所在地猜测。
 
-EdgeOne 环境变量按 Production/Preview 分开配置：
+EdgeOne 只配置 Production 环境变量：
 
 | 类别 | 变量 |
 | --- | --- |
@@ -1156,7 +1156,7 @@ EdgeOne 环境变量按 Production/Preview 分开配置：
 | Logo | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON` |
 | Logo metadata | `PORTAL_LOGO_ALT_ZH/EN`、`PORTAL_LOGO_WIDTH/HEIGHT`、可选 `PORTAL_BRAND_ASSET_ORIGIN` |
 
-Supabase Edge Function 配置按项目分别保存；当前批准的例外仅共享底层 Upstash endpoint/token。普通 EdgeOne feature Preview 只调用 persistent Supabase Dev，EdgeOne Production 只调用 Supabase Main；R0 compatibility Preview 按 §10.3 只调用 disposable Supabase Preview branch：
+Supabase Edge Function 配置按项目分别保存；当前批准的例外仅共享底层 Upstash endpoint/token。EdgeOne Production 只调用 Supabase Main；本地/CI 使用 loopback fixture 或 persistent Dev 的独立凭据。用户批准不创建单独 EdgeOne Preview，R0 hosted probes 在 Production 域名、索引关闭状态下验证真实 Main signer/namespace，不部署可调用业务内核的临时替代凭据：
 
 | 类别 | Edge Function 配置 |
 | --- | --- |
@@ -1166,24 +1166,24 @@ Supabase Edge Function 配置按项目分别保存；当前批准的例外仅共
 | R0 fixture | 独立 `PORTAL_R0_*` HMAC/publishable/Redis surface，`PORTAL_R0_REDIS_NAMESPACE=portal:r0:<fixture>:v1` |
 | Hybrid gate | `PORTAL_HYBRID_ENABLED=false`，仅在 R2 gate 全绿的目标环境显式设为 `true` |
 
-Dev 使用 `portal:dev:v1`，Main/Production 使用 `portal:main:v1`；两者当前可以保存相同的 `PORTAL_UPSTASH_REDIS_URL/TOKEN`，但不得保存相同的 namespace 或 HMAC keyId/secret。共享 token 不证明 Preview/Production 安全隔离，部署证据只能声明 Supabase target、HMAC identity、namespace 和应用 key construction 隔离，并必须同时记录共享配额、故障域和轮换域风险。
+Dev 使用 `portal:dev:v1`，Main/Production 使用 `portal:main:v1`；两者当前可以保存相同的 `PORTAL_UPSTASH_REDIS_URL/TOKEN`，但不得保存相同的 namespace 或 HMAC keyId/secret。共享 token 不证明 Dev/Main 安全隔离，部署证据只能声明 Supabase target、HMAC identity、namespace 和应用 key construction 隔离，并必须同时记录共享配额、故障域和轮换域风险。
 
 HMAC 与 Redis 凭据是秘密，永不渲染；previous HMAC key 只存在于 Supabase Edge Function Secrets 的轮换窗口，不配置到 EdgeOne signer。品牌变量本质上是公共展示配置，经过校验后进入 HTML/CSS metadata。由于 EdgeOne 单变量值上限为 500 bytes，品牌配置使用独立变量，不使用大段 JSON。变量变化只对新 deployment 生效，因此每次换色/Logo 都生成可回滚的部署记录。
 
 ### 17.3 平台约束
 
-EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization。方案仍设置一个上线前 compatibility spike，因为本 workspace 尚无 Next.js SSR 的 EdgeOne 先例，而且 experimental feature 只有部分支持。
+EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization。实际 deployment `dp4k6q62p30g` 使用 `@edgeone/opennextjs-pages`：Next 16 Node `proxy.ts` 构建成功但运行时对所有 matched path 返回 `Middleware execution failed: a is not a function`。Portal 因此使用 Next 仍支持的 legacy `middleware.ts` Edge runtime，并同时导出 named/default handler；只有 exact EdgeOne deployment 证明 native Node proxy 可用后才恢复 `proxy.ts`。
 
 Compatibility spike 必须实测：
 
 - Node 24 + pnpm 11 build；
 - Next 16 + React 19 + TypeScript 7 typecheck/build；
-- RSC、SSR、ISR、Streaming、`proxy.ts`、Route Handler、Image Optimization；
+- RSC、SSR、ISR、Streaming、legacy `middleware.ts`/future `proxy.ts`、Route Handler、Image Optimization；
 - 严格 CSP 下的 SRI、RSC hydration、Streaming 与 ISR 组合；不得用全站 nonce 让页面静态性测试失真；
-- 实际 SSR `process.version`；若低于 Node 22，继续使用 native fetch 且不得引入要求 Node 22+ 的服务端 SDK；
+- 实际 SSR `process.version`；当前日志为 Nodejs20.19，继续使用 native fetch 且不得引入要求 Node 22+ 的服务端 SDK；
 - 使用独立 `PORTAL_R0_*` HMAC/publishable 凭据和 `portal:r0:<random-fixture>:v1` 可丢弃 namespace；按 §10.3 的共享存储决策映射同一 Upstash endpoint/token，验证 EdgeOne Web Crypto HMAC、Supabase Deno 验签、`SET NX EX`/Lua 原子能力、nonce 防重放、current/previous key 轮换与 exact-key cleanup；fixture 不接业务 RPC/模型、不读取 Dev/Main HMAC 或 namespace，保存证据后删除 exact fixture keys 与 R0 project 的临时 secret copies，禁止删除共享 database 或绕过协调单独轮换共享源 token；
-- 除 §10.3 明确共享的 Upstash endpoint/token 外，Preview/Production 的 Supabase target、HMAC、publishable key、namespace 和 EdgeOne deployment 配置隔离；
-- 默认浅/深主色与 `tiangong-lca-next` 对齐；Portal 其余 semantic token、自定义主色和替换 Logo 的 Preview smoke；
+- 除 §10.3 明确共享的 Upstash endpoint/token 外，Dev/Main 的 Supabase target、HMAC、publishable key 和 namespace 隔离；EdgeOne deployment 必须拒绝 Dev target；
+- 默认浅/深主色与 `tiangong-lca-next` 对齐；Portal 其余 semantic token、自定义主色和替换 Logo 的 Production smoke；
 - `edgeone.json` headers、404、缓存与 canonical domain；扩展 tombstone 另测 410；
 - 回滚、冷启动和跨区域数据库时延。
 
@@ -1274,7 +1274,7 @@ Dashboard 至少覆盖：
 - Search/Compare/Collections 不被索引；
 - 浏览器 bundle 和 sourcemap 不含 secret/service role；
 - CSP 不含 `unsafe-inline`，主题 bootstrap script 的构建时 SHA-256 hash 与实际响应字节一致；
-- EdgeOne Preview 完成 SSR/RSC/ISR/Runtime smoke。
+- Exact EdgeOne main/Production deployment 完成 SSR/RSC/ISR/Runtime smoke。
 
 ### 19.4 发布门
 
@@ -1285,7 +1285,7 @@ format/lint
 → integration anon-security
 → build
 → Playwright + accessibility + SEO
-→ EdgeOne Preview smoke
+→ EdgeOne main/Production smoke（索引关闭）
 → manual product review
 → Production
 ```
@@ -1310,7 +1310,7 @@ format/lint
 3. 完成 EdgeOne Next SSR compatibility spike；
 4. 把 Portal 作为 M1 子模块纳入 workspace。
 
-退出条件：远端有可引用 main SHA；§17.3 列出的 RSC、SSR、ISR、Streaming、`proxy.ts`、Route Handler、Image、状态/缓存、回滚、runtime 与环境隔离全部在一个 exact Preview SHA 通过并保存证据；root 治理与 delivery profile 可路由 Portal。R0 HMAC fixture 只证明两端密码学/运行时互操作，不视为生产 signer、verifier、keyring 或 Redis guard 交付。任一项未验证都阻塞 R0，而不是留给生产发现。
+退出条件：远端有可引用 main SHA；§17.3 列出的 RSC、SSR、ISR、Streaming、Middleware/Proxy、Route Handler、Image、状态/缓存、回滚、runtime 与 Dev/Main 凭据隔离全部在一个 exact EdgeOne main deployment 通过并保存证据；root 治理与 delivery profile 可路由 Portal。Production HMAC probe 必须验证真实 signer/verifier/keyring/Redis guard。任一项未验证都保持索引关闭，而不是留给公开流量发现。
 
 ### 20.3 Phase 1：Database 公共读契约
 
@@ -1364,7 +1364,7 @@ format/lint
 
 | Work package | Owner repo | 分支/PR 目标 | 主要产物 |
 | --- | --- | --- | --- |
-| Portal governance + R0 compatibility | `tiangong-lca-portal` | M1：PR to `main` | 仓库治理、可丢弃 EdgeOne compatibility fixture、exact Preview evidence |
+| Portal governance + R0 compatibility | `tiangong-lca-portal` | M1：PR to `main` | 仓库治理、EdgeOne main/Production hosted probes、exact deployment evidence |
 | Public read façade + capability policy | `database-engine` | M2：feature from `dev`, PR to `dev`, promote to `main` | RPC、许可/capability policy、ACL、RLS、索引、tests、types |
 | Public LCIA numeric projection | `database-engine` | M2：feature from `dev`, PR to `dev`, promote to `main` | immutable projection、locator-free RPC、publication/evidence tests |
 | LCIA projection materialization | `tiangong-lca-worker` | M1：PR to `main` | publish payload/value/context materialization 与 idempotence proof |
@@ -1391,7 +1391,7 @@ Portal 已在 workspace delivery profile 中注册为 `portal`，所有新工作
 - live Project 已有 `Repo Tag=portal`，Portal executable work 由 workspace controller 创建、启动、提交和完成；
 - Portal 使用 `layout: repo` 的 repository-owned Docpact config；root Docpact 只拥有跨仓路由和 gitlink integration；
 - root gitlink 是经过审查的集成输入，不自动跟随 child `main`。每个需要 root integration 的 release 都必须单独 pin exact eligible child SHA；
-- onboarding 完成只证明仓库和交付链可用，不证明 R0、R1、EdgeOne Preview 或 Production readiness。
+- onboarding 完成只证明仓库和交付链可用，不证明 R0、R1 或 EdgeOne Production release readiness。
 
 ### 22.2 正常交付顺序
 
@@ -1436,7 +1436,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 - capability 允许的公开 Exchanges/LCIA 匿名可见；
 - 0/20、私有、团队和审核数据从所有入口不可见；
 - 伪造 filter/state/actor/team 无法扩大范围；
-- HMAC 缺失、错误、篡改、过期、重放或未知 keyId 均在 JSON/AI/数据库业务逻辑前拒绝；Preview/Production 的 HMAC、Supabase target、publishable key、namespace 和 EdgeOne deployment 隔离及 current/previous 轮换通过；§10.3 共享的 Upstash endpoint/token 不得被描述为 Redis 权限隔离；
+- HMAC 缺失、错误、篡改、过期、重放或未知 keyId 均在 JSON/AI/数据库业务逻辑前拒绝；Dev/Main 的 HMAC、Supabase target、publishable key 和 namespace 隔离及 Production current/previous 轮换通过；§10.3 共享的 Upstash endpoint/token 不得被描述为 Redis 权限隔离；
 - 浏览器、部署产物、日志和错误响应无 service role、secret 或 locator。
 
 ### 23.3 SEO
@@ -1451,7 +1451,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 
 ### 23.4 工程
 
-- EdgeOne Preview 验证 Next 16、React 19、TypeScript 7、SSR/RSC/ISR/Streaming；
+- Exact EdgeOne main/Production deployment 验证 Next 16、React 19、TypeScript 7、SSR/RSC/ISR/Streaming；
 - 依赖 exact pin，pnpm lockfile 可复现；
 - 所有 Server-only 模块不进入浏览器 bundle；
 - 默认浅/深主色、派生 semantic token、自定义主色、Logo/favicon 替换及失败回退均通过自动与视觉回归；
@@ -1462,9 +1462,9 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 
 以下每项都是 required；没有“与 R1 相关项”之类的解释空间：
 
-1. R0 的完整 EdgeOne compatibility matrix 已绑定 exact Preview SHA 并全绿；
+1. R0 的完整 EdgeOne compatibility matrix 已绑定 exact `portal/main` Production deployment 并全绿；
 2. Database public catalog/capability/LCIA projection 已 promote 到 `database-engine/main`，Worker/Release materialization/finalize 已进入各自 `main`，HMAC verifier 与 `portal_data_product_results_v1` 已 promote 到 `edge-functions/main`；
-3. 正确签名可调用；缺失/错误签名、篡改 body、过期 timestamp、重复 nonce、未知 keyId 均在业务逻辑前拒绝；old/new key 轮换通过；Preview/Production 使用不同 HMAC keyring、Supabase project 和 `portal:dev:v1` / `portal:main:v1` namespace。初始部署按 §10.3 共享经批准的 Upstash endpoint/token，验收证据明确 namespace 不是安全边界，并记录共享 token、配额、故障与轮换域风险；runtime 不读取通用 Redis 凭据，Redis guard 不可用时 LCIA 不调用数据库并显示暂不可用；
+3. 正确签名可调用；缺失/错误签名、篡改 body、过期 timestamp、重复 nonce、未知 keyId 均在业务逻辑前拒绝；old/new key 轮换通过；Dev/Main 使用不同 HMAC keyring、Supabase project 和 `portal:dev:v1` / `portal:main:v1` namespace，EdgeOne 只持有 Main current key。初始部署按 §10.3 共享经批准的 Upstash endpoint/token，验收证据明确 namespace 不是安全边界，并记录共享 token、配额、故障与轮换域风险；runtime 不读取通用 Redis 凭据，Redis guard 不可用时 LCIA 不调用数据库并显示暂不可用；
 4. 无终端用户 Cookie/token 的代表性 Process/Flow 100 与 200 查询返回允许元数据；HMAC secret 不出现在浏览器；0/20、owner/team/review fixture 从 search、detail、versions、exchange、facet 和伪造参数入口均不可见；
 5. UUID、CAS、分类码、中文名和英文名 lexical/identifier 查询通过，100/200 使用一个稳定 public-catalog 排序与 cursor；
 6. Process/Flow exact-version 详情、版本列表、撤回 404 和 latest 307 通过；页面不直接读取 raw core table；
