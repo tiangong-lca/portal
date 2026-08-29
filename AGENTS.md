@@ -26,8 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 0078188c86e8b7ecb153f91c032ddcd97e8ff767
-lastReviewedNote: "Reviewed for Portal #26: exact EdgeOne evidence uses a query-free native root redirect, bounded query-preserving Route Handlers, constrained locale params and the global branded 404; retained public-release gates still align."
+lastReviewedCommit: 82e9edb584c19974746c398027c424ac837e4e37
+lastReviewedNote: "Reviewed for Portal #29: Production HMAC/Redis signer cutover, active/rollback deployment evidence, Node 24 build versus managed Node 20 runtime, and retained public-release gates align."
 related:
   - README.md
   - docs/design-plan.md
@@ -48,6 +48,7 @@ related:
 - Portal is read-only for LCA data. It must not create, edit, review, publish, withdraw, repair, or recalculate datasets.
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
 - Node `24.18.x` is the pinned build toolchain. The selected EdgeOne Production deployment reports Node.js 20.19 for SSR, so server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
+- Production HMAC/Redis is proven on `dppeqhecdjax@82e9edb`; `dpldjwibrtb4` is the fail-closed pre-signer rollback. Restore signer by redeploying exact source with current Production configuration; a forward version rollback is not sufficient.
 - EdgeOne's current `@edgeone/opennextjs-pages` adapter returns `a is not a function` for both named-only and named/default Next 16 `proxy.ts`; its legacy `middleware.ts` path skips locale and probe semantics. Do not ship a Next Proxy/middleware entrypoint. Keep only the query-free root redirect and R0 headers in `edgeone.json`; bounded unlocalized product routes use same-origin 307 Route Handlers with `no-store`, and the generated locale segment is closed with `dynamicParams=false` so invalid values reach the full global 404 document.
 
 ## Repository and delivery model

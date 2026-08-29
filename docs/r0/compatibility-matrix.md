@@ -21,8 +21,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 0078188c86e8b7ecb153f91c032ddcd97e8ff767
-lastReviewedNote: "Reviewed for Portal #26: exact native-routing deployment evidence, query-preserving canonicalization, branded raw 404 candidate, immutable build SHA and the retained strict CSP/ISR gate are current."
+lastReviewedCommit: 82e9edb584c19974746c398027c424ac837e4e37
+lastReviewedNote: "Reviewed for Portal #29: exact Production signer/verifier/Redis cutover, fail-closed rollback/redeploy recovery, native routing evidence and retained public-release blockers are current."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -35,22 +35,22 @@ R0 remains blocked until every required row has evidence bound to one exact Port
 
 | Capability | Local production evidence | EdgeOne main/Production evidence | Gate |
 | --- | --- | --- | --- |
-| Node 24.18 build + pnpm 11 | `check:toolchain`, frozen install, production build pass | `dpo9t4ajt9ir` built exact `7559824`; SSR reports `v20.19.3` | Pass |
+| Node 24.18 build + pnpm 11 | `check:toolchain`, frozen install, production build pass | `dppeqhecdjax` built exact `82e9edb`; managed SSR runtime reports `v20.19.3` | Pass |
 | Next 16 / React 19 / TypeScript 7 | type-aware lint, `next typegen`, `tsc`, build pass | Exact deployment passed Next 16.3.3 without a Proxy/Middleware artifact | Pass |
 | RSC/static shell | `/` and `/r0-compat` prerender | `/` is real 302 to `/zh-CN`; `/r0-compat` is 200 with native routing evidence | Pass |
 | SSR runtime | `/r0-compat/ssr` reports local `process.version` | 200, `v20.19.3`, private/no-store on exact deployment | Pass |
 | ISR | `/r0-compat/isr` emits `s-maxage=60` and stable cached body | Regenerated from `05:47:10.931Z` to `05:48:21.109Z`, then byte-identical hits with increasing Age | Pass |
 | Streaming | dynamic Suspense route passes under report-only CSP | 200/private/no-store; five chunks with completion marker 88 ms after initial chunks | Pass |
-| EdgeOne routing | No Next Proxy/middleware artifact; native root/header contract and bounded query-preserving Route Handlers pass locally | Native root/header deployment passes; hosted state-preserving handler candidate awaits exact deployment | Partial |
-| Route Handler | dynamic JSON contract, redirects and no-store pass | R0 handler reports exact `7559824`, production, `v20.19.3`; canonical redirect candidate awaits deployment | Partial |
+| EdgeOne routing | No Next Proxy/middleware artifact; native root/header contract and bounded query-preserving Route Handlers pass locally | Root/native headers and relative 307/no-store Search/Compare/Browse/Process/Flow redirects preserve ordered query values on exact `82e9edb` | Pass |
+| Route Handler | dynamic JSON contract, redirects and no-store pass | R0 handler reports exact `82e9edb`, production, `v20.19.3`; LCIA BFF is same-origin, correlation-bound and no-store | Pass |
 | Image Optimization | raster brand probe resolves through `/_next/image` locally | EdgeOne emits valid `image/webp` via native `imageMogr2` transformation | Pass |
-| locale document / 404 / robots / noindex | zh-CN/en raw HTML and hydrated DOM use exact `lang`; `dynamicParams=false` candidate returns a full branded raw global 404 | direct locales/robots pass; current invalid-locale raw shell fails while hosted candidate awaits deployment | Partial |
+| locale document / 404 / robots / noindex | zh-CN/en raw HTML and hydrated DOM use exact `lang`; local invalid-locale/global 404 is branded | direct locales/robots and hydrated 404 pass; EdgeOne still wraps raw invalid first-segment HTML in `__next_error__` despite real 404 status; Portal #28 is platform-blocked | **Blocked** |
 | Brand defaults/assets/fallback | unit SHA receipt, env parse, production browser fallback pass | Custom color/logo Production smoke pending | Blocked |
-| HMAC WebCrypto signer | deterministic `portal-hmac-v1` fixture passes | Edge verifier/rotation/replay pending in Edge #319 | Blocked |
-| Redis NX/EX + Lua | Not owned by Portal | Disposable Upstash + Edge verifier pending | Blocked |
+| HMAC WebCrypto signer | deterministic `portal-hmac-v1` fixture passes | Main current rotated with previous absent; direct current 404, replay 403, tamper/unknown/expiry 401; EdgeOne `dppeqhecdjax` BFF returns expected 200/unavailable | Pass |
+| Redis NX/EX + Lua | Not owned by Portal | Production replay rejection and prior exact `portal:main:v1` TTL/namespace proof pass; guard remains fail closed | Pass |
 | Deployment model | Local marker only | User approved one `main`-tracked Production environment for TDD/release; indexing remains disabled until all gates pass | Accepted risk |
 | Strict CSP + hydration + ISR | Exact enforce command at `b94451c` passes 13/19; executable inline Flight blocks break hydration-dependent paths | No supported renderer-level solution; see [retained spike](csp-isr-spike.md) | **Blocked** |
-| Rollback/cold start/latency | Not a local claim | Pending | Blocked |
+| Rollback/cold start/latency | Not a local claim | `dpldjwibrtb4` rollback disables signer with 503; recovery requires current-config redeploy (`dppeqhecdjax`); cold-start/hosted SLA samples remain pending in Portal #13 | Partial |
 
 ## CSP blocker
 
