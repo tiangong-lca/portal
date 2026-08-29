@@ -2,8 +2,21 @@ import { defineConfig, devices } from "@playwright/test";
 
 import environmentFixture from "./tests/fixtures/portal/r1-environments.json" with { type: "json" };
 
-const portalE2eUrl = "http://127.0.0.1:4317";
-const portalFixtureUrl = "http://127.0.0.1:4328";
+function readPort(name: "PORTAL_E2E_PORT" | "PORTAL_FIXTURE_PORT", fallback: number): number {
+  const value = process.env[name] ?? String(fallback);
+
+  if (!/^\d+$/u.test(value)) throw new Error(`${name} must be a decimal TCP port.`);
+  const port = Number(value);
+  if (!Number.isSafeInteger(port) || port < 1 || port > 65_535) {
+    throw new Error(`${name} must be between 1 and 65535.`);
+  }
+  return port;
+}
+
+const portalE2ePort = readPort("PORTAL_E2E_PORT", 4317);
+const portalFixturePort = readPort("PORTAL_FIXTURE_PORT", 4328);
+const portalE2eUrl = `http://127.0.0.1:${String(portalE2ePort)}`;
+const portalFixtureUrl = `http://127.0.0.1:${String(portalFixturePort)}`;
 const previewFixture = environmentFixture.preview;
 
 export default defineConfig({
@@ -26,7 +39,7 @@ export default defineConfig({
   webServer: [
     {
       name: "Portal R1 fixture",
-      command: "pnpm fixture:r1 --environment preview --host 127.0.0.1 --port 4328",
+      command: `pnpm fixture:r1 --environment preview --host 127.0.0.1 --port ${String(portalFixturePort)}`,
       url: `${portalFixtureUrl}/health`,
       reuseExistingServer: false,
       timeout: 30_000,
@@ -34,7 +47,7 @@ export default defineConfig({
     },
     {
       name: "Portal",
-      command: "pnpm start --hostname 127.0.0.1 --port 4317",
+      command: `pnpm start --hostname 127.0.0.1 --port ${String(portalE2ePort)}`,
       url: portalE2eUrl,
       reuseExistingServer: false,
       timeout: 120_000,

@@ -5,6 +5,7 @@ const processId = "11111111-1111-1111-1111-111111111111";
 const processRef = `${processId}@01.00.000`;
 const flowId = "22222222-2222-2222-2222-222222222222";
 const flowRef = `${flowId}@01.00.000`;
+const portalE2eOrigin = `http://127.0.0.1:${process.env.PORTAL_E2E_PORT ?? "4317"}`;
 
 test("serves localized anonymous discovery with persistent theme and SEO alternates", async ({
   context,
@@ -176,7 +177,7 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
   expect(processShardLocations).toEqual(
     Array.from(
       { length: 64 },
-      (_, index) => `http://127.0.0.1:4317/catalog-process-sitemap.xml?shard=${index}`,
+      (_, index) => `${portalE2eOrigin}/catalog-process-sitemap.xml?shard=${index}`,
     ),
   );
   expect(processIndexBody).not.toContain("portal-sitemap-v1-");

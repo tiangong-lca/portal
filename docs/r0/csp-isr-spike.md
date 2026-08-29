@@ -20,9 +20,9 @@ checkPaths:
   - src/proxy.ts
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-08-28
-lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
-lastReviewedNote: "Reviewed for Portal #19: the client-enhanced R2 Hybrid route and fragment sharing do not change ISR HTML, Flight delivery, the retained strict CSP incompatibility, or the blocked R0 decision."
+lastReviewedAt: 2026-08-29
+lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
+lastReviewedNote: "Reviewed for Portal #8: main-only EdgeOne hosted TDD and the legacy middleware workaround do not change ISR HTML, Flight delivery, the retained strict CSP incompatibility, or the blocked public-release decision."
 related:
   - compatibility-matrix.md
   - ../design-plan.md
@@ -91,7 +91,7 @@ Re-run this gate only when at least one of these conditions is true:
 4. The product explicitly approves removing ISR and serving all interactive HTML through request-nonce dynamic rendering.
 5. The product explicitly approves a rendering architecture that does not depend on executable inline hydration scripts.
 
-Any reopened gate must pass the exact enforcing browser command locally and on one immutable EdgeOne Preview SHA while independently proving RSC hydration, Streaming, and real ISR regeneration.
+Any reopened gate must pass the exact enforcing browser command locally and on one immutable EdgeOne `main` Production deployment while independently proving RSC hydration, Streaming, and real ISR regeneration. Public indexing remains disabled during this hosted test.
 
 ## Primary references
 

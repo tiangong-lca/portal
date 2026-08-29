@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
-const fixtureOrigin = "http://127.0.0.1:4328";
+const fixtureOrigin = `http://127.0.0.1:${process.env.PORTAL_FIXTURE_PORT ?? "4328"}`;
 
 test("runs private-by-default Hybrid discovery and keeps evidence comparable", async ({
   context,

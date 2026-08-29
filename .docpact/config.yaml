@@ -1,8 +1,8 @@
 version: 1
 layout: repo
-lastReviewedAt: "2026-08-28"
-lastReviewedCommit: "cd08545626af89c710bf23ece40b7d5664e97288"
-lastReviewedNote: "Reviewed for Portal #19: R2 Hybrid BFF/UI, fallback, sharing, and proof paths remain within existing product/runtime ownership and routing."
+lastReviewedAt: "2026-08-29"
+lastReviewedCommit: "35e9e5154851db3901138133591db22cfaaedfba"
+lastReviewedNote: "Reviewed for Portal #8: EdgeOne main/Production TDD, middleware compatibility, deployment config and hosted proof paths remain within existing product/runtime ownership and routing."
 
 catalog:
   repos:

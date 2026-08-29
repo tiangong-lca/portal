@@ -4,6 +4,8 @@ import { expect, test, type APIRequestContext } from "@playwright/test";
 
 import environmentFixture from "../fixtures/portal/r1-environments.json" with { type: "json" };
 
+const fixtureOrigin = `http://127.0.0.1:${process.env.PORTAL_FIXTURE_PORT ?? "4328"}`;
+
 type FixtureLciaReceipt = {
   schemaVersion: "portal.r1-fixture-lcia-receipt.v1";
   receipt: { correlationId: string };
@@ -21,7 +23,7 @@ async function fixtureRpcReceipt(
   bodySha256: string,
 ): Promise<FixtureRpcReceipt> {
   const response = await request.get(
-    `http://127.0.0.1:4328/receipts/rpc/${encodeURIComponent(name)}/${bodySha256}`,
+    `${fixtureOrigin}/receipts/rpc/${encodeURIComponent(name)}/${bodySha256}`,
   );
   expect(response.ok()).toBe(true);
   return (await response.json()) as FixtureRpcReceipt;
@@ -32,7 +34,7 @@ async function fixtureLciaReceipt(
   correlationId: string,
 ): Promise<FixtureLciaReceipt> {
   const response = await request.get(
-    `http://127.0.0.1:4328/receipts/lcia/${encodeURIComponent(correlationId)}`,
+    `${fixtureOrigin}/receipts/lcia/${encodeURIComponent(correlationId)}`,
   );
   expect(response.ok()).toBe(true);
   return (await response.json()) as FixtureLciaReceipt;
@@ -64,7 +66,7 @@ test("deduplicates the exact public detail envelope within one render", async ({
 });
 
 test("routes signed LCIA through the isolated Preview fixture", async ({ page, request }) => {
-  const fixtureHealth = await request.get("http://127.0.0.1:4328/health");
+  const fixtureHealth = await request.get(`${fixtureOrigin}/health`);
   expect(fixtureHealth.ok()).toBe(true);
   expect(await fixtureHealth.json()).toEqual({
     schemaVersion: "portal.r1-fixture-health.v1",

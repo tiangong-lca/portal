@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-08-28
-lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
-lastReviewedNote: "Reviewed for Portal #19: local R1/R2 contracts, strict Hybrid fallback, explicit fragment disclosure, and deferred hosted qualification are current."
+lastReviewedAt: 2026-08-29
+lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
+lastReviewedNote: "Reviewed for Portal #8: main-only EdgeOne Production TDD, the OpenNext middleware compatibility boundary, hosted runtime evidence, and remaining release gates are current."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -57,10 +57,10 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 ## 状态
 
-Canonical `tiangong-lca/portal` 已有可写的 `main`，并已作为 `portal` 纳入 workspace 的 M1 分支策略、delivery adapter、Docpact 路由与精确 root gitlink integration 流程。Root gitlink 不自动跟随 child `main`；每个需要 workspace integration 的 release 仍须单独 pin 经审阅的 exact Portal SHA。仓库接入完成不代表 R0、R1、EdgeOne Preview 或 Production 已就绪。
+Canonical `tiangong-lca/portal` 已有可写的 `main`，并已作为 `portal` 纳入 workspace 的 M1 分支策略、delivery adapter、Docpact 路由与精确 root gitlink integration 流程。Root gitlink 不自动跟随 child `main`；每个需要 workspace integration 的 release 仍须单独 pin 经审阅的 exact Portal SHA。仓库接入完成不代表 R0、R1 或 EdgeOne Production release readiness。
 
 当前实现已完成 R1 Public Catalog 的本地交付：`zh-CN`/`en` 首页与 Browse、lexical/identifier Search、Process/Flow 精确版本详情与 Versions、Exchanges、publication-bound LCIA、确定性比较、引用、本地候选集、locale-correct 初始 `<html lang>`、SEO/JSON-LD、OKLCH 50–950 品牌色阶与对比度语义、移动 Logo mark、axe/no-JS/forced-colors/三断点自动门、本地 CWV/cache/security probes、依赖漏洞与许可证门、隔离上游 fixture 以及本地 production-build Playwright。Portal 按 exact Database commit 保存 13 份 JSON Schema 与 13 份 generated `.d.ts` 的 byte-identical snapshot，并以 manifest/上游 Git 对比阻止 drift；Search 卡严格消费完整 public context，首页使用 5 分钟 ISR 显示权威 Process/Flow 计数、最近公开变更与可执行 UUID/CAS/分类示例。Catalog sitemap 使用固定 64-way Database manifest、根级双语 reciprocal XML shard 与严格 5 MiB 输出门；默认 `no-store`，只有真实 CDN 证明 300 秒内同步失效且不返回 stale 后才启用共享缓存。
 
 R2 Intelligent Discovery 在本地复用同一 HMAC signer，通过同源 POST 调用专用 `portal_hybrid_search_v1`；成功时只展示 advisory query interpretation 与 Database evidence-backed public cards，disabled/guard/budget/concurrency/circuit/timeout/contract failure 时自动调用现有 lexical façade。自然语言、embedding、完整候选 ID、备注和 secret 不进入 URL 或 telemetry。默认 fragment 仍只含 member IDs；Hybrid query 或备注只有经过完整披露预览和第二次确认才生成 browser-local fragment。确定性 fixture、production-browser、动态 axe、比较与独立接收浏览器覆盖这些边界。
 
-发布、promotion、托管平台、真实 provider/cost-path enablement 和部署证据不属于当前本地里程碑。Portal #8/#13、Database #543 与 Release #60 保留这些 hosted-only 工作；本地交付不把它们当成阻塞，也不声称它们已经通过。真实 R0 Preview、严格 CSP/ISR 组合、部署后品牌回滚、真实 publication 200/cache-hit、托管 Hybrid/WAF/load/latency、托管 CWV/SLA 与 CDN 缓存语义仍须在未来发布资格审查中完成；在此之前 R0 保持 blocked，不能声称公共或 Production readiness。初始 test/Dev/Production 按批准决策共享一套 Upstash endpoint/token，但使用独立 R0/Dev/Main namespace 与完全不同的 HMAC；namespace 不是安全边界，共享配额、故障域和轮换域风险必须进入未来发布证据。详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)、[Redis/HMAC contract](docs/design-plan.md#103-hmac-signed-hybrid-search)、[R1 checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist) 与 [R2 checklist](docs/design-plan.md#236-r2-intelligent-discovery-release-checklist)。
+EdgeOne Production 现绑定 `portal/main` 与 `portal.tiangong.earth`，同一环境承担 hosted TDD 和最终发布；feature/PR 不创建独立 EdgeOne Preview。调试期间保持 `PORTAL_PUBLIC_INDEXING=disabled`、sitemap `no-store`、CSP report-only，只有 exact main deployment 的 runtime/cache/security/rollback gates 全绿后才开启索引。当前 EdgeOne OpenNext adapter 不能执行 Next 16 Node `proxy.ts`，因此 Portal 使用 Next 仍支持的 legacy `middleware.ts` Edge runtime 兼容入口；Node SSR runtime 已实测为 20.19。Portal #8/#13、Database #543、Edge #319 与 Release #59/#60 继续持有 hosted signer、严格 CSP/ISR、品牌回滚、真实 publication、Hybrid/WAF/load/latency、CWV/SLA 与 CDN cache 证据；这些未完成项不能被称为公共 release readiness。初始 Dev/Main 按批准决策共享一套 Upstash endpoint/token，但使用独立 namespace 与 HMAC；namespace 不是安全边界。详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)、[Redis/HMAC contract](docs/design-plan.md#103-hmac-signed-hybrid-search)、[R1 checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist) 与 [R2 checklist](docs/design-plan.md#236-r2-intelligent-discovery-release-checklist)。

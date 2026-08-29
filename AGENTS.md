@@ -25,9 +25,9 @@ checkPaths:
   - scripts/**
   - .github/workflows/**
   - edgeone.json
-lastReviewedAt: 2026-08-28
-lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
-lastReviewedNote: "Reviewed for Portal #19: strict R2 Hybrid BFF/fallback, explicit fragment disclosure, local validation, and deferred hosted cost paths align."
+lastReviewedAt: 2026-08-29
+lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
+lastReviewedNote: "Reviewed for Portal #8: main-only EdgeOne Production TDD, the OpenNext legacy middleware compatibility entrypoint, Node 20.19 runtime evidence, and retained public-release gates align."
 related:
   - README.md
   - docs/design-plan.md
@@ -47,14 +47,15 @@ related:
 - Database schema, RPC, RLS, ACL, and indexes belong to `database-engine`; Edge runtime and HMAC verification belong to `tiangong-lca-edge-functions`.
 - Portal is read-only for LCA data. It must not create, edit, review, publish, withdraw, repair, or recalculate datasets.
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
-- Node `24.18.x` is the pinned build toolchain, not proof of the deployed SSR runtime. Until an EdgeOne Preview route reports `process.version`, server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
+- Node `24.18.x` is the pinned build toolchain. The selected EdgeOne Production deployment reports Node.js 20.19 for SSR, so server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
+- EdgeOne's current `@edgeone/opennextjs-pages` adapter fails every request through the Next 16 Node `proxy.ts` entrypoint. Keep the deprecated-but-supported `src/middleware.ts` Edge-runtime entrypoint with both named/default exports until one exact EdgeOne deployment proves native `proxy.ts` support; local Next deprecation warnings are expected and are not a reason to reintroduce the production 500.
 
 ## Repository and delivery model
 
 - Canonical repository: `tiangong-lca/portal`. The repository has a writable `main` and is registered under the workspace `portal` delivery adapter, Docpact catalog, M1 branch policy, and exact-gitlink integration flow.
 - Branch model: M1. `main` is the only long-lived branch; routine branches start from and PR back to `main`.
 - Tracked work follows the workspace controller and `Project -> Issue -> PR -> Integration`.
-- Repository/workspace onboarding proves only that Portal changes can be reviewed and integrated. It does not prove R0, R1, EdgeOne Preview, or Production readiness.
+- Repository/workspace onboarding proves only that Portal changes can be reviewed and integrated. It does not prove R0, R1, or EdgeOne Production release readiness.
 - Commits are small, coherent, validated checkpoints. Do not mix Database, Edge, or root integration changes into Portal commits.
 - A merged Portal PR is repository-complete only; workspace delivery may still require exact root gitlink integration.
 
@@ -81,7 +82,7 @@ R2 natural-language search is a client enhancement over same-origin `POST /inter
 
 `contracts/database-engine/portal/**` is a byte-identical generated snapshot of one exact promoted Database commit. `pnpm check:database-contracts` verifies its closed inventory, source commit, byte lengths, and SHA-256 manifest; an explicit `--database-root` check additionally compares every file to the authoritative Database Git object. Prettier must ignore this directory because reformatting would destroy the byte identity. The explicit `PORTAL_LIVE_PROBE=true` Production integration test is read-only and default-skipped; normal local/CI tests never contact Production.
 
-R0 local tests run the strict CSP candidate in report-only mode so framework hydration remains observable. They are not release evidence. Only `docs/r0/compatibility-matrix.md` may declare R0 status, and it must remain blocked until an exact EdgeOne Preview passes enforcing CSP, runtime, cache, HMAC/Redis, brand, and rollback probes.
+R0 local tests run the strict CSP candidate in report-only mode so framework hydration remains observable. They are not release evidence. Only `docs/r0/compatibility-matrix.md` may declare R0 status, and it must remain blocked until an exact `portal/main` EdgeOne Production deployment passes enforcing CSP, runtime, cache, HMAC/Redis, brand, and rollback probes. Public indexing stays disabled during hosted TDD.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
