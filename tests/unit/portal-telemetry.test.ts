@@ -152,6 +152,12 @@ describe("Portal structured telemetry", () => {
     expect(createPortalCorrelationId(correlationId, () => crypto.randomUUID())).toBe(correlationId);
     expect(createPortalCorrelationId("raw-query-as-id", () => correlationId)).toBe(correlationId);
     expect(readPortalDeploymentSha({ PORTAL_DEPLOYMENT_SHA: deploymentSha })).toBe(deploymentSha);
+    expect(
+      readPortalDeploymentSha({
+        PORTAL_BUILD_SHA: "a".repeat(40),
+        PORTAL_DEPLOYMENT_SHA: deploymentSha,
+      }),
+    ).toBe("a".repeat(40));
     expect(readPortalDeploymentSha({ NODE_ENV: "test" })).toBe("local");
     expect(readPortalDeploymentSha({ NODE_ENV: "development" })).toBe("local");
     expect(readPortalDeploymentSha({ NODE_ENV: "production" })).toBe("unknown");

@@ -2,6 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 
+const immutableBuildSha = process.env.PORTAL_BUILD_SHA;
+
 const correlationIdSchema = z
   .string()
   .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
@@ -109,7 +111,8 @@ export function readPortalDeploymentSha(
   environment: Record<string, string | undefined> = process.env,
 ): PortalTelemetryEvent["deploymentSha"] {
   const nodeEnvironment = environment.NODE_ENV;
-  const configured = environment.PORTAL_DEPLOYMENT_SHA;
+  const configured =
+    environment.PORTAL_BUILD_SHA ?? immutableBuildSha ?? environment.PORTAL_DEPLOYMENT_SHA;
   if (configured === undefined || configured === "") {
     return nodeEnvironment === "development" || nodeEnvironment === "test" ? "local" : "unknown";
   }

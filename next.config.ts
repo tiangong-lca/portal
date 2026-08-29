@@ -21,7 +21,7 @@ const deploymentSha = resolvePortalBuildSha(process.env);
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   env: {
-    PORTAL_DEPLOYMENT_SHA: deploymentSha,
+    PORTAL_BUILD_SHA: deploymentSha,
   },
   experimental: {
     globalNotFound: true,

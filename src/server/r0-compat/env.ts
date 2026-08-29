@@ -2,6 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 
+const immutableBuildSha = process.env.PORTAL_BUILD_SHA;
+
 const optionalHttpsUrl = z
   .string()
   .trim()
@@ -30,7 +32,8 @@ export function readR0CompatEnvironment(
 ): R0CompatEnvironment {
   const parsed = r0EnvironmentSchema.parse({
     deploymentEnvironment: environment.PORTAL_DEPLOYMENT_ENV,
-    deploymentSha: environment.PORTAL_DEPLOYMENT_SHA,
+    deploymentSha:
+      environment.PORTAL_BUILD_SHA ?? immutableBuildSha ?? environment.PORTAL_DEPLOYMENT_SHA,
     endpoint: environment.R0_COMPAT_EDGE_ENDPOINT,
     keyId: environment.R0_COMPAT_KEY_ID,
     secret: environment.R0_COMPAT_HMAC_SECRET,
