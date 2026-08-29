@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 0078188c86e8b7ecb153f91c032ddcd97e8ff767
-lastReviewedNote: "Reviewed for Portal #26: main-only EdgeOne Production TDD, native root routing, query-preserving Route Handlers, closed locale params, immutable build evidence and retained release gates align."
+lastReviewedCommit: 82e9edb584c19974746c398027c424ac837e4e37
+lastReviewedNote: "Reviewed for Portal #29: exact Production HMAC/Redis cutover, fail-closed rollback/redeploy recovery, Node build/runtime split and retained release gates align."
 related:
   - AGENTS.md
   - README.md
@@ -729,6 +729,10 @@ Redis 是签名入口的安全依赖，不是可跳过的缓存：nonce 登记�
 4. 从 Edge Function Secrets 删除 previous，再次部署并验证；
 5. Dev fixture 与 Main/Production 独立执行，禁止跨环境复用 keyId 或 secret；EdgeOne 只切换 Production current key。
 
+若旧 Production secret 已不可恢复、且 EdgeOne 尚未配置 signer，则没有可执行的双 key 重叠窗口：直接以独立 CSPRNG 凭据原子替换 Supabase Main current，保持 previous absent；先通过 current/replay/tamper/unknown/expiry verifier probes，再把同一 current 写入 EdgeOne Production 并新建 deployment。凭据只在受控进程内存中存在，禁止为恢复旧 key 而读取、猜测或打印平台 write-only secret。
+
+EdgeOne deployment rollback 会同时应用目标 deployment 的旧项目配置。回滚到 pre-signer `dpldjwibrtb4@82e9edb` 已证明 LCIA BFF 立即 fail closed 为 503；EdgeOne 的“向前版本回滚”没有恢复 signer 运行态。恢复程序必须使用当前 Production 环境变量重新部署同一 exact source，直到新 deployment 的 BFF 重新通过；当前恢复证据为 `dppeqhecdjax@82e9edb`。不得只根据控制台变量存在或 deployment 状态推断 signer 已恢复。
+
 若 EdgeOne 不能提供可验证、覆盖式的 client-address/origin trust contract，MVP 不信任客户端自报的 `X-Forwarded-For`：只使用 EdgeOne WAF、签名身份、全局/并发预算和可验证的平台 request metadata；per-visitor 限流继续作为上线前验证项。
 
 入口必须：
@@ -1142,7 +1146,7 @@ tiangong-lca-portal/
 }
 ```
 
-`na-ashburn` 与当前 Supabase/Edge 的 US East 入口接近，是初始候选。是否增加中国大陆 region 必须依据 ICP、目标域名和实测后决定；不能仅凭用户所在地猜测。
+`na-ashburn` 与当前 Supabase/Edge 的 US East 入口接近，是初始候选。是否增加中国大陆 region 必须依据 ICP、目标域名和实测后决定；不能仅凭用户所在地猜测。`nodeVersion=24.18.0` 只控制构建；EdgeOne 托管 Cloud Functions/Next SSR 当前实测为 Node `v20.19.3`，不能通过该字段切换到 24，服务端代码必须继续满足 Node 20 runtime boundary。
 
 EdgeOne 只配置 Production 环境变量：
 
@@ -1171,7 +1175,7 @@ HMAC 与 Redis 凭据是秘密，永不渲染；previous HMAC key 只存在于 S
 
 ### 17.3 平台约束
 
-EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization；但当前 `@edgeone/opennextjs-pages` 的 Next 16 Proxy 适配存在已复现缺陷。`dp4k6q62p30g@cdef8a0` 的 named-only `proxy.ts` 与 `dpphjhb8yld6@ffb730a` 的 named/default `proxy.ts` 均对 matched path 返回 `Middleware execution failed: a is not a function`；`dp6z4vd02d2n@f039918` 的 legacy `middleware.ts` 虽消除 500，却不执行 locale redirect 或 R0 headers。`dpo9t4ajt9ir@7559824` 已证明无 Proxy 的 native routing、exact SHA、Node 20.19.3、真实 ISR regeneration、五段 Streaming 与 native WebP。当前目标只在 `edgeone.json` 保留 query-free root redirect/R0 headers；stateful 无 locale 路径由 bounded Route Handlers 保留 pathname/query，invalid locale 由 `dynamicParams=false` 导向完整 global 404。Next 16.3.3 对该正常 404 可能记录 upstream `NoFallbackError` 文案，但验收以真实 404 status/body 与 hosted runtime log severity 为准，不允许变成 5xx。构建从 checkout Git HEAD 注入 immutable SHA，`PORTAL_DEPLOYMENT_SHA` 只在 Git 元数据不可用时兜底。
+EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization；但当前 `@edgeone/opennextjs-pages` 的 Next 16 Proxy 适配存在已复现缺陷。`dp4k6q62p30g@cdef8a0` 的 named-only `proxy.ts` 与 `dpphjhb8yld6@ffb730a` 的 named/default `proxy.ts` 均对 matched path 返回 `Middleware execution failed: a is not a function`；`dp6z4vd02d2n@f039918` 的 legacy `middleware.ts` 虽消除 500，却不执行 locale redirect 或 R0 headers。`dppeqhecdjax@82e9edb` 已证明无 Proxy native routing、query-preserving redirects、exact SHA、Node 20.19.3、真实 ISR regeneration、五段 Streaming、native WebP 以及 Production HMAC signer。当前目标只在 `edgeone.json` 保留 query-free root redirect/R0 headers；stateful 无 locale 路径由 bounded Route Handlers 保留 pathname/query。EdgeOne 仍将 raw invalid first-segment 404 包为 `__next_error__`，Portal #28 保持 blocked 且 public indexing 关闭。构建从 checkout Git HEAD 注入 immutable SHA，`PORTAL_DEPLOYMENT_SHA` 只在 Git 元数据不可用时兜底。
 
 Compatibility spike 必须实测：
 
