@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-29"
-lastReviewedCommit: "16cbb293c9db159fc765ca82baee085cdaede2f7"
-lastReviewedNote: "Reviewed for Portal #24: EdgeOne main/Production TDD, native routing, application locale fallback, immutable build evidence and hosted proof paths remain within existing product/runtime ownership and routing."
+lastReviewedCommit: "0078188c86e8b7ecb153f91c032ddcd97e8ff767"
+lastReviewedNote: "Reviewed for Portal #26: EdgeOne native root routing, query-preserving Route Handlers, closed locale/global 404, immutable build evidence and hosted proof paths remain within existing product/runtime ownership and routing."
 
 catalog:
   repos:
