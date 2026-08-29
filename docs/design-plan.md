@@ -20,8 +20,8 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-08-28
-lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
+lastReviewedAt: 2026-08-29
+lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
 lastReviewedNote: "Reviewed for Portal #8: main-only EdgeOne Production TDD, the OpenNext middleware compatibility boundary, exact runtime evidence, deployment configuration and retained release gates align."
 related:
   - AGENTS.md

@@ -20,8 +20,8 @@ checkPaths:
   - src/proxy.ts
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-08-28
-lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
+lastReviewedAt: 2026-08-29
+lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
 lastReviewedNote: "Reviewed for Portal #8: main-only EdgeOne hosted TDD and the legacy middleware workaround do not change ISR HTML, Flight delivery, the retained strict CSP incompatibility, or the blocked public-release decision."
 related:
   - compatibility-matrix.md

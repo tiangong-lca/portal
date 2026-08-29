@@ -19,8 +19,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-08-28
-lastReviewedCommit: cd08545626af89c710bf23ece40b7d5664e97288
+lastReviewedAt: 2026-08-29
+lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
 lastReviewedNote: "Reviewed for Portal #8: exact main/Production deployment evidence, Node 20.19, the OpenNext proxy failure and middleware compatibility fix do not waive the strict CSP/ISR release gate."
 related:
   - ../design-plan.md
