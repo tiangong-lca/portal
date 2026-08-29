@@ -16,12 +16,13 @@ checkPaths:
   - edgeone.json
   - next.config.ts
   - src/app/[locale]/layout.tsx
+  - src/server/routing/**
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 16cbb293c9db159fc765ca82baee085cdaede2f7
-lastReviewedNote: "Reviewed for Portal #24: exact Proxy failure/rollback evidence, native routing candidate, immutable build SHA and the retained strict CSP/ISR release gate are current."
+lastReviewedCommit: 0078188c86e8b7ecb153f91c032ddcd97e8ff767
+lastReviewedNote: "Reviewed for Portal #26: exact native-routing deployment evidence, query-preserving canonicalization, branded raw 404 candidate, immutable build SHA and the retained strict CSP/ISR gate are current."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -34,16 +35,16 @@ R0 remains blocked until every required row has evidence bound to one exact Port
 
 | Capability | Local production evidence | EdgeOne main/Production evidence | Gate |
 | --- | --- | --- | --- |
-| Node 24.18 build + pnpm 11 | `check:toolchain`, frozen install, production build pass | `dp6z4vd02d2n` built exact `f039918`; SSR page reports `v20.19.3` | Partial |
-| Next 16 / React 19 / TypeScript 7 | type-aware lint, `next typegen`, `tsc`, build pass | Exact deployment build passed Next 16.3.3 and generated 35 function routes | Partial |
-| RSC/static shell | `/` and `/r0-compat` prerender | `/r0-compat` is 200; `/` is a cached 200 Next redirect-error document instead of 307 | Blocked |
+| Node 24.18 build + pnpm 11 | `check:toolchain`, frozen install, production build pass | `dpo9t4ajt9ir` built exact `7559824`; SSR reports `v20.19.3` | Pass |
+| Next 16 / React 19 / TypeScript 7 | type-aware lint, `next typegen`, `tsc`, build pass | Exact deployment passed Next 16.3.3 without a Proxy/Middleware artifact | Pass |
+| RSC/static shell | `/` and `/r0-compat` prerender | `/` is real 302 to `/zh-CN`; `/r0-compat` is 200 with native routing evidence | Pass |
 | SSR runtime | `/r0-compat/ssr` reports local `process.version` | 200, `v20.19.3`, private/no-store on exact deployment | Pass |
-| ISR | `/r0-compat/isr` emits `s-maxage=60` and stable cached body | Consecutive bodies are byte-identical with `s-maxage=60`; regeneration probe remains pending | Partial |
-| Streaming | dynamic Suspense route passes under report-only CSP | 200/private/no-store; exact chunk-boundary probe pending | Partial |
-| EdgeOne routing | No Next Proxy/middleware artifact; bounded native redirects/headers and application locale/404 fallback pass locally | named-only Proxy failed on `cdef8a0`; legacy middleware skipped semantics on `f039918`; named/default Proxy failed on `ffb730a`; native candidate awaits exact deployment | Blocked |
-| Route Handler | dynamic JSON contract and no-store pass | 200/no-store, but `f039918` reported stale `cdef8a0`; immutable build-SHA candidate awaits exact deployment | Blocked |
-| Image Optimization | raster brand probe resolves through `/_next/image` | Pending | Blocked |
-| locale document / 404 / robots / noindex | zh-CN/en raw HTML and hydrated DOM use exact `lang`; invalid locale and global 404 return product UI with `404` and valid language without Proxy | direct zh-CN/en and robots pass on rollback deployment; native root redirect and application fallback await exact deployment | Partial |
+| ISR | `/r0-compat/isr` emits `s-maxage=60` and stable cached body | Regenerated from `05:47:10.931Z` to `05:48:21.109Z`, then byte-identical hits with increasing Age | Pass |
+| Streaming | dynamic Suspense route passes under report-only CSP | 200/private/no-store; five chunks with completion marker 88 ms after initial chunks | Pass |
+| EdgeOne routing | No Next Proxy/middleware artifact; native root/header contract and bounded query-preserving Route Handlers pass locally | Native root/header deployment passes; hosted state-preserving handler candidate awaits exact deployment | Partial |
+| Route Handler | dynamic JSON contract, redirects and no-store pass | R0 handler reports exact `7559824`, production, `v20.19.3`; canonical redirect candidate awaits deployment | Partial |
+| Image Optimization | raster brand probe resolves through `/_next/image` locally | EdgeOne emits valid `image/webp` via native `imageMogr2` transformation | Pass |
+| locale document / 404 / robots / noindex | zh-CN/en raw HTML and hydrated DOM use exact `lang`; `dynamicParams=false` candidate returns a full branded raw global 404 | direct locales/robots pass; current invalid-locale raw shell fails while hosted candidate awaits deployment | Partial |
 | Brand defaults/assets/fallback | unit SHA receipt, env parse, production browser fallback pass | Custom color/logo Production smoke pending | Blocked |
 | HMAC WebCrypto signer | deterministic `portal-hmac-v1` fixture passes | Edge verifier/rotation/replay pending in Edge #319 | Blocked |
 | Redis NX/EX + Lua | Not owned by Portal | Disposable Upstash + Edge verifier pending | Blocked |
@@ -62,7 +63,10 @@ The retained [strict CSP and ISR spike](csp-isr-spike.md) records the exact repr
 ## Authoritative references
 
 - [Next.js Content Security Policy](https://nextjs.org/docs/app/guides/content-security-policy)
+- [Next.js `dynamicParams`](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#dynamicparams)
+- [Next.js `NoFallbackError` diagnostic issue](https://github.com/vercel/next.js/issues/87738)
 - [Next.js SRI inline Flight limitation](https://github.com/vercel/next.js/issues/95354)
 - [Next.js CSP documentation correction](https://github.com/vercel/next.js/pull/96281)
+- [EdgeOne `edgeone.json` redirects and headers](https://pages.edgeone.ai/document/edgeone-json)
 - [EdgeOne Build Guide](https://pages.edgeone.ai/document/build-guide)
 - [EdgeOne Cloud Functions](https://pages.edgeone.ai/document/cloud-functions)

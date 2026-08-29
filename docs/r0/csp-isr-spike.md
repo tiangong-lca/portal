@@ -21,8 +21,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 16cbb293c9db159fc765ca82baee085cdaede2f7
-lastReviewedNote: "Reviewed for Portal #24: native redirects/headers and application locale fallback do not change ISR HTML, Flight delivery, the retained strict CSP incompatibility, or the blocked public-release decision."
+lastReviewedCommit: 0078188c86e8b7ecb153f91c032ddcd97e8ff767
+lastReviewedNote: "Reviewed for Portal #26: query-preserving Route Handlers and closed locale/global 404 behavior do not change ISR HTML, Flight delivery, the retained strict CSP incompatibility, or the blocked public-release decision."
 related:
   - compatibility-matrix.md
   - ../design-plan.md
