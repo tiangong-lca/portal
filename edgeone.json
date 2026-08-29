@@ -4,14 +4,7 @@
   "outputDirectory": ".next",
   "nodeVersion": "24.18.0",
   "redirects": [
-    { "source": "/", "destination": "/zh-CN", "statusCode": 302 },
-    { "source": "/search", "destination": "/zh-CN/search", "statusCode": 302 },
-    { "source": "/compare", "destination": "/zh-CN/compare", "statusCode": 302 },
-    { "source": "/collections", "destination": "/zh-CN/collections", "statusCode": 302 },
-    { "source": "/methodology", "destination": "/zh-CN/methodology", "statusCode": 302 },
-    { "source": "/browse/*", "destination": "/zh-CN/browse/:splat", "statusCode": 302 },
-    { "source": "/process/*", "destination": "/zh-CN/process/:splat", "statusCode": 302 },
-    { "source": "/flow/*", "destination": "/zh-CN/flow/:splat", "statusCode": 302 }
+    { "source": "/", "destination": "/zh-CN", "statusCode": 302 }
   ],
   "headers": [
     {
