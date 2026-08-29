@@ -26,8 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
-lastReviewedNote: "Reviewed for Portal #8: main-only EdgeOne Production TDD, the OpenNext legacy middleware compatibility entrypoint, Node 20.19 runtime evidence, and retained public-release gates align."
+lastReviewedCommit: 9dc24a87eb4eaa5b98e2a063ea7f28e3036e5052
+lastReviewedNote: "Reviewed for Portal #22: exact EdgeOne Production evidence requires the Next 16 Proxy entrypoint with named/default adapter exports and immutable build-SHA injection; retained public-release gates still align."
 related:
   - README.md
   - docs/design-plan.md
@@ -48,7 +48,7 @@ related:
 - Portal is read-only for LCA data. It must not create, edit, review, publish, withdraw, repair, or recalculate datasets.
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
 - Node `24.18.x` is the pinned build toolchain. The selected EdgeOne Production deployment reports Node.js 20.19 for SSR, so server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
-- EdgeOne's current `@edgeone/opennextjs-pages` adapter fails every request through the Next 16 Node `proxy.ts` entrypoint. Keep the deprecated-but-supported `src/middleware.ts` Edge-runtime entrypoint with both named/default exports until one exact EdgeOne deployment proves native `proxy.ts` support; local Next deprecation warnings are expected and are not a reason to reintroduce the production 500.
+- EdgeOne's current `@edgeone/opennextjs-pages` adapter returned `a is not a function` for a named-only Next 16 `proxy.ts`, while an exact legacy `middleware.ts` deployment skipped locale and probe semantics. Keep `src/proxy.ts` as the sole entrypoint and export the same handler as both named `proxy` and default until a newer exact adapter deployment proves a different contract.
 
 ## Repository and delivery model
 

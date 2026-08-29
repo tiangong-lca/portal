@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-29"
-lastReviewedCommit: "35e9e5154851db3901138133591db22cfaaedfba"
-lastReviewedNote: "Reviewed for Portal #8: EdgeOne main/Production TDD, middleware compatibility, deployment config and hosted proof paths remain within existing product/runtime ownership and routing."
+lastReviewedCommit: "9dc24a87eb4eaa5b98e2a063ea7f28e3036e5052"
+lastReviewedNote: "Reviewed for Portal #22: EdgeOne main/Production TDD, Proxy adapter compatibility, immutable build evidence and hosted proof paths remain within existing product/runtime ownership and routing."
 
 catalog:
   repos:

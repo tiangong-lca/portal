@@ -20,8 +20,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 35e9e5154851db3901138133591db22cfaaedfba
-lastReviewedNote: "Reviewed for Portal #8: exact main/Production deployment evidence, Node 20.19, the OpenNext proxy failure and middleware compatibility fix do not waive the strict CSP/ISR release gate."
+lastReviewedCommit: 9dc24a87eb4eaa5b98e2a063ea7f28e3036e5052
+lastReviewedNote: "Reviewed for Portal #22: exact f039918 Production evidence, named/default Proxy candidate, immutable build SHA and the retained strict CSP/ISR release gate are current."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -34,18 +34,18 @@ R0 remains blocked until every required row has evidence bound to one exact Port
 
 | Capability | Local production evidence | EdgeOne main/Production evidence | Gate |
 | --- | --- | --- | --- |
-| Node 24.18 build + pnpm 11 | `check:toolchain`, frozen install, production build pass | Deployment `dp4k6q62p30g` built exact `cdef8a0`; SSR log runtime is Nodejs20.19 | Partial |
-| Next 16 / React 19 / TypeScript 7 | type-aware lint, `next typegen`, `tsc`, build pass | Exact deployment build passed Next 16.3.3; request path remained blocked by OpenNext proxy runtime | Partial |
-| RSC/static shell | `/` and `/r0-compat` prerender | Exact `cdef8a0` deployment returned middleware 500 for every matched path | Blocked |
-| SSR runtime | `/r0-compat/ssr` reports local `process.version` | EdgeOne logs prove Nodejs20.19; page-level runtime probe pending middleware fix | Partial |
-| ISR | `/r0-compat/isr` emits `s-maxage=60` and stable cached body | Pending cache/refresh probe | Blocked |
-| Streaming | dynamic Suspense route passes under report-only CSP | Pending chunk-timing probe | Blocked |
-| Middleware/Proxy | `src/middleware.ts` preserves locale/R0 headers; 15/15 targeted production-browser paths pass | `cdef8a0` Node `proxy.ts` returned `Middleware execution failed: a is not a function`; legacy Edge middleware fix awaits exact deployment | Blocked |
-| Route Handler | dynamic JSON contract and no-store pass | Pending | Blocked |
+| Node 24.18 build + pnpm 11 | `check:toolchain`, frozen install, production build pass | `dp6z4vd02d2n` built exact `f039918`; SSR page reports `v20.19.3` | Partial |
+| Next 16 / React 19 / TypeScript 7 | type-aware lint, `next typegen`, `tsc`, build pass | Exact deployment build passed Next 16.3.3 and generated 35 function routes | Partial |
+| RSC/static shell | `/` and `/r0-compat` prerender | `/r0-compat` is 200; `/` is a cached 200 Next redirect-error document instead of 307 | Blocked |
+| SSR runtime | `/r0-compat/ssr` reports local `process.version` | 200, `v20.19.3`, private/no-store on exact deployment | Pass |
+| ISR | `/r0-compat/isr` emits `s-maxage=60` and stable cached body | Consecutive bodies are byte-identical with `s-maxage=60`; regeneration probe remains pending | Partial |
+| Streaming | dynamic Suspense route passes under report-only CSP | 200/private/no-store; exact chunk-boundary probe pending | Partial |
+| Middleware/Proxy | Named/default `src/proxy.ts` candidate preserves local locale/R0 semantics; 45/45 production-browser paths pass | named-only Proxy crashed on `cdef8a0`; legacy middleware skipped semantics on `f039918`; named/default candidate awaits exact deployment | Blocked |
+| Route Handler | dynamic JSON contract and no-store pass | 200/no-store, but `f039918` reported stale `cdef8a0`; immutable build-SHA candidate awaits exact deployment | Blocked |
 | Image Optimization | raster brand probe resolves through `/_next/image` | Pending | Blocked |
-| locale document / 404 / robots / noindex | zh-CN/en raw HTML and hydrated DOM use exact `lang`; localized/global 404 return product UI with `404` and valid language | `/robots.txt` is 200 with `Disallow: /`; locale/404 probes await middleware fix | Partial |
+| locale document / 404 / robots / noindex | zh-CN/en raw HTML and hydrated DOM use exact `lang`; localized/global 404 return product UI with `404` and valid language | direct zh-CN/en and robots pass; root redirect and unmatched locale routing fail without Proxy semantics | Partial |
 | Brand defaults/assets/fallback | unit SHA receipt, env parse, production browser fallback pass | Custom color/logo Production smoke pending | Blocked |
-| HMAC WebCrypto signer | deterministic `portal-hmac-v1` fixture passes | Edge verifier/rotation/replay pending in Edge #307 | Blocked |
+| HMAC WebCrypto signer | deterministic `portal-hmac-v1` fixture passes | Edge verifier/rotation/replay pending in Edge #319 | Blocked |
 | Redis NX/EX + Lua | Not owned by Portal | Disposable Upstash + Edge verifier pending | Blocked |
 | Deployment model | Local marker only | User approved one `main`-tracked Production environment for TDD/release; indexing remains disabled until all gates pass | Accepted risk |
 | Strict CSP + hydration + ISR | Exact enforce command at `b94451c` passes 13/19; executable inline Flight blocks break hydration-dependent paths | No supported renderer-level solution; see [retained spike](csp-isr-spike.md) | **Blocked** |

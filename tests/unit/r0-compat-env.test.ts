@@ -22,6 +22,17 @@ describe("R0 compatibility environment", () => {
     });
   });
 
+  it("prefers immutable build evidence over a stale deployment setting", () => {
+    const buildSha = "a".repeat(40);
+
+    expect(
+      readR0CompatEnvironment({
+        PORTAL_BUILD_SHA: buildSha,
+        PORTAL_DEPLOYMENT_SHA: "b".repeat(40),
+      }),
+    ).toMatchObject({ deploymentSha: buildSha });
+  });
+
   it("rejects partial HMAC fixture configuration", () => {
     expect(() =>
       readR0CompatEnvironment({
