@@ -133,7 +133,7 @@
     "title": "{dimension} durchsuchen",
     "description": "Erkunden Sie öffentliche Daten anhand der für dieses Feld verfügbaren Katalogangaben.",
     "emptyTitle": "In diesem Bereich sind keine Einträge verfügbar",
-    "emptyDescription": "Öffnen Sie einen anderen Katalogbereich oder verwenden Sie die öffentliche Suche."
+    "emptyDescription": "Öffnen Sie einen anderen Katalogbereich oder verwenden Sie die öffentliche Suche. Es werden nur Gruppen aus den Quelldaten angezeigt."
   },
   "Detail": {
     "processTitle": "Prozessdatensatz",
@@ -182,6 +182,9 @@
     "methodVersion": "Methodenversion",
     "publication": "Veröffentlichung",
     "package": "Datenpaket",
+    "published": "Veröffentlicht",
+    "releaseDetails": "Veröffentlichungs- und Prüfangaben",
+    "verificationCode": "Prüfcode",
     "versionsTitle": "Versionsverlauf",
     "versionsDescription": "Jede veröffentlichte Version hat einen eigenen stabilen Link.",
     "versionsEmpty": "Es ist noch kein öffentlicher Versionsverlauf verfügbar.",

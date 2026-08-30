@@ -149,6 +149,7 @@ export function SearchResults({
                   citation={citation}
                   copiedLabel={labels.copied}
                   copyLabel={labels.copyCitation}
+                  showText={false}
                 />
               </CardFooter>
             </Card>

@@ -121,9 +121,9 @@
     "emptyTitle": "No matching public datasets",
     "emptyDescription": "Try a shorter description, add a material or activity, or use the standard search above.",
     "compareSelected": "Compare selected Process datasets",
-    "shareQuery": "Preview query share",
-    "sharePreview": "Disclosure preview",
-    "shareDisclosure": "The complete query and filters below will become visible to anyone who receives the fragment link. Confirm separately to copy it.",
+    "shareQuery": "Preview shared link",
+    "sharePreview": "What the link will include",
+    "shareDisclosure": "The complete description and filters below will be visible to anyone with the link. Confirm before copying it.",
     "shareConfirm": "Confirm and copy query link",
     "shareCancel": "Cancel",
     "shared": "The confirmed Smart search link was copied",
@@ -133,7 +133,7 @@
     "title": "Browse {dimension}",
     "description": "Explore public data using the catalog information available for this field.",
     "emptyTitle": "No entries can be shown in this directory",
-    "emptyDescription": "Try another directory or public search. Groups not supplied upstream are never inferred."
+    "emptyDescription": "Try another directory or public search. Only groups present in the source data are shown."
   },
   "Detail": {
     "processTitle": "Process dataset",
@@ -182,6 +182,9 @@
     "methodVersion": "Method version",
     "publication": "Release",
     "package": "Data package",
+    "published": "Published",
+    "releaseDetails": "Release and verification details",
+    "verificationCode": "Verification code",
     "versionsTitle": "Version history",
     "versionsDescription": "Each published version has its own stable link.",
     "versionsEmpty": "No public version history can be shown yet.",

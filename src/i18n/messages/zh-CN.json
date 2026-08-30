@@ -121,9 +121,9 @@
     "emptyTitle": "没有匹配的公开数据集",
     "emptyDescription": "请缩短描述，补充材料或活动，或使用上方普通搜索。",
     "compareSelected": "比较已选过程数据集",
-    "shareQuery": "预览查询分享",
-    "sharePreview": "披露预览",
-    "shareDisclosure": "下方完整查询与筛选会对所有收到 fragment 链接的人可见；需再次确认后才会复制。",
+    "shareQuery": "预览分享链接",
+    "sharePreview": "链接将包含的内容",
+    "shareDisclosure": "下方完整描述与筛选会对所有获得链接的人可见；确认后才会复制。",
     "shareConfirm": "确认并复制查询链接",
     "shareCancel": "取消",
     "shared": "已复制经确认的智能搜索链接",
@@ -133,7 +133,7 @@
     "title": "浏览{dimension}",
     "description": "使用目录中已有的公开字段浏览数据。",
     "emptyTitle": "当前目录没有可显示条目",
-    "emptyDescription": "尝试切换目录或使用公开搜索。系统不会推断未由上游提供的分组。"
+    "emptyDescription": "尝试切换目录或使用公开搜索。这里只展示来源数据中已有的分组。"
   },
   "Detail": {
     "processTitle": "过程数据集",
@@ -182,6 +182,9 @@
     "methodVersion": "方法版本",
     "publication": "发布批次",
     "package": "数据包",
+    "published": "发布日期",
+    "releaseDetails": "发布与校验信息",
+    "verificationCode": "校验码",
     "versionsTitle": "版本历史",
     "versionsDescription": "每个公开版本都有独立、稳定的链接。",
     "versionsEmpty": "尚无可显示的公共版本历史。",
