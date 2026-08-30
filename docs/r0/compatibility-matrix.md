@@ -21,8 +21,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: 9bcb45d8480716f60c8548ddbcd6e83833bb5a55
-lastReviewedNote: "Reviewed for Portal #35: exact public/enforcing deployment evidence is complete except for the default lexical Search payload/SSR budget regression now owned by the bounded Portal remediation."
+lastReviewedCommit: 8ff97d22041f574793976152c1957df692bf6512
+lastReviewedNote: "Reviewed against the current data-catalog UI and exact 807fe13 Production probes: rendering, indexing, CSP, and payload gates remain intact; lexical Search latency still exceeds its two-second p95 budget."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -31,7 +31,7 @@ related:
 
 # Portal R0 Compatibility Matrix
 
-R0 exit requires the exact selected Portal `main` commit and EdgeOne Production deployment on `portal.tiangong.earth` to pass every non-excepted row below. Public indexing and the cacheable enforcing performance CSP are active on `dpdgfqylc0dw@9bcb45d`; a real 404/noindex/unchanged-URL EdgeOne generic raw document for unknown first segments remains the accepted platform disposition. Portal #35 owns the one active release gate discovered by hosted TDD: default lexical Search payload/SSR latency.
+R0 exit requires the exact selected Portal `main` commit and EdgeOne Production deployment on `portal.tiangong.earth` to pass every non-excepted row below. Public indexing and the cacheable enforcing performance CSP are active on exact `807fe13c48581bf361bc4c28b5cfdf42c0df8824`; a real 404/noindex/unchanged-URL EdgeOne generic raw document for unknown first segments remains the accepted platform disposition. The active release gate is default lexical Search latency: the bounded payload passes, but the current ten-sample TTFB p95 remains over budget.
 
 | Capability | Local production evidence | EdgeOne main/Production evidence | Gate |
 | --- | --- | --- | --- |
@@ -41,17 +41,17 @@ R0 exit requires the exact selected Portal `main` commit and EdgeOne Production 
 | SSR runtime | `/r0-compat/ssr` reports local `process.version` | 200, `v20.19.3`, private/no-store on exact deployment | Pass |
 | ISR | `/r0-compat/isr` emits `s-maxage=60` and stable cached body | Regenerated from `05:47:10.931Z` to `05:48:21.109Z`, then byte-identical hits with increasing Age | Pass |
 | Streaming | Dynamic Suspense route passes under the enforcing performance CSP | 200/private/no-store; five chunks with completion marker 88 ms after initial chunks | Pass |
-| EdgeOne routing | No Next Proxy/middleware artifact; native root/header contract and bounded query-preserving Route Handlers pass locally | Root/native headers and relative 307/no-store Search/Compare/Browse/Process/Flow redirects preserve ordered query values on exact `82e9edb` | Pass |
-| Route Handler | dynamic JSON contract, redirects and no-store pass | R0 handler reports exact `82e9edb`, production, `v20.19.3`; LCIA BFF is same-origin, correlation-bound and no-store | Pass |
+| EdgeOne routing | No Next Proxy/middleware artifact; native root/header contract and bounded query-preserving Route Handlers pass locally | Root/native headers and relative 307/no-store Search/Compare/Browse/Process/Flow redirects preserve ordered query values on exact `807fe13` | Pass |
+| Route Handler | dynamic JSON contract, redirects and no-store pass | R0 handler reports exact `807fe13`, production, `v20.19.3`; LCIA BFF is same-origin, correlation-bound and no-store | Pass |
 | Image Optimization | raster brand probe resolves through `/_next/image` locally | EdgeOne emits valid `image/webp` via native `imageMogr2` transformation | Pass |
-| locale document / 404 / robots / noindex | zh-CN/en/de/fr raw HTML and hydrated DOM use exact `lang`; local invalid-locale/global 404 is branded | `dpdgfqylc0dw` returns exact four-locale `lang`, reciprocal hreflang, localized hydration, public robots/sitemaps and private-route noindex. Raw unknown-first-segment remains a real 404/noindex with generic `__next_error__`; Portal #28 tracks upstream repair | Pass; raw defect accepted |
+| locale document / 404 / robots / noindex | zh-CN/en/de/fr raw HTML and hydrated DOM use exact `lang`; local invalid-locale/global 404 is branded | Exact `807fe13` returns four-locale `lang`, reciprocal hreflang, localized hydration, public robots/sitemaps and private-route noindex. Raw unknown-first-segment remains a real 404/noindex with generic `__next_error__`; Portal #28 tracks upstream repair | Pass; raw defect accepted |
 | Brand defaults/assets/fallback | unit SHA receipt, env parse, production browser fallback pass | Custom `dpx9m06806fi` and exact default rollback `dpzbmb1u15np` passed color/logo/favicon/metadata/no-JS/axe/CLS/visual gates | Pass |
 | HMAC WebCrypto signer | deterministic `portal-hmac-v1` fixture passes | Main current rotated with previous absent; direct current 404, replay 403, tamper/unknown/expiry 401; EdgeOne `dppeqhecdjax` BFF returns expected 200/unavailable | Pass |
 | Redis NX/EX + Lua | Not owned by Portal | Production replay rejection and prior exact `portal:main:v1` TTL/namespace proof pass; guard remains fail closed | Pass |
-| Deployment model | Local marker only | One `main`-tracked Production environment serves TDD/release; `PORTAL_PUBLIC_INDEXING=enabled` on `dpdgfqylc0dw` after exact SEO/security preflight | Pass |
-| Enforcing CSP + hydration + ISR | Performance profile passes all 50 production Playwright tests with enforcing CSP, Next inline script/style allowed, `unsafe-eval` forbidden, and ISR still static | `dpdgfqylc0dw` returns enforcing CSP, no report-only header, required inline allowance, no `unsafe-eval`, hydration ready in a controlled 563 ms sample, working theme/locale events, Streaming completion and cacheable ISR | Pass |
+| Deployment model | Local marker only | One `main`-tracked Production environment serves TDD/release; `PORTAL_PUBLIC_INDEXING=enabled` on exact `807fe13` after SEO/security preflight | Pass |
+| Enforcing CSP + hydration + ISR | Performance profile passes all 50 production Playwright tests with enforcing CSP, Next inline script/style allowed, `unsafe-eval` forbidden, and ISR still static | Exact `807fe13` returns enforcing CSP, no report-only header, required inline allowance, no `unsafe-eval`, working theme/locale events, Streaming completion and cacheable ISR | Pass |
 | Strict no-inline CSP research | Exact enforce command at `b94451c` passes 13/19; executable inline Flight blocks break hydration-dependent paths | No supported renderer-level solution; see [retained spike](csp-isr-spike.md) | Non-blocking upstream follow-up |
-| Rollback/cold start/latency | Local controlled CWV remains inside budgets | Rollback evidence remains `dpldjwibrtb4`/`dppeqhecdjax`. Hosted home p75: LCP 284 ms, INP 16 ms, CLS 0, TTFB 118 ms; cached detail TTFB p75 509 ms. Default Search baseline was 705 KB with TTFB p95 2.39 s and is remediated by Portal #35 before exit | Blocked only on Portal #35 exact Search recheck; RUM non-blocking |
+| Rollback/cold start/latency | Local controlled CWV remains inside budgets | Rollback evidence remains `dpldjwibrtb4`/`dppeqhecdjax`. Hosted home p75: LCP 284 ms, INP 16 ms, CLS 0, TTFB 118 ms; cached detail TTFB p75 509 ms. Exact `807fe13` default Search is 354,153 bytes and therefore passes the 512 KiB payload budget; ten controlled samples on 2026-08-30 measured TTFB p95 2.43 s, above the 2 s gate | Search payload pass; Search latency gate open; RUM non-blocking |
 
 ## CSP disposition
 

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isPortalLocale } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
 
@@ -42,15 +42,16 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         <h1 className="font-heading text-3xl font-semibold sm:text-5xl">{t("title")}</h1>
         <p className="text-muted-foreground text-lg leading-8">{t("description")}</p>
       </header>
-      <div className="evidence-rail flex flex-col gap-6">
+      <div className="grid gap-4 md:grid-cols-2">
         {sections.map(([Icon, title, description]) => (
           <Card key={title}>
             <CardHeader>
               <Icon aria-hidden="true" />
               <CardTitle>{title}</CardTitle>
-              <CardDescription>{description}</CardDescription>
             </CardHeader>
-            <CardContent />
+            <CardContent>
+              <p className="text-muted-foreground leading-6">{description}</p>
+            </CardContent>
           </Card>
         ))}
       </div>

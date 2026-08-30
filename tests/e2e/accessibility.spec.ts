@@ -57,10 +57,10 @@ test("keeps core anonymous discovery readable without JavaScript", async ({ brow
 
   try {
     await page.goto("/en");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Find lifecycle data");
-    await expect(
-      page.getByRole("searchbox", { name: "Search public lifecycle data" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "Find data for life cycle assessment",
+    );
+    await expect(page.getByRole("searchbox", { name: "Search the data catalog" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Process datasets" }).first()).toBeVisible();
 
     await page.goto(`/en/process/${processRef}`);
@@ -73,12 +73,12 @@ test("keeps core anonymous discovery readable without JavaScript", async ({ brow
 
     await page.goto("/de");
     await expect(page.locator("html")).toHaveAttribute("lang", "de");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Lebenszyklusdaten");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "Daten für Ökobilanzen finden",
+    );
     await page.goto("/fr/methodology");
     await expect(page.locator("html")).toHaveAttribute("lang", "fr");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Comment lire le catalogue public",
-    );
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("À propos des données");
     expect(await context.cookies()).toEqual([]);
   } finally {
     await context.close();

@@ -19,6 +19,12 @@ function scalarPaths(value: unknown, prefix = ""): string[] {
   );
 }
 
+function scalarValues(value: unknown): string[] {
+  if (typeof value === "string") return [value];
+  if (value === null || typeof value !== "object" || Array.isArray(value)) return [];
+  return Object.values(value).flatMap(scalarValues);
+}
+
 describe("four-locale public product contract", () => {
   it("keeps one complete independent dictionary topology", () => {
     expect(locales).toEqual(["zh-CN", "en", "de", "fr"]);
@@ -30,6 +36,13 @@ describe("four-locale public product contract", () => {
     expect(de.Home.title).not.toBe(en.Home.title);
     expect(fr.Home.title).not.toBe(en.Home.title);
     expect(zhCn.Home.title).not.toBe(en.Home.title);
+    expect(zhCn.Home.title).toBe("查找可用于生命周期评估的数据");
+    expect(en.Home.title).toBe("Find data for life cycle assessment");
+    expect(de.Home.title).toBe("Daten für Ökobilanzen finden");
+    expect(fr.Home.title).toBe("Trouver des données pour l’analyse du cycle de vie");
+    expect(en.Common.externalLca).toBe("TianGong LCA platform");
+    expect(en.Common.externalLcaAction).toBe("Open the LCA platform");
+    expect("footerBoundary" in en.Common).toBe(false);
   });
 
   it("builds stable locale paths and localizes controlled domain vocabulary", () => {
@@ -50,5 +63,13 @@ describe("four-locale public product contract", () => {
     expect(formatDatasetCitation("de", input)).toContain("Datensatz: Electricity");
     expect(formatDatasetCitation("fr", input)).toContain("jeu de données : Electricity");
     expect(formatDatasetCitation("zh-CN", input)).toContain("数据集：Electricity");
+  });
+
+  it("keeps implementation and release-stage vocabulary out of public copy", () => {
+    const forbidden =
+      /\b(?:R0|R1|R2|BFF|HTTP|POST|GET|LOCALSTORAGE|telemetry|façade)\b|证据台账|evidence ledger/iu;
+    for (const messages of [zhCn, en, de, fr]) {
+      expect(scalarValues(messages).filter((value) => forbidden.test(value))).toEqual([]);
+    }
   });
 });

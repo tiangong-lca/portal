@@ -1,4 +1,11 @@
-import { ArrowRightIcon, DatabaseIcon, MapPinIcon, SearchIcon, ShapesIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  BookOpenIcon,
+  DatabaseIcon,
+  MapPinIcon,
+  SearchIcon,
+  ShapesIcon,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -16,7 +23,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Separator } from "@/components/ui/separator";
 import { localizedText } from "@/features/catalog/map-public-data";
 import { isPortalLocale, localePath } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
@@ -48,9 +54,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   if (!isPortalLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const [t, common, summary] = await Promise.all([
+  const [t, summary] = await Promise.all([
     getTranslations({ locale, namespace: "Home" }),
-    getTranslations({ locale, namespace: "Common" }),
     readCatalogSummary(),
   ]);
   const browseCoordinates = [
@@ -85,119 +90,105 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         new Date(summary.latestModifiedAt),
       )
     : null;
+  const catalogGuide = [
+    [t("railMetadataTitle"), t("railMetadataBody")],
+    [t("railVersionTitle"), t("railVersionBody")],
+    [t("railValuesTitle"), t("railValuesBody")],
+  ] as const;
 
   return (
-    <main className="portal-ledger flex-1" id="main-content">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-        <section className="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.5fr)] lg:items-end">
-          <div className="flex max-w-4xl min-w-0 flex-col gap-6">
-            <p className="text-primary font-mono text-xs font-semibold tracking-[0.18em] uppercase">
-              {t("eyebrow")}
-            </p>
-            <h1 className="font-heading text-4xl leading-[1.05] font-semibold tracking-tight text-balance break-words sm:text-6xl lg:text-7xl">
-              {t("title")}
-            </h1>
-            <p className="text-muted-foreground max-w-3xl text-base leading-7 sm:text-lg sm:leading-8">
-              {t("description")}
-            </p>
-          </div>
-
-          <div className="evidence-rail flex min-w-0 flex-col gap-5">
-            {[
-              [t("railMetadataTitle"), t("railMetadataBody")],
-              [t("railVersionTitle"), t("railVersionBody")],
-              [t("railValuesTitle"), t("railValuesBody")],
-            ].map(([label, description]) => (
-              <div className="flex flex-col gap-1" key={label}>
-                <span className="text-sm font-semibold">{label}</span>
-                <span className="text-muted-foreground text-sm">{description}</span>
-              </div>
-            ))}
-          </div>
+    <main className="flex-1" id="main-content">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-10 sm:gap-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <section className="flex max-w-4xl min-w-0 flex-col gap-5">
+          <p className="text-muted-foreground text-sm font-medium">{t("eyebrow")}</p>
+          <h1 className="font-heading text-4xl leading-tight font-semibold tracking-tight text-balance break-words sm:text-5xl lg:text-6xl">
+            {t("title")}
+          </h1>
+          <p className="text-muted-foreground max-w-3xl text-base leading-7 sm:text-lg sm:leading-8">
+            {t("description")}
+          </p>
         </section>
 
-        <section
-          aria-labelledby="home-search-heading"
-          className="bg-card rounded-2xl border p-4 sm:p-6 lg:p-8"
-        >
-          <h2 className="sr-only" id="home-search-heading">
-            {t("searchLabel")}
-          </h2>
-          <search>
-            <form
-              action={localePath(locale, "search")}
-              className="flex flex-col gap-3"
-              method="get"
-            >
-              <input name="v" type="hidden" value="1" />
-              <label className="sr-only" htmlFor="home-search-query">
-                {t("searchLabel")}
-              </label>
-              <InputGroup className="min-h-14">
-                <InputGroupAddon>
-                  <SearchIcon aria-hidden="true" />
-                </InputGroupAddon>
-                <InputGroupInput
-                  autoComplete="off"
-                  id="home-search-query"
-                  maxLength={512}
-                  name="q"
-                  placeholder={t("searchPlaceholder")}
-                  type="search"
-                />
-                <InputGroupAddon align="inline-end">
-                  <Button aria-label={t("searchButton")} size="lg" type="submit">
-                    <span className="hidden sm:inline">{t("searchButton")}</span>
-                    <ArrowRightIcon data-icon="inline-end" />
-                  </Button>
-                </InputGroupAddon>
-              </InputGroup>
-              <p className="text-muted-foreground text-xs">{t("privacy")}</p>
-            </form>
-          </search>
-        </section>
-
-        <section aria-labelledby="browse-heading" className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
-              <h2 className="font-heading text-2xl font-semibold" id="browse-heading">
-                {t("browseTitle")}
-              </h2>
-              <p className="text-muted-foreground">{t("browseDescription")}</p>
-            </div>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {browseCoordinates.map(({ description, href, icon: Icon, label }) => (
-              <Card key={href} size="sm">
-                <CardHeader>
-                  <Icon aria-hidden="true" />
-                  <CardTitle>{label}</CardTitle>
-                  <CardDescription>{description}</CardDescription>
-                  <CardAction>
-                    <Button asChild aria-label={label} size="icon-sm" variant="ghost">
-                      <Link href={localePath(locale, href)}>
-                        <ArrowRightIcon aria-hidden="true" />
-                      </Link>
+        <Card aria-labelledby="home-search-heading">
+          <CardHeader>
+            <CardTitle id="home-search-heading">{t("searchLabel")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <search>
+              <form
+                action={localePath(locale, "search")}
+                className="flex flex-col gap-3"
+                method="get"
+              >
+                <input name="v" type="hidden" value="1" />
+                <label className="sr-only" htmlFor="home-search-query">
+                  {t("searchLabel")}
+                </label>
+                <InputGroup className="min-h-14">
+                  <InputGroupAddon>
+                    <SearchIcon aria-hidden="true" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    autoComplete="off"
+                    id="home-search-query"
+                    maxLength={512}
+                    name="q"
+                    placeholder={t("searchPlaceholder")}
+                    type="search"
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <Button aria-label={t("searchButton")} size="lg" type="submit">
+                      <span className="hidden sm:inline">{t("searchButton")}</span>
+                      <ArrowRightIcon data-icon="inline-end" />
                     </Button>
-                  </CardAction>
-                </CardHeader>
-              </Card>
+                  </InputGroupAddon>
+                </InputGroup>
+                <p className="text-muted-foreground text-xs leading-5">{t("privacy")}</p>
+              </form>
+            </search>
+          </CardContent>
+        </Card>
+
+        <Card aria-labelledby="browse-heading">
+          <CardHeader>
+            <CardTitle id="browse-heading">{t("browseTitle")}</CardTitle>
+            <CardDescription>{t("browseDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-2 md:grid-cols-2">
+            {browseCoordinates.map(({ description, href, icon: Icon, label }) => (
+              <Button
+                asChild
+                className="h-auto min-h-24 justify-start p-4 text-left whitespace-normal"
+                key={href}
+                variant="ghost"
+              >
+                <Link href={localePath(locale, href)}>
+                  <Icon data-icon="inline-start" />
+                  <span className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span className="font-heading text-base font-semibold">{label}</span>
+                    <span className="text-muted-foreground font-normal">{description}</span>
+                  </span>
+                  <ArrowRightIcon className="ml-auto" data-icon="inline-end" />
+                </Link>
+              </Button>
             ))}
-          </div>
-        </section>
+          </CardContent>
+        </Card>
 
-        <Separator />
-
-        <section className="grid gap-4 md:grid-cols-2">
+        <section className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)] lg:items-start">
           {summary ? (
-            <Card className="md:row-span-2">
-              <CardHeader className="border-b">
+            <Card>
+              <CardHeader>
                 <DatabaseIcon aria-hidden="true" />
                 <CardTitle>{t("scaleTitle")}</CardTitle>
                 <CardDescription>{t("scaleDescription")}</CardDescription>
-                <CardAction>
-                  <span className="text-muted-foreground text-xs">{t("refreshCadence")}</span>
-                </CardAction>
+                {latestModified ? (
+                  <CardAction>
+                    <span className="text-muted-foreground text-xs">
+                      {t("latestModified", { date: latestModified })}
+                    </span>
+                  </CardAction>
+                ) : null}
               </CardHeader>
               <CardContent>
                 <dl className="grid grid-cols-3 gap-4">
@@ -216,11 +207,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                     </div>
                   ))}
                 </dl>
-                {latestModified ? (
-                  <p className="text-muted-foreground mt-5 font-mono text-xs">
-                    {t("latestModified", { date: latestModified })}
-                  </p>
-                ) : null}
               </CardContent>
               {summary.examples.length > 0 ? (
                 <CardFooter className="flex-col items-stretch gap-3">
@@ -270,14 +256,28 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               <AlertDescription>{t("scaleUnavailable")}</AlertDescription>
             </Alert>
           )}
-          <Card size="sm">
+          <Card>
             <CardHeader>
-              <CardTitle>{t("advancedTitle")}</CardTitle>
-              <CardDescription>{t("advancedDescription")}</CardDescription>
+              <BookOpenIcon aria-hidden="true" />
+              <CardTitle>{t("useTitle")}</CardTitle>
+              <CardDescription>{t("useDescription")}</CardDescription>
             </CardHeader>
+            <CardContent>
+              <dl className="flex flex-col gap-4">
+                {catalogGuide.map(([title, description]) => (
+                  <div className="flex flex-col gap-1" key={title}>
+                    <dt className="font-medium">{title}</dt>
+                    <dd className="text-muted-foreground leading-6">{description}</dd>
+                  </div>
+                ))}
+              </dl>
+            </CardContent>
             <CardFooter>
               <Button asChild size="sm" variant="outline">
-                <a href="https://lca.tiangong.earth">{common("externalAdvanced")}</a>
+                <Link href={localePath(locale, "methodology")}>
+                  {t("useLink")}
+                  <ArrowRightIcon data-icon="inline-end" />
+                </Link>
               </Button>
             </CardFooter>
           </Card>

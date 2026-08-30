@@ -14,7 +14,11 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.goto("/");
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("找到适合问题");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("查找可用于生命周期评估的数据");
+  await expect(page.getByRole("link", { name: "天工 LCA 平台" }).first()).toHaveAttribute(
+    "href",
+    "https://lca.tiangong.earth",
+  );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/zh-CN$/);
   await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
     "href",
@@ -48,10 +52,12 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.getByRole("option", { name: "English" }).click();
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Find lifecycle data");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Find data for life cycle assessment",
+  );
   const englishHtml = await (await page.request.get("/en")).text();
   expect(englishHtml).toMatch(/<html[^>]*\slang="en"/u);
-  await expect(page.getByText("What is available now", { exact: true })).toBeVisible();
+  await expect(page.getByText("Catalog overview", { exact: true })).toBeVisible();
   await expect(page.getByText("Process datasets", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Flow datasets", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Total", { exact: true })).toBeVisible();
@@ -61,13 +67,18 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.getByRole("option", { name: "Deutsch" }).click();
   await expect(page).toHaveURL(/\/de$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Lebenszyklusdaten");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Daten für Ökobilanzen finden");
 
   await page.getByRole("combobox", { name: "Sprache" }).click();
   await page.getByRole("option", { name: "Français" }).click();
   await expect(page).toHaveURL(/\/fr$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("données de cycle de vie");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Trouver des données pour l’analyse du cycle de vie",
+  );
+  await expect(page.getByRole("contentinfo")).not.toContainText(
+    /lecture seule|aucun compte requis/i,
+  );
   expect(await context.cookies()).toEqual([]);
 });
 
@@ -76,7 +87,7 @@ test("renders public search, exact details, numeric context, versions, and lates
   request,
 }) => {
   await page.goto("/en/search?v=1&kind=process&q=electricity");
-  await expect(page.getByRole("heading", { name: "Search public LCA data" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Search the data catalog" })).toBeVisible();
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
   await expect(page.getByText(processRef, { exact: true })).toBeVisible();
   await expect(page.getByText("Reference product or flow", { exact: true }).first()).toBeVisible();
@@ -236,7 +247,7 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
 test("keeps the local collection local and shares member IDs only", async ({ context, page }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/collections");
-  await page.getByLabel("Exact dataset identifier").fill(processRef);
+  await page.getByLabel("Dataset version identifier").fill(processRef);
   await page.getByRole("button", { name: "Add to shortlist" }).click();
   await page.getByLabel("Local note or rationale").fill("private local note");
   await page.reload();
@@ -273,7 +284,11 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
   await page.evaluate(() => {
     document.documentElement.style.fontSize = "200%";
   });
-  await expect(page.getByRole("searchbox", { name: "Search public lifecycle data" })).toBeVisible();
+  await expect(page.getByRole("searchbox", { name: "Search the data catalog" })).toBeVisible();
+  await expect(page.locator('header a[href="https://lca.tiangong.earth"]')).toBeHidden();
+  await expect(
+    page.getByRole("contentinfo").getByRole("link", { name: "Open the LCA platform" }),
+  ).toBeVisible();
   const layout = await page.evaluate(async () => {
     const root = document.documentElement;
     const initialClientWidth = root.clientWidth;

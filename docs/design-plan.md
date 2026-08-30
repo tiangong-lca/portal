@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: 9bcb45d8480716f60c8548ddbcd6e83833bb5a55
-lastReviewedNote: "Reviewed for Portal #35: hosted TDD adds an explicit default Search result/facet rendering bound while preserving the four-language public product, enforcing performance CSP, indexing and upstream raw-404 disposition."
+lastReviewedCommit: b240ad77ae900ec6bef8528c4417b94306e05ff3
+lastReviewedNote: "Reviewed against the current professional data-catalog information architecture, four-language public copy, product shell, and TianGong LCA platform navigation."
 related:
   - AGENTS.md
   - README.md
@@ -32,7 +32,7 @@ related:
 
 | 项目 | 约束 |
 | --- | --- |
-| 状态 | 最终交付实施方案；Portal #33 正在完成公众 UI/文案、四语、公开索引与 exact EdgeOne Production 验收，Release/Hybrid 的外部依赖单独收敛 |
+| 状态 | 当前目标状态；匿名只读、四语、SEO 与性能优先的专业 LCA 数据门户 |
 | 产品形态 | 面向匿名用户的公共 LCA 数据检索与展示门户 |
 | 技术形态 | Next.js App Router 前后端同构，部署到 EdgeOne Makers |
 | 数据边界 | 只读消费现有数据；不生产、修改、审核或维护 LCA 数据 |
@@ -348,15 +348,15 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 
 ### 7.1 首页
 
-首页保持克制：
+首页按专业科学数据目录的任务顺序组织：
 
-1. 主搜索框；
-2. 真实可执行示例：UUID、CAS、分类码；HMAC-signed Hybrid 达到 Phase 3 退出条件后再加入自然语言示例；
-3. Process / Flow、行业、地区、数据库目录入口；
-4. 当前公共内容规模与最近公开更新时间；
-5. “需要高级功能？”外链到 `tiangong-lca-next`。
+1. 用一句直接的任务标题说明“查找可用于生命周期评估的数据”，辅文只解释可检索对象与可核对背景；
+2. 关键词与标识符搜索是首要操作，支持名称、UUID、CAS 号和分类；
+3. 用一个连续目录索引提供 Process、Flow、地区与来源四个入口，不拆成营销功能卡；
+4. 展示当前可发现记录数、最近公开更新时间以及真实可执行的 UUID、CAS、分类示例；
+5. 用“如何使用这些数据”说明范围、来源、版本、引用与已发布结果，并链接到数据说明页。
 
-首屏不放营销 KPI 卡片、聊天窗口或登录 CTA。`/` 聚焦搜索；在输入控件内不劫持快捷键。
+首屏不放营销 KPI、聊天窗口、登录 CTA、开发状态、基础设施说明或“高级功能”宣传卡。`lca.tiangong.earth` 是天工 LCA 产品平台入口，只在桌面全局导航和所有尺寸页脚作为次级外链出现；紧凑导航不为跨产品链接牺牲目录入口。该链接不与目录搜索竞争，也不暗示 Portal 共享登录态。`/` 聚焦搜索，输入控件不劫持快捷键。
 
 ### 7.2 搜索页
 
@@ -890,11 +890,11 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 
 ### 13.1 设计方向
 
-视觉主题是“证据台账”：高信息密度、稳定坐标、细分隔线和精确数字排版。不是营销 SaaS、政府门户或聊天产品。
+视觉方向是“专业科学数据目录”：信息结构稳定、留白克制、分隔清楚、检索优先，不采用营销 SaaS、政府公文站、聊天产品或开发仪表盘的造型。
 
-可识别的核心元素是“Evidence Rail”：结果行和详情字段左侧的一条四态证据轨，用位置、图标与文字区分 Original、Normalized、Derived、AI inferred。它编码真实 provenance，不作为装饰。
+可识别的核心元素是连续目录索引：Process、Flow、地区与来源共享一个表面与统一行结构，帮助访问者建立数据空间坐标。首页不把 provenance 状态做成装饰性证据轨；版本、来源、许可、方法、质量和 publication 等信任信息只在目录概览、结果行或记录页的实际使用位置出现。
 
-最终公众版本保留细网格、证据轨和固定版本感这一处视觉签名，其余界面保持安静：品牌紫只用于行动、链接、焦点和少量导航信号；Source Sans 3 承担正文与标题，IBM Plex Mono 只用于 UUID、版本、日期和确有必要的技术标识。开发阶段的 `R1/R2`、`LEXICAL/HYBRID`、`POST`、`LIVE · 5 MIN`、`LOCALSTORAGE`、rank、score、reason code、schema、BFF、façade、telemetry 等标签不得出现在公众 UI。
+品牌紫只用于主要行动、链接、焦点和少量导航信号；Source Sans 3 承担正文与标题，IBM Plex Mono 只用于 UUID、版本、日期、计数和确有必要的技术标识。Card、Table、Alert、Empty、Input Group、Button 与 Separator 使用 shadcn/ui 语义 token，浅色与深色分别校准。不得加入渐变英雄区、装饰插画、伪统计、悬浮玻璃卡或与数据任务无关的品牌口号。开发阶段的 `R1/R2`、`LEXICAL/HYBRID`、`POST`、`LIVE · 5 MIN`、`LOCALSTORAGE`、rank、score、reason code、schema、BFF、façade、telemetry 等标签不得出现在公众 UI。
 
 公众文字遵循“用户先于实现”的顺序：先说明能做什么、看到什么、下一步是什么，再在必要位置解释限制。按钮使用可预期动作；错误同时说明状态与恢复方式；空态提供下一步；不把内部安全/缓存/发布结构当作卖点。首页首屏只完成“找到公开 LCA 数据并理解使用背景”这一件事，Search 只显示完成检索所需的字段，完整技术与质量原文进入详情页。
 
@@ -904,6 +904,8 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 2. `tiangong-lca-next` 当前 locale style guide 拥有四语 UI 语气、按钮、错误和产品术语（例如法语普通产品文案使用 `ÉICV`）；
 3. `tiangong-lca-next-docs` 当前四语内容提供公众任务表达与帮助链接；
 4. Portal 只在匿名只读场景下缩短说明，不改变领域含义；无法本地化的上游数据值显示来源语言，不伪装成本地翻译。
+
+信息架构参考同类公开数据服务的成熟做法：Federal LCA Commons 以仓库与数据集发现为中心；GBIF 在首屏给出直接价值陈述与主搜索；NASA Earthdata 把搜索、主题浏览和工具入口分层；European Platform on LCA / LCDN 在记录语境中强调提供方、版本、方法、质量和文档。Portal 只借鉴这些任务层级与信息边界，不复制其视觉资产、文案或品牌。
 
 ### 13.2 默认主色：与 `tiangong-lca-next` 一致
 
@@ -1518,12 +1520,9 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 | Flow 流              | 产品流、基本流或废物流                                           |
 | Process Group 过程组 | 只有上游给出稳定聚合结果时使用的 UI 分组，不是 Portal 存储实体   |
 | 分配与建模方法       | ILCD/TIDAS 语境下的建模与分配信息；cut-off/APOS 等作为来源值展示 |
-| Original             | 原始数据自带字段                                                 |
-| Normalized           | 上游规范化产生的字段                                             |
-| Derived              | 规则派生字段                                                     |
-| AI inferred          | AI 推断字段，必须带置信度与理由                                  |
 | Open                 | 后端明确允许显示公开元数据与相应数值能力                         |
 | Metadata only        | 元数据公开，但数值能力未授权或不存在                             |
+| Search assistance    | 仅用于帮助召回记录的查询解释；不是数据集事实                     |
 
 ## 25. 官方参考
 
@@ -1541,3 +1540,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 - [EdgeOne Makers Cloud Functions](https://pages.edgeone.ai/document/cloud-functions)
 - [EdgeOne Makers edgeone.json](https://pages.edgeone.ai/document/edgeone-json)
 - [WCAG 2.2](https://www.w3.org/TR/WCAG22/)
+- [Federal LCA Commons](https://www.lcacommons.gov/)
+- [GBIF](https://www.gbif.org/)
+- [NASA Earthdata](https://www.earthdata.nasa.gov/)
+- [European Platform on LCA / LCDN](https://eplca.jrc.ec.europa.eu/LCDN/)
