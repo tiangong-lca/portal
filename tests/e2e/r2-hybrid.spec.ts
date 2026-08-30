@@ -44,8 +44,8 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
   expect(receiptBody).toContain("portal.r2-fixture-hybrid-receipt.v1");
   expect(receiptBody).not.toContain(query);
 
-  await page.getByRole("button", { name: "Preview query share" }).click();
-  await expect(page.getByRole("heading", { name: "Disclosure preview" })).toBeVisible();
+  await page.getByRole("button", { name: "Preview shared link" }).click();
+  await expect(page.getByRole("heading", { name: "What the link will include" })).toBeVisible();
   await expect(page.getByText(query, { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Confirm and copy query link" }).click();
   const shared = await page.evaluate(() => navigator.clipboard.readText());

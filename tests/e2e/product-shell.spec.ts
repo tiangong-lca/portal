@@ -105,6 +105,7 @@ test("renders public search, exact details, numeric context, versions, and lates
   await page.goto(`/en/process/${processRef}/lcia`);
   await expect(page.getByRole("cell", { name: "12.5" })).toBeVisible();
   await expect(page.getByRole("cell", { name: "kg CO2-Eq" })).toBeVisible();
+  await page.getByText("Release and verification details", { exact: true }).click();
   await expect(page.getByText("55555555-5555-5555-5555-555555555555@release-2026.1")).toBeVisible();
 
   await page.goto(`/en/process/${processRef}/versions`);
