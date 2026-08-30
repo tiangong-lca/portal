@@ -21,8 +21,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: 8ff97d22041f574793976152c1957df692bf6512
-lastReviewedNote: "Reviewed against the current data-catalog UI and production browser suite; no rendering, CSP, or ISR boundary changed, so the strict-profile finding and reopen conditions remain current."
+lastReviewedCommit: e0c3577b7664f9d0f203e01d2423200e608ce92f
+lastReviewedNote: "Reviewed for Portal #40: the 30-second public Search/facet data cache does not change HTML rendering, CSP, ISR, or the strict-profile reopen conditions."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-30"
-lastReviewedCommit: "b240ad77ae900ec6bef8528c4417b94306e05ff3"
-lastReviewedNote: "Reviewed against the current public data-catalog UI and documentation changes; existing product, runtime, proof, and deployment routes remain complete."
+lastReviewedCommit: "e0c3577b7664f9d0f203e01d2423200e608ce92f"
+lastReviewedNote: "Reviewed for Portal #40: the fixed public Search/facet data-cache implementation and proof remain covered by existing product, runtime, proof, deployment, and documentation routes."
 
 catalog:
   repos:
