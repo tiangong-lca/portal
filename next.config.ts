@@ -10,8 +10,12 @@ import { resolvePortalBuildSha } from "./src/config/deployment-build";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 const enforceContentSecurityPolicy = process.env.PORTAL_CSP_MODE === "enforce";
+const strictCspProbe = process.env.PORTAL_EXPECT_STRICT_CSP === "1";
+const allowFrameworkInline =
+  !strictCspProbe && (process.env.PORTAL_CSP_PROFILE ?? "performance") === "performance";
 const brandConfig = readBrandConfig(process.env);
 const contentSecurityPolicy = buildContentSecurityPolicy({
+  allowFrameworkInline,
   brandAssetOrigin: brandConfig.assetOrigin ? new URL(brandConfig.assetOrigin).origin : undefined,
   isDevelopment,
 });

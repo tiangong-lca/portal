@@ -3,6 +3,13 @@ import type { Metadata } from "next";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 import { brandConfig } from "@/server/brand";
 
+const openGraphLocales: Record<PortalLocale, string> = {
+  "zh-CN": "zh_CN",
+  en: "en_US",
+  de: "de_DE",
+  fr: "fr_FR",
+};
+
 type LocalizedMetadataInput = {
   locale: PortalLocale;
   path?: string;
@@ -27,6 +34,8 @@ export function localizedMetadata({
       canonical: localePath(locale, normalizedPath),
       languages: {
         en: localePath("en", normalizedPath),
+        de: localePath("de", normalizedPath),
+        fr: localePath("fr", normalizedPath),
         "x-default": "/",
         "zh-CN": localePath("zh-CN", normalizedPath),
       },
@@ -42,7 +51,7 @@ export function localizedMetadata({
           width: brandConfig.width,
         },
       ],
-      locale: locale === "zh-CN" ? "zh_CN" : "en",
+      locale: openGraphLocales[locale],
       title,
       type: "website",
     },

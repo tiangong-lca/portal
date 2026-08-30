@@ -81,7 +81,6 @@ export default async function ProcessLciaPage({
       </header>
       <LciaPanel
         labels={{
-          evidence: t("evidence"),
           functionalUnit: t("functionalUnit"),
           geography: t("geography"),
           guardUnavailable: t("lciaGuardUnavailable"),
@@ -90,11 +89,15 @@ export default async function ProcessLciaPage({
           package: t("package"),
           process: common("process"),
           publication: t("publication"),
+          published: t("published"),
           referenceYear: t("referenceYear"),
+          releaseDetails: t("releaseDetails"),
           unavailable: t("lciaUnavailable"),
           unit: t("unit"),
           value: t("value"),
+          verificationCode: t("verificationCode"),
         }}
+        locale={locale}
         result={result}
       />
       {nextCursor ? (

@@ -4,7 +4,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { CollectionsWorkspace } from "@/features/collections/collections-workspace";
 import { isPortalLocale } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
@@ -37,7 +36,6 @@ export default async function CollectionsPage({ params }: PageProps<"/[locale]/c
       id="main-content"
     >
       <header className="flex max-w-3xl flex-col gap-3">
-        <Badge variant="outline">LOCALSTORAGE / NO SYNC</Badge>
         <h1 className="font-heading text-3xl font-semibold sm:text-5xl">{t("title")}</h1>
         <p className="text-muted-foreground text-lg leading-8">{t("description")}</p>
       </header>

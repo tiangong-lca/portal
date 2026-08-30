@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 
+import { locales } from "@/i18n/routing";
+
 export default function robots(): MetadataRoute.Robots {
   const siteUrl = new URL(process.env.SITE_URL ?? "http://localhost:3000");
   if (process.env.PORTAL_PUBLIC_INDEXING !== "enabled") {
@@ -18,12 +20,9 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: [
           "/r0-compat/",
-          "/zh-CN/search",
-          "/en/search",
-          "/zh-CN/compare",
-          "/en/compare",
-          "/zh-CN/collections",
-          "/en/collections",
+          ...locales.flatMap((locale) =>
+            ["search", "compare", "collections"].map((path) => `/${locale}/${path}`),
+          ),
         ],
       },
     ],

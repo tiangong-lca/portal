@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { PortalLocale } from "@/i18n/routing";
 
 import {
   evaluateCompatibility,
@@ -57,18 +58,63 @@ export type ComparableLciaPresentation = {
   unit: string;
 };
 
-const dimensionLabels: Record<CompatibilityDimension, { en: string; zh: string }> = {
-  allocationMethod: { en: "Allocation method", zh: "分配方法" },
-  cutoffRule: { en: "Cutoff rule", zh: "截止规则" },
-  functionalUnit: { en: "Functional unit", zh: "功能单位" },
-  geography: { en: "Geographic identity", zh: "地区身份" },
-  geographyPrecision: { en: "Geographic precision", zh: "地区精度" },
-  lciaMethodRef: { en: "LCIA method", zh: "LCIA 方法" },
-  modelingApproach: { en: "Modeling approach", zh: "建模方法" },
-  publicationRef: { en: "Publication", zh: "Publication" },
-  referenceUnit: { en: "Reference-flow unit", zh: "参考流单位" },
-  referenceYear: { en: "Reference year", zh: "参考年" },
-  technology: { en: "Technology route", zh: "技术路线" },
+const dimensionLabels: Record<CompatibilityDimension, Record<PortalLocale, string>> = {
+  allocationMethod: {
+    "zh-CN": "分配方法",
+    en: "Allocation method",
+    de: "Allokationsmethode",
+    fr: "Méthode d’allocation",
+  },
+  cutoffRule: {
+    "zh-CN": "截止规则",
+    en: "Cutoff rule",
+    de: "Abschneideregel",
+    fr: "Règle de coupure",
+  },
+  functionalUnit: {
+    "zh-CN": "功能单位",
+    en: "Functional unit",
+    de: "Funktionelle Einheit",
+    fr: "Unité fonctionnelle",
+  },
+  geography: { "zh-CN": "地区", en: "Geography", de: "Region", fr: "Région" },
+  geographyPrecision: {
+    "zh-CN": "地区精度",
+    en: "Geographic precision",
+    de: "Geografische Genauigkeit",
+    fr: "Précision géographique",
+  },
+  lciaMethodRef: {
+    "zh-CN": "LCIA 方法",
+    en: "LCIA method",
+    de: "LCIA-Methode",
+    fr: "Méthode d’ACVI",
+  },
+  modelingApproach: {
+    "zh-CN": "建模方法",
+    en: "Modeling approach",
+    de: "Modellierungsansatz",
+    fr: "Approche de modélisation",
+  },
+  publicationRef: {
+    "zh-CN": "发布批次",
+    en: "Publication",
+    de: "Veröffentlichung",
+    fr: "Publication",
+  },
+  referenceUnit: {
+    "zh-CN": "参考流单位",
+    en: "Reference-flow unit",
+    de: "Einheit des Referenzflusses",
+    fr: "Unité du flux de référence",
+  },
+  referenceYear: {
+    "zh-CN": "参考年",
+    en: "Reference year",
+    de: "Referenzjahr",
+    fr: "Année de référence",
+  },
+  technology: { "zh-CN": "技术描述", en: "Technology", de: "Technologie", fr: "Technologie" },
 };
 
 export function CompareWorkbench({
@@ -79,7 +125,7 @@ export function CompareWorkbench({
 }: {
   candidates: CompareCandidate[];
   labels: CompareLabels;
-  locale: "zh-CN" | "en";
+  locale: PortalLocale;
   numericContext?: ComparableLciaPresentation;
 }) {
   if (candidates.length < 2) {
@@ -124,9 +170,7 @@ export function CompareWorkbench({
           <TableBody>
             {result.rows.map((row) => (
               <TableRow key={row.dimension}>
-                <TableHead scope="row">
-                  {dimensionLabels[row.dimension][locale === "zh-CN" ? "zh" : "en"]}
-                </TableHead>
+                <TableHead scope="row">{dimensionLabels[row.dimension][locale]}</TableHead>
                 {row.values.map((value, index) => (
                   <TableCell className="font-mono text-xs" key={candidates[index]?.ref}>
                     {value ?? labels.notProvided}
@@ -143,9 +187,7 @@ export function CompareWorkbench({
       <div className="flex flex-col gap-3 md:hidden">
         {result.rows.map((row) => (
           <section className="rounded-xl border p-4" key={row.dimension}>
-            <h3 className="font-medium">
-              {dimensionLabels[row.dimension][locale === "zh-CN" ? "zh" : "en"]}
-            </h3>
+            <h3 className="font-medium">{dimensionLabels[row.dimension][locale]}</h3>
             <dl className="mt-3 flex flex-col gap-2">
               {row.values.map((value, index) => (
                 <div

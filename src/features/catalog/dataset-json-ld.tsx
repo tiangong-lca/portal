@@ -1,4 +1,5 @@
 import type { PublicDatasetEnvelope } from "@/server/contracts/portal";
+import type { PortalLocale } from "@/i18n/routing";
 
 import { localizedText } from "./map-public-data";
 
@@ -9,7 +10,7 @@ export function DatasetJsonLd({
 }: {
   canonicalUrl: string;
   dataset: PublicDatasetEnvelope;
-  locale: "zh-CN" | "en";
+  locale: PortalLocale;
 }) {
   const metadata = dataset.metadata;
   const provider = localizedText(metadata.source.providerName, locale);

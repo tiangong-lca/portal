@@ -26,8 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: 2a242160362cf61b255578de6e5eb4492e33756f
-lastReviewedNote: "Reviewed for Portal #31: removing the manual VoiceOver/screen-reader release gate changes no repository boundary; automated WCAG, semantics, keyboard, focus, zoom, motion, theme and responsive validation remain required."
+lastReviewedCommit: d0836a6cbd5d2a0cbf2f8ad1352caf380591848e
+lastReviewedNote: "Reviewed for Portal #33: the final public UI/copy, four-locale route tree, performance-first CSP disposition, bounded sitemap partitioning and upstream 404 follow-up remain inside Portal's anonymous read-only product boundary."
 related:
   - README.md
   - docs/design-plan.md
@@ -47,9 +47,12 @@ related:
 - Database schema, RPC, RLS, ACL, and indexes belong to `database-engine`; Edge runtime and HMAC verification belong to `tiangong-lca-edge-functions`.
 - Portal is read-only for LCA data. It must not create, edit, review, publish, withdraw, repair, or recalculate datasets.
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
+- The public product has independent `zh-CN`, `en`, `de`, and `fr` routes and dictionaries. UI copy never falls back across locales; source-data language fallback remains visibly labelled.
+- The user selected the cacheable performance/SEO CSP profile for EdgeOne: an enforcing policy permits the inline scripts/styles required by Next App Router, forbids `unsafe-eval`, and retains strict object/base/form/frame/source directives. The no-`unsafe-inline` profile remains a non-blocking upstream compatibility probe.
 - Node `24.18.x` is the pinned build toolchain. The selected EdgeOne Production deployment reports Node.js 20.19 for SSR, so server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
 - Production HMAC/Redis is proven on `dppeqhecdjax@82e9edb`; `dpldjwibrtb4` is the fail-closed pre-signer rollback. Restore signer by redeploying exact source with current Production configuration; a forward version rollback is not sufficient.
 - EdgeOne's current `@edgeone/opennextjs-pages` adapter returns `a is not a function` for both named-only and named/default Next 16 `proxy.ts`; its legacy `middleware.ts` path skips locale and probe semantics. Do not ship a Next Proxy/middleware entrypoint. Keep only the query-free root redirect and R0 headers in `edgeone.json`; bounded unlocalized product routes use same-origin 307 Route Handlers with `no-store`, and the generated locale segment is closed with `dynamicParams=false` so invalid values reach the full global 404 document.
+- Raw unknown-first-segment HTML may still be wrapped by EdgeOne in a generic `__next_error__` document. It remains a real upstream defect: preserve the real 404, unchanged URL/query, and `noindex`; do not use a soft redirect, 200 shell, Proxy workaround, or route-tree rewrite to disguise it.
 
 ## Repository and delivery model
 
@@ -83,7 +86,7 @@ R2 natural-language search is a client enhancement over same-origin `POST /inter
 
 `contracts/database-engine/portal/**` is a byte-identical generated snapshot of one exact promoted Database commit. `pnpm check:database-contracts` verifies its closed inventory, source commit, byte lengths, and SHA-256 manifest; an explicit `--database-root` check additionally compares every file to the authoritative Database Git object. Prettier must ignore this directory because reformatting would destroy the byte identity. The explicit `PORTAL_LIVE_PROBE=true` Production integration test is read-only and default-skipped; normal local/CI tests never contact Production.
 
-R0 local tests run the strict CSP candidate in report-only mode so framework hydration remains observable. They are not release evidence. Only `docs/r0/compatibility-matrix.md` may declare R0 status, and it must remain blocked until an exact `portal/main` EdgeOne Production deployment passes enforcing CSP, runtime, cache, HMAC/Redis, brand, and rollback probes. Public indexing stays disabled during hosted TDD.
+Local tests cover both the retained strict CSP probe and the user-approved enforcing performance profile. Only `docs/r0/compatibility-matrix.md` may declare hosted status; public indexing changes only on an exact `portal/main` deployment after four-locale, runtime, cache, HMAC/Redis, brand, private-route noindex, and rollback probes pass.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -106,15 +105,23 @@ export default async function BrowsePage({
     dataUnavailable = true;
   }
 
+  const dimensionLabel =
+    dimension === "process"
+      ? common("process")
+      : dimension === "flow"
+        ? common("flow")
+        : dimension === "region"
+          ? searchT("region")
+          : searchT("source");
+
   return (
     <main
       className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8"
       id="main-content"
     >
       <header className="flex max-w-3xl flex-col gap-3">
-        <Badge variant="outline">DIRECTORY / {dimension.toUpperCase()}</Badge>
         <h1 className="font-heading text-3xl font-semibold sm:text-4xl">
-          {t("title", { dimension })}
+          {t("title", { dimension: dimensionLabel })}
         </h1>
         <p className="text-muted-foreground leading-7">{t("description")}</p>
       </header>
@@ -134,10 +141,12 @@ export default async function BrowsePage({
             details: common("details"),
             emptyDescription: t("emptyDescription"),
             emptyTitle: t("emptyTitle"),
+            flow: common("flow"),
             functionalUnit: detail("functionalUnit"),
             geography: detail("geography"),
             match: searchT("matchEvidence"),
             metadataOnly: common("metadataOnly"),
+            process: common("process"),
             public: common("public"),
             quality: detail("quality"),
             reference: detail("referenceProduct"),

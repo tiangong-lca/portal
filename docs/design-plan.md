@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: 2a242160362cf61b255578de6e5eb4492e33756f
-lastReviewedNote: "Reviewed for Portal #31: remove the manual VoiceOver/screen-reader release gate while retaining automated WCAG, semantic, keyboard, zoom, motion, theme and responsive requirements."
+lastReviewedCommit: d0836a6cbd5d2a0cbf2f8ad1352caf380591848e
+lastReviewedNote: "Reviewed for Portal #33: final public UI/copy, four independent locales, performance-first enforcing CSP, bounded four-language sitemaps, public indexing authorization and the non-blocking upstream raw-404 defect replace the development-state release narrative."
 related:
   - AGENTS.md
   - README.md
@@ -32,7 +32,7 @@ related:
 
 | 项目 | 约束 |
 | --- | --- |
-| 状态 | 最终实施方案；仓库治理与 workspace onboarding 已完成，EdgeOne main/Production hosted TDD 已开始，R0/R1 release checklist 尚未完成 |
+| 状态 | 最终交付实施方案；Portal #33 正在完成公众 UI/文案、四语、公开索引与 exact EdgeOne Production 验收，Release/Hybrid 的外部依赖单独收敛 |
 | 产品形态 | 面向匿名用户的公共 LCA 数据检索与展示门户 |
 | 技术形态 | Next.js App Router 前后端同构，部署到 EdgeOne Makers |
 | 数据边界 | 只读消费现有数据；不生产、修改、审核或维护 LCA 数据 |
@@ -317,7 +317,7 @@ DTO 不返回：
 
 ## 6. 信息架构与路由
 
-首发语言为 `zh-CN` 与 `en`，语言进入路径。根路径只做语言协商，不承载内容。
+正式公开语言为 `zh-CN`、`en`、`de` 与 `fr`，语言进入路径。四套 UI 词典独立完整，不跨语言回退；数据内容缺少当前语言时允许显式标注来源语言。根路径只做默认语言跳转，不承载内容。
 
 | 路由 | 用途 | 渲染 | 索引 |
 | --- | --- | --- | --- |
@@ -810,10 +810,10 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 - 可索引：首页、受控 Browse 目录、Process/Flow 精确版本、方法论、扩展阶段的 Database；
 - 不索引：任意 Search、Compare、Collections、Map 参数组合；
 - Facet URL 使用 `noindex,follow`，避免 query × filter 的无限索引空间；
-- zh-CN/en 互相声明 `hreflang`，根路径提供 `x-default`；
-- 根级 `/catalog-{process|flow}-sitemap.xml` 各返回一个固定 64 项的 sitemap index；同一根级文件以唯一规范参数 `?shard={0..63}` 返回对应 XML shard，确保文件作用域覆盖 `/zh-CN/**` 与 `/en/**`；
+- zh-CN/en/de/fr 在 HTML 与 sitemap 中互相声明 self-inclusive reciprocal `hreflang`，根路径提供 `x-default`；
+- Database sitemap manifest 仍固定返回 64 个 opaque source shard。Portal 将每个 source shard 按稳定位置取模切成 4 个公开 part，因此根级 `/catalog-{process|flow}-sitemap.xml` 各固定列出 256 项；唯一规范参数为 `?shard={0..63}&part={0..3}`，确保根文件作用域覆盖四种语言；
 - shard 数字只接受规范化 `0..63`，Portal 按 manifest 数组位置选择 opaque cursor 并原样调用 Database；cursor 不进入 URL、XML、响应或日志；
-- sitemap 分片只包含当前公开且允许索引的 canonical URL；每个 shard 最多 4,096 个 identity，并为 zh-CN/en 各生成一条 reciprocal `<url>`，总计最多 8,192 URLs，最终 UTF-8 XML 必须严格小于 5 MiB；
+- 每个 Database source shard 最多 4,096 个 identity；每个公开 part 最多 1,024 个 identity，并为 zh-CN/en/de/fr 各生成一条 `<url>`，每条均列出四个 reciprocal alternate，最终 UTF-8 XML 必须严格小于 5 MiB；4 个 part 的 union 必须无重复、无遗漏地还原 source shard；
 - 最新版本进入 sitemap，历史版本由 Versions 页面发现；
 - 成功响应默认 `no-store`，确保未验证的平台也满足零陈旧；只有 exact deployment 证明 cache key 精确包含规范 `shard` 参数、到期同步 revalidate、错误不缓存且不自动返回 stale 后，才设置 `PORTAL_SITEMAP_CACHE_MODE=shared-300` 并使用 `public, max-age=0, s-maxage=300, must-revalidate`；Vercel 的 `s-maxage` 会后台异步更新，因此当前禁止该模式；缺失参数表示 index，唯一参数只接受规范十进制 `0..63`，其他 query 全部在 Database 调用前返回 `404/no-store`；配置、上游、DTO 或字节门失败返回 `503/no-store`；禁止 query cache-bust、`stale-while-revalidate` 与 `stale-if-error`；
 - robots 不用于保护数据，真正的权限仍在 Database/Edge。
@@ -859,8 +859,8 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 
 ### 12.2 Web 安全
 
-- CSP 默认拒绝，按实际字体、图片和后端域名放行，禁止 `unsafe-inline`；Next SHA-256 SRI 只覆盖外部资产，不能单独授权 App Router 内联 Flight scripts；全站 nonce 又会强制动态渲染并禁用 ISR；
-- R0 非公开阶段只允许把严格候选策略置于 report-only 以收集证据，不得把 report-only 当作通过。主题 bootstrap 使用同源外部静态脚本；SRI、内联 Flight 处理、RSC hydration、Streaming 和 ISR 必须在 enforce 模式作为一个组合通过 exact EdgeOne main/Production deployment，无法同时满足即阻塞开启公开索引；
+- 公众 EdgeOne profile 使用真正 enforcing 的 CSP：`default-src 'self'`，`script-src`/`style-src` 仅因 Next App Router 的 cacheable inline Flight/style 现实加入 `unsafe-inline`，生产永远禁止 `unsafe-eval`；`object-src 'none'`、`base-uri 'self'`、`form-action 'self'`、`frame-ancestors 'none'`、connect/font/image allowlist 等继续严格执行；
+- 用户已明确选择性能/SEO优先，不接受全站 nonce 导致的动态渲染、ISR/CDN 失效和成本上升。主题 bootstrap 继续使用同源外部静态脚本与 SRI；performance profile 必须在 enforce 模式通过 hydration、Streaming、真实 ISR 与四语浏览器门。无 `unsafe-inline` 的 strict profile 保留为 Next/EdgeOne 上游兼容探针，不再阻塞首次公开；
 - `frame-ancestors 'none'`、`X-Content-Type-Options: nosniff`、`Referrer-Policy: strict-origin-when-cross-origin` 和最小 Permissions Policy；
 - 用户内容只作为文本渲染，不用未经清洗的 HTML；
 - URL/localStorage/JSON 导入全部经 Zod 校验；
@@ -892,6 +892,17 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 视觉主题是“证据台账”：高信息密度、稳定坐标、细分隔线和精确数字排版。不是营销 SaaS、政府门户或聊天产品。
 
 可识别的核心元素是“Evidence Rail”：结果行和详情字段左侧的一条四态证据轨，用位置、图标与文字区分 Original、Normalized、Derived、AI inferred。它编码真实 provenance，不作为装饰。
+
+最终公众版本保留细网格、证据轨和固定版本感这一处视觉签名，其余界面保持安静：品牌紫只用于行动、链接、焦点和少量导航信号；Source Sans 3 承担正文与标题，IBM Plex Mono 只用于 UUID、版本、日期和确有必要的技术标识。开发阶段的 `R1/R2`、`LEXICAL/HYBRID`、`POST`、`LIVE · 5 MIN`、`LOCALSTORAGE`、rank、score、reason code、schema、BFF、façade、telemetry 等标签不得出现在公众 UI。
+
+公众文字遵循“用户先于实现”的顺序：先说明能做什么、看到什么、下一步是什么，再在必要位置解释限制。按钮使用可预期动作；错误同时说明状态与恢复方式；空态提供下一步；不把内部安全/缓存/发布结构当作卖点。首页首屏只完成“找到公开 LCA 数据并理解使用背景”这一件事，Search 只显示完成检索所需的字段，完整技术与质量原文进入详情页。
+
+术语冲突按以下顺序收敛：
+
+1. TIDAS/ILCD glossary 拥有 Process、Flow、Exchange、functional unit、reference flow、LCI/LCIA、review/validation/compliance 等领域概念；
+2. `tiangong-lca-next` 当前 locale style guide 拥有四语 UI 语气、按钮、错误和产品术语（例如法语普通产品文案使用 `ÉICV`）；
+3. `tiangong-lca-next-docs` 当前四语内容提供公众任务表达与帮助链接；
+4. Portal 只在匿名只读场景下缩短说明，不改变领域含义；无法本地化的上游数据值显示来源语言，不伪装成本地翻译。
 
 ### 13.2 默认主色：与 `tiangong-lca-next` 一致
 
@@ -1002,9 +1013,10 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 
 ### 14.2 国际化
 
-- 首发 `zh-CN` 与 `en`；
+- 正式公开 `zh-CN`、`en`、`de` 与 `fr`，URL 段与 html lang 分别保持这四个规范值；与 Docs/TIDAS 的 `/de`、`/fr` 公共路径一致，不把 Next 内部 `de-DE`/`fr-FR` adapter tag 暴露为 Portal URL；
 - 使用 `next-intl` 的 locale segment 与 Server Component 消息加载；
 - 日期、数字、单位和复数规则本地化；
+- 四份消息字典具有完全相同的闭合 key topology；缺 key、整段英语复制、未翻译开发标签或跨语言 UI fallback 均使构建/测试失败；
 - UI 语言与数据内容语言分离；
 - 数据字段回退到其他语言时明确标记来源，不伪装成本地化原文；
 - 切换语言保留同一对象、版本、查询和分面。
@@ -1043,7 +1055,7 @@ MVP 不引入重量级状态管理、客户端查询缓存、Chart 或 Map 依�
 ### 15.2 Next 配置
 
 - App Router；
-- `app/[locale]/layout.tsx` 是本地化页面的动态根布局，通过 `generateStaticParams` + `dynamicParams=false` 只接受 zh-CN/en；根跳转、R0 probe 与全局 404 使用独立 root document，共享同一个主题/品牌 bootstrap；
+- `app/[locale]/layout.tsx` 是本地化页面的动态根布局，通过 `generateStaticParams` + `dynamicParams=false` 只接受 zh-CN/en/de/fr；根跳转、R0 probe 与全局 404 使用独立 root document，共享同一个主题/品牌 bootstrap；
 - 不使用 `output: "export"`；
 - EdgeOne 输出目录 `.next`；
 - 静态与 ISR 路由启用 `experimental.sri.algorithm="sha256"`，并由 exact EdgeOne main/Production deployment 证明平台对该 experimental 能力兼容；
@@ -1158,7 +1170,7 @@ EdgeOne 只配置 Production 环境变量：
 | Sitemap cache | `PORTAL_SITEMAP_CACHE_MODE=no-store`；仅在该平台通过 no-stale 验收后改为 `shared-300` |
 | 主色 | `PORTAL_LIGHT_PRIMARY`、`PORTAL_DARK_PRIMARY`、`PORTAL_BRAND_VERSION` |
 | Logo | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON` |
-| Logo metadata | `PORTAL_LOGO_ALT_ZH/EN`、`PORTAL_LOGO_WIDTH/HEIGHT`、可选 `PORTAL_BRAND_ASSET_ORIGIN` |
+| Logo metadata | `PORTAL_LOGO_ALT_ZH/EN/DE/FR`、`PORTAL_LOGO_WIDTH/HEIGHT`、可选 `PORTAL_BRAND_ASSET_ORIGIN` |
 
 Supabase Edge Function 配置按项目分别保存；当前批准的例外仅共享底层 Upstash endpoint/token。EdgeOne Production 只调用 Supabase Main；本地/CI 使用 loopback fixture 或 persistent Dev 的独立凭据。用户批准不创建单独 EdgeOne Preview，R0 hosted probes 在 Production 域名、索引关闭状态下验证真实 Main signer/namespace，不部署可调用业务内核的临时替代凭据：
 
@@ -1176,14 +1188,14 @@ HMAC 与 Redis 凭据是秘密，永不渲染；previous HMAC key 只存在于 S
 
 ### 17.3 平台约束
 
-EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization；但当前 `@edgeone/opennextjs-pages` 的 Next 16 Proxy 适配存在已复现缺陷。`dp4k6q62p30g@cdef8a0` 的 named-only `proxy.ts` 与 `dpphjhb8yld6@ffb730a` 的 named/default `proxy.ts` 均对 matched path 返回 `Middleware execution failed: a is not a function`；`dp6z4vd02d2n@f039918` 的 legacy `middleware.ts` 虽消除 500，却不执行 locale redirect 或 R0 headers。`dppeqhecdjax@82e9edb` 已证明无 Proxy native routing、query-preserving redirects、exact SHA、Node 20.19.3、真实 ISR regeneration、五段 Streaming、native WebP 以及 Production HMAC signer。当前目标只在 `edgeone.json` 保留 query-free root redirect/R0 headers；stateful 无 locale 路径由 bounded Route Handlers 保留 pathname/query。EdgeOne 仍将 raw invalid first-segment 404 包为 `__next_error__`，Portal #28 保持 blocked 且 public indexing 关闭。构建从 checkout Git HEAD 注入 immutable SHA，`PORTAL_DEPLOYMENT_SHA` 只在 Git 元数据不可用时兜底。
+EdgeOne 当前官方支持 Next.js 13.5+、14、15、16，以及 App Router、SSR、ISR、RSC、Streaming、Middleware、Route Handlers 和 Image Optimization；但当前 `@edgeone/opennextjs-pages` 的 Next 16 Proxy 适配存在已复现缺陷。`dp4k6q62p30g@cdef8a0` 的 named-only `proxy.ts` 与 `dpphjhb8yld6@ffb730a` 的 named/default `proxy.ts` 均对 matched path 返回 `Middleware execution failed: a is not a function`；`dp6z4vd02d2n@f039918` 的 legacy `middleware.ts` 虽消除 500，却不执行 locale redirect 或 R0 headers。`dppeqhecdjax@82e9edb` 已证明无 Proxy native routing、query-preserving redirects、exact SHA、Node 20.19.3、真实 ISR regeneration、五段 Streaming、native WebP 以及 Production HMAC signer。当前目标只在 `edgeone.json` 保留 query-free root redirect/R0 headers；stateful 无 locale 路径由 bounded Route Handlers 保留 pathname/query。EdgeOne 对 raw unknown-first-segment 404 的 `__next_error__` 包装已证明是平台适配缺陷：Portal #33 复测了 `dynamicParams=true` 候选，它只能修复深层未知路径，无法修复单段未知 locale；完整 route-tree 迁移会破坏 locale-correct root document/ISR，因此候选已撤回。首次公开接受真实 404/noindex/原 URL 与平台通用 raw document，Portal #28 继续持有上游修复，不以软跳转、200 shell 或 Proxy 伪装。构建从 checkout Git HEAD 注入 immutable SHA，`PORTAL_DEPLOYMENT_SHA` 只在 Git 元数据不可用时兜底。
 
 Compatibility spike 必须实测：
 
 - Node 24 + pnpm 11 build；
 - Next 16 + React 19 + TypeScript 7 typecheck/build；
 - RSC、SSR、ISR、Streaming、EdgeOne native root redirect/headers、query-preserving bounded Route Handlers、closed locale/global 404、Image Optimization；
-- 严格 CSP 下的 SRI、RSC hydration、Streaming 与 ISR 组合；不得用全站 nonce 让页面静态性测试失真；
+- enforcing performance CSP 下的 RSC hydration、Streaming 与 ISR 组合；生产无 `unsafe-eval`，strict no-inline profile 作为独立上游探针，不得用全站 nonce 让页面静态性测试失真；
 - 实际 SSR `process.version`；当前日志为 Nodejs20.19，继续使用 native fetch 且不得引入要求 Node 22+ 的服务端 SDK；
 - 使用独立 `PORTAL_R0_*` HMAC/publishable 凭据和 `portal:r0:<random-fixture>:v1` 可丢弃 namespace；按 §10.3 的共享存储决策映射同一 Upstash endpoint/token，验证 EdgeOne Web Crypto HMAC、Supabase Deno 验签、`SET NX EX`/Lua 原子能力、nonce 防重放、current/previous key 轮换与 exact-key cleanup；fixture 不接业务 RPC/模型、不读取 Dev/Main HMAC 或 namespace，保存证据后删除 exact fixture keys 与 R0 project 的临时 secret copies，禁止删除共享 database 或绕过协调单独轮换共享源 token；
 - 除 §10.3 明确共享的 Upstash endpoint/token 外，Dev/Main 的 Supabase target、HMAC、publishable key 和 namespace 隔离；EdgeOne deployment 必须拒绝 Dev target；
@@ -1205,6 +1217,8 @@ Compatibility spike 必须实测：
 - 详情页首屏 JavaScript gzip <= 180 KB；
 - 搜索页首屏 JavaScript gzip <= 250 KB；
 - 不为隐藏 tab 预加载大型表格、地图或图表。
+
+首次公开以 exact EdgeOne deployment 的受控 cold/warm 浏览器样本作为 launch gate；新站没有足够真实访客时不得伪造 field p75。公开后启动 7 天 RUM 观察，只匿名聚合 LCP、INP、CLS、TTFB、页面族、设备级别和大区，不上传搜索词、自然语言、UUID、候选集、备注或精确访问路径。RUM 不阻塞首次上线；任何持续超预算或错误率异常必须创建跟踪 Issue，并给出修复或回滚处置。
 
 ### 18.2 数据查询
 
@@ -1267,17 +1281,17 @@ Dashboard 至少覆盖：
 
 ### 19.3 浏览器与 SEO
 
-- Playwright 覆盖 zh-CN/en、浅/深主题、三种断点；
-- zh-CN/en 的原始初始响应与水合后 DOM 都具有 exact `<html lang>`；本地化 404 与全局 404 返回真实 `404`、有效 document language 和产品错误界面；
+- Playwright 覆盖 zh-CN/en/de/fr、浅/深主题、三种断点；
+- 四种语言的原始初始响应与水合后 DOM 都具有 exact `<html lang>`；本地化 404 与本地全局 404 返回真实 `404`、有效 document language 和产品错误界面，EdgeOne raw unknown-first-segment 的平台通用文档按已批准缺陷单独验证；
 - 默认浅/深主色与 `tiangong-lca-next` snapshot 一致；其余 Portal semantic token、自定义主色、Light/Dark Logo、favicon、manifest/OG metadata 和失败 fallback 的视觉回归通过；
 - 无 cookie、无登录完成搜索→详情→比较→引用；
 - JavaScript 关闭后核心页面可读；
 - axe 无 serious/critical；
 - 纯键盘、200% zoom、reduced motion、浅/深主题和三断点人工走查；
-- canonical、hreflang、JSON-LD、robots、64-way sitemap index/shard、XML 解析、5 MiB 门、300 秒 cache 与 404/503 no-store；
+- canonical、四语 reciprocal hreflang、JSON-LD、robots、64 source shards × 4 public parts 的 sitemap index/shard、XML 解析、5 MiB 门、300 秒 cache 与 404/503 no-store；
 - Search/Compare/Collections 不被索引；
 - 浏览器 bundle 和 sourcemap 不含 secret/service role；
-- CSP 不含 `unsafe-inline`，主题 bootstrap script 的构建时 SHA-256 hash 与实际响应字节一致；
+- public performance CSP 在 enforce 模式允许 Next 必需的 `unsafe-inline`、禁止 `unsafe-eval` 并保持其他 directive 收敛；retained strict probe 不含 `unsafe-inline`；主题 bootstrap script 的构建时 SHA-256 hash 与实际响应字节一致；
 - Exact EdgeOne main/Production deployment 完成 SSR/RSC/ISR/Runtime smoke。
 
 ### 19.4 发布门
@@ -1429,6 +1443,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 ### 23.1 产品
 
 - 匿名、无 Cookie 完成搜索、详情、公开 LCIA、比较、引用和本地整理；
+- zh-CN/en/de/fr 的导航、页面、metadata、错误、空态和操作文字独立完整；公众 UI 无开发阶段标签、架构缩写、raw rank/score/reason code 或未翻译英文副本；
 - 全站没有登录墙、API 页面、MCP/Skill 示例或伪装的高级功能；
 - 每类数值满足 §10.2 的独立上下文矩阵；Exchange 不伪造 LCIA publication，LCIA 不缺方法/地理/时间/publication；
 - Process Group、字段来源、匹配理由和代理只展示上游 evidence；
@@ -1446,9 +1461,9 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 ### 23.3 SEO
 
 - 首页、目录、详情与公开 LCIA 的重要内容在初始 HTML；
-- zh-CN/en 的初始 `<html lang>` 与路由一致，未知 URL 的 404 document 具有有效语言且保持 `noindex`；
+- zh-CN/en/de/fr 的初始 `<html lang>` 与路由一致，未知 URL 保持真实 404、原 URL/query 与 `noindex`；Portal-owned 404 为品牌文档，EdgeOne raw unknown-first-segment 通用文档按批准的上游缺陷记录；
 - 每个详情页有唯一 canonical、hreflang、结构化数据和正确状态码；
-- 两个 catalog sitemap index 各固定列出 64 个数字 shard；分片仅含允许索引的最新公开对象，128 个公开 shard 的 union 无重复或遗漏；
+- 两个 catalog sitemap index 各固定列出 64 × 4 = 256 个数字 shard/part；分片仅含允许索引的最新公开对象，每组 4 part 的 union 与对应 Database source shard 无重复或遗漏；
 - sitemap 上游 RPC 始终 `no-store`，成功 XML 严格小于 5 MiB；响应默认 `no-store`，只有托管平台通过同步 300 秒/no-stale 验收才启用唯一一层共享 CDN cache；404/503 不缓存；
 - Search/Compare/Collections 不进入索引；
 - 撤回/能力收紧在 60 秒 visibility SLA 内停止展示；publication 与 sitemap 在 5 分钟内更新。
@@ -1470,13 +1485,13 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 2. Database public catalog/capability/LCIA projection 已 promote 到 `database-engine/main`，Worker/Release materialization/finalize 已进入各自 `main`，HMAC verifier 与 `portal_data_product_results_v1` 已 promote 到 `edge-functions/main`；
 3. 正确签名可调用；缺失/错误签名、篡改 body、过期 timestamp、重复 nonce、未知 keyId 均在业务逻辑前拒绝；old/new key 轮换通过；Dev/Main 使用不同 HMAC keyring、Supabase project 和 `portal:dev:v1` / `portal:main:v1` namespace，EdgeOne 只持有 Main current key。初始部署按 §10.3 共享经批准的 Upstash endpoint/token，验收证据明确 namespace 不是安全边界，并记录共享 token、配额、故障与轮换域风险；runtime 不读取通用 Redis 凭据，Redis guard 不可用时 LCIA 不调用数据库并显示暂不可用；
 4. 无终端用户 Cookie/token 的代表性 Process/Flow 100 与 200 查询返回允许元数据；HMAC secret 不出现在浏览器；0/20、owner/team/review fixture 从 search、detail、versions、exchange、facet 和伪造参数入口均不可见；
-5. UUID、CAS、分类码、中文名和英文名 lexical/identifier 查询通过，100/200 使用一个稳定 public-catalog 排序与 cursor；
+5. UUID、CAS、分类码以及公开数据中存在的中文、英文、德文、法文名称 lexical/identifier 查询通过，100/200 使用一个稳定 public-catalog 排序与 cursor；
 6. Process/Flow exact-version 详情、版本列表、撤回 404 和 latest 307 通过；页面不直接读取 raw core table；
 7. 每个公开 Exchange amount 同时具备 §10.2 所列 Process/Flow/amount/unit/direction/functional-unit/capability context；缺一项时不显示数值或比较；
 8. 每个公开 LCIA result 同时具备 §10.2 所列 Process、功能单位、地理/精度、参考年、Method、impact、value/unit 和 publication/package context；无 publication 时显示 unavailable 而非 0；
 9. 2–4 条比较先通过功能单位、单位、方法、地区精度、时间与边界矩阵；只有允许组合才并列 LCIA，Exchange 与 LCIA 使用各自上下文；
 10. Citation 固定 exact version；本地候选集/JSON 经 schema 校验，不把备注发送到服务器；默认 fragment 只含 member IDs；
-11. 首页、Browse、Process/Flow 详情和公开 LCIA 摘要进入初始 HTML；canonical、zh-CN/en hreflang、Dataset JSON-LD、robots，以及根级固定 64-way、双语 reciprocal、严格 5 MiB 的 sitemap index/shard 通过；sitemap 默认 `no-store`，仅在托管平台证明同步 300 秒/no-stale 后启用单一共享缓存；Search/Compare/Collections 为 noindex；
+11. 首页、Browse、Process/Flow 详情和公开 LCIA 摘要进入初始 HTML；canonical、zh-CN/en/de/fr reciprocal hreflang、Dataset JSON-LD、robots，以及根级 64 source shards × 4 public parts、四语 reciprocal、严格 5 MiB 的 sitemap index/shard 通过；sitemap 默认 `no-store`，仅在托管平台证明同步 300 秒/no-stale 后启用单一共享缓存；Search/Compare/Collections 为 noindex；
 12. 默认浅色 `#5C246A`、深色 `#9E3FFD`；其他 semantic token 遵循 shadcn/Tailwind 最佳实践；自定义主色、Light/Dark Logo、favicon、alt、尺寸、fallback、manifest/OG metadata 和品牌回滚全部通过；
 13. WCAG 2.2 AA 自动检查无 serious/critical，并完成键盘、200% zoom、浅/深主题和三断点人工走查；
 14. 浏览器 bundle、sourcemap、响应和日志中无 HMAC secret、service role、数据库 secret、内部 locator 或 Hybrid body；GET lexical `q` 的 24 小时 access-log 提示与 Referrer Policy 生效；

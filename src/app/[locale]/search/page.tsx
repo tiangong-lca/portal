@@ -4,7 +4,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -18,7 +17,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { localizedText, mapSearchItem } from "@/features/catalog/map-public-data";
 import { HybridSearchPanel } from "@/features/catalog/hybrid-search-panel";
 import { SearchResults } from "@/features/catalog/search-results";
-import { isPortalLocale, localePath } from "@/i18n/routing";
+import { isPortalLocale, localePath, type PortalLocale } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
 import {
   parsePortalSearchUrl,
@@ -30,7 +29,7 @@ import { PortalDataError } from "@/server/data/supabase-rpc";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-function searchHref(locale: "zh-CN" | "en", input: PortalSearchUrlInput, cursor: string): string {
+function searchHref(locale: PortalLocale, input: PortalSearchUrlInput, cursor: string): string {
   const parameters = new URLSearchParams({
     cursor,
     kind: input.kind,
@@ -54,7 +53,7 @@ function searchHref(locale: "zh-CN" | "en", input: PortalSearchUrlInput, cursor:
 }
 
 function facetHref(
-  locale: "zh-CN" | "en",
+  locale: PortalLocale,
   input: PortalSearchUrlInput,
   groupId: string,
   value: string,
@@ -148,10 +147,12 @@ export default async function SearchPage({
     details: common("details"),
     emptyDescription: t("emptyDescription"),
     emptyTitle: t("emptyTitle"),
+    flow: common("flow"),
     functionalUnit: detail("functionalUnit"),
     geography: detail("geography"),
     match: t("matchEvidence"),
     metadataOnly: common("metadataOnly"),
+    process: common("process"),
     public: common("public"),
     quality: detail("quality"),
     reference: detail("referenceProduct"),
@@ -185,7 +186,6 @@ export default async function SearchPage({
       id="main-content"
     >
       <header className="flex max-w-3xl flex-col gap-2">
-        <Badge variant="outline">LEXICAL / IDENTIFIER</Badge>
         <h1 className="font-heading text-3xl font-semibold sm:text-4xl">{t("title")}</h1>
         <p className="text-muted-foreground leading-7">{t("description")}</p>
       </header>
@@ -225,6 +225,7 @@ export default async function SearchPage({
         labels={{
           advisoryDescription: hybrid("advisoryDescription"),
           advisoryTitle: hybrid("advisoryTitle"),
+          badge: hybrid("badge"),
           compareSelected: t("compareSelected"),
           description: hybrid("description"),
           emptyDescription: hybrid("emptyDescription"),
@@ -262,13 +263,13 @@ export default async function SearchPage({
             <a
               href={`${localePath(locale, "search")}?v=1&kind=${kind}&q=${encodeURIComponent(query)}`}
             >
-              {kind}
+              {kind === "process" ? common("process") : common("flow")}
             </a>
           </Button>
         ))}
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[14rem_minmax(0,1fr)_15rem]">
+      <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
         <aside aria-labelledby="facet-heading" className="hidden lg:block">
           <Card size="sm">
             <CardHeader>
@@ -280,29 +281,59 @@ export default async function SearchPage({
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               {facets
-                ? facets.groups.map((group) => (
-                    <div className="flex flex-col gap-2" key={group.id}>
-                      <strong>{localizedText(group.label, locale) ?? group.id}</strong>
-                      {group.values.map((value) => {
-                        const href = facetHref(locale, parsedSearch, group.id, value.value);
-                        const label = `${localizedText(value.label, locale) ?? value.value} (${value.count})`;
-                        return href ? (
-                          <Button
-                            asChild
-                            className="justify-start"
-                            key={value.value}
-                            variant="ghost"
-                          >
-                            <a href={href}>{label}</a>
-                          </Button>
-                        ) : (
-                          <span className="text-muted-foreground text-sm" key={value.value}>
-                            {label}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  ))
+                ? facets.groups.map((group) => {
+                    const normalizedGroup = group.id.toLowerCase().replaceAll(/[^a-z]/g, "");
+                    const renderValue = (value: (typeof group.values)[number]) => {
+                      const href = facetHref(locale, parsedSearch, group.id, value.value);
+                      const translatedValue =
+                        normalizedGroup === "kind" || normalizedGroup === "objecttype"
+                          ? value.value === "process"
+                            ? common("process")
+                            : value.value === "flow"
+                              ? common("flow")
+                              : value.value
+                          : normalizedGroup.includes("access")
+                            ? value.value === "open"
+                              ? common("public")
+                              : value.value === "metadata_only"
+                                ? common("metadataOnly")
+                                : value.value
+                            : (localizedText(value.label, locale) ?? value.value);
+                      const label = `${translatedValue} (${value.count})`;
+                      return href ? (
+                        <Button
+                          asChild
+                          className="w-full justify-start"
+                          key={value.value}
+                          variant="ghost"
+                        >
+                          <a href={href}>{label}</a>
+                        </Button>
+                      ) : (
+                        <span className="text-muted-foreground text-sm" key={value.value}>
+                          {label}
+                        </span>
+                      );
+                    };
+                    const visibleValues = group.values.slice(0, 8);
+                    const remainingValues = group.values.slice(8);
+                    return (
+                      <div className="flex flex-col gap-2" key={group.id}>
+                        <strong>{localizedText(group.label, locale) ?? group.id}</strong>
+                        {visibleValues.map(renderValue)}
+                        {remainingValues.length > 0 ? (
+                          <details>
+                            <summary className="text-link cursor-pointer text-sm">
+                              {t("moreFilters", { count: remainingValues.length })}
+                            </summary>
+                            <div className="mt-2 flex flex-col gap-1">
+                              {remainingValues.map(renderValue)}
+                            </div>
+                          </details>
+                        ) : null}
+                      </div>
+                    );
+                  })
                 : facetLabels.map((label) => (
                     <Button disabled key={label} variant="ghost">
                       {label}
@@ -361,20 +392,6 @@ export default async function SearchPage({
             </nav>
           ) : null}
         </section>
-
-        <aside aria-labelledby="selection-heading">
-          <Card size="sm">
-            <CardHeader>
-              <CardTitle id="selection-heading">{t("selection")}</CardTitle>
-              <CardDescription>{t("selectionEmpty")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Alert>
-                <AlertDescription>{t("selectionEmpty")}</AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card>
-        </aside>
       </div>
     </main>
   );

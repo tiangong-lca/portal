@@ -1,8 +1,9 @@
 import "server-only";
 
-import { localePath, type PortalLocale } from "@/i18n/routing";
+import { localePath, locales, type PortalLocale } from "@/i18n/routing";
 import {
   catalogSitemapShardCount,
+  catalogSitemapPartsPerShard,
   parseCatalogSitemapKind,
   parseCatalogSitemapShardSearch,
   parseCatalogSitemapShardSegment,
@@ -14,6 +15,7 @@ import { getPublicSitemapManifest, getPublicSitemapShard } from "@/server/data/c
 
 export type { CatalogSitemapKind } from "@/lib/catalog-sitemap-path";
 export {
+  catalogSitemapPartsPerShard,
   catalogSitemapShardCount,
   parseCatalogSitemapKind,
   parseCatalogSitemapShardSegment,
@@ -24,6 +26,8 @@ type PublicSitemapShard = Awaited<ReturnType<typeof getPublicSitemapShard>>;
 type PublicSitemapItem = PublicSitemapShard["items"][number];
 
 export const maximumCatalogSitemapItems = 4096;
+export const maximumCatalogSitemapItemsPerPart =
+  maximumCatalogSitemapItems / catalogSitemapPartsPerShard;
 export const maximumCatalogSitemapUrls = 50_000;
 export const maximumCatalogSitemapXmlBytes = 5 * 1024 * 1024;
 export const catalogSitemapSharedCacheControl = "public, max-age=0, s-maxage=300, must-revalidate";
@@ -128,10 +132,17 @@ export function assertCatalogSitemapXmlWithinLimit(xml: string): string {
 }
 
 export function renderCatalogSitemapIndex(kind: CatalogSitemapKind, origin: string): string {
-  const entries = Array.from({ length: catalogSitemapShardCount }, (_, shardIndex) => {
-    const location = absoluteUrl(origin, rootCatalogSitemapShardPath(kind, shardIndex));
-    return `  <sitemap><loc>${escapeXml(location)}</loc></sitemap>`;
-  }).join("\n");
+  const entries = Array.from({ length: catalogSitemapShardCount }, (_, shardIndex) =>
+    Array.from({ length: catalogSitemapPartsPerShard }, (_, partIndex) => {
+      const location = absoluteUrl(
+        origin,
+        rootCatalogSitemapShardPath(kind, shardIndex, partIndex),
+      );
+      return `  <sitemap><loc>${escapeXml(location)}</loc></sitemap>`;
+    }),
+  )
+    .flat()
+    .join("\n");
 
   return assertCatalogSitemapXmlWithinLimit(
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
@@ -146,7 +157,10 @@ export function renderCatalogSitemapShard(
   origin: string,
   items: readonly PublicSitemapItem[],
 ): string {
-  if (items.length > maximumCatalogSitemapItems || items.length * 2 > maximumCatalogSitemapUrls) {
+  if (
+    items.length > maximumCatalogSitemapItemsPerPart ||
+    items.length * locales.length > maximumCatalogSitemapUrls
+  ) {
     throw new CatalogSitemapError();
   }
 
@@ -162,16 +176,23 @@ export function renderCatalogSitemapShard(
     }
     seenIdentities.add(identity);
 
-    const zhCnUrl = escapeXml(localizedDatasetUrl(origin, "zh-CN", item));
-    const enUrl = escapeXml(localizedDatasetUrl(origin, "en", item));
+    const localizedUrls = Object.fromEntries(
+      locales.map((locale) => [locale, escapeXml(localizedDatasetUrl(origin, locale, item))]),
+    ) as Record<PortalLocale, string>;
     const lastModified = escapeXml(item.modifiedAt);
-    return [zhCnUrl, enUrl]
+    const alternateLinks = locales
+      .map(
+        (locale) =>
+          `    <xhtml:link rel="alternate" hreflang="${locale}" href="${localizedUrls[locale]}" />`,
+      )
+      .join("\n");
+    return locales
+      .map((locale) => localizedUrls[locale])
       .map((location) =>
         [
           "  <url>",
           `    <loc>${location}</loc>`,
-          `    <xhtml:link rel="alternate" hreflang="zh-CN" href="${zhCnUrl}" />`,
-          `    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />`,
+          alternateLinks,
           `    <lastmod>${lastModified}</lastmod>`,
           "  </url>",
         ].join("\n"),
@@ -204,12 +225,16 @@ export async function buildCatalogSitemapIndex(
 export async function buildCatalogSitemapShard(
   kind: CatalogSitemapKind,
   shardIndex: number,
+  partIndex: number,
   dependencyOverrides: Partial<CatalogSitemapDependencies> = {},
 ): Promise<string> {
   if (
     !Number.isSafeInteger(shardIndex) ||
     shardIndex < 0 ||
-    shardIndex >= catalogSitemapShardCount
+    shardIndex >= catalogSitemapShardCount ||
+    !Number.isSafeInteger(partIndex) ||
+    partIndex < 0 ||
+    partIndex >= catalogSitemapPartsPerShard
   ) {
     throw new CatalogSitemapError();
   }
@@ -227,10 +252,11 @@ export async function buildCatalogSitemapShard(
     throw new CatalogSitemapError();
   }
 
+  const kindItems = shard.items.filter((item) => item.key.kind === kind);
   return renderCatalogSitemapShard(
     kind,
     origin,
-    shard.items.filter((item) => item.key.kind === kind),
+    kindItems.filter((_, index) => index % catalogSitemapPartsPerShard === partIndex),
   );
 }
 
@@ -283,15 +309,20 @@ export async function createCatalogSitemapShardResponse(
   dependencyOverrides: Partial<CatalogSitemapDependencies> = {},
 ): Promise<Response> {
   const kind = parseCatalogSitemapKind(kindValue);
-  const shardIndex = parseCatalogSitemapShardSegment(shardSegment);
-  if (!kind || shardIndex === null) return failureResponse(404);
+  const shardPart = parseCatalogSitemapShardSegment(shardSegment);
+  if (!kind || shardPart === null) return failureResponse(404);
 
   try {
     const cacheControl = readCatalogSitemapCacheControl(
       dependencyOverrides.environment ?? process.env,
     );
     return xmlResponse(
-      await buildCatalogSitemapShard(kind, shardIndex, dependencyOverrides),
+      await buildCatalogSitemapShard(
+        kind,
+        shardPart.shardIndex,
+        shardPart.partIndex,
+        dependencyOverrides,
+      ),
       cacheControl,
     );
   } catch {
@@ -317,8 +348,12 @@ export async function createRootCatalogSitemapResponse(
     return createCatalogSitemapIndexResponse(kind, dependencyOverrides);
   }
 
-  const shardIndex = parseCatalogSitemapShardSearch(url.search);
-  return shardIndex === null
+  const shardPart = parseCatalogSitemapShardSearch(url.search);
+  return shardPart === null
     ? failureResponse(404)
-    : createCatalogSitemapShardResponse(kind, `${shardIndex}.xml`, dependencyOverrides);
+    : createCatalogSitemapShardResponse(
+        kind,
+        `${shardPart.shardIndex}-${shardPart.partIndex}.xml`,
+        dependencyOverrides,
+      );
 }

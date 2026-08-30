@@ -21,8 +21,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-08-29
-lastReviewedCommit: 82e9edb584c19974746c398027c424ac837e4e37
-lastReviewedNote: "Reviewed for Portal #29: Production HMAC/Redis cutover and rollback evidence do not change ISR HTML, Flight delivery, the retained strict CSP incompatibility, or the blocked public-release decision."
+lastReviewedCommit: d0836a6cbd5d2a0cbf2f8ad1352caf380591848e
+lastReviewedNote: "Reviewed for Portal #33: the strict no-inline incompatibility remains technically valid, but the user selected a separate enforcing cacheable performance profile for public release; this document is retained upstream evidence rather than a launch blocker."
 related:
   - compatibility-matrix.md
   - ../design-plan.md
@@ -30,9 +30,9 @@ related:
 
 # Portal R0 Strict CSP and ISR Compatibility Evidence
 
-## Decision
+## Strict-profile finding
 
-Public release remains blocked. With the officially supported Next.js 16.3.3 and EdgeOne Makers/Pages surfaces, no production-supported configuration currently satisfies all of these requirements together:
+With the officially supported Next.js 16.3.3 and EdgeOne Makers/Pages surfaces, no production-supported configuration currently satisfies all of these strict-profile requirements together:
 
 - real ISR regeneration;
 - App Router and RSC hydration;
@@ -40,7 +40,13 @@ Public release remains blocked. With the officially supported Next.js 16.3.3 and
 - an enforcing Content Security Policy; and
 - no `unsafe-inline` in `script-src`.
 
-The Portal must keep the strict candidate in report-only mode while it is non-public. Report-only, `unsafe-inline`, broken hydration, or a nonce conversion that removes ISR are not passing results.
+This remains the result of the no-inline research profile. Report-only, broken hydration, or a nonce conversion that removes ISR are not passing strict-profile results.
+
+## Public product decision
+
+The user explicitly selected performance and SEO for the anonymous read-only Portal. Public Production uses a separate enforcing performance profile: Next-required inline script/style is allowed, `unsafe-eval` remains forbidden, all other source/object/base/form/frame directives remain restricted, and the exact EdgeOne deployment must pass hydration, Streaming, ISR, security-header, secret and rollback gates. Portal #33's local enforcing run passed all 50 production Playwright tests without converting static/ISR routes to dynamic rendering.
+
+The strict no-inline profile remains available through `PORTAL_EXPECT_STRICT_CSP=1` for future Next/EdgeOne rechecks. Its failure is no longer a public-launch blocker and must not be confused with the enforcing performance profile.
 
 ## Reproduction
 
@@ -91,7 +97,7 @@ Re-run this gate only when at least one of these conditions is true:
 4. The product explicitly approves removing ISR and serving all interactive HTML through request-nonce dynamic rendering.
 5. The product explicitly approves a rendering architecture that does not depend on executable inline hydration scripts.
 
-Any reopened gate must pass the exact enforcing browser command locally and on one immutable EdgeOne `main` Production deployment while independently proving RSC hydration, Streaming, and real ISR regeneration. Public indexing remains disabled during this hosted test.
+Any future strict-profile promotion must pass the exact enforcing browser command locally and on one immutable EdgeOne `main` Production deployment while independently proving RSC hydration, Streaming, and real ISR regeneration. It may strengthen the public policy without changing route or cache behavior; it must not regress the already released performance profile.
 
 ## Primary references
 

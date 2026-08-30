@@ -72,14 +72,14 @@ const telemetryEventSchema = z.strictObject({
       "hybrid_fallback_unavailable",
     ])
     .nullable(),
-  locale: z.enum(["zh-CN", "en"]).optional(),
+  locale: z.enum(["zh-CN", "en", "de", "fr"]).optional(),
   deploymentSha: deploymentShaSchema,
 });
 
 export type PortalTelemetryEvent = z.infer<typeof telemetryEventSchema>;
 export type PortalTelemetryEventInput = Omit<PortalTelemetryEvent, "deploymentSha">;
 export type PortalTelemetryLogger = (event: Readonly<PortalTelemetryEvent>) => void | Promise<void>;
-export type PortalTelemetryLocale = "zh-CN" | "en";
+export type PortalTelemetryLocale = "zh-CN" | "en" | "de" | "fr";
 
 export const defaultPortalTelemetryLogger: PortalTelemetryLogger = (event) => {
   process.stdout.write(`${JSON.stringify(event)}\n`);

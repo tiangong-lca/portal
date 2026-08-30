@@ -4,8 +4,8 @@ test("renders the anonymous Portal bootstrap shell", async ({ page }) => {
   await page.goto("/");
 
   await expect(page).toHaveURL(/\/zh-CN$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("从数据身份出发");
-  await expect(page.getByRole("contentinfo").getByText("匿名 · 只读 · 无登录")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("找到适合问题");
+  await expect(page.getByRole("contentinfo").getByText("开放数据 · 只读 · 无需账号")).toBeVisible();
   await expect(page.getByRole("searchbox", { name: "搜索公开生命周期数据" })).toBeEnabled();
   await expect(page.locator("[data-brand-light-logo]").first()).toBeVisible();
 

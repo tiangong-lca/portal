@@ -9,14 +9,20 @@ type CitationCopyProps = {
   citation: string;
   copyLabel: string;
   copiedLabel: string;
+  showText?: boolean;
 };
 
-export function CitationCopy({ citation, copiedLabel, copyLabel }: CitationCopyProps) {
+export function CitationCopy({
+  citation,
+  copiedLabel,
+  copyLabel,
+  showText = true,
+}: CitationCopyProps) {
   const [copied, setCopied] = useState(false);
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="font-mono text-sm leading-6 break-words">{citation}</p>
+      {showText ? <p className="font-mono text-sm leading-6 break-words">{citation}</p> : null}
       <div className="flex items-center gap-3">
         <Button
           onClick={async () => {

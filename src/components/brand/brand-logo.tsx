@@ -1,9 +1,10 @@
 import { brandConfig } from "@/server/brand";
+import type { PortalLocale } from "@/i18n/routing";
 
 import { BrandLogoImage } from "./brand-logo-image";
 
 type BrandLogoProps = {
-  locale?: "zh-CN" | "en";
+  locale?: PortalLocale;
   priority?: boolean;
 };
 
