@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: b240ad77ae900ec6bef8528c4417b94306e05ff3
-lastReviewedNote: "Reviewed against the current professional data-catalog information architecture, four-language public copy, product shell, and TianGong LCA platform navigation."
+lastReviewedCommit: e0c3577b7664f9d0f203e01d2423200e608ce92f
+lastReviewedNote: "Reviewed for Portal #40: a fixed 30-second public Search/facet data cache preserves private dynamic HTML, the 60-second visibility SLA, Hybrid-query privacy, exact request matching, and current product boundaries."
 related:
   - AGENTS.md
   - README.md
@@ -826,7 +826,7 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 | 层 | 只负责 | 明确不负责 |
 | --- | --- | --- |
 | 经验证的共享 CDN | hash 静态资源、构建产物，以及显式启用后的 sitemap XML | 不缓存 Search 或详情动态 HTML，不判断数据可见性；未证明同步 revalidate/no-stale 时不得缓存 sitemap |
-| Next Route/Data Cache | 首页/目录 ISR、详情 DTO、Exchange 页和 LCIA 短缓存、request dedupe | 不缓存用户/团队数据、Hybrid 原文或 sitemap manifest/shard RPC |
+| Next Route/Data Cache | 首页/目录 ISR、详情 DTO、Exchange 页、LCIA，以及页面发起的 public lexical Search/facet RPC 30 秒短缓存与 request dedupe | 不缓存用户/团队数据、Hybrid 原文或 sitemap manifest/shard RPC；Search tag 只含固定 family/kind，不含 query/filter |
 | Edge Redis | HMAC nonce、route budget、concurrency lease，以及 Hybrid rewrite/embedding/公共结果的 hash-key 短缓存 | 不缓存页面 HTML、候选集或 Database 权限事实；不决定数据可见性 |
 
 | 内容 | 策略 | 最大陈旧时间 |
@@ -837,12 +837,12 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 | 精确版本详情与版本列表 DTO | Next Data Cache + tag | 5 分钟；visibility=false 时不得渲染 |
 | Exchanges 分页 DTO | Next Data Cache + tag | 5 分钟；visibility=false 时不得渲染 |
 | 当前公开 LCIA publication | 短 TTL/tag cache | 5 分钟 |
-| Search 页面 | Next `no-store`；Edge 可对公共 hash query 短缓存 | 不跨用户状态 |
+| Search 页面 | 动态 HTML 始终 private/no-store；页面发起的 public lexical Search/facet POST 由 Next 按 URL、method、headers、body 完整匹配并缓存 30 秒 | 只缓存 200 public DTO；固定 tag 不含 query/filter；Hybrid lexical fallback 继续 no-store；最长陈旧 30 秒，低于 60 秒 visibility SLA |
 | sitemap | 显式 XML Route Handler；上游始终 `no-store`；响应默认 `no-store`，只有实测通过的平台启用唯一一层 300 秒共享缓存 | 默认 0；启用后最多 5 分钟 |
 
 详情 HTML 为动态 SSR，先读取 visibility envelope，再使用可缓存 DTO。EdgeOne headers 必须阻止 CDN 把动态详情/Search HTML 缓存成长期对象。撤回和能力收紧在 60 秒 visibility SLA 内停止展示；LCIA publication 与 sitemap 在 5 分钟内更新。
 
-MVP 使用 TTL；若以后引入受保护的 on-demand revalidation，它只失效 Next tag/CDN cache，不改变数据。部署自动清空 EdgeOne 静态 cache；数据发布不能依赖重新部署清 cache。Sitemap 的 route/data contract 保持平台中立，但缓存语义不是跨 CDN 等价：每个实际 CDN 都必须重新证明 300 秒、同步 revalidation、错误不缓存且不自动添加 stale 行为；证明前保持 `no-store`。
+MVP 使用 TTL；public lexical Search/facet 的 30 秒缓存只改善重复公共请求，首次/不同请求仍访问权威 RPC，不能被描述为 Database 性能替代。若以后引入受保护的 on-demand revalidation，它只失效 Next tag/CDN cache，不改变数据。部署自动清空 EdgeOne 静态 cache；数据发布不能依赖重新部署清 cache。Sitemap 的 route/data contract 保持平台中立，但缓存语义不是跨 CDN 等价：每个实际 CDN 都必须重新证明 300 秒、同步 revalidation、错误不缓存且不自动添加 stale 行为；证明前保持 `no-store`。
 
 Cache key 必须包含 locale、kind、id、version、public capability、publication 和规范化 filter/cursor，不能跨版本、语言或权限范围污染。
 

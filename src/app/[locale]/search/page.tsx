@@ -169,9 +169,13 @@ export default async function SearchPage({
       const { kind: _kind, ...searchInput } = parsedSearch;
       const [page, facetPage] = await Promise.all([
         parsedSearch.kind === "process"
-          ? searchPublicProcesses(searchInput)
-          : searchPublicFlows(searchInput),
-        getPublicFacets({ filters: parsedSearch.filters, kind: parsedSearch.kind, query }),
+          ? searchPublicProcesses(searchInput, undefined, { cache: "short-public" })
+          : searchPublicFlows(searchInput, undefined, { cache: "short-public" }),
+        getPublicFacets(
+          { filters: parsedSearch.filters, kind: parsedSearch.kind, query },
+          undefined,
+          { cache: "short-public" },
+        ),
       ]);
       results = page.items.map((item) => mapSearchItem(item, locale));
       nextCursor = page.nextCursor;

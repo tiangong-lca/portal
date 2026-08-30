@@ -34,6 +34,7 @@ import {
 import {
   createPortalRpcClient,
   PortalDataError,
+  type PortalFetchCachePolicy,
   type PortalRpcClient,
 } from "@/server/data/supabase-rpc";
 
@@ -43,6 +44,23 @@ type VersionListInput = z.input<typeof versionListInputSchema>;
 type ExchangeListInput = z.input<typeof exchangeListInputSchema>;
 type FacetInput = z.input<typeof facetInputSchema>;
 type SitemapInput = z.input<typeof sitemapInputSchema>;
+type PublicCatalogReadOptions = { cache?: "no-store" | "short-public" };
+
+const shortPublicCatalogCacheSeconds = 30;
+
+function publicCatalogQueryCachePolicy(
+  family: "search" | "facets",
+  kind: "all" | "process" | "flow",
+  options?: PublicCatalogReadOptions,
+): PortalFetchCachePolicy {
+  return options?.cache === "short-public"
+    ? {
+        mode: "revalidate",
+        seconds: shortPublicCatalogCacheSeconds,
+        tags: [`portal:catalog-${family}:${kind}`],
+      }
+    : { mode: "no-store" };
+}
 
 function parseInput<T>(schema: z.ZodType<T>, input: unknown): T {
   const result = schema.safeParse(input);
@@ -67,6 +85,7 @@ async function searchPublicCatalog(
   kind: "process" | "flow",
   input: Omit<CatalogSearchInput, "kind">,
   client?: PortalRpcClient,
+  options?: PublicCatalogReadOptions,
 ): Promise<PublicSearchPage> {
   const parsed = parseInput(catalogSearchInputSchema, { ...input, kind });
 
@@ -83,7 +102,7 @@ async function searchPublicCatalog(
       p_limit: parsed.limit,
     },
     responseSchema,
-    { mode: "no-store" },
+    publicCatalogQueryCachePolicy("search", kind, options),
   );
   return requireBoundResponse(
     page,
@@ -94,15 +113,17 @@ async function searchPublicCatalog(
 export function searchPublicProcesses(
   input: Omit<CatalogSearchInput, "kind">,
   client?: PortalRpcClient,
+  options?: PublicCatalogReadOptions,
 ): Promise<PublicSearchPage> {
-  return searchPublicCatalog("process", input, client);
+  return searchPublicCatalog("process", input, client, options);
 }
 
 export function searchPublicFlows(
   input: Omit<CatalogSearchInput, "kind">,
   client?: PortalRpcClient,
+  options?: PublicCatalogReadOptions,
 ): Promise<PublicSearchPage> {
-  return searchPublicCatalog("flow", input, client);
+  return searchPublicCatalog("flow", input, client, options);
 }
 
 export function getPublicCatalogSummary(client?: PortalRpcClient): Promise<PublicCatalogSummary> {
@@ -228,6 +249,7 @@ export async function listPublicProcessExchanges(
 export async function getPublicFacets(
   input: FacetInput,
   client?: PortalRpcClient,
+  options?: PublicCatalogReadOptions,
 ): Promise<PublicFacets> {
   const parsed = parseInput(facetInputSchema, input);
 
@@ -240,7 +262,7 @@ export async function getPublicFacets(
       p_filters: parsed.filters,
     },
     responseSchema,
-    { mode: "no-store" },
+    publicCatalogQueryCachePolicy("facets", parsed.kind, options),
   );
   return requireBoundResponse(facets, facets.kind === parsed.kind);
 }

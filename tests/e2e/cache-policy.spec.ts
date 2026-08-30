@@ -1,6 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type APIRequestContext } from "@playwright/test";
+import { createHash } from "node:crypto";
 
 const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
+const fixtureOrigin = `http://127.0.0.1:${process.env.PORTAL_FIXTURE_PORT ?? "4328"}`;
+
+async function rpcReceiptCount(request: APIRequestContext, name: string, body: object) {
+  const bodySha256 = createHash("sha256").update(JSON.stringify(body)).digest("hex");
+  const response = await request.get(`${fixtureOrigin}/receipts/rpc/${name}/${bodySha256}`);
+  expect(response.ok()).toBe(true);
+  return ((await response.json()) as { count: number }).count;
+}
 
 function parseCacheControl(value: string | undefined): Map<string, string | true> {
   expect(value, "Cache-Control header").toBeTruthy();
@@ -71,4 +80,33 @@ test("keeps prerendered HTML public and hashed assets immutable", async ({ page,
   expect(numericDirective(assetCacheControl, "max-age")).toBeGreaterThan(0);
   expect(assetCacheControl.has("private")).toBe(false);
   expect(assetCacheControl.has("no-store")).toBe(false);
+});
+
+test("reuses short public Search data without sharing dynamic HTML", async ({ request }) => {
+  const query = `cache-${crypto.randomUUID()}`;
+  const path = `/en/search?v=1&kind=process&q=${encodeURIComponent(query)}`;
+  const searchBody = {
+    p_query: query,
+    p_filters: {},
+    p_sort: "relevance",
+    p_cursor: null,
+    p_limit: 10,
+  };
+  const facetBody = { p_kind: "process", p_query: query, p_filters: {} };
+
+  const first = await request.get(path);
+  expect(first.ok()).toBe(true);
+  const firstCacheControl = parseCacheControl(first.headers()["cache-control"]);
+  expect(firstCacheControl.get("private")).toBe(true);
+  expect(firstCacheControl.get("no-store")).toBe(true);
+  expect(await rpcReceiptCount(request, "portal_search_processes_v1", searchBody)).toBe(1);
+  expect(await rpcReceiptCount(request, "portal_facets_v1", facetBody)).toBe(1);
+
+  const second = await request.get(path);
+  expect(second.ok()).toBe(true);
+  const secondCacheControl = parseCacheControl(second.headers()["cache-control"]);
+  expect(secondCacheControl.get("private")).toBe(true);
+  expect(secondCacheControl.get("no-store")).toBe(true);
+  expect(await rpcReceiptCount(request, "portal_search_processes_v1", searchBody)).toBe(1);
+  expect(await rpcReceiptCount(request, "portal_facets_v1", facetBody)).toBe(1);
 });

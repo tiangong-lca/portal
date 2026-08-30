@@ -26,8 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: b240ad77ae900ec6bef8528c4417b94306e05ff3
-lastReviewedNote: "Reviewed against the current public data-catalog UI, four-language copy, and product-family navigation; repository ownership and anonymous read-only boundaries are unchanged."
+lastReviewedCommit: e0c3577b7664f9d0f203e01d2423200e608ce92f
+lastReviewedNote: "Reviewed for Portal #40: explicit page-initiated public Search/facet reads may use the fixed 30-second data cache while dynamic HTML and Hybrid fallback remain no-store; ownership and anonymous read-only boundaries are unchanged."
 related:
   - README.md
   - docs/design-plan.md
@@ -49,6 +49,7 @@ related:
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
 - The public product has independent `zh-CN`, `en`, `de`, and `fr` routes and dictionaries. UI copy never falls back across locales; source-data language fallback remains visibly labelled.
 - Public lexical Search defaults to 10 result cards while accepting explicit validated limits through 50. Each facet group renders at most 16 linked values (8 visible + 8 disclosed); further values are counted and require a narrower query instead of being hidden in initial HTML/RSC.
+- Dynamic Search HTML remains private/no-store. Only page-initiated public lexical Search and facet RPC reads may opt into the fixed 30-second Next Data Cache with full request matching and fixed kind-only tags; Hybrid fallback uses the default no-store path, raw queries never enter tags/telemetry, and errors are not cached.
 - The user selected the cacheable performance/SEO CSP profile for EdgeOne: an enforcing policy permits the inline scripts/styles required by Next App Router, forbids `unsafe-eval`, and retains strict object/base/form/frame/source directives. The no-`unsafe-inline` profile remains a non-blocking upstream compatibility probe.
 - Node `24.18.x` is the pinned build toolchain. The selected EdgeOne Production deployment reports Node.js 20.19 for SSR, so server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
 - Production HMAC/Redis is proven on `dppeqhecdjax@82e9edb`; `dpldjwibrtb4` is the fail-closed pre-signer rollback. Restore signer by redeploying exact source with current Production configuration; a forward version rollback is not sufficient.
