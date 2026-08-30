@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-30"
-lastReviewedCommit: "9bcb45d8480716f60c8548ddbcd6e83833bb5a55"
-lastReviewedNote: "Reviewed for Portal #35: the Search result/facet payload correction and its hosted performance proof remain covered by existing Portal runtime, proof, deployment and documentation routes."
+lastReviewedCommit: "b240ad77ae900ec6bef8528c4417b94306e05ff3"
+lastReviewedNote: "Reviewed against the current public data-catalog UI and documentation changes; existing product, runtime, proof, and deployment routes remain complete."
 
 catalog:
   repos:

@@ -18,12 +18,14 @@ export async function SiteFooter({ locale }: { locale: PortalLocale }) {
         </div>
         <nav aria-label={t("footerExplore")} className="flex flex-col gap-2 text-sm">
           <p className="font-medium">{t("footerExplore")}</p>
-          {([
-            [localePath(locale, "search?v=1"), t("search")],
-            [localePath(locale, "browse/process"), t("browse")],
-            [localePath(locale, "methodology"), t("methodology")],
-            [localePath(locale, "collections"), t("collections")],
-          ] as const).map(([href, label]) => (
+          {(
+            [
+              [localePath(locale, "search?v=1"), t("search")],
+              [localePath(locale, "browse/process"), t("browse")],
+              [localePath(locale, "methodology"), t("methodology")],
+              [localePath(locale, "collections"), t("collections")],
+            ] as const
+          ).map(([href, label]) => (
             <Link
               className="text-link w-fit underline decoration-1 underline-offset-4 hover:decoration-2"
               href={href}
@@ -39,7 +41,7 @@ export async function SiteFooter({ locale }: { locale: PortalLocale }) {
             className="text-link inline-flex w-fit items-center gap-1 underline decoration-1 underline-offset-4 hover:decoration-2"
             href="https://lca.tiangong.earth"
           >
-            {t("externalLca")}
+            {t("externalLcaAction")}
             <ExternalLinkIcon aria-hidden="true" className="size-4" />
           </a>
         </div>

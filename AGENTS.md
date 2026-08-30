@@ -26,8 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: 9bcb45d8480716f60c8548ddbcd6e83833bb5a55
-lastReviewedNote: "Reviewed for Portal #35: bounding server-rendered Search facets and the default public page size is a Portal-owned performance correction that leaves Database contracts, ordering, visibility and anonymous read-only boundaries unchanged."
+lastReviewedCommit: b240ad77ae900ec6bef8528c4417b94306e05ff3
+lastReviewedNote: "Reviewed against the current public data-catalog UI, four-language copy, and product-family navigation; repository ownership and anonymous read-only boundaries are unchanged."
 related:
   - README.md
   - docs/design-plan.md

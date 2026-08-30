@@ -40,7 +40,8 @@ describe("four-locale public product contract", () => {
     expect(en.Home.title).toBe("Find data for life cycle assessment");
     expect(de.Home.title).toBe("Daten für Ökobilanzen finden");
     expect(fr.Home.title).toBe("Trouver des données pour l’analyse du cycle de vie");
-    expect(en.Common.externalLca).toBe("TianGong LCA Workspace");
+    expect(en.Common.externalLca).toBe("TianGong LCA platform");
+    expect(en.Common.externalLcaAction).toBe("Open the LCA platform");
     expect("footerBoundary" in en.Common).toBe(false);
   });
 
