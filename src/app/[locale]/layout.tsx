@@ -13,9 +13,7 @@ import { RootDocument, portalMetadata } from "../root-document";
 import "../globals.css";
 
 export const metadata: Metadata = portalMetadata;
-// Keep generated locales static/ISR, while allowing unknown first segments to reach the
-// explicit locale validator and return the branded application 404 instead of an adapter shell.
-export const dynamicParams = true;
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));

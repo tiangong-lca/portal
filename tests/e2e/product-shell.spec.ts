@@ -14,11 +14,19 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.goto("/");
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("从数据身份出发");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("找到适合问题");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/zh-CN$/);
   await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
     "href",
     /\/en$/,
+  );
+  await expect(page.locator('link[rel="alternate"][hreflang="de"]')).toHaveAttribute(
+    "href",
+    /\/de$/,
+  );
+  await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveAttribute(
+    "href",
+    /\/fr$/,
   );
   const themeScript = await page.request.get("/brand/theme-init.js");
   const expectedIntegrity = `sha256-${createHash("sha256")
@@ -36,18 +44,30 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.reload();
   await expect(page.locator("html")).toHaveClass(/dark/);
 
-  await page.getByRole("link", { name: "Switch to English" }).click();
+  await page.getByRole("combobox", { name: "语言" }).click();
+  await page.getByRole("option", { name: "English" }).click();
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Start with data identity");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Find lifecycle data");
   const englishHtml = await (await page.request.get("/en")).text();
   expect(englishHtml).toMatch(/<html[^>]*\slang="en"/u);
-  await expect(page.getByText("Public catalog status", { exact: true })).toBeVisible();
-  await expect(page.getByText("Processes", { exact: true })).toBeVisible();
-  await expect(page.getByText("Flows", { exact: true })).toBeVisible();
+  await expect(page.getByText("What is available now", { exact: true })).toBeVisible();
+  await expect(page.getByText("Process datasets", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Flow datasets", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Total", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: /UUID Electricity, medium voltage/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /CAS Carbon dioxide/ })).toBeVisible();
+  await page.getByRole("combobox", { name: "Language" }).click();
+  await page.getByRole("option", { name: "Deutsch" }).click();
+  await expect(page).toHaveURL(/\/de$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "de");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Lebenszyklusdaten");
+
+  await page.getByRole("combobox", { name: "Sprache" }).click();
+  await page.getByRole("option", { name: "Français" }).click();
+  await expect(page).toHaveURL(/\/fr$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("données de cycle de vie");
   expect(await context.cookies()).toEqual([]);
 });
 
@@ -56,17 +76,15 @@ test("renders public search, exact details, numeric context, versions, and lates
   request,
 }) => {
   await page.goto("/en/search?v=1&kind=process&q=electricity");
-  await expect(page.getByRole("heading", { name: "Search the public catalog" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Search public LCA data" })).toBeVisible();
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
   await expect(page.getByText(processRef, { exact: true })).toBeVisible();
-  await expect(page.getByText("Reference product / flow", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Reference product or flow", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Electricity", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Functional unit", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("1 kWh", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Grid mix", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("TianGong", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("reviewed", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("name", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Name", { exact: true }).first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Next" })).toHaveAttribute(
     "href",
     /cursor=eyJ2IjoxfQ/,
@@ -129,9 +147,9 @@ test("completes the HTML-first search to two-member comparison path", async ({ p
   await expect(processFacet).toHaveAttribute("href", /sort=relevance/);
   await expect(processFacet).not.toHaveAttribute("href", /cursor=/);
 
-  await page.getByRole("button", { name: "Compare selected Processes" }).click();
+  await page.getByRole("button", { name: "Compare selected Process datasets" }).click();
   await expect(page).toHaveURL(/\/en\/compare\?/);
-  await expect(page.getByRole("heading", { name: "Deterministic comparison" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Compare Process datasets" })).toBeVisible();
   await expect(
     page.getByRole("columnheader", { name: "Electricity, medium voltage" }),
   ).toBeVisible();
@@ -169,26 +187,31 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
   expect(processIndex.headers()["cache-control"]).toBe(
     "public, max-age=0, s-maxage=300, must-revalidate",
   );
-  expect(processIndexBody.match(/<sitemap>/gu)).toHaveLength(64);
+  expect(processIndexBody.match(/<sitemap>/gu)).toHaveLength(256);
   const processShardLocations = await page.evaluate((xml) => {
     const document_ = new DOMParser().parseFromString(xml, "application/xml");
     return [...document_.querySelectorAll("sitemap > loc")].map((item) => item.textContent);
   }, processIndexBody);
   expect(processShardLocations).toEqual(
-    Array.from(
-      { length: 64 },
-      (_, index) => `${portalE2eOrigin}/catalog-process-sitemap.xml?shard=${index}`,
-    ),
+    Array.from({ length: 64 }, (_, shardIndex) =>
+      Array.from(
+        { length: 4 },
+        (_, partIndex) =>
+          `${portalE2eOrigin}/catalog-process-sitemap.xml?shard=${shardIndex}&part=${partIndex}`,
+      ),
+    ).flat(),
   );
   expect(processIndexBody).not.toContain("portal-sitemap-v1-");
 
-  const processShard = await request.get("/catalog-process-sitemap.xml?shard=0");
+  const processShard = await request.get("/catalog-process-sitemap.xml?shard=0&part=0");
   const processShardBody = await processShard.text();
   expect(processShard.ok()).toBe(true);
   expect(processShardBody).toContain("<urlset");
   expect(processShardBody).toContain("/zh-CN/process/");
   expect(processShardBody).toContain("/en/process/");
-  expect(processShardBody.match(/<url>/gu)).toHaveLength(2);
+  expect(processShardBody).toContain("/de/process/");
+  expect(processShardBody).toContain("/fr/process/");
+  expect(processShardBody.match(/<url>/gu)).toHaveLength(4);
   expect(processShardBody).toContain('hreflang="en"');
   expect(processShardBody).not.toContain("/flow/");
   expect(processShardBody).not.toContain("portal-sitemap-v1-");
@@ -199,11 +222,11 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
     }, processShardBody),
   ).toBe(true);
 
-  const invalidShard = await request.get("/catalog-process-sitemap.xml?shard=01");
+  const invalidShard = await request.get("/catalog-process-sitemap.xml?shard=01&part=0");
   expect(invalidShard.status()).toBe(404);
   expect(invalidShard.headers()["cache-control"]).toBe("no-store");
 
-  const queryVariant = await request.get("/catalog-process-sitemap.xml?shard=0&bust=1");
+  const queryVariant = await request.get("/catalog-process-sitemap.xml?shard=0&part=0&bust=1");
   expect(queryVariant.status()).toBe(404);
   expect(queryVariant.headers()["cache-control"]).toBe("no-store");
 });
@@ -211,14 +234,14 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
 test("keeps the local collection local and shares member IDs only", async ({ context, page }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/collections");
-  await page.getByLabel("Exact member ID").fill(processRef);
-  await page.getByRole("button", { name: "Add to collection" }).click();
-  await page.getByLabel("Local note / rationale").fill("private local note");
+  await page.getByLabel("Exact dataset identifier").fill(processRef);
+  await page.getByRole("button", { name: "Add to shortlist" }).click();
+  await page.getByLabel("Local note or rationale").fill("private local note");
   await page.reload();
   await expect(page.getByText(processRef, { exact: true })).toBeVisible();
-  await expect(page.getByLabel("Local note / rationale")).toHaveValue("private local note");
+  await expect(page.getByLabel("Local note or rationale")).toHaveValue("private local note");
 
-  await page.getByRole("button", { name: "Copy ID-only share link" }).click();
+  await page.getByRole("button", { name: "Copy link with identifiers only" }).click();
   const shared = await page.evaluate(() => navigator.clipboard.readText());
   expect(shared).toContain("#collection=");
   expect(shared).not.toContain("private local note");
@@ -232,12 +255,12 @@ test("quarantines corrupt local collection data until the user explicitly clears
     localStorage.setItem("tiangong.portal.collections.v1", "{corrupt-json");
   });
   await page.goto("/en/collections");
-  await expect(page.getByRole("button", { name: "Download corrupt raw data" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Download damaged raw data" })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem("tiangong.portal.collections.v1"))).toBe(
     "{corrupt-json",
   );
-  await page.getByRole("button", { name: "Clear corrupt data" }).click();
-  await expect(page.getByRole("button", { name: "Download corrupt raw data" })).toBeHidden();
+  await page.getByRole("button", { name: "Clear damaged data" }).click();
+  await expect(page.getByRole("button", { name: "Download damaged raw data" })).toBeHidden();
 });
 
 test("keeps core controls available at mobile width and 200 percent text zoom", async ({

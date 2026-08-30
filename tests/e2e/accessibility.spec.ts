@@ -27,6 +27,10 @@ for (const route of [
   `/en/flow/${flowRef}`,
   "/en/compare?v=1",
   "/en/collections",
+  "/de",
+  "/de/methodology",
+  "/fr",
+  "/fr/collections",
 ]) {
   test(`has no serious or critical WCAG violations on ${route}`, async ({ page }) => {
     await page.goto(route);
@@ -53,11 +57,11 @@ test("keeps core anonymous discovery readable without JavaScript", async ({ brow
 
   try {
     await page.goto("/en");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Start with data identity");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Find lifecycle data");
     await expect(
       page.getByRole("searchbox", { name: "Search public lifecycle data" }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "Process catalog" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Process datasets" }).first()).toBeVisible();
 
     await page.goto(`/en/process/${processRef}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Electricity, medium voltage");
@@ -65,6 +69,15 @@ test("keeps core anonymous discovery readable without JavaScript", async ({ brow
     await expect(page.getByRole("link", { name: "Versions" })).toBeVisible();
     expect(await page.locator('script[type="application/ld+json"]').textContent()).toContain(
       '"@type":"Dataset"',
+    );
+
+    await page.goto("/de");
+    await expect(page.locator("html")).toHaveAttribute("lang", "de");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Lebenszyklusdaten");
+    await page.goto("/fr/methodology");
+    await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "Comment lire le catalogue public",
     );
     expect(await context.cookies()).toEqual([]);
   } finally {
@@ -84,7 +97,7 @@ test("exposes stable landmarks and controls at three responsive widths", async (
     await expect(page.getByRole("main")).toHaveCount(1);
     await expect(page.getByRole("contentinfo")).toBeVisible();
     await expect(page.getByRole("radiogroup", { name: "Theme" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "切换到中文" })).toBeVisible();
+    await expect(page.getByRole("combobox", { name: "Language" })).toBeVisible();
     const maximumScrollX = await page.evaluate(() => {
       window.scrollTo(Number.MAX_SAFE_INTEGER, window.scrollY);
       const value = window.scrollX;

@@ -36,7 +36,7 @@ test("discloses lexical-query access logging without exposing public sourcemaps"
   await page.goto("/en/search?v=1&kind=process&q=electricity");
   await expect(
     page.getByText(
-      "GET queries appear in browser history and platform access logs. Do not enter confidential information.",
+      "Search terms may appear in browser history and operational access logs. Do not enter confidential information.",
     ),
   ).toBeVisible();
 

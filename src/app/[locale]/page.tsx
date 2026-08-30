@@ -274,12 +274,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <CardHeader>
               <CardTitle>{t("advancedTitle")}</CardTitle>
               <CardDescription>{t("advancedDescription")}</CardDescription>
-              <CardAction>
-                <Button asChild size="sm" variant="outline">
-                  <a href="https://lca.tiangong.earth">{common("externalAdvanced")}</a>
-                </Button>
-              </CardAction>
             </CardHeader>
+            <CardFooter>
+              <Button asChild size="sm" variant="outline">
+                <a href="https://lca.tiangong.earth">{common("externalAdvanced")}</a>
+              </Button>
+            </CardFooter>
           </Card>
         </section>
       </div>

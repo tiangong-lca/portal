@@ -36,9 +36,9 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <Link className="flex min-h-11 items-center gap-3" href={homeHref} prefetch={false}>
           <BrandLogo locale={locale} priority />
-          <span className="hidden flex-col sm:flex">
-            <span className="font-heading text-sm font-semibold">{t("brandName")}</span>
-            <span className="text-muted-foreground font-mono text-[0.68rem] tracking-[0.16em] uppercase">
+          <span className="hidden min-w-0 flex-col sm:flex">
+            <span className="font-heading truncate text-sm font-semibold">{t("brandName")}</span>
+            <span className="text-muted-foreground hidden font-mono text-[0.68rem] tracking-[0.16em] uppercase sm:block">
               {t("evidenceLabel")}
             </span>
           </span>

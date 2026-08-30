@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const strictCspExpected = process.env.PORTAL_EXPECT_STRICT_CSP === "1";
+const cspEnforced = strictCspExpected || process.env.PORTAL_CSP_MODE === "enforce";
 const portalOrigin = `http://127.0.0.1:${process.env.PORTAL_E2E_PORT ?? "4317"}`;
 
 test("serves the R0 matrix through native routing with the strict CSP candidate", async ({
@@ -20,12 +21,17 @@ test("serves the R0 matrix through native routing with the strict CSP candidate"
   expect(response!.headers()["x-portal-routing"]).toBe("edgeone-native-v1");
   expect(response!.headers()["x-robots-tag"]).toContain("noindex");
 
-  const cspHeaderName = strictCspExpected
+  const cspHeaderName = cspEnforced
     ? "content-security-policy"
     : "content-security-policy-report-only";
   const csp = response!.headers()[cspHeaderName];
   expect(csp).toContain("script-src 'self'");
-  expect(csp).not.toContain("'unsafe-inline'");
+  if (strictCspExpected) {
+    expect(csp).not.toContain("'unsafe-inline'");
+  } else {
+    expect(csp).toContain("script-src 'self' 'unsafe-inline'");
+    expect(csp).toContain("style-src 'self' 'unsafe-inline'");
+  }
   expect(csp).not.toContain("'unsafe-eval'");
 
   await expect(page.getByRole("heading", { name: "R0 compatibility matrix" })).toBeVisible();
@@ -148,5 +154,16 @@ test("returns the product not-found surface for unknown paths", async ({ page, r
 
   expect(globalResponse!.status()).toBe(404);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
+  await expect(page.getByRole("heading", { name: "页面不存在" })).toBeVisible();
+
+  const invalidLocale = await request.get("/es/does-not-exist-r0?keep=1");
+  const invalidLocaleHtml = await invalidLocale.text();
+  expect(invalidLocale.status()).toBe(404);
+  expect(invalidLocaleHtml).toContain('<html data-brand-version="default-v1" lang="zh-CN"');
+  expect(invalidLocaleHtml).not.toContain('id="__next_error__"');
+
+  const invalidLocaleBrowser = await page.goto("/es/does-not-exist-r0?keep=1");
+  expect(invalidLocaleBrowser!.status()).toBe(404);
+  await expect(page).toHaveURL(/\/es\/does-not-exist-r0\?keep=1$/);
   await expect(page.getByRole("heading", { name: "页面不存在" })).toBeVisible();
 });
