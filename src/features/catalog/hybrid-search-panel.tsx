@@ -1,12 +1,12 @@
 "use client";
 
-import { LinkIcon, ShieldAlertIcon, SparklesIcon, XIcon } from "lucide-react";
+import { LinkIcon, ScanSearchIcon, ShieldAlertIcon, XIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,7 +28,6 @@ import type { PortalHybridBffResponse } from "@/server/hybrid/contracts";
 type HybridSearchLabels = {
   advisoryDescription: string;
   advisoryTitle: string;
-  badge: string;
   compareSelected: string;
   description: string;
   emptyDescription: string;
@@ -143,13 +142,9 @@ export function HybridSearchPanel({
   }, [locale, response]);
 
   return (
-    <Card className="border-primary/30">
+    <Card>
       <CardHeader>
-        <Badge>{labels.badge}</Badge>
-        <h2 className="font-heading flex items-center gap-2 text-xl font-semibold">
-          <SparklesIcon aria-hidden="true" />
-          {labels.title}
-        </h2>
+        <CardTitle>{labels.title}</CardTitle>
         <CardDescription>{labels.description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
@@ -220,7 +215,7 @@ export function HybridSearchPanel({
           </Field>
           <div className="flex flex-wrap gap-2">
             <Button disabled={!parsedRequest || running} type="submit">
-              <SparklesIcon data-icon="inline-start" />
+              <ScanSearchIcon data-icon="inline-start" />
               {running ? labels.running : labels.submit}
             </Button>
             <Button
@@ -238,7 +233,7 @@ export function HybridSearchPanel({
         {sharePreview && parsedRequest ? (
           <Card size="sm">
             <CardHeader>
-              <h3 className="font-heading text-base font-medium">{labels.sharePreview}</h3>
+              <CardTitle>{labels.sharePreview}</CardTitle>
               <CardDescription>{labels.shareDisclosure}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
@@ -283,7 +278,7 @@ export function HybridSearchPanel({
         {response?.mode === "hybrid" ? (
           <Card size="sm">
             <CardHeader>
-              <h3 className="font-heading text-base font-medium">{labels.advisoryTitle}</h3>
+              <CardTitle>{labels.advisoryTitle}</CardTitle>
               <CardDescription>{labels.advisoryDescription}</CardDescription>
             </CardHeader>
             <CardContent>

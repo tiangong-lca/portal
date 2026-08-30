@@ -14,6 +14,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { Separator } from "@/components/ui/separator";
 import { localizedText, mapSearchItem } from "@/features/catalog/map-public-data";
 import { partitionFacetValues } from "@/features/catalog/facet-display";
 import { HybridSearchPanel } from "@/features/catalog/hybrid-search-panel";
@@ -220,44 +221,6 @@ export default async function SearchPage({
         </form>
       </search>
 
-      <HybridSearchPanel
-        initialFilters={parsedSearch.filters}
-        initialKind={parsedSearch.kind}
-        labels={{
-          advisoryDescription: hybrid("advisoryDescription"),
-          advisoryTitle: hybrid("advisoryTitle"),
-          badge: hybrid("badge"),
-          compareSelected: t("compareSelected"),
-          description: hybrid("description"),
-          emptyDescription: hybrid("emptyDescription"),
-          emptyTitle: hybrid("emptyTitle"),
-          error: hybrid("error"),
-          fallbackDescription: hybrid("fallbackDescription"),
-          fallbackTitle: hybrid("fallbackTitle"),
-          flow: hybrid("flow"),
-          kind: hybrid("kind"),
-          privacy: hybrid("privacy"),
-          process: hybrid("process"),
-          queryLabel: hybrid("queryLabel"),
-          queryPlaceholder: hybrid("queryPlaceholder"),
-          resultsTitle: hybrid("resultsTitle"),
-          running: hybrid("running"),
-          semanticQuery: hybrid("semanticQuery"),
-          shareCancel: hybrid("shareCancel"),
-          shareConfirm: hybrid("shareConfirm"),
-          shareDisclosure: hybrid("shareDisclosure"),
-          sharePreview: hybrid("sharePreview"),
-          shareQuery: hybrid("shareQuery"),
-          shared: hybrid("shared"),
-          submit: hybrid("submit"),
-          terms: hybrid("terms"),
-          title: hybrid("title"),
-        }}
-        locale={locale}
-        resultLabels={resultLabels}
-        siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
-      />
-
       <div aria-label={t("objectType")} className="flex flex-wrap gap-2">
         {(["process", "flow"] as const).map((kind) => (
           <Button asChild key={kind} variant={parsedSearch.kind === kind ? "default" : "outline"}>
@@ -398,6 +361,45 @@ export default async function SearchPage({
           ) : null}
         </section>
       </div>
+
+      <Separator />
+
+      <HybridSearchPanel
+        initialFilters={parsedSearch.filters}
+        initialKind={parsedSearch.kind}
+        labels={{
+          advisoryDescription: hybrid("advisoryDescription"),
+          advisoryTitle: hybrid("advisoryTitle"),
+          compareSelected: t("compareSelected"),
+          description: hybrid("description"),
+          emptyDescription: hybrid("emptyDescription"),
+          emptyTitle: hybrid("emptyTitle"),
+          error: hybrid("error"),
+          fallbackDescription: hybrid("fallbackDescription"),
+          fallbackTitle: hybrid("fallbackTitle"),
+          flow: hybrid("flow"),
+          kind: hybrid("kind"),
+          privacy: hybrid("privacy"),
+          process: hybrid("process"),
+          queryLabel: hybrid("queryLabel"),
+          queryPlaceholder: hybrid("queryPlaceholder"),
+          resultsTitle: hybrid("resultsTitle"),
+          running: hybrid("running"),
+          semanticQuery: hybrid("semanticQuery"),
+          shareCancel: hybrid("shareCancel"),
+          shareConfirm: hybrid("shareConfirm"),
+          shareDisclosure: hybrid("shareDisclosure"),
+          sharePreview: hybrid("sharePreview"),
+          shareQuery: hybrid("shareQuery"),
+          shared: hybrid("shared"),
+          submit: hybrid("submit"),
+          terms: hybrid("terms"),
+          title: hybrid("title"),
+        }}
+        locale={locale}
+        resultLabels={resultLabels}
+        siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
+      />
     </main>
   );
 }

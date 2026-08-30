@@ -159,42 +159,6 @@ body {
   background: color-mix(in oklch, var(--primary) 22%, transparent);
 }
 
-.portal-ledger {
-  background-image:
-    linear-gradient(
-      to right,
-      color-mix(in oklch, var(--border) 54%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in oklch, var(--border) 36%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 4rem 4rem;
-}
-
-.evidence-rail {
-  border-inline-start: 1px solid var(--border);
-  padding-inline-start: 1.5rem;
-}
-
-.evidence-rail > * {
-  position: relative;
-}
-
-.evidence-rail > *::before {
-  position: absolute;
-  inset-block-start: 0.5rem;
-  inset-inline-start: -1.75rem;
-  width: 0.5rem;
-  height: 0.5rem;
-  border: 1px solid var(--primary);
-  border-radius: 999px;
-  background: var(--background);
-  content: "";
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -210,16 +174,6 @@ body {
   :focus-visible {
     outline: 2px solid CanvasText;
     outline-offset: 2px;
-  }
-}
-
-@media (forced-colors: active) {
-  .portal-ledger {
-    background-image: none;
-  }
-
-  .evidence-rail > *::before {
-    border-color: CanvasText;
   }
 }
 
