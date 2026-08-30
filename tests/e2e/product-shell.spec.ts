@@ -247,7 +247,7 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
 test("keeps the local collection local and shares member IDs only", async ({ context, page }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/collections");
-  await page.getByLabel("Exact dataset identifier").fill(processRef);
+  await page.getByLabel("Dataset version identifier").fill(processRef);
   await page.getByRole("button", { name: "Add to shortlist" }).click();
   await page.getByLabel("Local note or rationale").fill("private local note");
   await page.reload();

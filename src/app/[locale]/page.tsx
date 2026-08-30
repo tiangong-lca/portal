@@ -100,7 +100,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     <main className="flex-1" id="main-content">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-10 sm:gap-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <section className="flex max-w-4xl min-w-0 flex-col gap-5">
-          <p className="text-primary text-sm font-medium">{t("eyebrow")}</p>
+          <p className="text-muted-foreground text-sm font-medium">{t("eyebrow")}</p>
           <h1 className="font-heading text-4xl leading-tight font-semibold tracking-tight text-balance break-words sm:text-5xl lg:text-6xl">
             {t("title")}
           </h1>
@@ -175,7 +175,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </CardContent>
         </Card>
 
-        <section className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]">
+        <section className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)] lg:items-start">
           {summary ? (
             <Card>
               <CardHeader>
