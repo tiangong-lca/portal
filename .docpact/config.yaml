@@ -1,8 +1,8 @@
 version: 1
 layout: repo
-lastReviewedAt: "2026-08-29"
-lastReviewedCommit: "82e9edb584c19974746c398027c424ac837e4e37"
-lastReviewedNote: "Reviewed for Portal #29: Production HMAC/Redis signer cutover, active/rollback deployment evidence, Node build/runtime split and hosted proof paths remain within existing product/runtime ownership and routing."
+lastReviewedAt: "2026-08-30"
+lastReviewedCommit: "2a242160362cf61b255578de6e5eb4492e33756f"
+lastReviewedNote: "Reviewed for Portal #31: removing the manual VoiceOver/screen-reader release gate stays within existing product/runtime ownership and routing; no Docpact rule or catalog change is required."
 
 catalog:
   repos:
