@@ -21,8 +21,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: 9bcb45d8480716f60c8548ddbcd6e83833bb5a55
-lastReviewedNote: "Reviewed for Portal #35: exact hosted enforcing-profile success and the independent Search payload remediation do not change the retained strict no-inline/ISR incompatibility or its reopen conditions."
+lastReviewedCommit: 8ff97d22041f574793976152c1957df692bf6512
+lastReviewedNote: "Reviewed against the current data-catalog UI and production browser suite; no rendering, CSP, or ISR boundary changed, so the strict-profile finding and reopen conditions remain current."
 related:
   - compatibility-matrix.md
   - ../design-plan.md
@@ -44,7 +44,7 @@ This remains the result of the no-inline research profile. Report-only, broken h
 
 ## Public product decision
 
-The user explicitly selected performance and SEO for the anonymous read-only Portal. Public Production uses a separate enforcing performance profile: Next-required inline script/style is allowed, `unsafe-eval` remains forbidden, all other source/object/base/form/frame directives remain restricted, and the exact EdgeOne deployment must pass hydration, Streaming, ISR, security-header, secret and rollback gates. Portal #33's local enforcing run passed all 50 production Playwright tests without converting static/ISR routes to dynamic rendering.
+The user explicitly selected performance and SEO for the anonymous read-only Portal. Public Production uses a separate enforcing performance profile: Next-required inline script/style is allowed, `unsafe-eval` remains forbidden, all other source/object/base/form/frame directives remain restricted, and the exact EdgeOne deployment must pass hydration, Streaming, ISR, security-header, secret and rollback gates. The current local enforcing run passes all 50 production Playwright tests without converting static/ISR routes to dynamic rendering.
 
 The strict no-inline profile remains available through `PORTAL_EXPECT_STRICT_CSP=1` for future Next/EdgeOne rechecks. Its failure is no longer a public-launch blocker and must not be confused with the enforcing performance profile.
 
