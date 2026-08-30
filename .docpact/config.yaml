@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-30"
-lastReviewedCommit: "d0836a6cbd5d2a0cbf2f8ad1352caf380591848e"
-lastReviewedNote: "Reviewed for Portal #33: four-locale public delivery, performance-first CSP, sitemap partitioning and the upstream raw-404 follow-up remain covered by the existing Portal governance, runtime and proof routes."
+lastReviewedCommit: "9bcb45d8480716f60c8548ddbcd6e83833bb5a55"
+lastReviewedNote: "Reviewed for Portal #35: the Search result/facet payload correction and its hosted performance proof remain covered by existing Portal runtime, proof, deployment and documentation routes."
 
 catalog:
   repos:

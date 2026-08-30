@@ -20,9 +20,9 @@ checkPaths:
   - edgeone.json
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-08-29
-lastReviewedCommit: d0836a6cbd5d2a0cbf2f8ad1352caf380591848e
-lastReviewedNote: "Reviewed for Portal #33: the strict no-inline incompatibility remains technically valid, but the user selected a separate enforcing cacheable performance profile for public release; this document is retained upstream evidence rather than a launch blocker."
+lastReviewedAt: 2026-08-30
+lastReviewedCommit: 9bcb45d8480716f60c8548ddbcd6e83833bb5a55
+lastReviewedNote: "Reviewed for Portal #35: exact hosted enforcing-profile success and the independent Search payload remediation do not change the retained strict no-inline/ISR incompatibility or its reopen conditions."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

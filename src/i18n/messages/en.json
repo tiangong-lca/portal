@@ -86,6 +86,7 @@
     "year": "Reference year",
     "source": "Data source",
     "moreFilters": "Show {count} more",
+    "refineMoreFilters": "{count} more values are available. Add a keyword or another filter to narrow them.",
     "selection": "Selected for comparison",
     "selectionEmpty": "Select between 2 and 4 Process datasets.",
     "selectForCompare": "Select this Process",

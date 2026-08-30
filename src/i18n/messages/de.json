@@ -86,6 +86,7 @@
     "year": "Referenzjahr",
     "source": "Datenanbieter",
     "moreFilters": "Weitere {count} anzeigen",
+    "refineMoreFilters": "Weitere {count} Werte sind verfügbar. Schränken Sie sie mit einem Suchbegriff oder weiteren Filter ein.",
     "selection": "Für den Vergleich ausgewählt",
     "selectionEmpty": "Wählen Sie 2 bis 4 Prozessdatensätze aus.",
     "selectForCompare": "Diesen Prozess auswählen",

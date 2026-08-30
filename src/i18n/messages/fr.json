@@ -86,6 +86,7 @@
     "year": "Année de référence",
     "source": "Fournisseur de données",
     "moreFilters": "Afficher {count} de plus",
+    "refineMoreFilters": "{count} valeurs supplémentaires sont disponibles. Ajoutez un terme ou un autre filtre pour les affiner.",
     "selection": "Sélectionnés pour comparaison",
     "selectionEmpty": "Sélectionnez entre 2 et 4 jeux de données de processus.",
     "selectForCompare": "Sélectionner ce processus",

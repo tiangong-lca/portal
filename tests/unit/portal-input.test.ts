@@ -66,7 +66,7 @@ describe("Portal deterministic input parsing", () => {
       filters: {},
       sort: "relevance",
       cursor: null,
-      limit: 20,
+      limit: 10,
     });
   });
 
