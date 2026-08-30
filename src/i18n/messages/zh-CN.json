@@ -86,6 +86,7 @@
     "year": "参考年",
     "source": "数据源",
     "moreFilters": "再显示 {count} 项",
+    "refineMoreFilters": "还有 {count} 个值可用；添加关键词或其他筛选条件可缩小范围。",
     "selection": "已选比较项",
     "selectionEmpty": "请选择 2–4 个过程数据集。",
     "selectForCompare": "选择此 Process",

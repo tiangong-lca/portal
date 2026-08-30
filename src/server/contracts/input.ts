@@ -11,6 +11,7 @@ import {
 } from "@/server/contracts/portal";
 
 const textEncoder = new TextEncoder();
+export const publicSearchUrlDefaultLimit = 10;
 const cursorInputSchema = portalCursorSchema.regex(/^[A-Za-z0-9_-]+$/);
 const boundedFilterTextSchema = z
   .string()
@@ -258,7 +259,7 @@ export function parsePortalSearchUrl(
       "relevance",
     ),
     cursor: cursorResult.success ? cursorResult.data : null,
-    limit: safeInteger(firstParameter(parameters, "limit"), 1, 50, 20),
+    limit: safeInteger(firstParameter(parameters, "limit"), 1, 50, publicSearchUrlDefaultLimit),
   });
 }
 

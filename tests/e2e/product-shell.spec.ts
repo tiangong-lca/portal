@@ -89,6 +89,7 @@ test("renders public search, exact details, numeric context, versions, and lates
     "href",
     /cursor=eyJ2IjoxfQ/,
   );
+  await expect(page.getByRole("link", { name: "Next" })).toHaveAttribute("href", /limit=10/);
 
   await page.goto(`/en/process/${processRef}`);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Electricity, medium voltage");

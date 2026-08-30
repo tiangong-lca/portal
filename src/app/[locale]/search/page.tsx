@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/empty";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { localizedText, mapSearchItem } from "@/features/catalog/map-public-data";
+import { partitionFacetValues } from "@/features/catalog/facet-display";
 import { HybridSearchPanel } from "@/features/catalog/hybrid-search-panel";
 import { SearchResults } from "@/features/catalog/search-results";
 import { isPortalLocale, localePath, type PortalLocale } from "@/i18n/routing";
@@ -315,19 +316,23 @@ export default async function SearchPage({
                         </span>
                       );
                     };
-                    const visibleValues = group.values.slice(0, 8);
-                    const remainingValues = group.values.slice(8);
+                    const { disclosed, hiddenCount, visible } = partitionFacetValues(group.values);
                     return (
                       <div className="flex flex-col gap-2" key={group.id}>
                         <strong>{localizedText(group.label, locale) ?? group.id}</strong>
-                        {visibleValues.map(renderValue)}
-                        {remainingValues.length > 0 ? (
+                        {visible.map(renderValue)}
+                        {disclosed.length > 0 ? (
                           <details>
                             <summary className="text-link cursor-pointer text-sm">
-                              {t("moreFilters", { count: remainingValues.length })}
+                              {t("moreFilters", { count: disclosed.length })}
                             </summary>
                             <div className="mt-2 flex flex-col gap-1">
-                              {remainingValues.map(renderValue)}
+                              {disclosed.map(renderValue)}
+                              {hiddenCount > 0 ? (
+                                <p className="text-muted-foreground px-2 pt-2 text-xs leading-5">
+                                  {t("refineMoreFilters", { count: hiddenCount })}
+                                </p>
+                              ) : null}
                             </div>
                           </details>
                         ) : null}
