@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: d0836a6cbd5d2a0cbf2f8ad1352caf380591848e
-lastReviewedNote: "Reviewed for Portal #33: final public UI/copy, four independent locales, performance-first enforcing CSP, bounded four-language sitemaps, public indexing authorization and the non-blocking upstream raw-404 defect replace the development-state release narrative."
+lastReviewedCommit: 9bcb45d8480716f60c8548ddbcd6e83833bb5a55
+lastReviewedNote: "Reviewed for Portal #35: hosted TDD adds an explicit default Search result/facet rendering bound while preserving the four-language public product, enforcing performance CSP, indexing and upstream raw-404 disposition."
 related:
   - AGENTS.md
   - README.md
@@ -621,6 +621,7 @@ type PublicExchangePage = {
 - Search façade 在数据库内联合 100/200，返回同一算法生成的 `rankKey + kind + id + version` cursor；Portal 不分别请求 `tg/co` 后拼接不可比较分数；
 - 不接受 `this_user_id`、`team_id_filter`、`my`、`te` 或任意状态码；
 - Filter、Sort、Kind、Limit 全部 allowlist；
+- 公众 URL Search 默认 `limit=10`，显式 `limit` 仍允许 `1..50` 并进入稳定 cursor；每个 facet group 初始最多渲染 8 个值，disclosure 再渲染最多 8 个，超过 16 的余量只显示本地化计数与缩小条件提示，不把隐藏长尾塞进初始 HTML/RSC；
 - `limit <= 50`；sitemap manifest 固定返回 64 个按位置排序、全局互斥的 opaque cursor，Portal 只能原样回传，不能解码、合成或放入公开 URL；
 - sitemap shard 最多 4,096 条、JSON 最多 2 MiB、Database statement timeout 4 秒；Process/Flow 可以混合返回，Portal 只按公开路由中的 kind 过滤；
 - 列表使用 cursor/keyset；混合排名游标包含 score + stable ID；
@@ -1203,7 +1204,7 @@ Compatibility spike 必须实测：
 - `edgeone.json` headers、404、缓存与 canonical domain；扩展 tombstone 另测 410；
 - 回滚、冷启动和跨区域数据库时延。
 
-平台限制纳入验收：Cloud Function 包不超过 128 MB，请求/响应 body 不超过 6 MB，默认 30 秒、最多 120 秒。Portal 自身设更小预算：详情响应目标不超过 512 KB，sitemap XML 严格小于 5 MiB，Hybrid 8 秒超时，不通过提高平台上限掩盖慢查询。
+平台限制纳入验收：Cloud Function 包不超过 128 MB，请求/响应 body 不超过 6 MB，默认 30 秒、最多 120 秒。Portal 自身设更小预算：详情响应目标不超过 512 KB，默认 lexical Search 初始 HTML 目标不超过 512 KB，sitemap XML 严格小于 5 MiB，Hybrid 8 秒超时，不通过提高平台上限掩盖慢查询。
 
 ## 18. 性能、可靠性与可观测性
 

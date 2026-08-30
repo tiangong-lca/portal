@@ -26,8 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: d0836a6cbd5d2a0cbf2f8ad1352caf380591848e
-lastReviewedNote: "Reviewed for Portal #33: the final public UI/copy, four-locale route tree, performance-first CSP disposition, bounded sitemap partitioning and upstream 404 follow-up remain inside Portal's anonymous read-only product boundary."
+lastReviewedCommit: 9bcb45d8480716f60c8548ddbcd6e83833bb5a55
+lastReviewedNote: "Reviewed for Portal #35: bounding server-rendered Search facets and the default public page size is a Portal-owned performance correction that leaves Database contracts, ordering, visibility and anonymous read-only boundaries unchanged."
 related:
   - README.md
   - docs/design-plan.md
@@ -48,6 +48,7 @@ related:
 - Portal is read-only for LCA data. It must not create, edit, review, publish, withdraw, repair, or recalculate datasets.
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
 - The public product has independent `zh-CN`, `en`, `de`, and `fr` routes and dictionaries. UI copy never falls back across locales; source-data language fallback remains visibly labelled.
+- Public lexical Search defaults to 10 result cards while accepting explicit validated limits through 50. Each facet group renders at most 16 linked values (8 visible + 8 disclosed); further values are counted and require a narrower query instead of being hidden in initial HTML/RSC.
 - The user selected the cacheable performance/SEO CSP profile for EdgeOne: an enforcing policy permits the inline scripts/styles required by Next App Router, forbids `unsafe-eval`, and retains strict object/base/form/frame/source directives. The no-`unsafe-inline` profile remains a non-blocking upstream compatibility probe.
 - Node `24.18.x` is the pinned build toolchain. The selected EdgeOne Production deployment reports Node.js 20.19 for SSR, so server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
 - Production HMAC/Redis is proven on `dppeqhecdjax@82e9edb`; `dpldjwibrtb4` is the fail-closed pre-signer rollback. Restore signer by redeploying exact source with current Production configuration; a forward version rollback is not sufficient.
