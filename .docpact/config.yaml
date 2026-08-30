@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-30"
-lastReviewedCommit: "2a242160362cf61b255578de6e5eb4492e33756f"
-lastReviewedNote: "Reviewed for Portal #31: removing the manual VoiceOver/screen-reader release gate stays within existing product/runtime ownership and routing; no Docpact rule or catalog change is required."
+lastReviewedCommit: "d0836a6cbd5d2a0cbf2f8ad1352caf380591848e"
+lastReviewedNote: "Reviewed for Portal #33: four-locale public delivery, performance-first CSP, sitemap partitioning and the upstream raw-404 follow-up remain covered by the existing Portal governance, runtime and proof routes."
 
 catalog:
   repos:
