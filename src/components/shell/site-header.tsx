@@ -61,11 +61,10 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
             <li aria-hidden="true" className="hidden lg:block">
               <Separator className="mx-1 h-5" orientation="vertical" />
             </li>
-            <li>
+            <li className="hidden lg:block">
               <Button asChild className="min-h-11" size="lg" variant="ghost">
                 <a href="https://lca.tiangong.earth">
-                  <span className="lg:hidden">{t("externalLcaShort")}</span>
-                  <span className="hidden lg:inline">{t("externalLca")}</span>
+                  {t("externalLca")}
                   <ExternalLinkIcon data-icon="inline-end" />
                 </a>
               </Button>

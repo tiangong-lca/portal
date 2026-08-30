@@ -60,7 +60,7 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 Production 由 `portal/main` 自动发布到 `portal.tiangong.earth`，公开站点同时承担托管验收；feature 分支不创建独立 Preview。构建工具链固定为 Node 24.18.x，EdgeOne 托管 SSR 继续遵守已验证的 Node 20 runtime boundary。
 
-公众产品提供 `zh-CN`、`en`、`de`、`fr` 四套独立路由与词典。首页以目录搜索为主，连续的 Process、Flow、地区与来源索引作为浏览入口；详情、版本、输入输出、公开 LCIA、比较、引用、候选清单、错误与空态均使用面向数据使用者的文字。`lca.tiangong.earth` 作为天工 LCA 产品平台入口出现在全局导航与页脚，不在首页占用独立宣传区。
+公众产品提供 `zh-CN`、`en`、`de`、`fr` 四套独立路由与词典。首页以目录搜索为主，连续的 Process、Flow、地区与来源索引作为浏览入口；详情、版本、输入输出、公开 LCIA、比较、引用、候选清单、错误与空态均使用面向数据使用者的文字。`lca.tiangong.earth` 作为天工 LCA 产品平台入口出现在桌面导航与所有尺寸页脚，不在首页或紧凑导航占用独立宣传区。
 
 关键词搜索默认返回 10 条记录；每组分面最多渲染 8 个常用值和 8 个显式展开值，更多值提示继续缩小条件。自然语言描述搜索通过同源 BFF 和 Portal HMAC 调用专用 Edge Function；预算、并发、Redis guard、上游或开关不可用时回退关键词目录，不绕过保护措施。
 

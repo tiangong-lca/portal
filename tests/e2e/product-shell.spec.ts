@@ -285,6 +285,10 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
     document.documentElement.style.fontSize = "200%";
   });
   await expect(page.getByRole("searchbox", { name: "Search the data catalog" })).toBeVisible();
+  await expect(page.locator('header a[href="https://lca.tiangong.earth"]')).toBeHidden();
+  await expect(
+    page.getByRole("contentinfo").getByRole("link", { name: "Open the LCA platform" }),
+  ).toBeVisible();
   const layout = await page.evaluate(async () => {
     const root = document.documentElement;
     const initialClientWidth = root.clientWidth;
