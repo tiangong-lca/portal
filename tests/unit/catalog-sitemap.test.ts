@@ -4,12 +4,14 @@ import {
   assertCatalogSitemapXmlWithinLimit,
   CatalogSitemapError,
   catalogSitemapFailureCacheControl,
+  catalogSitemapPartsPerShard,
   catalogSitemapSharedCacheControl,
   catalogSitemapShardCount,
   createCatalogSitemapIndexResponse,
   createRootCatalogSitemapResponse,
   createCatalogSitemapShardResponse,
   maximumCatalogSitemapItems,
+  maximumCatalogSitemapItemsPerPart,
   maximumCatalogSitemapXmlBytes,
   parseCatalogSitemapShardSegment,
   readCatalogSitemapCacheControl,
@@ -67,7 +69,7 @@ function dependencies(
 }
 
 describe("catalog sitemap Route Handler domain", () => {
-  it("renders a fixed 64-entry sitemap index without exposing opaque cursors", async () => {
+  it("renders four bounded public parts per database shard without exposing opaque cursors", async () => {
     const fixture = dependencies();
     const response = await createCatalogSitemapIndexResponse("process", fixture);
     const body = await response.text();
@@ -75,9 +77,13 @@ describe("catalog sitemap Route Handler domain", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("application/xml; charset=utf-8");
     expect(response.headers.get("cache-control")).toBe(catalogSitemapSharedCacheControl);
-    expect(body.match(/<sitemap>/gu)).toHaveLength(64);
-    expect(body).toContain("https://portal.example/catalog-process-sitemap.xml?shard=0");
-    expect(body).toContain("https://portal.example/catalog-process-sitemap.xml?shard=63");
+    expect(body.match(/<sitemap>/gu)).toHaveLength(
+      catalogSitemapShardCount * catalogSitemapPartsPerShard,
+    );
+    expect(body).toContain("https://portal.example/catalog-process-sitemap.xml?shard=0&amp;part=0");
+    expect(body).toContain(
+      "https://portal.example/catalog-process-sitemap.xml?shard=63&amp;part=3",
+    );
     expect(body).not.toContain("cursor-");
     expect(fixture.loadManifest).toHaveBeenCalledTimes(1);
     expect(fixture.loadShard).not.toHaveBeenCalled();
@@ -85,25 +91,37 @@ describe("catalog sitemap Route Handler domain", () => {
 
   it("passes the selected manifest cursor byte-for-byte and filters mixed shards by kind", async () => {
     const fixture = dependencies();
-    const response = await createCatalogSitemapShardResponse("process", "7.xml", fixture);
+    const response = await createCatalogSitemapShardResponse("process", "7-0.xml", fixture);
     const body = await response.text();
 
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe(catalogSitemapSharedCacheControl);
     expect(fixture.loadShard).toHaveBeenCalledWith({ shardCursor: "cursor-7" });
-    expect(body.match(/<url>/gu)).toHaveLength(2);
-    expect(body.match(/<loc>/gu)).toHaveLength(2);
+    expect(body.match(/<url>/gu)).toHaveLength(4);
+    expect(body.match(/<loc>/gu)).toHaveLength(4);
     expect(body).toContain(`/zh-CN/process/${processItem.key.id}@${processItem.key.version}`);
     expect(body).toContain(`/en/process/${processItem.key.id}@${processItem.key.version}`);
+    expect(body).toContain(`/de/process/${processItem.key.id}@${processItem.key.version}`);
+    expect(body).toContain(`/fr/process/${processItem.key.id}@${processItem.key.version}`);
     expect(body).toContain('hreflang="zh-CN"');
     expect(body).toContain('hreflang="en"');
+    expect(body).toContain('hreflang="de"');
+    expect(body).toContain('hreflang="fr"');
     expect(body).not.toContain(flowItem.key.id);
     expect(body).not.toContain("cursor-7");
   });
 
   it("rejects non-canonical local route values before any upstream call", async () => {
     const fixture = dependencies();
-    const invalidSegments = ["-1.xml", "64.xml", "01.xml", "1.0.xml", "cursor-7", "7"];
+    const invalidSegments = [
+      "-1-0.xml",
+      "64-0.xml",
+      "01-0.xml",
+      "1-4.xml",
+      "1.0.xml",
+      "cursor-7",
+      "7.xml",
+    ];
 
     const invalidKind = await createCatalogSitemapIndexResponse("private", fixture);
     expect(invalidKind.status).toBe(404);
@@ -151,7 +169,7 @@ describe("catalog sitemap Route Handler domain", () => {
         items: [processItem],
       })),
     });
-    expect((await createCatalogSitemapShardResponse("process", "0.xml", mismatch)).status).toBe(
+    expect((await createCatalogSitemapShardResponse("process", "0-0.xml", mismatch)).status).toBe(
       503,
     );
 
@@ -163,8 +181,8 @@ describe("catalog sitemap Route Handler domain", () => {
     ).toThrow(CatalogSitemapError);
   });
 
-  it("enforces the 4096-item and strict sub-5-MiB UTF-8 XML limits", () => {
-    const boundaryItems = Array.from({ length: maximumCatalogSitemapItems }, (_, index) => ({
+  it("enforces the partitioned item and strict sub-5-MiB UTF-8 XML limits", () => {
+    const boundaryItems = Array.from({ length: maximumCatalogSitemapItemsPerPart }, (_, index) => ({
       key: {
         kind: "process" as const,
         id: `00000000-0000-0000-0000-${index.toString(16).padStart(12, "0")}`,
@@ -177,7 +195,7 @@ describe("catalog sitemap Route Handler domain", () => {
       "https://portal.example",
       boundaryItems,
     );
-    expect(boundaryXml.match(/<url>/gu)).toHaveLength(maximumCatalogSitemapItems * 2);
+    expect(boundaryXml.match(/<url>/gu)).toHaveLength(maximumCatalogSitemapItemsPerPart * 4);
     expect(new TextEncoder().encode(boundaryXml).byteLength).toBeLessThan(
       maximumCatalogSitemapXmlBytes,
     );
@@ -187,6 +205,9 @@ describe("catalog sitemap Route Handler domain", () => {
         { ...processItem, key: { ...processItem.key, id: "ffffffff-ffff-ffff-ffff-ffffffffffff" } },
       ]),
     ).toThrow(CatalogSitemapError);
+    expect(maximumCatalogSitemapItemsPerPart * catalogSitemapPartsPerShard).toBe(
+      maximumCatalogSitemapItems,
+    );
     expect(
       assertCatalogSitemapXmlWithinLimit("x".repeat(maximumCatalogSitemapXmlBytes - 1)),
     ).toHaveLength(maximumCatalogSitemapXmlBytes - 1);
@@ -240,10 +261,25 @@ describe("catalog sitemap Route Handler domain", () => {
 
   it("maps only canonical root-level index and shard paths", () => {
     expect(rootCatalogSitemapIndexPath("process")).toBe("/catalog-process-sitemap.xml");
-    expect(rootCatalogSitemapShardPath("flow", 63)).toBe("/catalog-flow-sitemap.xml?shard=63");
-    expect(parseCatalogSitemapShardSearch("?shard=0")).toBe(0);
-    expect(parseCatalogSitemapShardSearch("?shard=63")).toBe(63);
-    for (const invalid of ["?shard=01", "?shard=64", "?shard=1.0", "?shard=0&bust=1"]) {
+    expect(rootCatalogSitemapShardPath("flow", 63, 3)).toBe(
+      "/catalog-flow-sitemap.xml?shard=63&part=3",
+    );
+    expect(parseCatalogSitemapShardSearch("?shard=0&part=0")).toEqual({
+      partIndex: 0,
+      shardIndex: 0,
+    });
+    expect(parseCatalogSitemapShardSearch("?shard=63&part=3")).toEqual({
+      partIndex: 3,
+      shardIndex: 63,
+    });
+    for (const invalid of [
+      "?shard=01&part=0",
+      "?shard=64&part=0",
+      "?shard=1.0&part=0",
+      "?shard=0&part=4",
+      "?part=0&shard=0",
+      "?shard=0&part=0&bust=1",
+    ]) {
       expect(parseCatalogSitemapShardSearch(invalid)).toBeNull();
     }
   });
@@ -252,7 +288,7 @@ describe("catalog sitemap Route Handler domain", () => {
     const fixture = dependencies();
     const invalid = await createRootCatalogSitemapResponse(
       "process",
-      new Request("https://portal.example/catalog-process-sitemap.xml?shard=01"),
+      new Request("https://portal.example/catalog-process-sitemap.xml?shard=01&part=0"),
       fixture,
     );
     expect(invalid.status).toBe(404);

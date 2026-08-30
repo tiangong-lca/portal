@@ -49,6 +49,8 @@ const rawBrandConfigSchema = z.object({
   favicon: z.string().trim().min(1).default("/brand/favicon.ico"),
   altZh: z.string().trim().min(1).max(100).default("天工 LCA"),
   altEn: z.string().trim().min(1).max(100).default("TianGong LCA"),
+  altDe: z.string().trim().min(1).max(100).default("TianGong LCA"),
+  altFr: z.string().trim().min(1).max(100).default("TianGong LCA"),
   width: z.coerce.number().positive().max(4096).default(170.08),
   height: z.coerce.number().positive().max(4096).default(170.08),
   assetOrigin: optionalHttpsOriginSchema,
@@ -65,6 +67,8 @@ export type BrandConfig = {
   alt: {
     "zh-CN": string;
     en: string;
+    de: string;
+    fr: string;
   };
   width: number;
   height: number;
@@ -87,6 +91,8 @@ export type BrandEnvironment = Record<string, string | undefined> &
       | "PORTAL_FAVICON"
       | "PORTAL_LOGO_ALT_ZH"
       | "PORTAL_LOGO_ALT_EN"
+      | "PORTAL_LOGO_ALT_DE"
+      | "PORTAL_LOGO_ALT_FR"
       | "PORTAL_LOGO_WIDTH"
       | "PORTAL_LOGO_HEIGHT"
       | "PORTAL_BRAND_ASSET_ORIGIN",
@@ -138,6 +144,8 @@ export function readBrandConfig(environment: BrandEnvironment = process.env): Br
     favicon: environment.PORTAL_FAVICON,
     altZh: environment.PORTAL_LOGO_ALT_ZH,
     altEn: environment.PORTAL_LOGO_ALT_EN,
+    altDe: environment.PORTAL_LOGO_ALT_DE,
+    altFr: environment.PORTAL_LOGO_ALT_FR,
     width: environment.PORTAL_LOGO_WIDTH,
     height: environment.PORTAL_LOGO_HEIGHT,
     assetOrigin: environment.PORTAL_BRAND_ASSET_ORIGIN,
@@ -160,6 +168,8 @@ export function readBrandConfig(environment: BrandEnvironment = process.env): Br
     alt: {
       "zh-CN": raw.altZh,
       en: raw.altEn,
+      de: raw.altDe,
+      fr: raw.altFr,
     },
     width: raw.width,
     height: raw.height,

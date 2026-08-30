@@ -1,9 +1,11 @@
 type ContentSecurityPolicyInput = {
+  allowFrameworkInline: boolean;
   brandAssetOrigin?: string;
   isDevelopment: boolean;
 };
 
 export function buildContentSecurityPolicy({
+  allowFrameworkInline,
   brandAssetOrigin,
   isDevelopment,
 }: ContentSecurityPolicyInput): string {
@@ -16,8 +18,8 @@ export function buildContentSecurityPolicy({
 
   return [
     "default-src 'self'",
-    `script-src 'self'${isDevelopment ? " 'unsafe-eval'" : ""}`,
-    `style-src 'self'${isDevelopment ? " 'unsafe-inline'" : ""}`,
+    `script-src 'self'${allowFrameworkInline || isDevelopment ? " 'unsafe-inline'" : ""}${isDevelopment ? " 'unsafe-eval'" : ""}`,
+    `style-src 'self'${allowFrameworkInline || isDevelopment ? " 'unsafe-inline'" : ""}`,
     `img-src ${imageSources.join(" ")}`,
     "font-src 'self'",
     "connect-src 'self'",

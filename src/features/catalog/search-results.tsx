@@ -14,6 +14,7 @@ import {
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import type { CatalogResultViewModel } from "@/features/catalog/view-model";
 import { localePath, type PortalLocale } from "@/i18n/routing";
+import { formatDatasetCitation } from "@/i18n/domain-vocabulary";
 
 import { CitationCopy } from "./citation-copy";
 
@@ -29,6 +30,8 @@ export type SearchResultLabels = {
   geography: string;
   match: string;
   metadataOnly: string;
+  flow: string;
+  process: string;
   public: string;
   quality: string;
   reference: string;
@@ -66,18 +69,17 @@ export function SearchResults({
     <ol className="flex flex-col gap-4">
       {items.map((item) => {
         const detailHref = localePath(locale, `${item.kind}/${encodeURIComponent(item.ref)}`);
-        const citation = `TianGong LCA. ${item.name}. ${item.kind} dataset, ${item.ref}. ${new URL(
-          detailHref,
-          siteOrigin,
-        ).toString()}`;
+        const citation = formatDatasetCitation(locale, {
+          name: item.name,
+          ref: item.ref,
+          url: new URL(detailHref, siteOrigin).toString(),
+        });
         const context = [
           { label: labels.reference, value: item.referenceProduct },
           { label: labels.functionalUnit, value: item.functionalUnit },
           { label: labels.geography, value: item.geography },
           { label: labels.referenceYear, value: item.referenceYear },
-          { label: labels.technology, value: item.technology },
           { label: labels.source, value: item.source },
-          { label: labels.quality, value: item.quality },
           { label: labels.match, value: item.match },
         ].filter((entry): entry is { label: string; value: string } => Boolean(entry.value));
 
@@ -86,7 +88,9 @@ export function SearchResults({
             <Card>
               <CardHeader>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">{item.kind}</Badge>
+                  <Badge variant="outline">
+                    {item.kind === "process" ? labels.process : labels.flow}
+                  </Badge>
                   <Badge variant={item.accessLevel === "open" ? "default" : "secondary"}>
                     {item.accessLevel === "open" ? labels.public : labels.metadataOnly}
                   </Badge>

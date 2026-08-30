@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DetailEmpty } from "@/features/catalog/detail-empty";
 import { mapDataset } from "@/features/catalog/map-public-data";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
+import { localizeReviewStatus } from "@/i18n/domain-vocabulary";
 import { isPortalLocale } from "@/i18n/routing";
 import { absolutePortalUrl, localizedMetadata } from "@/lib/seo";
 
@@ -38,19 +39,16 @@ export default async function ProcessQualityPage({
   const metadata = dataset.metadata;
   if (metadata.kind !== "process") return null;
   const t = await getTranslations({ locale, namespace: "Detail" });
-  const labels =
-    locale === "zh-CN"
-      ? ["审核状态", "时间代表性", "地区代表性", "技术代表性", "完整性", "不确定性"]
-      : [
-          "Review status",
-          "Time representativeness",
-          "Geographic representativeness",
-          "Technology representativeness",
-          "Completeness",
-          "Uncertainty",
-        ];
+  const labels = [
+    t("reviewStatus"),
+    t("timeRepresentativeness"),
+    t("geographyRepresentativeness"),
+    t("technologyRepresentativeness"),
+    t("completeness"),
+    t("uncertainty"),
+  ];
   const values = [
-    metadata.quality.reviewStatus,
+    localizeReviewStatus(metadata.quality.reviewStatus, locale),
     metadata.quality.timeRepresentativeness,
     metadata.quality.geographyRepresentativeness,
     metadata.quality.technologyRepresentativeness,

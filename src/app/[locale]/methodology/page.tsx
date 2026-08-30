@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { isPortalLocale } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
@@ -40,7 +39,6 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
       id="main-content"
     >
       <header className="flex max-w-3xl flex-col gap-3">
-        <Badge variant="outline">METHOD / EVIDENCE</Badge>
         <h1 className="font-heading text-3xl font-semibold sm:text-5xl">{t("title")}</h1>
         <p className="text-muted-foreground text-lg leading-8">{t("description")}</p>
       </header>

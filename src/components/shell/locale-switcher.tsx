@@ -3,8 +3,15 @@
 import { LanguagesIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-import type { PortalLocale } from "@/i18n/routing";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { isPortalLocale, localeNames, locales, type PortalLocale } from "@/i18n/routing";
 
 type LocaleSwitcherProps = {
   currentLocale: PortalLocale;
@@ -13,27 +20,42 @@ type LocaleSwitcherProps = {
 
 export function LocaleSwitcher({ currentLocale, label }: LocaleSwitcherProps) {
   const pathname = usePathname();
-  const nextLocale: PortalLocale = currentLocale === "zh-CN" ? "en" : "zh-CN";
-  const fallbackHref = `/${nextLocale}`;
+
+  function switchLocale(nextLocale: string) {
+    if (!isPortalLocale(nextLocale) || nextLocale === currentLocale) return;
+    const segments = pathname.split("/");
+    segments[1] = nextLocale;
+    window.location.assign(`${segments.join("/")}${window.location.search}${window.location.hash}`);
+  }
 
   return (
-    <Button asChild className="size-[44px] p-0 sm:w-auto sm:px-2.5" size="lg" variant="ghost">
-      <a
-        aria-label={label}
-        href={fallbackHref}
-        hrefLang={nextLocale}
-        onClick={(event) => {
-          event.preventDefault();
-          const segments = pathname.split("/");
-          segments[1] = nextLocale;
-          window.location.assign(
-            `${segments.join("/")}${window.location.search}${window.location.hash}`,
-          );
-        }}
-      >
-        <LanguagesIcon data-icon="inline-start" />
-        <span className="hidden sm:inline">{label}</span>
-      </a>
-    </Button>
+    <div className="flex items-center gap-2">
+      <LanguagesIcon aria-hidden="true" />
+      <Select onValueChange={switchLocale} value={currentLocale}>
+        <SelectTrigger aria-label={label} className="min-h-11 min-w-28">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent position="popper">
+          <SelectGroup>
+            {locales.map((locale) => (
+              <SelectItem key={locale} value={locale}>
+                {localeNames[locale]}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      <noscript>
+        <span className="flex flex-wrap gap-2">
+          {locales
+            .filter((locale) => locale !== currentLocale)
+            .map((locale) => (
+              <a href={`/${locale}`} hrefLang={locale} key={locale}>
+                {localeNames[locale]}
+              </a>
+            ))}
+        </span>
+      </noscript>
+    </div>
   );
 }

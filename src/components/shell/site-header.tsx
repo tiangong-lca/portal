@@ -81,7 +81,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
               system: t("themeSystem"),
             }}
           />
-          <LocaleSwitcher currentLocale={locale} label={t("switchToEnglish")} />
+          <LocaleSwitcher currentLocale={locale} label={t("language")} />
         </div>
       </div>
       <Separator />

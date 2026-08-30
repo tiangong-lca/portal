@@ -5,7 +5,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -55,10 +54,30 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     readCatalogSummary(),
   ]);
   const browseCoordinates = [
-    { href: "browse/process", icon: DatabaseIcon, label: t("browseProcess"), token: "PROCESS" },
-    { href: "browse/flow", icon: ShapesIcon, label: t("browseFlow"), token: "FLOW" },
-    { href: "browse/region", icon: MapPinIcon, label: t("browseRegion"), token: "REGION" },
-    { href: "browse/source", icon: DatabaseIcon, label: t("browseSource"), token: "SOURCE" },
+    {
+      description: t("browseProcessDescription"),
+      href: "browse/process",
+      icon: DatabaseIcon,
+      label: t("browseProcess"),
+    },
+    {
+      description: t("browseFlowDescription"),
+      href: "browse/flow",
+      icon: ShapesIcon,
+      label: t("browseFlow"),
+    },
+    {
+      description: t("browseRegionDescription"),
+      href: "browse/region",
+      icon: MapPinIcon,
+      label: t("browseRegion"),
+    },
+    {
+      description: t("browseSourceDescription"),
+      href: "browse/source",
+      icon: DatabaseIcon,
+      label: t("browseSource"),
+    },
   ] as const;
   const countFormatter = new Intl.NumberFormat(locale);
   const latestModified = summary?.latestModifiedAt
@@ -84,10 +103,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </div>
 
           <div className="evidence-rail flex min-w-0 flex-col gap-5">
-            {[common("public"), common("exactVersion"), common("footerBoundary")].map((label) => (
+            {[
+              [t("railMetadataTitle"), t("railMetadataBody")],
+              [t("railVersionTitle"), t("railVersionBody")],
+              [t("railValuesTitle"), t("railValuesBody")],
+            ].map(([label, description]) => (
               <div className="flex flex-col gap-1" key={label}>
-                <span className="font-mono text-xs tracking-[0.12em] uppercase">{label}</span>
-                <span className="text-muted-foreground text-sm">{common("footerEvidence")}</span>
+                <span className="text-sm font-semibold">{label}</span>
+                <span className="text-muted-foreground text-sm">{description}</span>
               </div>
             ))}
           </div>
@@ -135,26 +158,21 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </section>
 
         <section aria-labelledby="browse-heading" className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+          <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
               <h2 className="font-heading text-2xl font-semibold" id="browse-heading">
                 {t("browseTitle")}
               </h2>
               <p className="text-muted-foreground">{t("browseDescription")}</p>
             </div>
-            <Badge className="sm:ml-auto" variant="outline">
-              R1 · LEXICAL
-            </Badge>
           </div>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {browseCoordinates.map(({ href, icon: Icon, label, token }) => (
+            {browseCoordinates.map(({ description, href, icon: Icon, label }) => (
               <Card key={href} size="sm">
                 <CardHeader>
                   <Icon aria-hidden="true" />
                   <CardTitle>{label}</CardTitle>
-                  <CardDescription className="font-mono text-xs tracking-[0.12em]">
-                    {token}
-                  </CardDescription>
+                  <CardDescription>{description}</CardDescription>
                   <CardAction>
                     <Button asChild aria-label={label} size="icon-sm" variant="ghost">
                       <Link href={localePath(locale, href)}>
@@ -178,7 +196,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                 <CardTitle>{t("scaleTitle")}</CardTitle>
                 <CardDescription>{t("scaleDescription")}</CardDescription>
                 <CardAction>
-                  <Badge variant="outline">LIVE · 5 MIN</Badge>
+                  <span className="text-muted-foreground text-xs">{t("refreshCadence")}</span>
                 </CardAction>
               </CardHeader>
               <CardContent>
@@ -256,6 +274,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <CardHeader>
               <CardTitle>{t("advancedTitle")}</CardTitle>
               <CardDescription>{t("advancedDescription")}</CardDescription>
+              <CardAction>
+                <Button asChild size="sm" variant="outline">
+                  <a href="https://lca.tiangong.earth">{common("externalAdvanced")}</a>
+                </Button>
+              </CardAction>
             </CardHeader>
           </Card>
         </section>

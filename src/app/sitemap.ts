@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { localePath } from "@/i18n/routing";
+import { localePath, locales } from "@/i18n/routing";
 
 const staticPaths = [
   "",
@@ -18,10 +18,9 @@ function siteUrl(path: string): string {
 export default function sitemap(): MetadataRoute.Sitemap {
   return staticPaths.map((path) => ({
     alternates: {
-      languages: {
-        en: siteUrl(localePath("en", path)),
-        "zh-CN": siteUrl(localePath("zh-CN", path)),
-      },
+      languages: Object.fromEntries(
+        locales.map((locale) => [locale, siteUrl(localePath(locale, path))]),
+      ),
     },
     changeFrequency:
       path === "" || path.startsWith("browse/") ? ("daily" as const) : ("monthly" as const),

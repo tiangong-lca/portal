@@ -28,6 +28,7 @@ import type { PortalHybridBffResponse } from "@/server/hybrid/contracts";
 type HybridSearchLabels = {
   advisoryDescription: string;
   advisoryTitle: string;
+  badge: string;
   compareSelected: string;
   description: string;
   emptyDescription: string;
@@ -144,10 +145,7 @@ export function HybridSearchPanel({
   return (
     <Card className="border-primary/30">
       <CardHeader>
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge>R2 · HYBRID</Badge>
-          <Badge variant="outline">POST / NO URL QUERY</Badge>
-        </div>
+        <Badge>{labels.badge}</Badge>
         <h2 className="font-heading flex items-center gap-2 text-xl font-semibold">
           <SparklesIcon aria-hidden="true" />
           {labels.title}
@@ -278,9 +276,7 @@ export function HybridSearchPanel({
           <Alert>
             <ShieldAlertIcon aria-hidden="true" />
             <AlertTitle>{labels.fallbackTitle}</AlertTitle>
-            <AlertDescription>
-              {labels.fallbackDescription.replace("{reason}", response.fallbackReason)}
-            </AlertDescription>
+            <AlertDescription>{labels.fallbackDescription}</AlertDescription>
           </Alert>
         ) : null}
 

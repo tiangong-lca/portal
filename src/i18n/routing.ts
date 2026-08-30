@@ -1,7 +1,14 @@
 import { defineRouting } from "next-intl/routing";
 
-export const locales = ["zh-CN", "en"] as const;
+export const locales = ["zh-CN", "en", "de", "fr"] as const;
 export type PortalLocale = (typeof locales)[number];
+
+export const localeNames: Record<PortalLocale, string> = {
+  "zh-CN": "中文",
+  en: "English",
+  de: "Deutsch",
+  fr: "Français",
+};
 
 export const defaultLocale: PortalLocale = "zh-CN";
 

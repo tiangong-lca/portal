@@ -28,8 +28,8 @@ describe("localized public text", () => {
     const item = publicSearchPageSchema.parse(fixture.search).items[0]!;
     expect(mapSearchItem(item, "en")).toMatchObject({
       functionalUnit: "1 kWh",
-      match: "name",
-      quality: "reviewed",
+      match: "Name",
+      quality: "Reviewed",
       referenceProduct: "Electricity",
       source: "TianGong",
       technology: "Grid mix",

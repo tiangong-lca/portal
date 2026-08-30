@@ -1,4 +1,5 @@
 import type { PublicDatasetEnvelope } from "@/server/contracts/portal";
+import type { PortalLocale } from "@/i18n/routing";
 import type { ComparablePublishedLciaResult } from "@/server/lcia/compare";
 
 import { localizedText } from "@/features/catalog/map-public-data";
@@ -32,7 +33,7 @@ export function applyComparableLcia(
   candidates: CompareCandidate[],
   datasets: Array<PublicDatasetEnvelope | null>,
   data: AvailableComparableData,
-  locale: "zh-CN" | "en",
+  locale: PortalLocale,
 ): { candidates: CompareCandidate[]; context: ComparableLciaPresentation } | null {
   if (candidates.length !== data.orderedRows.length || datasets.length !== candidates.length) {
     return null;
