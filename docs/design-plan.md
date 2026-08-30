@@ -20,9 +20,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-08-29
-lastReviewedCommit: 82e9edb584c19974746c398027c424ac837e4e37
-lastReviewedNote: "Reviewed for Portal #29: exact Production HMAC/Redis cutover, fail-closed rollback/redeploy recovery, Node build/runtime split and retained release gates align."
+lastReviewedAt: 2026-08-30
+lastReviewedCommit: 2a242160362cf61b255578de6e5eb4492e33756f
+lastReviewedNote: "Reviewed for Portal #31: remove the manual VoiceOver/screen-reader release gate while retaining automated WCAG, semantic, keyboard, zoom, motion, theme and responsive requirements."
 related:
   - AGENTS.md
   - README.md
@@ -998,6 +998,7 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 - 表格有 caption、行列 header 和可理解的排序状态；
 - 图表提供精确数据表，地图提供等价可筛选列表；
 - Field origin 标记有文字、图标、`aria-label` 和解释。
+- 人工发布验收不设置 VoiceOver/屏幕阅读器走查门；语义 HTML/ARIA、自动 WCAG、纯键盘、焦点、缩放、reduced motion、主题与响应式要求保持不变。
 
 ### 14.2 国际化
 
@@ -1272,7 +1273,7 @@ Dashboard 至少覆盖：
 - 无 cookie、无登录完成搜索→详情→比较→引用；
 - JavaScript 关闭后核心页面可读；
 - axe 无 serious/critical；
-- 纯键盘、屏幕阅读器、200% zoom、reduced motion 人工走查；
+- 纯键盘、200% zoom、reduced motion、浅/深主题和三断点人工走查；
 - canonical、hreflang、JSON-LD、robots、64-way sitemap index/shard、XML 解析、5 MiB 门、300 秒 cache 与 404/503 no-store；
 - Search/Compare/Collections 不被索引；
 - 浏览器 bundle 和 sourcemap 不含 secret/service role；
@@ -1477,7 +1478,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 10. Citation 固定 exact version；本地候选集/JSON 经 schema 校验，不把备注发送到服务器；默认 fragment 只含 member IDs；
 11. 首页、Browse、Process/Flow 详情和公开 LCIA 摘要进入初始 HTML；canonical、zh-CN/en hreflang、Dataset JSON-LD、robots，以及根级固定 64-way、双语 reciprocal、严格 5 MiB 的 sitemap index/shard 通过；sitemap 默认 `no-store`，仅在托管平台证明同步 300 秒/no-stale 后启用单一共享缓存；Search/Compare/Collections 为 noindex；
 12. 默认浅色 `#5C246A`、深色 `#9E3FFD`；其他 semantic token 遵循 shadcn/Tailwind 最佳实践；自定义主色、Light/Dark Logo、favicon、alt、尺寸、fallback、manifest/OG metadata 和品牌回滚全部通过；
-13. WCAG 2.2 AA 自动检查无 serious/critical，并完成键盘、屏幕阅读器、200% zoom、浅/深主题和三断点人工走查；
+13. WCAG 2.2 AA 自动检查无 serious/critical，并完成键盘、200% zoom、浅/深主题和三断点人工走查；
 14. 浏览器 bundle、sourcemap、响应和日志中无 HMAC secret、service role、数据库 secret、内部 locator 或 Hybrid body；GET lexical `q` 的 24 小时 access-log 提示与 Referrer Policy 生效；
 15. §18.1 的 R1 路由性能预算、§11.3 的 60 秒 visibility SLA/5 分钟 LCIA 与 sitemap SLA/cache isolation、§18.3 的错误与 fallback 指标均通过；
 16. Portal、Database、Edge 的 PR/validation evidence 完整；所有 required main SHA 已由 root exact gitlink integration 验证，workspace coordination 和 child Issues 处于正确终态。

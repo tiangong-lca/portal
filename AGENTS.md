@@ -25,9 +25,9 @@ checkPaths:
   - scripts/**
   - .github/workflows/**
   - edgeone.json
-lastReviewedAt: 2026-08-29
-lastReviewedCommit: 82e9edb584c19974746c398027c424ac837e4e37
-lastReviewedNote: "Reviewed for Portal #29: Production HMAC/Redis signer cutover, active/rollback deployment evidence, Node 24 build versus managed Node 20 runtime, and retained public-release gates align."
+lastReviewedAt: 2026-08-30
+lastReviewedCommit: 2a242160362cf61b255578de6e5eb4492e33756f
+lastReviewedNote: "Reviewed for Portal #31: removing the manual VoiceOver/screen-reader release gate changes no repository boundary; automated WCAG, semantics, keyboard, focus, zoom, motion, theme and responsive validation remain required."
 related:
   - README.md
   - docs/design-plan.md

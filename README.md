@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-08-29
-lastReviewedCommit: 82e9edb584c19974746c398027c424ac837e4e37
-lastReviewedNote: "Reviewed for Portal #29: exact Production HMAC/Redis cutover, active/rollback deployments, Node build/runtime split and remaining public-release gates are current."
+lastReviewedAt: 2026-08-30
+lastReviewedCommit: 2a242160362cf61b255578de6e5eb4492e33756f
+lastReviewedNote: "Reviewed for Portal #31: manual VoiceOver/screen-reader acceptance is removed while the implemented automated and manual non-screen-reader accessibility gates remain current."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -63,4 +63,4 @@ Canonical `tiangong-lca/portal` 已有可写的 `main`，并已作为 `portal` �
 
 R2 Intelligent Discovery 在本地复用同一 HMAC signer，通过同源 POST 调用专用 `portal_hybrid_search_v1`；成功时只展示 advisory query interpretation 与 Database evidence-backed public cards，disabled/guard/budget/concurrency/circuit/timeout/contract failure 时自动调用现有 lexical façade。自然语言、embedding、完整候选 ID、备注和 secret 不进入 URL 或 telemetry。默认 fragment 仍只含 member IDs；Hybrid query 或备注只有经过完整披露预览和第二次确认才生成 browser-local fragment。确定性 fixture、production-browser、动态 axe、比较与独立接收浏览器覆盖这些边界。
 
-EdgeOne Production 现绑定 `portal/main` 与 `portal.tiangong.earth`，同一环境承担 hosted TDD 和最终发布；feature/PR 不创建独立 EdgeOne Preview。调试期间保持 `PORTAL_PUBLIC_INDEXING=disabled`、sitemap `no-store`、CSP report-only，只有 exact main deployment 的 runtime/cache/security/rollback gates 全绿后才开启索引。`dppeqhecdjax@82e9edb` 是 qualified signer cutover deployment：Node 24.18 构建、托管 SSR Node 20.19.3、native routing、query-preserving redirects、ISR regeneration、五段 Streaming、WebP、HMAC current/replay/tamper/unknown/expiry、Redis guard 与 same-origin LCIA BFF 已通过；后续仅文档变化的 main deployment 继承同一 Production signer 配置，但不替代该不可变证据。`dpldjwibrtb4@82e9edb` 是 fail-closed rollback target；恢复必须使用当前 Production 配置重新部署，不能依赖向前版本回滚。Edge #319 的运行态已完成；Portal #13/#28、Database #543 与 Release #59/#60 继续持有严格 CSP/raw 404、品牌/manual a11y、真实 publication、Hybrid/WAF/load/latency、CWV/SLA 与 CDN cache 证据。初始 Dev/Main 共享 Upstash endpoint/token 但使用独立 namespace 与 HMAC；namespace 不是安全边界。详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)、[Redis/HMAC contract](docs/design-plan.md#103-hmac-signed-hybrid-search)、[R1 checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist) 与 [R2 checklist](docs/design-plan.md#236-r2-intelligent-discovery-release-checklist)。
+EdgeOne Production 现绑定 `portal/main` 与 `portal.tiangong.earth`，同一环境承担 hosted TDD 和最终发布；feature/PR 不创建独立 EdgeOne Preview。调试期间保持 `PORTAL_PUBLIC_INDEXING=disabled`、sitemap `no-store`、CSP report-only，只有 exact main deployment 的 runtime/cache/security/rollback gates 全绿后才开启索引。`dppeqhecdjax@82e9edb` 是 qualified signer cutover deployment：Node 24.18 构建、托管 SSR Node 20.19.3、native routing、query-preserving redirects、ISR regeneration、五段 Streaming、WebP、HMAC current/replay/tamper/unknown/expiry、Redis guard 与 same-origin LCIA BFF 已通过；后续仅文档变化的 main deployment 继承同一 Production signer 配置，但不替代该不可变证据。`dpldjwibrtb4@82e9edb` 是 fail-closed rollback target；恢复必须使用当前 Production 配置重新部署，不能依赖向前版本回滚。Edge #319 的运行态已完成；Portal #13/#28、Database #543 与 Release #59/#60 继续持有严格 CSP/raw 404、托管性能与剩余人工键盘/缩放复核、真实 publication、Hybrid/WAF/load/latency、CWV/SLA 与 CDN cache 证据；人工 VoiceOver/屏幕阅读器不再是发布门。初始 Dev/Main 共享 Upstash endpoint/token 但使用独立 namespace 与 HMAC；namespace 不是安全边界。详见 [R0 compatibility matrix](docs/r0/compatibility-matrix.md)、[Redis/HMAC contract](docs/design-plan.md#103-hmac-signed-hybrid-search)、[R1 checklist](docs/design-plan.md#235-r1-public-catalog-mvp-release-checklist) 与 [R2 checklist](docs/design-plan.md#236-r2-intelligent-discovery-release-checklist)。
