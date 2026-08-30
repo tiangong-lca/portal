@@ -227,6 +227,37 @@ describe("Portal Supabase public RPC client", () => {
     ]);
   });
 
+  it("opts only explicit public Search reads into a fixed short cache", async () => {
+    const calls: unknown[][] = [];
+    const client: PortalRpcClient = {
+      async call<T>(...arguments_: Parameters<PortalRpcClient["call"]>): Promise<T> {
+        calls.push(arguments_);
+        return (calls.length === 1 ? fixture.search : { ...fixture.facets, kind: "process" }) as T;
+      },
+    };
+
+    await searchPublicProcesses({ query: "private cache key must not become a tag" }, client, {
+      cache: "short-public",
+    });
+    await getPublicFacets(
+      { kind: "process", query: "private cache key must not become a tag" },
+      client,
+      { cache: "short-public" },
+    );
+
+    expect(calls[0]?.[3]).toEqual({
+      mode: "revalidate",
+      seconds: 30,
+      tags: ["portal:catalog-search:process"],
+    });
+    expect(calls[1]?.[3]).toEqual({
+      mode: "revalidate",
+      seconds: 30,
+      tags: ["portal:catalog-facets:process"],
+    });
+    expect(JSON.stringify(calls.map((call) => call[3]))).not.toContain("private cache key");
+  });
+
   it("fails closed when a valid DTO is bound to a different public request", async () => {
     const processReference = {
       kind: "process" as const,
