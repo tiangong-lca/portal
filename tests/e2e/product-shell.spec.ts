@@ -15,7 +15,7 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("查找可用于生命周期评估的数据");
-  await expect(page.getByRole("link", { name: "天工 LCA 工作台" }).first()).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "天工 LCA 平台" }).first()).toHaveAttribute(
     "href",
     "https://lca.tiangong.earth",
   );

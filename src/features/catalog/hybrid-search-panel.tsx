@@ -144,7 +144,9 @@ export function HybridSearchPanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{labels.title}</CardTitle>
+        <CardTitle>
+          <h2>{labels.title}</h2>
+        </CardTitle>
         <CardDescription>{labels.description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
@@ -233,7 +235,9 @@ export function HybridSearchPanel({
         {sharePreview && parsedRequest ? (
           <Card size="sm">
             <CardHeader>
-              <CardTitle>{labels.sharePreview}</CardTitle>
+              <CardTitle>
+                <h3>{labels.sharePreview}</h3>
+              </CardTitle>
               <CardDescription>{labels.shareDisclosure}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
@@ -278,7 +282,9 @@ export function HybridSearchPanel({
         {response?.mode === "hybrid" ? (
           <Card size="sm">
             <CardHeader>
-              <CardTitle>{labels.advisoryTitle}</CardTitle>
+              <CardTitle>
+                <h3>{labels.advisoryTitle}</h3>
+              </CardTitle>
               <CardDescription>{labels.advisoryDescription}</CardDescription>
             </CardHeader>
             <CardContent>

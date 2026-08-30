@@ -16,17 +16,17 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
       response.url().endsWith("/internal/hybrid") && response.request().method() === "POST",
   );
   const query = "low-carbon electricity for an industrial site in China";
-  await page.getByLabel("Natural-language need").fill(query);
-  await page.getByRole("button", { name: "Search by description" }).click();
+  await page.getByLabel("Data need").fill(query);
+  await page.getByRole("button", { name: "Find matching data" }).click();
   const bffResponse = await bffResponsePromise;
 
   expect(bffResponse.ok()).toBe(true);
   await expect(page).toHaveURL(/\/en\/search\?v=1$/u);
+  await expect(page.getByRole("heading", { name: "Search interpretation" })).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "How your description was interpreted" }),
+    page.getByText("This interpretation helps retrieve records", { exact: false }),
   ).toBeVisible();
-  await expect(page.getByText("This wording helps the search", { exact: false })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Suggested public datasets" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Matching datasets" })).toBeVisible();
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
   await expect(page.getByText("Text content", { exact: true }).first()).toBeVisible();
   expect(page.url()).not.toContain(encodeURIComponent(query));
@@ -64,12 +64,12 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 test("automatically returns lexical cards for a fixed Hybrid guard rejection", async ({ page }) => {
   await page.goto("/en/search?v=1");
   const query = "fixture:guard_unavailable";
-  await page.getByLabel("Natural-language need").fill(query);
-  await page.getByRole("button", { name: "Search by description" }).click();
+  await page.getByLabel("Data need").fill(query);
+  await page.getByRole("button", { name: "Find matching data" }).click();
 
-  await expect(page.getByText("Standard search results", { exact: true })).toBeVisible();
+  await expect(page.getByText("Keyword search results", { exact: true })).toBeVisible();
   await expect(
-    page.getByRole("alert").filter({ hasText: "Standard search results" }),
+    page.getByRole("alert").filter({ hasText: "Keyword search results" }),
   ).not.toContainText("guard_unavailable");
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
   await expect(page).toHaveURL(/\/en\/search\?v=1$/u);
@@ -83,7 +83,7 @@ test("shares collection notes only after preview and second confirmation", async
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/collections");
-  await page.getByLabel("Exact dataset identifier").fill(processRef);
+  await page.getByLabel("Dataset version identifier").fill(processRef);
   await page.getByRole("button", { name: "Add to shortlist" }).click();
   await page.getByLabel("Research name").fill("Private research name");
   await page.getByLabel("Purpose").fill("Private purpose");

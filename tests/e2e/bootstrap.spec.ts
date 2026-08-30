@@ -5,8 +5,10 @@ test("renders the anonymous Portal bootstrap shell", async ({ page }) => {
 
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("查找可用于生命周期评估的数据");
-  await expect(page.getByRole("contentinfo").getByText("开放数据 · 只读 · 无需账号")).toBeVisible();
-  await expect(page.getByRole("searchbox", { name: "搜索公开生命周期数据" })).toBeEnabled();
+  await expect(
+    page.getByRole("contentinfo").getByText("面向生命周期评价研究与实践的公开数据目录。"),
+  ).toBeVisible();
+  await expect(page.getByRole("searchbox", { name: "搜索数据目录" })).toBeEnabled();
   await expect(page.locator("[data-brand-light-logo]").first()).toBeVisible();
 
   await expect
