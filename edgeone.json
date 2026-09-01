@@ -15,7 +15,7 @@
     }
   ],
   "cloudFunctions": {
-    "maxDuration": 30,
+    "maxDuration": 40,
     "regions": {
       "overseas": ["na-ashburn"]
     }

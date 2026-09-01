@@ -10,6 +10,11 @@ import {
   queryPortalHybrid,
   queryPortalHybridRaw,
 } from "@/server/hybrid/client";
+import {
+  portalHybridEdgeTimeoutMilliseconds,
+  readPortalHybridEnvironment,
+} from "@/server/hybrid/environment";
+import { readPortalLciaEnvironment } from "@/server/lcia/environment";
 
 const request: PortalHybridSearchRequest = {
   schemaVersion: "portal.hybrid-search-request.v1",
@@ -58,6 +63,34 @@ function edgePage() {
 }
 
 describe("Portal Hybrid signed client", () => {
+  it("uses a dedicated bounded Hybrid timeout without widening LCIA", () => {
+    const runtimeEnvironment = {
+      SUPABASE_URL: environment.supabaseUrl,
+      SUPABASE_PUBLISHABLE_KEY: environment.publishableKey,
+      PORTAL_EDGE_ENDPOINT: environment.edgeOrigin,
+      PORTAL_EDGE_KEY_ID: environment.keyId,
+      PORTAL_EDGE_HMAC_SECRET: environment.secret,
+      PORTAL_EDGE_TIMEOUT_MS: "8000",
+    };
+
+    expect(readPortalHybridEnvironment(runtimeEnvironment).edgeTimeoutMilliseconds).toBe(
+      portalHybridEdgeTimeoutMilliseconds,
+    );
+    expect(readPortalLciaEnvironment(runtimeEnvironment).edgeTimeoutMilliseconds).toBe(8000);
+    expect(
+      readPortalHybridEnvironment({
+        ...runtimeEnvironment,
+        PORTAL_HYBRID_EDGE_TIMEOUT_MS: "25000",
+      }).edgeTimeoutMilliseconds,
+    ).toBe(25000);
+    expect(() =>
+      readPortalHybridEnvironment({
+        ...runtimeEnvironment,
+        PORTAL_HYBRID_EDGE_TIMEOUT_MS: "30001",
+      }),
+    ).toThrow();
+  });
+
   it("signs the exact raw body for the fixed Hybrid path and validates success", async () => {
     const fetchImplementation = vi.fn<typeof fetch>(async (input, init) => {
       expect(input).toBeInstanceOf(URL);
