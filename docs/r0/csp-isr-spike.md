@@ -20,9 +20,9 @@ checkPaths:
   - edgeone.json
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-08-30
-lastReviewedCommit: e0c3577b7664f9d0f203e01d2423200e608ce92f
-lastReviewedNote: "Reviewed for Portal #40: the 30-second public Search/facet data cache does not change HTML rendering, CSP, ISR, or the strict-profile reopen conditions."
+lastReviewedAt: 2026-09-02
+lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
+lastReviewedNote: "Reviewed for Portal #42: the server-only interactive Hybrid timeout and 40-second host ceiling do not change initial HTML, CSP, ISR, Streaming, or strict-profile reopen conditions."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

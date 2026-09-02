@@ -1,8 +1,8 @@
 version: 1
 layout: repo
-lastReviewedAt: "2026-08-30"
-lastReviewedCommit: "e0c3577b7664f9d0f203e01d2423200e608ce92f"
-lastReviewedNote: "Reviewed for Portal #40: the fixed public Search/facet data-cache implementation and proof remain covered by existing product, runtime, proof, deployment, and documentation routes."
+lastReviewedAt: "2026-09-02"
+lastReviewedCommit: "60bc35bce656daf21da7b4a0827090fb82c66b2c"
+lastReviewedNote: "Reviewed for Portal #42: product/runtime/proof/deployment routes cover the dedicated 30-second Hybrid BFF timeout, 40-second EdgeOne ceiling, environment contract, and correctness-first evidence."
 
 catalog:
   repos:

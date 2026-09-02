@@ -11,7 +11,7 @@ const hybridEnvironmentSchema = z.strictObject({
     .number()
     .int()
     .min(250)
-    .max(portalHybridEdgeTimeoutMilliseconds)
+    .max(portalHybridEdgeTimeoutMilliseconds, "Portal Hybrid Edge timeout must not exceed 30000 ms")
     .default(portalHybridEdgeTimeoutMilliseconds),
 });
 

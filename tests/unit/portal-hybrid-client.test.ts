@@ -88,7 +88,7 @@ describe("Portal Hybrid signed client", () => {
         ...runtimeEnvironment,
         PORTAL_HYBRID_EDGE_TIMEOUT_MS: "30001",
       }),
-    ).toThrow();
+    ).toThrow("Portal Hybrid Edge timeout must not exceed 30000 ms");
   });
 
   it("signs the exact raw body for the fixed Hybrid path and validates success", async () => {

@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-08-30
-lastReviewedCommit: e0c3577b7664f9d0f203e01d2423200e608ce92f
-lastReviewedNote: "Reviewed for Portal #40: the bounded 30-second public Search/facet data cache preserves dynamic HTML, visibility, Hybrid privacy, and the professional four-language product shell."
+lastReviewedAt: 2026-09-02
+lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
+lastReviewedNote: "Reviewed for Portal #42: the interactive Hybrid BFF has a dedicated bounded 30-second completion window without changing LCIA, lexical Search caching, SEO/ISR, privacy, or the four-language product shell."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -62,6 +62,6 @@ Production 由 `portal/main` 自动发布到 `portal.tiangong.earth`，公开站
 
 公众产品提供 `zh-CN`、`en`、`de`、`fr` 四套独立路由与词典。首页以目录搜索为主，连续的 Process、Flow、地区与来源索引作为浏览入口；详情、版本、输入输出、公开 LCIA、比较、引用、候选清单、错误与空态均使用面向数据使用者的文字。`lca.tiangong.earth` 作为天工 LCA 产品平台入口出现在桌面导航与所有尺寸页脚，不在首页或紧凑导航占用独立宣传区。
 
-关键词搜索默认返回 10 条记录；每组分面最多渲染 8 个常用值和 8 个显式展开值，更多值提示继续缩小条件。Search HTML 始终 private/no-store；只有页面发起的公共关键词与分面 RPC 使用 30 秒 Next Data Cache，缓存按完整请求区分、tag 不含查询原文、错误不缓存。自然语言描述搜索通过同源 BFF 和 Portal HMAC 调用专用 Edge Function；其 lexical fallback 保持 no-store，预算、并发、Redis guard、上游或开关不可用时不绕过保护措施。
+关键词搜索默认返回 10 条记录；每组分面最多渲染 8 个常用值和 8 个显式展开值，更多值提示继续缩小条件。Search HTML 始终 private/no-store；只有页面发起的公共关键词与分面 RPC 使用 30 秒 Next Data Cache，缓存按完整请求区分、tag 不含查询原文、错误不缓存。自然语言描述搜索通过同源 BFF 和 Portal HMAC 调用专用 Edge Function；BFF 使用独立、有界的 30 秒完成窗口，优先返回正确 Hybrid 结果，时延只作为优化观测。其 lexical fallback 保持 no-store，预算、并发、Redis guard、上游或开关不可用时不绕过保护措施。
 
 公开站点采用性能与 SEO 优先的 enforcing CSP、五分钟首页 ISR、locale-correct 初始 HTML、四语 reciprocal metadata、Dataset JSON-LD 与分片 sitemap。真实 404 保留原 URL、`noindex` 和错误状态；EdgeOne 对未知首段生成通用 raw document 的问题按平台缺陷单独跟踪，不以软跳转或动态化 ISR 页面掩盖。首次上线后的 RUM 为七天非阻断观察，精确托管兼容与发布证据记录在 `docs/r0/`。
