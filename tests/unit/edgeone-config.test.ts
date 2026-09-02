@@ -10,7 +10,7 @@ describe("EdgeOne deployment configuration", () => {
     const cloudFunctions = configuration.cloudFunctions as Record<string, unknown>;
 
     expect(cloudFunctions).toMatchObject({
-      maxDuration: 30,
+      maxDuration: 40,
       regions: { overseas: ["na-ashburn"] },
     });
     expect(cloudFunctions).not.toHaveProperty("nodejs");

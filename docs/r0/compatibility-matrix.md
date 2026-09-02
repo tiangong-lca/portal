@@ -20,9 +20,9 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-08-30
-lastReviewedCommit: e0c3577b7664f9d0f203e01d2423200e608ce92f
-lastReviewedNote: "Reviewed for Portal #40 against exact bf97795 Production and the local 30-second public Search-data cache proof; hosted latency requalification remains open until the candidate reaches main."
+lastReviewedAt: 2026-09-02
+lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
+lastReviewedNote: "Reviewed for Portal #42: the dedicated 30-second Hybrid BFF timeout and 40-second host ceiling do not change R0 CSP/ISR/routing evidence; exact hosted Hybrid correctness proof remains pending the candidate deployment."
 related:
   - ../design-plan.md
   - ../../AGENTS.md

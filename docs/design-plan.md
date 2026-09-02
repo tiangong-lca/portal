@@ -20,9 +20,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-08-30
-lastReviewedCommit: e0c3577b7664f9d0f203e01d2423200e608ce92f
-lastReviewedNote: "Reviewed for Portal #40: a fixed 30-second public Search/facet data cache preserves private dynamic HTML, the 60-second visibility SLA, Hybrid-query privacy, exact request matching, and current product boundaries."
+lastReviewedAt: 2026-09-02
+lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
+lastReviewedNote: "Reviewed for Portal #42: multi-recall correctness precedes latency; Database/Edge/BFF remain bounded at 20/25/30 seconds and the EdgeOne host ceiling is 40 seconds without changing SEO/ISR, LCIA, privacy, or fallback."
 related:
   - AGENTS.md
   - README.md
@@ -548,7 +548,9 @@ Portal 不形成第三方 API 产品。Route Handler 或 Server Action 仅允许
 - `PORTAL_SITEMAP_CACHE_MODE`，默认 `no-store`；仅经托管 CDN 证明后使用 `shared-300`；
 - `PORTAL_EDGE_KEY_ID`；
 - `PORTAL_EDGE_HMAC_SECRET`；
-- 可选的 Edge endpoint 与超时配置。
+- `PORTAL_EDGE_TIMEOUT_MS`，LCIA 默认/上限保持 8 秒；
+- `PORTAL_HYBRID_EDGE_TIMEOUT_MS`，Hybrid BFF 默认/上限 30 秒；
+- 可选的 Edge endpoint 配置。
 
 EdgeOne Production 签名端只持有一个当前 `keyId/secret`。Supabase Edge Function 验证端在正常状态只持有 current，在无停机轮换窗口短期持有 current + previous keyring；本地/CI Dev fixture 与 Main/Production 使用完全不同的 keyId/secret。签名密钥绝不进入 `NEXT_PUBLIC_*`、HTML、Cookie、浏览器 bundle、日志或错误响应。Portal 绝不配置 `service_role`、Supabase secret key 或用户凭据。Publishable key 虽可公开，仍保持 server-only，因为浏览器没有直连需求。
 
@@ -744,7 +746,7 @@ EdgeOne deployment rollback 会同时应用目标 deployment 的旧项目配置�
 - 查询长度、数组长度、page size 和 filter 深度有上限；
 - Redis 缓存规范化 query 与 embedding，键只使用 hash；
 - 按签名 keyId、全局预算和经验证的 `visitorHash` 限流；
-- 设成本预算、并发上限、熔断和 8 秒应用超时；
+- 设成本预算、并发上限、熔断和 25 秒有界 Edge 超时；Database Hybrid statement budget 为 20 秒，Portal BFF 为 30 秒，Hybrid lease 为 35 秒；
 - 提供默认值为 `false` 的 `PORTAL_HYBRID_ENABLED` kill switch；关闭时不调用 rewrite/embedding/model；
 - 超时、模型故障或限额触发时返回 lexical fallback 与明确状态；
 - 日志仅记 query type/length/hash、阶段、时延、结果数和错误码，不记原始查询、embedding 或 UUID 列表；
@@ -1154,7 +1156,7 @@ tiangong-lca-portal/
   "outputDirectory": ".next",
   "nodeVersion": "24.18.0",
   "cloudFunctions": {
-    "maxDuration": 30,
+    "maxDuration": 40,
     "regions": {
       "overseas": ["na-ashburn"]
     }
@@ -1170,6 +1172,7 @@ EdgeOne 只配置 Production 环境变量：
 | --- | --- |
 | HMAC signer | `PORTAL_EDGE_KEY_ID`、`PORTAL_EDGE_HMAC_SECRET` |
 | 公共数据 | `SUPABASE_URL`、`SUPABASE_PUBLISHABLE_KEY`、`SITE_URL` |
+| Hybrid BFF | `PORTAL_HYBRID_EDGE_TIMEOUT_MS=30000`；LCIA 继续使用独立 `PORTAL_EDGE_TIMEOUT_MS=8000` |
 | Sitemap cache | `PORTAL_SITEMAP_CACHE_MODE=no-store`；仅在该平台通过 no-stale 验收后改为 `shared-300` |
 | 主色 | `PORTAL_LIGHT_PRIMARY`、`PORTAL_DARK_PRIMARY`、`PORTAL_BRAND_VERSION` |
 | Logo | `PORTAL_LIGHT_LOGO`、`PORTAL_DARK_LOGO`、`PORTAL_LOGO_MARK`、`PORTAL_FAVICON` |
@@ -1206,7 +1209,7 @@ Compatibility spike 必须实测：
 - `edgeone.json` headers、404、缓存与 canonical domain；扩展 tombstone 另测 410；
 - 回滚、冷启动和跨区域数据库时延。
 
-平台限制纳入验收：Cloud Function 包不超过 128 MB，请求/响应 body 不超过 6 MB，默认 30 秒、最多 120 秒。Portal 自身设更小预算：详情响应目标不超过 512 KB，默认 lexical Search 初始 HTML 目标不超过 512 KB，sitemap XML 严格小于 5 MiB，Hybrid 8 秒超时，不通过提高平台上限掩盖慢查询。
+平台限制纳入验收：Cloud Function 包不超过 128 MB，请求/响应 body 不超过 6 MB，平台最多 120 秒。Portal Cloud Function ceiling 固定 40 秒；Hybrid Database/Edge/BFF 分别固定为 20/25/30 秒，保留失败收敛与宿主余量，不允许无界等待。多路召回以正确完成为发布条件，耗时持续记录并尽可能优化，但不设 p95 或 8 秒发布门。详情响应目标不超过 512 KB，默认 lexical Search 初始 HTML 目标不超过 512 KB，sitemap XML 严格小于 5 MiB。
 
 ## 18. 性能、可靠性与可观测性
 
@@ -1215,7 +1218,7 @@ Compatibility spike 必须实测：
 - Core Web Vitals p75：LCP <= 2.5s、INP <= 200ms、CLS <= 0.1；
 - 缓存详情 TTFB p75 <= 800ms；
 - Identifier/lexical 搜索 p95 <= 2s；
-- Hybrid 搜索 p95 <= 6s，8s 后回退；
+- Hybrid 搜索必须在 30 秒 BFF 有界窗口内返回正确语义结果或明确 fallback；记录耗时用于优化，但不以 p95 作为发布门；
 - 首页首屏 JavaScript gzip <= 120 KB；
 - 详情页首屏 JavaScript gzip <= 180 KB；
 - 搜索页首屏 JavaScript gzip <= 250 KB；
@@ -1507,7 +1510,7 @@ scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-p
 2. Hybrid 复用 R1 canonical HMAC/keyring/nonce contract；无有效签名的直接 Edge 请求在 rewrite、embedding、模型和数据库之前拒绝；
 3. Redis outage、重复 nonce、预算耗尽、并发竞争、lease 中断/TTL 回收和 `PORTAL_HYBRID_ENABLED=false` 均不产生模型调用；BFF 返回可观测原因并自动执行 lexical fallback；
 4. 匿名 BFF 的 EdgeOne WAF、route/global budget 和 Edge 原子 admission gate 已通过并发/突发负载测试；验收证据明确 HMAC 不是访客鉴权或单独的成本边界；
-5. 正常 Hybrid p95、8 秒超时、缓存、熔断、全局分钟/日预算、并发上限与 kill switch 演练通过，且不影响 identifier/lexical 基线；
+5. 正常 Hybrid 在 Database 20 秒、Edge 25 秒、BFF 30 秒及 35 秒 lease 的有界链路内返回严格语义结果；缓存、熔断、全局分钟/日预算、并发上限与 kill switch 演练通过，且不影响 identifier/lexical 基线；耗时只记录用于优化，不作为发布门；
 6. Query interpretation、match reasons、proxy/group 展示全部带上游 evidence；无法支持的解释不生成，AI 文案不被当作数据库事实；
 7. 日志不含原始自然语言、embedding、完整 UUID 列表或 secret；HMAC/guard/budget/concurrency/fallback 指标和告警可区分；
 8. Hybrid-query 或含备注的 fragment 只在显式预览与二次确认后生成；默认分享仍不含查询原文或备注；R2 浏览器、无障碍、安全和主路径回归全绿。

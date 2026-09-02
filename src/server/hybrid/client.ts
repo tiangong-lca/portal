@@ -10,7 +10,10 @@ import {
   type PortalHybridFallbackReason,
   type PortalHybridSearchPage,
 } from "@/server/hybrid/contracts";
-import { readPortalLciaEnvironment, type PortalLciaEnvironment } from "@/server/lcia/environment";
+import {
+  readPortalHybridEnvironment,
+  type PortalHybridEnvironment,
+} from "@/server/hybrid/environment";
 import { createPortalNonce, signPortalHmac } from "@/server/r0-compat/hmac";
 import { validatePortalCorrelationId } from "@/server/telemetry/logger";
 
@@ -33,7 +36,7 @@ export class PortalHybridInputError extends Error {
 }
 
 type QueryOptions = {
-  environment?: PortalLciaEnvironment;
+  environment?: PortalHybridEnvironment;
   fetchImplementation?: typeof fetch;
   now?: () => number;
   nonce?: () => string;
@@ -88,9 +91,9 @@ export async function queryPortalHybridRaw(
   requestBody.set(rawBody);
   const parsedInput = parsePortalHybridRequestBody(requestBody);
 
-  let environment: PortalLciaEnvironment;
+  let environment: PortalHybridEnvironment;
   try {
-    environment = options.environment ?? readPortalLciaEnvironment();
+    environment = options.environment ?? readPortalHybridEnvironment();
   } catch {
     return fallback("hybrid_upstream_unavailable");
   }

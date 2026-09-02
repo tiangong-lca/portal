@@ -25,9 +25,9 @@ checkPaths:
   - scripts/**
   - .github/workflows/**
   - edgeone.json
-lastReviewedAt: 2026-08-30
-lastReviewedCommit: e0c3577b7664f9d0f203e01d2423200e608ce92f
-lastReviewedNote: "Reviewed for Portal #40: explicit page-initiated public Search/facet reads may use the fixed 30-second data cache while dynamic HTML and Hybrid fallback remain no-store; ownership and anonymous read-only boundaries are unchanged."
+lastReviewedAt: 2026-09-02
+lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
+lastReviewedNote: "Reviewed for Portal #42: Hybrid uses a dedicated bounded 30-second BFF timeout and 40-second EdgeOne host ceiling while LCIA, SEO/ISR, privacy, lexical fallback, and anonymous read-only boundaries remain unchanged."
 related:
   - README.md
   - docs/design-plan.md
@@ -52,6 +52,7 @@ related:
 - Dynamic Search HTML remains private/no-store. Only page-initiated public lexical Search and facet RPC reads may opt into the fixed 30-second Next Data Cache with full request matching and fixed kind-only tags; Hybrid fallback uses the default no-store path, raw queries never enter tags/telemetry, and errors are not cached.
 - The user selected the cacheable performance/SEO CSP profile for EdgeOne: an enforcing policy permits the inline scripts/styles required by Next App Router, forbids `unsafe-eval`, and retains strict object/base/form/frame/source directives. The no-`unsafe-inline` profile remains a non-blocking upstream compatibility probe.
 - Node `24.18.x` is the pinned build toolchain. The selected EdgeOne Production deployment reports Node.js 20.19 for SSR, so server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
+- Hybrid uses server-only `PORTAL_HYBRID_EDGE_TIMEOUT_MS`, defaulting to and capped at 30 seconds, with a 40-second EdgeOne Cloud Function ceiling. LCIA retains the independent `PORTAL_EDGE_TIMEOUT_MS` 8-second default. Hybrid correctness is the release criterion; elapsed time is observed and optimized but is not a release gate, and neither path may wait without a fixed bound.
 - Production HMAC/Redis is proven on `dppeqhecdjax@82e9edb`; `dpldjwibrtb4` is the fail-closed pre-signer rollback. Restore signer by redeploying exact source with current Production configuration; a forward version rollback is not sufficient.
 - EdgeOne's current `@edgeone/opennextjs-pages` adapter returns `a is not a function` for both named-only and named/default Next 16 `proxy.ts`; its legacy `middleware.ts` path skips locale and probe semantics. Do not ship a Next Proxy/middleware entrypoint. Keep only the query-free root redirect and R0 headers in `edgeone.json`; bounded unlocalized product routes use same-origin 307 Route Handlers with `no-store`, and the generated locale segment is closed with `dynamicParams=false` so invalid values reach the full global 404 document.
 - Raw unknown-first-segment HTML may still be wrapped by EdgeOne in a generic `__next_error__` document. It remains a real upstream defect: preserve the real 404, unchanged URL/query, and `noindex`; do not use a soft redirect, 200 shell, Proxy workaround, or route-tree rewrite to disguise it.
