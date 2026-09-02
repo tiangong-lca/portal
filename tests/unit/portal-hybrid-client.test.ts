@@ -132,6 +132,36 @@ describe("Portal Hybrid signed client", () => {
     }
   });
 
+  it("rejects out-of-order V2 representatives, including equal-score id ties", async () => {
+    const page = hybridVersionPage();
+    const second = structuredClone(page.items[0]!);
+    second.key.id = "ffffffff-ffff-4fff-8fff-ffffffffffff";
+    second.match.score = 0.8;
+    page.items.push(second);
+    page.versionGroups.push({
+      key: second.key,
+      matches: [{ key: second.key, match: second.match }],
+    });
+    page.candidateCount = 3;
+    page.datasetCount = 2;
+    const check = () =>
+      queryPortalHybrid(
+        { ...request, schemaVersion: "portal.hybrid-search-request.v2", cursor: null },
+        { environment, fetchImplementation: vi.fn<typeof fetch>(async () => Response.json(page)) },
+      );
+    await expect(check()).resolves.toMatchObject({ status: "available" });
+    second.match.score = page.items[0]!.match.score;
+    await expect(check()).resolves.toMatchObject({ status: "available" });
+    page.items.reverse();
+    page.versionGroups.reverse();
+    await expect(check()).resolves.toEqual({ status: "fallback", reason: "contract_failure" });
+    second.match.score = 1;
+    await expect(check()).resolves.toMatchObject({ status: "available" });
+    page.items.reverse();
+    page.versionGroups.reverse();
+    await expect(check()).resolves.toEqual({ status: "fallback", reason: "contract_failure" });
+  });
+
   it("uses a dedicated bounded Hybrid timeout without widening LCIA", () => {
     const runtimeEnvironment = {
       SUPABASE_URL: environment.supabaseUrl,

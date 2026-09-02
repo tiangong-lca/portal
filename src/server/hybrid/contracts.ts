@@ -210,6 +210,19 @@ function validateVersionPage(
       issue("each representative must be the best exact-version match of one unique dataset");
     }
     datasetIds.add(group.key.id);
+    const previousItem = value.items[index - 1];
+    if (
+      item &&
+      previousItem &&
+      (item.match.score > previousItem.match.score ||
+        (item.match.score === previousItem.match.score &&
+          (item.key.id < previousItem.key.id ||
+            (item.key.id === previousItem.key.id && item.key.version > previousItem.key.version))))
+    ) {
+      issue(
+        "representatives must be ordered by score descending, id ascending, version descending",
+      );
+    }
     const versions = new Set<string>();
     group.matches.forEach((member, memberIndex) => {
       if (
