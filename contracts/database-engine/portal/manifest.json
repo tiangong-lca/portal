@@ -1,7 +1,7 @@
 {
   "schemaVersion": "portal.database-contract-snapshot.v1",
   "sourceRepository": "tiangong-lca/database-engine",
-  "sourceCommit": "d9b131b7e911100b67a0ed3427a549d30d622433",
+  "sourceCommit": "470e66157fc0b363c3360ba952f75280cfa1ff73",
   "files": [
     {
       "path": "portal.common-types.v1.schema.json",
@@ -26,6 +26,18 @@
       "sourcePath": "contracts/portal/generated/portal.hybrid-database-input.v1.d.ts",
       "bytes": 1835,
       "sha256": "81c29bd525070cd7320aacf9ceb98345587ffa322b3765363ac18b744c8b03be"
+    },
+    {
+      "path": "portal.hybrid-database-input.v2.schema.json",
+      "sourcePath": "contracts/portal/portal.hybrid-database-input.v2.schema.json",
+      "bytes": 3610,
+      "sha256": "1c1ce82ea659c093838bd9d5b325fe4d9f7146768df0d281b2dfb5507de6c080"
+    },
+    {
+      "path": "generated/portal.hybrid-database-input.v2.d.ts",
+      "sourcePath": "contracts/portal/generated/portal.hybrid-database-input.v2.d.ts",
+      "bytes": 1954,
+      "sha256": "05cecfd8dd6af9300cc7d0e3dc3ae3647f8b2485ba78c2db206096d8f1f19107"
     },
     {
       "path": "portal.public-catalog-summary.v1.schema.json",
@@ -76,6 +88,18 @@
       "sha256": "10cc943d4579c6aa8e4362b0e0f00fc8820ff65e007d16a2a3dd875566887abf"
     },
     {
+      "path": "portal.public-facets.v2.schema.json",
+      "sourcePath": "contracts/portal/portal.public-facets.v2.schema.json",
+      "bytes": 2444,
+      "sha256": "ea4120c9a4a30cd8ad51f514a32109a70a9d48e74faef571a1eabe41bbb7fc77"
+    },
+    {
+      "path": "generated/portal.public-facets.v2.d.ts",
+      "sourcePath": "contracts/portal/generated/portal.public-facets.v2.d.ts",
+      "bytes": 1604,
+      "sha256": "4c39c26fb549f9a57f5090097d6bb0676c2b8056db9aed8c6dafbd18d526e754"
+    },
+    {
       "path": "portal.public-hybrid-candidate-page.v1.schema.json",
       "sourcePath": "contracts/portal/portal.public-hybrid-candidate-page.v1.schema.json",
       "bytes": 8529,
@@ -88,6 +112,18 @@
       "sha256": "937f9ef06d125c9201c3b126f131d46f2da29cf2af256dd67997e6b610dedb0c"
     },
     {
+      "path": "portal.public-hybrid-candidate-page.v2.schema.json",
+      "sourcePath": "contracts/portal/portal.public-hybrid-candidate-page.v2.schema.json",
+      "bytes": 10797,
+      "sha256": "1b528c3fdba7bb19dcb79bf1a9d30f7e38a2f9cc968a677d5632908098097653"
+    },
+    {
+      "path": "generated/portal.public-hybrid-candidate-page.v2.d.ts",
+      "sourcePath": "contracts/portal/generated/portal.public-hybrid-candidate-page.v2.d.ts",
+      "bytes": 6624,
+      "sha256": "b35135401e29baa743544f7691d16f72265db819c67f904283b4f84bf2dfd24d"
+    },
+    {
       "path": "portal.public-search-page.v1.schema.json",
       "sourcePath": "contracts/portal/portal.public-search-page.v1.schema.json",
       "bytes": 3269,
@@ -98,6 +134,18 @@
       "sourcePath": "contracts/portal/generated/portal.public-search-page.v1.d.ts",
       "bytes": 4091,
       "sha256": "caee451e9d489ab6830cbcb2709d23dbaeb02dd65e18213f94da98b871f43833"
+    },
+    {
+      "path": "portal.public-search-page.v2.schema.json",
+      "sourcePath": "contracts/portal/portal.public-search-page.v2.schema.json",
+      "bytes": 3457,
+      "sha256": "36ca808eda25f6c2019af8abf2001e21e1142d13f3d2988e42a3889f86d847c3"
+    },
+    {
+      "path": "generated/portal.public-search-page.v2.d.ts",
+      "sourcePath": "contracts/portal/generated/portal.public-search-page.v2.d.ts",
+      "bytes": 4270,
+      "sha256": "0ee57a3fa9884bbc344f6d7e10eedcbe662cbc776d7596cb7302d9b8014b66ae"
     },
     {
       "path": "portal.public-sitemap-manifest.v1.schema.json",
