@@ -124,6 +124,8 @@
     "updateDescription": "Die aktuelle Liste bleibt unverändert, damit Sie weiterlesen können.",
     "showUpdated": "Aktualisierte Ergebnisse anzeigen",
     "optimized": "Der Abgleich mit Ihrem Bedarf ist abgeschlossen",
+    "noMatchesTitle": "Die Katalogergebnisse bleiben erhalten",
+    "noMatchesDescription": "Der intelligente Abgleich hat keine Ergebnisse gefunden. Sie können die Katalogergebnisse weiterhin durchsuchen und weitere laden.",
     "loadMore": "Weitere passende Ergebnisse anzeigen",
     "loadingMore": "Wird geladen…",
     "pageError": "Weitere Ergebnisse sind vorübergehend nicht verfügbar. Die aktuelle Liste bleibt erhalten. Bitte versuchen Sie es erneut.",

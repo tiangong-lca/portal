@@ -124,6 +124,8 @@
     "updateDescription": "La liste actuelle reste inchangée pour ne pas interrompre votre lecture.",
     "showUpdated": "Afficher les résultats actualisés",
     "optimized": "La recherche adaptée à votre besoin est terminée",
+    "noMatchesTitle": "Les résultats du catalogue sont conservés",
+    "noMatchesDescription": "La recherche intelligente n’a trouvé aucun résultat. Vous pouvez continuer à consulter les résultats du catalogue et en charger d’autres.",
     "loadMore": "Afficher davantage de résultats",
     "loadingMore": "Chargement…",
     "pageError": "Les résultats supplémentaires sont temporairement indisponibles. La liste actuelle est conservée ; veuillez réessayer.",

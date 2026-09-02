@@ -73,6 +73,8 @@ export type HybridSearchLabels = {
   updateDescription: string;
   showUpdated: string;
   optimized: string;
+  noMatchesTitle: string;
+  noMatchesDescription: string;
   loadMore: string;
   loadingMore: string;
   pageError: string;
@@ -171,6 +173,7 @@ export function HybridSearchPanel({
     if (!response) return [];
     return mapProgressiveSearchPage(response, locale);
   }, [locale, response]);
+  const keptLexicalResults = search.hybrid === "empty" && results.length > 0;
 
   return (
     <Card>
@@ -300,6 +303,11 @@ export function HybridSearchPanel({
                 aria-hidden="true"
                 className="text-primary size-5 shrink-0 motion-safe:animate-spin"
               />
+            ) : keptLexicalResults ? (
+              <ScanSearchIcon
+                aria-hidden="true"
+                className="text-muted-foreground size-5 shrink-0"
+              />
             ) : search.pendingUpdate || response?.mode === "hybrid" ? (
               <SparklesIcon aria-hidden="true" className="text-primary size-5 shrink-0" />
             ) : (
@@ -316,9 +324,11 @@ export function HybridSearchPanel({
                     ? results.length > 0
                       ? labels.optimizing
                       : labels.running
-                    : response?.mode === "hybrid"
-                      ? labels.optimized
-                      : labels.fallbackTitle}
+                    : keptLexicalResults
+                      ? labels.noMatchesTitle
+                      : response?.mode === "hybrid"
+                        ? labels.optimized
+                        : labels.fallbackTitle}
               </span>
               <span className="text-muted-foreground text-sm">
                 {search.pendingUpdate
@@ -327,9 +337,11 @@ export function HybridSearchPanel({
                     ? results.length > 0
                       ? labels.optimizingDescription
                       : labels.initialDescription
-                    : response?.mode === "hybrid"
-                      ? labels.advisoryDescription
-                      : labels.fallbackDescription}
+                    : keptLexicalResults
+                      ? labels.noMatchesDescription
+                      : response?.mode === "hybrid"
+                        ? labels.advisoryDescription
+                        : labels.fallbackDescription}
               </span>
             </span>
             {search.pendingUpdate ? (

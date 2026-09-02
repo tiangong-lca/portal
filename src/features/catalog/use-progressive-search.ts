@@ -18,7 +18,7 @@ export type ProgressiveSearchState = {
   response: Page | null;
   pendingUpdate: HybridPage | null;
   lexical: Outcome;
-  hybrid: Outcome;
+  hybrid: Outcome | "empty";
   pageLoading: boolean;
   pageError: PageError;
 };
@@ -71,10 +71,24 @@ export function progressiveSearchReducer(
   if (action.id !== state.id) return state;
   switch (action.type) {
     case "lexical":
-      return { ...state, lexical: "complete", response: state.response ?? action.page };
+      return {
+        ...state,
+        lexical: "complete",
+        response:
+          state.hybrid === "empty" && action.page.items.length > 0
+            ? action.page
+            : (state.response ?? action.page),
+      };
     case "hybrid":
       if (action.page.mode !== "hybrid")
         return { ...state, hybrid: "failed", response: state.response ?? action.page };
+      if (action.page.items.length === 0)
+        return {
+          ...state,
+          hybrid: "empty",
+          response: state.response ?? action.page,
+          pendingUpdate: null,
+        };
       if (state.response && state.response.items.length > 0 && state.response.mode !== "hybrid") {
         return { ...state, hybrid: "complete", pendingUpdate: action.page };
       }
@@ -298,7 +312,9 @@ export function useProgressiveSearch(locale: PortalLocale) {
     }
   }
 
-  const running = state.hybrid === "pending" || (!state.response && state.lexical === "pending");
+  const running =
+    state.hybrid === "pending" ||
+    ((!state.response || state.response.items.length === 0) && state.lexical === "pending");
   const unavailable = state.hybrid === "failed" && state.lexical === "failed" && !state.response;
   return { state, start, applyUpdate, loadMore, running, unavailable };
 }

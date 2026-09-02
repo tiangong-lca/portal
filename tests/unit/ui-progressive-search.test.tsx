@@ -262,6 +262,35 @@ describe("progressive, version-aware discovery", () => {
     ).not.toBeInTheDocument();
   });
 
+  it.each(["lexical-first", "hybrid-first"])(
+    "keeps useful lexical results and continuation when intelligent matching is empty (%s)",
+    async (order) => {
+      const { user, pending, submit, complete } = setup();
+      await submit();
+      const emptyHybrid = {
+        ...refinedPage(),
+        items: [],
+        versionGroups: [],
+        candidateCount: 0,
+        datasetCount: 0,
+      };
+      const lexical = { ...lexicalPage(), nextCursor: "lexical_cursor" };
+      const hybridFirst = order === "hybrid-first";
+      await complete(hybridFirst ? 1 : 0, hybridFirst ? emptyHybrid : lexical);
+      expect(screen.queryByText(messages.Hybrid.emptyTitle)).not.toBeInTheDocument();
+      await complete(hybridFirst ? 0 : 1, hybridFirst ? lexical : emptyHybrid);
+      expect(screen.getByText("Initial catalog result")).toBeVisible();
+      expect(screen.getByRole("status")).toHaveTextContent(messages.Hybrid.noMatchesTitle);
+      expect(screen.queryByText(messages.Hybrid.optimized)).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: messages.Hybrid.showUpdated }),
+      ).not.toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: messages.Hybrid.loadMore }));
+      expect(pending[2]!.url).toBe("/internal/hybrid/lexical");
+      expect(pending[2]!.body.cursor).toBe("lexical_cursor");
+    },
+  );
+
   it("reports malformed or failed responses without rendering partial private transport data", async () => {
     const { submit, complete } = setup();
     await submit();

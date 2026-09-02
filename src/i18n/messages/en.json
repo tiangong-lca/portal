@@ -124,6 +124,8 @@
     "updateDescription": "Your current list stays in place so you can keep reading.",
     "showUpdated": "View updated results",
     "optimized": "Matching to your request is complete",
+    "noMatchesTitle": "Catalog results have been kept",
+    "noMatchesDescription": "Intelligent matching found no results. You can still browse and load more catalog results.",
     "loadMore": "Show more matching results",
     "loadingMore": "Loading…",
     "pageError": "More results are temporarily unavailable. Your current list is preserved; please try again.",

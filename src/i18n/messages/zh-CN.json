@@ -124,6 +124,8 @@
     "updateDescription": "为避免打断阅读，当前列表保持不变。",
     "showUpdated": "查看最新结果",
     "optimized": "已结合您的需求完成匹配",
+    "noMatchesTitle": "已保留普通搜索结果",
+    "noMatchesDescription": "智能匹配未找到结果，您仍可浏览和翻页查看当前结果。",
     "loadMore": "显示更多匹配结果",
     "loadingMore": "正在加载…",
     "pageError": "更多结果暂不可用，当前列表已保留。请稍后重试。",
