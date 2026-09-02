@@ -3,19 +3,29 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import catalogFixture from "../fixtures/portal/catalog-v1.json";
 import enMessages from "../../src/i18n/messages/en.json";
+import type {
+  getPublicFacets,
+  searchPublicFlows,
+  searchPublicProcesses,
+} from "@/server/data/catalog";
+import { publicFacetsSchema, publicSearchPageSchema } from "@/server/contracts/portal";
+
+type Translator = (key: string, values?: Record<string, string | number>) => string;
 
 const catalogMocks = vi.hoisted(() => ({
-  searchPublicProcesses: vi.fn(),
-  searchPublicFlows: vi.fn(),
-  getPublicFacets: vi.fn(),
+  searchPublicProcesses: vi.fn<typeof searchPublicProcesses>(),
+  searchPublicFlows: vi.fn<typeof searchPublicFlows>(),
+  getPublicFacets: vi.fn<typeof getPublicFacets>(),
 }));
 
-const getTranslations = vi.hoisted(() => vi.fn());
+const getTranslations = vi.hoisted(() =>
+  vi.fn<(options: { locale?: string; namespace: string }) => Promise<Translator>>(),
+);
 
 vi.mock("@/server/data/catalog", () => catalogMocks);
 vi.mock("next-intl/server", () => ({
   getTranslations,
-  setRequestLocale: vi.fn(),
+  setRequestLocale: vi.fn<(locale: string) => void>(),
 }));
 vi.mock("@/features/catalog/hybrid-search-panel", () => ({
   HybridSearchPanel: () => <div data-testid="hybrid-panel-stub" />,
@@ -27,7 +37,7 @@ import { PortalDataError } from "@/server/data/supabase-rpc";
 const searchDictionary = enMessages.Search;
 
 function translator(namespace: string) {
-  return (key: string, values?: Record<string, unknown>) => {
+  return (key: string, values?: Record<string, string | number>) => {
     const table = (enMessages as Record<string, Record<string, string>>)[namespace] ?? {};
     const template = table[key] ?? key;
     if (!values) return template;
@@ -94,8 +104,12 @@ describe("Search page sidebar state (Portal #46)", () => {
   });
 
   it("a successful query keeps facets and the facet description", async () => {
-    catalogMocks.searchPublicProcesses.mockResolvedValue(catalogFixture.search);
-    catalogMocks.getPublicFacets.mockResolvedValue(catalogFixture.facets);
+    catalogMocks.searchPublicProcesses.mockResolvedValue(
+      publicSearchPageSchema.parse(catalogFixture.search),
+    );
+    catalogMocks.getPublicFacets.mockResolvedValue(
+      publicFacetsSchema.parse({ ...catalogFixture.facets, kind: "process" }),
+    );
 
     await renderSearchPage({ v: "1", kind: "process", q: "electricity" });
 
