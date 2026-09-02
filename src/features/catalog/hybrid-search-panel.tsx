@@ -1,9 +1,22 @@
 "use client";
 
-import { LinkIcon, ScanSearchIcon, ShieldAlertIcon, XIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import {
+  LinkIcon,
+  LoaderCircleIcon,
+  ScanSearchIcon,
+  ShieldAlertIcon,
+  SparklesIcon,
+  XIcon,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +24,8 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/u
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { mapHybridItem, mapSearchItem } from "@/features/catalog/map-public-data";
+import { mapProgressiveSearchPage } from "@/features/catalog/map-public-data";
+import { useProgressiveSearch } from "@/features/catalog/use-progressive-search";
 import { SearchResults, type SearchResultLabels } from "@/features/catalog/search-results";
 import {
   decodeHybridQueryFragment,
@@ -23,9 +37,8 @@ import {
   type PortalHybridSearchRequest,
 } from "@/lib/hybrid-request";
 import { localePath, type PortalLocale } from "@/i18n/routing";
-import type { PortalHybridBffResponse } from "@/server/hybrid/contracts";
 
-type HybridSearchLabels = {
+export type HybridSearchLabels = {
   advisoryDescription: string;
   advisoryTitle: string;
   compareSelected: string;
@@ -53,33 +66,38 @@ type HybridSearchLabels = {
   submit: string;
   terms: string;
   title: string;
+  initialDescription: string;
+  optimizing: string;
+  optimizingDescription: string;
+  updateTitle: string;
+  updateDescription: string;
+  showUpdated: string;
+  optimized: string;
+  noMatchesTitle: string;
+  noMatchesDescription: string;
+  loadMore: string;
+  loadingMore: string;
+  pageError: string;
+  cursorExpired: string;
+  restart: string;
 };
 
 type RequestState = {
   filters: PortalHybridFilters;
   kind: "process" | "flow";
   query: string;
+  limit: number;
 };
-
-function isBffResponse(value: unknown): value is PortalHybridBffResponse {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
-  const record = value as Record<string, unknown>;
-  return (
-    record.schemaVersion === "portal.hybrid-bff.v1" &&
-    (record.mode === "hybrid" || record.mode === "lexical_fallback") &&
-    (record.kind === "process" || record.kind === "flow") &&
-    Array.isArray(record.items)
-  );
-}
 
 function shareRequest(state: RequestState): PortalHybridSearchRequest {
   return portalHybridSearchRequestSchema.parse({
-    schemaVersion: "portal.hybrid-search-request.v1",
+    schemaVersion: "portal.hybrid-search-request.v2",
     kind: state.kind,
     query: state.query,
     filters:
       state.kind === "flow" ? { ...state.filters, processSubtype: undefined } : state.filters,
-    limit: 10,
+    limit: state.limit,
+    cursor: null,
   });
 }
 
@@ -102,18 +120,32 @@ export function HybridSearchPanel({
     filters: initialFilters,
     kind: initialKind,
     query: "",
+    limit: 20,
   });
-  const [response, setResponse] = useState<PortalHybridBffResponse | null>(null);
   const [message, setMessage] = useState("");
-  const [running, setRunning] = useState(false);
   const [sharePreview, setSharePreview] = useState(false);
+  const {
+    state: search,
+    start,
+    applyUpdate,
+    loadMore,
+    running,
+    unavailable,
+  } = useProgressiveSearch(locale);
+  const response = search.response;
+  const resultHeading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     if (!window.location.hash.startsWith("#hybrid=")) return;
     try {
       const request = decodeHybridQueryFragment(window.location.hash);
       // oxlint-disable-next-line react-hooks/set-state-in-effect -- A fragment is browser-only input and never auto-submits.
-      setRequestState({ filters: request.filters, kind: request.kind, query: request.query });
+      setRequestState({
+        filters: request.filters,
+        kind: request.kind,
+        query: request.query,
+        limit: request.limit,
+      });
     } catch {
       // oxlint-disable-next-line react-hooks/set-state-in-effect -- Invalid shared input is reported locally.
       setMessage(labels.error);
@@ -122,24 +154,26 @@ export function HybridSearchPanel({
 
   const parsedRequest = useMemo(() => {
     const parsed = portalHybridSearchRequestSchema.safeParse({
-      schemaVersion: "portal.hybrid-search-request.v1",
+      schemaVersion: "portal.hybrid-search-request.v2",
       kind: requestState.kind,
       query: requestState.query,
       filters:
         requestState.kind === "flow"
           ? { ...requestState.filters, processSubtype: undefined }
           : requestState.filters,
-      limit: 10,
+      limit: requestState.limit,
+      cursor: null,
     });
-    return parsed.success ? parsed.data : null;
+    return parsed.success && parsed.data.schemaVersion === "portal.hybrid-search-request.v2"
+      ? parsed.data
+      : null;
   }, [requestState]);
 
   const results = useMemo(() => {
     if (!response) return [];
-    return response.mode === "hybrid"
-      ? response.items.map((item) => mapHybridItem(item, locale))
-      : response.items.map((item) => mapSearchItem(item, locale));
+    return mapProgressiveSearchPage(response, locale);
   }, [locale, response]);
+  const keptLexicalResults = search.hybrid === "empty" && results.length > 0;
 
   return (
     <Card>
@@ -152,32 +186,15 @@ export function HybridSearchPanel({
       <CardContent className="flex flex-col gap-6">
         <form
           className="flex flex-col gap-4"
-          onSubmit={async (event) => {
+          onSubmit={(event) => {
             event.preventDefault();
             if (!parsedRequest) {
               setMessage(labels.error);
               return;
             }
-            setRunning(true);
             setMessage("");
-            setResponse(null);
             setSharePreview(false);
-            try {
-              const result = await fetch("/internal/hybrid", {
-                method: "POST",
-                body: JSON.stringify(parsedRequest),
-                headers: { "content-type": "application/json" },
-                cache: "no-store",
-                redirect: "error",
-              });
-              const payload = (await result.json()) as unknown;
-              if (!result.ok || !isBffResponse(payload)) throw new Error("hybrid_response_invalid");
-              setResponse(payload);
-            } catch {
-              setMessage(labels.error);
-            } finally {
-              setRunning(false);
-            }
+            start(parsedRequest);
           }}
         >
           <Field>
@@ -216,9 +233,13 @@ export function HybridSearchPanel({
             <FieldDescription>{labels.privacy}</FieldDescription>
           </Field>
           <div className="flex flex-wrap gap-2">
-            <Button disabled={!parsedRequest || running} type="submit">
-              <ScanSearchIcon data-icon="inline-start" />
-              {running ? labels.running : labels.submit}
+            <Button aria-busy={running} disabled={!parsedRequest} type="submit">
+              {running ? (
+                <LoaderCircleIcon className="motion-safe:animate-spin" data-icon="inline-start" />
+              ) : (
+                <ScanSearchIcon data-icon="inline-start" />
+              )}
+              {labels.submit}
             </Button>
             <Button
               disabled={!parsedRequest}
@@ -271,58 +292,125 @@ export function HybridSearchPanel({
           </Card>
         ) : null}
 
-        {response?.mode === "lexical_fallback" ? (
+        {search.request && (running || search.pendingUpdate || response) ? (
+          <output
+            aria-atomic="true"
+            aria-live="polite"
+            className="bg-muted/30 grid min-h-28 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-lg border p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+          >
+            {running ? (
+              <LoaderCircleIcon
+                aria-hidden="true"
+                className="text-primary size-5 shrink-0 motion-safe:animate-spin"
+              />
+            ) : keptLexicalResults ? (
+              <ScanSearchIcon
+                aria-hidden="true"
+                className="text-muted-foreground size-5 shrink-0"
+              />
+            ) : search.pendingUpdate || response?.mode === "hybrid" ? (
+              <SparklesIcon aria-hidden="true" className="text-primary size-5 shrink-0" />
+            ) : (
+              <ShieldAlertIcon
+                aria-hidden="true"
+                className="text-muted-foreground size-5 shrink-0"
+              />
+            )}
+            <span className="flex min-w-0 flex-col gap-1">
+              <span className="font-medium">
+                {search.pendingUpdate
+                  ? labels.updateTitle
+                  : running
+                    ? results.length > 0
+                      ? labels.optimizing
+                      : labels.running
+                    : keptLexicalResults
+                      ? labels.noMatchesTitle
+                      : response?.mode === "hybrid"
+                        ? labels.optimized
+                        : labels.fallbackTitle}
+              </span>
+              <span className="text-muted-foreground text-sm">
+                {search.pendingUpdate
+                  ? labels.updateDescription
+                  : running
+                    ? results.length > 0
+                      ? labels.optimizingDescription
+                      : labels.initialDescription
+                    : keptLexicalResults
+                      ? labels.noMatchesDescription
+                      : response?.mode === "hybrid"
+                        ? labels.advisoryDescription
+                        : labels.fallbackDescription}
+              </span>
+            </span>
+            {search.pendingUpdate ? (
+              <Button
+                className="col-start-2 h-auto min-h-11 justify-self-start whitespace-normal sm:col-start-auto"
+                onClick={() => {
+                  applyUpdate();
+                  resultHeading.current?.focus({ preventScroll: true });
+                }}
+                type="button"
+              >
+                {labels.showUpdated}
+              </Button>
+            ) : null}
+          </output>
+        ) : null}
+
+        {unavailable ? (
           <Alert>
             <ShieldAlertIcon aria-hidden="true" />
-            <AlertTitle>{labels.fallbackTitle}</AlertTitle>
-            <AlertDescription>{labels.fallbackDescription}</AlertDescription>
+            <AlertTitle>{labels.error}</AlertTitle>
           </Alert>
         ) : null}
 
         {response?.mode === "hybrid" ? (
-          <Card size="sm">
-            <CardHeader>
-              <CardTitle>
-                <h3>{labels.advisoryTitle}</h3>
-              </CardTitle>
-              <CardDescription>{labels.advisoryDescription}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <dl className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <dt className="text-muted-foreground text-xs font-medium uppercase">
-                    {labels.semanticQuery}
-                  </dt>
-                  <dd>{response.interpretation.semanticQuery}</dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground text-xs font-medium uppercase">
-                    {labels.terms}
-                  </dt>
-                  <dd className="flex flex-wrap gap-2">
-                    {response.interpretation.terms.map((term) => (
-                      <Badge key={`${term.language}:${term.value}`} variant="outline">
-                        {term.language} · {term.value}
-                      </Badge>
-                    ))}
-                  </dd>
-                </div>
-              </dl>
-            </CardContent>
-          </Card>
+          <Accordion collapsible type="single">
+            <AccordionItem value="interpretation">
+              <AccordionTrigger type="button">{labels.advisoryTitle}</AccordionTrigger>
+              <AccordionContent>
+                <dl className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-muted-foreground text-xs font-medium uppercase">
+                      {labels.semanticQuery}
+                    </dt>
+                    <dd>{response.interpretation.semanticQuery}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground text-xs font-medium uppercase">
+                      {labels.terms}
+                    </dt>
+                    <dd className="flex flex-wrap gap-2">
+                      {response.interpretation.terms.map((term) => (
+                        <Badge key={`${term.language}:${term.value}`} variant="outline">
+                          {term.language} · {term.value}
+                        </Badge>
+                      ))}
+                    </dd>
+                  </div>
+                </dl>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         ) : null}
 
         {response ? (
           results.length === 0 ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyTitle>{labels.emptyTitle}</EmptyTitle>
-                <EmptyDescription>{labels.emptyDescription}</EmptyDescription>
-              </EmptyHeader>
-            </Empty>
+            running ? null : (
+              <Empty>
+                <EmptyHeader>
+                  <EmptyTitle>{labels.emptyTitle}</EmptyTitle>
+                  <EmptyDescription>{labels.emptyDescription}</EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            )
           ) : (
             <section aria-label={labels.resultsTitle} className="flex flex-col gap-4">
-              <h3 className="font-heading text-xl font-semibold">{labels.resultsTitle}</h3>
+              <h3 className="font-heading text-xl font-semibold" ref={resultHeading} tabIndex={-1}>
+                {labels.resultsTitle}
+              </h3>
               <form
                 action={localePath(locale, "compare")}
                 className="flex flex-col gap-4"
@@ -342,6 +430,44 @@ export function HybridSearchPanel({
                   </Button>
                 ) : null}
               </form>
+              {search.pageError ? (
+                <Alert>
+                  <AlertDescription>
+                    {search.pageError === "cursor_expired"
+                      ? labels.cursorExpired
+                      : labels.pageError}
+                  </AlertDescription>
+                  {search.pageError === "cursor_expired" && search.request ? (
+                    <Button
+                      className="mt-3"
+                      onClick={() => start(search.request!)}
+                      type="button"
+                      variant="outline"
+                    >
+                      {labels.restart}
+                    </Button>
+                  ) : null}
+                </Alert>
+              ) : null}
+              {response.nextCursor && search.pageError !== "cursor_expired" ? (
+                <Button
+                  className="self-start"
+                  disabled={search.pageLoading}
+                  onClick={() => {
+                    void loadMore();
+                  }}
+                  type="button"
+                  variant="outline"
+                >
+                  {search.pageLoading ? (
+                    <LoaderCircleIcon
+                      aria-hidden="true"
+                      className="size-4 motion-safe:animate-spin"
+                    />
+                  ) : null}
+                  {search.pageLoading ? labels.loadingMore : labels.loadMore}
+                </Button>
+              ) : null}
             </section>
           )
         ) : null}

@@ -75,7 +75,7 @@ describe("Portal R1 fixture upstream", () => {
     });
 
     const page = await client.call(
-      "portal_search_processes_v1",
+      "portal_search_processes_v2",
       { p_query: "electricity", p_filters: {}, p_sort: "relevance", p_cursor: null, p_limit: 20 },
       publicSearchPageSchema,
       { mode: "no-store" },
@@ -133,14 +133,14 @@ describe("Portal R1 fixture upstream", () => {
     expect(fixture.receipts.rpcByName).toMatchObject({
       portal_get_dataset_v1: 2,
       portal_catalog_summary_v1: 1,
-      portal_search_flows_v1: 1,
-      portal_search_processes_v1: 1,
+      portal_search_flows_v2: 1,
+      portal_search_processes_v2: 1,
       portal_sitemap_manifest_v1: 1,
       portal_sitemap_shard_v1: 1,
     });
     expect(fixture.receipts.lastRpc).toMatchObject({ name: "portal_sitemap_shard_v1" });
 
-    const missingProfile = await fetch(`${fixture.origin}/rest/v1/rpc/portal_search_processes_v1`, {
+    const missingProfile = await fetch(`${fixture.origin}/rest/v1/rpc/portal_search_processes_v2`, {
       method: "POST",
       body: "{}",
       headers: { apikey: environmentFixture.preview.publishableKey },
@@ -148,7 +148,7 @@ describe("Portal R1 fixture upstream", () => {
     expect(missingProfile.status).toBe(403);
 
     const bearerCredential = await fetch(
-      `${fixture.origin}/rest/v1/rpc/portal_search_processes_v1`,
+      `${fixture.origin}/rest/v1/rpc/portal_search_processes_v2`,
       {
         method: "POST",
         body: "{}",
@@ -387,7 +387,7 @@ describe("Portal R1 fixture upstream", () => {
     });
     await expect(
       crossEnvironmentRpc.call(
-        "portal_search_processes_v1",
+        "portal_search_processes_v2",
         { p_query: "electricity" },
         publicSearchPageSchema,
         { mode: "no-store" },

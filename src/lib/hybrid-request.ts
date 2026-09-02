@@ -67,14 +67,31 @@ export const portalHybridFiltersSchema = z
     }
   });
 
+const requestFields = {
+  kind: z.enum(["process", "flow"]),
+  query: portalHybridQuerySchema,
+  filters: portalHybridFiltersSchema,
+  limit: z.number().int().min(1).max(20),
+};
+
+export const portalHybridCursorSchema = z
+  .string()
+  .min(1)
+  .max(4096)
+  .regex(/^[A-Za-z0-9_-]+$/u);
+
 export const portalHybridSearchRequestSchema = z
-  .strictObject({
-    schemaVersion: z.literal("portal.hybrid-search-request.v1"),
-    kind: z.enum(["process", "flow"]),
-    query: portalHybridQuerySchema,
-    filters: portalHybridFiltersSchema,
-    limit: z.number().int().min(1).max(20),
-  })
+  .discriminatedUnion("schemaVersion", [
+    z.strictObject({
+      schemaVersion: z.literal("portal.hybrid-search-request.v1"),
+      ...requestFields,
+    }),
+    z.strictObject({
+      schemaVersion: z.literal("portal.hybrid-search-request.v2"),
+      ...requestFields,
+      cursor: portalHybridCursorSchema.nullable(),
+    }),
+  ])
   .superRefine((value, context) => {
     if (value.kind === "flow" && value.filters.processSubtype !== undefined) {
       context.addIssue({
@@ -87,3 +104,7 @@ export const portalHybridSearchRequestSchema = z
 
 export type PortalHybridFilters = z.infer<typeof portalHybridFiltersSchema>;
 export type PortalHybridSearchRequest = z.infer<typeof portalHybridSearchRequestSchema>;
+export type PortalHybridVersionSearchRequest = Extract<
+  PortalHybridSearchRequest,
+  { schemaVersion: "portal.hybrid-search-request.v2" }
+>;

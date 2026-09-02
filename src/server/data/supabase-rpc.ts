@@ -16,26 +16,26 @@ import {
 const defaultMaximumResponseBytes = 512 * 1024;
 const sitemapShardMaximumResponseBytes = 2 * 1024 * 1024;
 const rpcNames = new Set([
-  "portal_search_processes_v1",
-  "portal_search_flows_v1",
+  "portal_search_processes_v2",
+  "portal_search_flows_v2",
   "portal_catalog_summary_v1",
   "portal_get_dataset_v1",
   "portal_list_versions_v1",
   "portal_list_process_exchanges_v1",
-  "portal_facets_v1",
+  "portal_facets_v2",
   "portal_sitemap_entries_v1",
   "portal_sitemap_manifest_v1",
   "portal_sitemap_shard_v1",
 ]);
 
 export type PortalRpcName =
-  | "portal_search_processes_v1"
-  | "portal_search_flows_v1"
+  | "portal_search_processes_v2"
+  | "portal_search_flows_v2"
   | "portal_catalog_summary_v1"
   | "portal_get_dataset_v1"
   | "portal_list_versions_v1"
   | "portal_list_process_exchanges_v1"
-  | "portal_facets_v1"
+  | "portal_facets_v2"
   | "portal_sitemap_entries_v1"
   | "portal_sitemap_manifest_v1"
   | "portal_sitemap_shard_v1";
@@ -87,8 +87,8 @@ type PortalRpcClientOptions = {
 
 function routeFamily(name: PortalRpcName): PortalTelemetryEvent["routeFamily"] {
   switch (name) {
-    case "portal_search_processes_v1":
-    case "portal_search_flows_v1":
+    case "portal_search_processes_v2":
+    case "portal_search_flows_v2":
       return "catalog_search";
     case "portal_catalog_summary_v1":
       return "catalog_summary";
@@ -98,7 +98,7 @@ function routeFamily(name: PortalRpcName): PortalTelemetryEvent["routeFamily"] {
       return "dataset_versions";
     case "portal_list_process_exchanges_v1":
       return "dataset_exchanges";
-    case "portal_facets_v1":
+    case "portal_facets_v2":
       return "catalog_facets";
     case "portal_sitemap_entries_v1":
     case "portal_sitemap_manifest_v1":

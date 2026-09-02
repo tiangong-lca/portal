@@ -6,7 +6,10 @@ import type {
   PublicSearchPage,
   PublicVersionPage,
 } from "@/server/contracts/portal";
-import type { PortalHybridCandidate } from "@/server/hybrid/contracts";
+import type {
+  PortalHybridCandidate,
+  PortalHybridBffVersionResponse,
+} from "@/server/hybrid/contracts";
 import type { PortalLocale } from "@/i18n/routing";
 import {
   formatDatasetCitation,
@@ -119,6 +122,21 @@ export function mapHybridItem(item: PortalHybridCandidate, locale: Locale): Cata
     source: source || undefined,
     technology: localizedText(context.technology, locale),
   };
+}
+
+export function mapProgressiveSearchPage(
+  page: PortalHybridBffVersionResponse,
+  locale: Locale,
+): CatalogResultViewModel[] {
+  if (page.mode !== "hybrid") return page.items.map((item) => mapSearchItem(item, locale));
+  return page.items.map((item, index) => ({
+    ...mapHybridItem(item, locale),
+    matchingVersions: page.versionGroups[index]!.matches.slice(1).map((member) => ({
+      ref: exactRef(member.key.id, member.key.version),
+      version: member.key.version,
+      match: localizeMatchReasons(member.match.reasonCodes, locale),
+    })),
+  }));
 }
 
 export function mapDataset(

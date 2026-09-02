@@ -44,7 +44,7 @@ describe("Portal structured telemetry", () => {
     });
 
     await client.call(
-      "portal_search_processes_v1",
+      "portal_search_processes_v2",
       {
         p_query: "fixture-query-must-not-be-logged",
         p_filters: {},
@@ -60,7 +60,7 @@ describe("Portal structured telemetry", () => {
       {
         correlationId,
         routeFamily: "catalog_search",
-        rpcName: "portal_search_processes_v1",
+        rpcName: "portal_search_processes_v2",
         cachePolicy: "no-store",
         cacheHit: "unknown",
         backend: "supabase_data_api",
@@ -106,7 +106,7 @@ describe("Portal structured telemetry", () => {
 
     await expect(
       client.call(
-        "portal_search_processes_v1",
+        "portal_search_processes_v2",
         { p_query: "fixture-query-must-not-be-logged" },
         publicSearchPageSchema,
         { mode: "no-store" },
@@ -139,12 +139,12 @@ describe("Portal structured telemetry", () => {
 
       await expect(
         client.call(
-          "portal_search_processes_v1",
+          "portal_search_processes_v2",
           { p_query: "electricity" },
           publicSearchPageSchema,
           { mode: "no-store" },
         ),
-      ).resolves.toMatchObject({ schemaVersion: "portal.public-search-page.v1" });
+      ).resolves.toMatchObject({ schemaVersion: "portal.public-search-page.v2" });
     }
   });
 

@@ -22,13 +22,20 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 
   expect(bffResponse.ok()).toBe(true);
   await expect(page).toHaveURL(/\/en\/search\?v=1$/u);
-  await expect(page.getByRole("heading", { name: "Search interpretation" })).toBeVisible();
+  await expect(page.getByRole("status")).toContainText(
+    /Updated results are ready|Matching to your request is complete/u,
+  );
+  const updatedResults = page.getByRole("button", { name: "View updated results" });
+  if (await updatedResults.isVisible()) await updatedResults.click();
+  await expect(page.getByRole("button", { name: "Search interpretation" })).toBeVisible();
   await expect(
     page.getByText("This interpretation helps retrieve records", { exact: false }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Matching datasets" })).toBeVisible();
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
-  await expect(page.getByText("Text content", { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByText("Description matches your need", { exact: false }).first(),
+  ).toBeVisible();
   expect(page.url()).not.toContain(encodeURIComponent(query));
 
   const serious = (await new AxeBuilder({ page }).analyze()).violations.filter(
@@ -52,7 +59,7 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
   expect(shared).toContain("#hybrid=");
   expect(shared).not.toContain(query);
 
-  const candidates = page.getByRole("checkbox", { name: "Select this Process" });
+  const candidates = page.getByRole("checkbox", { name: /^Select this Process /u });
   await expect(candidates).toHaveCount(2);
   await candidates.nth(0).check();
   await candidates.nth(1).check();
@@ -69,11 +76,56 @@ test("automatically returns lexical cards for a fixed Hybrid guard rejection", a
 
   await expect(page.getByText("Keyword search results", { exact: true })).toBeVisible();
   await expect(
-    page.getByRole("alert").filter({ hasText: "Keyword search results" }),
+    page.getByRole("status").filter({ hasText: "Keyword search results" }),
   ).not.toContainText("guard_unavailable");
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
   await expect(page).toHaveURL(/\/en\/search\?v=1$/u);
   expect(page.url()).not.toContain(query);
+});
+
+test("keeps early selections stable until a late update is accepted and exposes exact versions on mobile", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  let releaseUpdate: () => void = () => {};
+  const updateReady = new Promise<void>((resolve) => {
+    releaseUpdate = resolve;
+  });
+  await page.route("**/internal/hybrid", async (route) => {
+    const response = await route.fetch();
+    await updateReady;
+    await route.fulfill({ response });
+  });
+  await page.goto("/en/search?v=1");
+  await page.getByLabel("Data need").fill("electricity for an industrial site");
+  await page.getByRole("button", { name: "Find matching data" }).click();
+  const firstSelection = page.getByRole("checkbox", { name: /^Select this Process /u }).first();
+  await firstSelection.check();
+  const selectedRef = await firstSelection.inputValue();
+  releaseUpdate();
+  await expect(page.getByRole("button", { name: "View updated results" })).toBeVisible();
+  await expect(firstSelection).toBeChecked();
+  expect(await firstSelection.inputValue()).toBe(selectedRef);
+  await page.getByRole("button", { name: "View updated results" }).click();
+  const versions = page.getByRole("button", { name: /Other matching versions/u }).first();
+  await versions.focus();
+  await page.keyboard.press("Enter");
+  const versionLink = page.getByRole("link", { name: "Version 00.99.999" });
+  await expect(versionLink).toBeVisible();
+  await expect(versionLink).toHaveAttribute(
+    "href",
+    /11111111-1111-1111-1111-111111111111%4000\.99\.999$/u,
+  );
+  const violations = (await new AxeBuilder({ page }).analyze()).violations.filter(
+    ({ impact }) => impact === "serious" || impact === "critical",
+  );
+  expect(violations).toEqual([]);
+  await page
+    .getByRole("heading", { name: "Matching datasets" })
+    .evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await page.screenshot({ path: "test-results/hybrid-progressive-mobile-viewport.png" });
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: "test-results/hybrid-progressive-mobile.png", fullPage: true });
 });
 
 test("shares collection notes only after preview and second confirmation", async ({

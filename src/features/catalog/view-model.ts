@@ -1,6 +1,13 @@
 export type CatalogKind = "process" | "flow";
 export type AccessLevel = "open" | "metadata_only";
 
+export type CatalogVersionMatch = {
+  ref: string;
+  version: string;
+  name?: string;
+  match?: string;
+};
+
 export type CatalogResultViewModel = {
   ref: string;
   kind: CatalogKind;
@@ -16,6 +23,7 @@ export type CatalogResultViewModel = {
   match?: string;
   accessLevel: AccessLevel;
   evidence?: string;
+  matchingVersions?: CatalogVersionMatch[];
 };
 
 export type DatasetDetailViewModel = CatalogResultViewModel & {

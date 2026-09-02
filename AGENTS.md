@@ -26,8 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
-lastReviewedNote: "Reviewed for Portal #42: Hybrid uses a dedicated bounded 30-second BFF timeout and 40-second EdgeOne host ceiling while LCIA, SEO/ISR, privacy, lexical fallback, and anonymous read-only boundaries remain unchanged."
+lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
+lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
 related:
   - README.md
   - docs/design-plan.md
@@ -49,6 +49,9 @@ related:
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
 - The public product has independent `zh-CN`, `en`, `de`, and `fr` routes and dictionaries. UI copy never falls back across locales; source-data language fallback remains visibly labelled.
 - Public lexical Search defaults to 10 result cards while accepting explicit validated limits through 50. Each facet group renders at most 16 linked values (8 visible + 8 disclosed); further values are counted and require a narrower query instead of being hidden in initial HTML/RSC.
+- Portal queries allow only state codes 100 and 200. Version-aware Search/facets use V2; Hybrid groups by the best exact matching version before paging and retains every recalled matching version. Never replace a match with the latest version or boost a dataset by its number of versions.
+- Natural-language discovery starts bounded same-origin lexical and signed Hybrid POSTs. Early rows remain usable; a late intelligent result is applied only by an explicit user action. Cancelled/stale requests and failed/expired pagination must not clear or silently replace displayed rows. Query text stays out of URLs, telemetry and implicit persistence.
+- Portal #37's RUM and seven-day observation are cancelled. Do not add a browser performance collector or reinstate an observation period; existing privacy-safe server reliability logs remain in scope.
 - Dynamic Search HTML remains private/no-store. Only page-initiated public lexical Search and facet RPC reads may opt into the fixed 30-second Next Data Cache with full request matching and fixed kind-only tags; Hybrid fallback uses the default no-store path, raw queries never enter tags/telemetry, and errors are not cached.
 - The user selected the cacheable performance/SEO CSP profile for EdgeOne: an enforcing policy permits the inline scripts/styles required by Next App Router, forbids `unsafe-eval`, and retains strict object/base/form/frame/source directives. The no-`unsafe-inline` profile remains a non-blocking upstream compatibility probe.
 - Node `24.18.x` is the pinned build toolchain. The selected EdgeOne Production deployment reports Node.js 20.19 for SSR, so server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
@@ -88,6 +91,8 @@ Localized routes own their root document under `app/[locale]`: the initial HTML 
 R2 natural-language search is a client enhancement over same-origin `POST /internal/hybrid`. The BFF signs the exact raw request for the fixed Edge path, strictly validates advisory/public-only output, and calls the existing R1 lexical façade for every fixed Edge fallback reason. Raw Hybrid queries, embeddings, identifiers, notes, and secrets stay out of URL/query parameters and telemetry. Query or note-bearing fragments require a visible full disclosure preview plus a separate confirmation; ID-only sharing remains the default.
 
 `contracts/database-engine/portal/**` is a byte-identical generated snapshot of one exact promoted Database commit. `pnpm check:database-contracts` verifies its closed inventory, source commit, byte lengths, and SHA-256 manifest; an explicit `--database-root` check additionally compares every file to the authoritative Database Git object. Prettier must ignore this directory because reformatting would destroy the byte identity. The explicit `PORTAL_LIVE_PROBE=true` Production integration test is read-only and default-skipped; normal local/CI tests never contact Production.
+
+Portal #44 has one user-authorized exception, recorded in workspace #963: the 34-file snapshot is pinned to Database `470e66157fc0b363c3360ba952f75280cfa1ff73` and consumes Edge `08b19d7b841395e5d16096ff5258d7ac405c9b6f` after their exact search increment was deployed and read back on Main. This does not establish Git promotion, frontend release or workspace completion and does not change the promoted-source rule for future work.
 
 Local tests cover both the retained strict CSP probe and the user-approved enforcing performance profile. Only `docs/r0/compatibility-matrix.md` may declare hosted status; public indexing changes only on an exact `portal/main` deployment after four-locale, runtime, cache, HMAC/Redis, brand, private-route noindex, and rollback probes pass.
 

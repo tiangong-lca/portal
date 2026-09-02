@@ -28,13 +28,13 @@ const telemetryEventSchema = z.strictObject({
   ]),
   rpcName: z
     .enum([
-      "portal_search_processes_v1",
-      "portal_search_flows_v1",
+      "portal_search_processes_v2",
+      "portal_search_flows_v2",
       "portal_catalog_summary_v1",
       "portal_get_dataset_v1",
       "portal_list_versions_v1",
       "portal_list_process_exchanges_v1",
-      "portal_facets_v1",
+      "portal_facets_v2",
       "portal_sitemap_entries_v1",
       "portal_sitemap_manifest_v1",
       "portal_sitemap_shard_v1",

@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
-lastReviewedNote: "Reviewed for Portal #42: multi-recall correctness precedes latency; Database/Edge/BFF remain bounded at 20/25/30 seconds and the EdgeOne host ceiling is 40 seconds without changing SEO/ISR, LCIA, privacy, or fallback."
+lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
+lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
 related:
   - AGENTS.md
   - README.md
@@ -166,6 +166,8 @@ Portal 只能进一步隐藏能力，不能把 `false` 改成 `true`。
 所有 Portal 数据响应采用版本化、白名单 DTO，不把数据库 raw row 当成产品契约。Phase 1 必须在 `database-engine/contracts/portal/portal.public-dataset.v1.schema.json` 固化 exhaustive JSON Schema，所有 object 均 `additionalProperties: false`，并生成 Portal TypeScript 类型；下面是该 Schema 必须覆盖的结构：
 
 Portal 仓库把一个 exact promoted Database commit 的全部 `contracts/portal/*.schema.json` 与 `generated/*.d.ts` 机械同步到 `contracts/database-engine/portal/**`。该目录不由 Portal 格式化或手工修改；版本化 manifest 固定 canonical repo、40 位 source commit、闭合文件清单、byte length 与 SHA-256。`pnpm check:database-contracts` 每次验证本地 snapshot，提供 Database checkout 时再逐文件对比 Git object。运行时 Zod 仍执行严格 fail-closed 解析，TypeScript DTO 直接使用该 generated contract；不能用 Portal 手写类型替代或通过放宽 Schema 消除 drift。
+
+Portal #44 / workspace #963 仅本次按用户授权使用已部署到 Main 并完成只读回验的候选提交：Database `470e66157fc0b363c3360ba952f75280cfa1ff73`、Edge `08b19d7b841395e5d16096ff5258d7ac405c9b6f`。当前快照包含 17 个 Schema 及 17 个 generated type 文件；[现网证据](https://github.com/tiangong-lca/workspace/issues/963#issuecomment-5508734216) 不等同于 Git promote、前端上线或 workspace integration 完成。该例外不改变以后工作的 promoted-source 要求。
 
 ```ts
 type PublicDatasetKey = {
@@ -558,14 +560,14 @@ EdgeOne Production 签名端只持有一个当前 `keyId/secret`。Supabase Edge
 
 ### 10.2 Database 公共 façade
 
-`database-engine` 新增版本化 read façade，建议命名：
+`database-engine` 提供版本化 read façade；当前查询消费 V2，旧 V1 保留兼容：
 
-- `api.portal_search_processes_v1`；
-- `api.portal_search_flows_v1`；
+- `api.portal_search_processes_v2`；
+- `api.portal_search_flows_v2`；
 - `api.portal_get_dataset_v1(kind, id, version)`；
 - `api.portal_list_versions_v1(kind, id, cursor, limit)`；
 - `api.portal_list_process_exchanges_v1(process_id, process_version, exchange_kind, cursor, limit)`；
-- `api.portal_facets_v1(kind, query, filters)`；
+- `api.portal_facets_v2(kind, query, filters)`；
 - `api.portal_sitemap_manifest_v1()`；
 - `api.portal_sitemap_shard_v1(shard_cursor)`。
 
@@ -754,11 +756,11 @@ EdgeOne deployment rollback 会同时应用目标 deployment 的旧项目配置�
 
 HMAC 只阻止未持有 secret 的客户端直接调用 Edge Function，不限制匿名用户通过公开 same-origin BFF 发起合法查询。因此成本边界由 EdgeOne WAF/BFF 请求预算、Edge Function 原子 admission gate、全局日/分钟预算、并发 lease、缓存、熔断与 kill switch 共同组成；任何文档、指标或 UI 都不得把 HMAC 描述成终端用户鉴权或单独的成本控制。
 
-R2 Hybrid 的固定请求不接受 cursor、sort、state、actor、team、`data_source`、模型名、权重、阈值、embedding、visitor hash 或备注：
+当前自然语言搜索使用 V2 请求，初次 cursor 必须为 null，续页只接受同一次查询契约返回的 opaque cursor；不接受 sort、state、actor、team、`data_source`、模型名、权重、阈值、embedding、visitor hash 或备注。V1 请求和分享片段仅保留兼容，不接受 cursor：
 
 ```ts
-type PortalHybridSearchRequestV1 = {
-  schemaVersion: "portal.hybrid-search-request.v1";
+type PortalHybridSearchRequestV2 = {
+  schemaVersion: "portal.hybrid-search-request.v2";
   kind: "process" | "flow";
   query: string; // 1–512 code points、UTF-8 <= 2048 bytes、无 C0/C1
   filters: {
@@ -771,12 +773,19 @@ type PortalHybridSearchRequestV1 = {
     source?: string;
   };
   limit: number; // 1–20
+  cursor: string | null; // 初次 null；后续为本次结果返回的 base64url token
 };
 ```
 
-Database R2 façade 固定为 `api.portal_hybrid_search_v1(p_kind, p_query_terms, p_query_embedding, p_filters, p_limit)`。它在 Database 内联合 lexical/semantic 的 100/200 Process/Flow candidates，使用版本化常量 `portal-hybrid-rank-v1` 做一次稳定融合，返回 `portal.public-hybrid-candidate-page.v1`；item 只复用 R1 public card/capability 字段。`match.evidence` 只能包含实际检索产生的 lexical rank、semantic rank 和 semantic distance，不能返回 raw `json`、`search_text`、embedding、team/model/owner/review 字段或猜测命中的具体字段。OpenAI rewrite 只能显示为 `source=model_generated`、`advisory=true` 的 query interpretation，不能当作数据库事实。
+Database façade 为 `api.portal_hybrid_search_v2(p_kind, p_query_terms, p_query_embedding, p_filters, p_limit, p_cursor)`，返回 `portal.public-hybrid-candidate-page.v2`。仅 state code 100/200 的精确版本参与候选、计数、过滤与 hydration；所有其他 code 都排除，不核对或替换为“最新公开版本”。每路以 200 个有效候选为基线，过滤发生在窗口截断前；索引参数与有界补偿由 Database 管理，不为了补满窗口而恢复全库精确扫描。融合版本固定 `portal-hybrid-rank-v2`，先按同一 dataset 的最佳版本分数组组，再分页；不累加版本数量来抬高排名。
 
-R2 最小版本不做 Hybrid cursor：一次最多返回 20 条，需要更多结果时进入现有 lexical GET 页。Edge 只返回 Hybrid 成功 DTO或固定失败原因；`guard_unavailable`、`budget_exhausted`、`concurrency_exhausted`、kill switch、circuit、timeout、contract failure 的 lexical fallback 由 Portal BFF 使用现有 R1 façade执行，Edge 不得在 guard 失败后绕过 guard 调 Database。Hybrid query 与备注不得进入 URL、浏览历史路径、telemetry 或默认 fragment。
+`items` 是每组的最佳命中卡片；`versionGroups` 保存组内全部已召回的精确 `kind/id/version` 和各自 match evidence。展开只标注本次确实命中的版本，详情的 Versions 页面可以另行显示其他公开版本。`candidateCount` / `datasetCount` 是有界候选窗口内的版本数 / 数据集数，不是全库总量。`match.evidence` 只含真实 lexical/semantic rank 和 distance，不返回 raw `json`、`search_text`、embedding、team/model/owner/review 字段或猜测命中的具体字段。
+
+语义路径固定为“AI 改写 -> 非空规范化英文 `semantic_query_en` -> embedding”，不为了表面并行而向量化原始非英文查询。全文检索保留原始查询和来源里的所有原始语言，英文/中文别名只是补充。改写文本仅是 `source=model_generated`、`advisory=true` 的检索解释，不是数据事实；独立的缓存写入与 Database RPC 可以并行，但不把单个 Database Hybrid RPC 描述成 JavaScript 的两路召回 Promise.all。
+
+自然语言 UI 同时发起 `POST /internal/hybrid/lexical` 与 `POST /internal/hybrid`。前者只读当前 V2 公开目录，不调用模型；后者保持原始 body HMAC、admission 与全部现有预算。先到的普通结果可立即阅读与选择，晚到的非空智能结果只提示“搜索结果有更新”，点击后才切换；不伪造进度、人工延迟或 AI 完成状态。智能匹配为空时保留普通结果及其翻页游标，并明确说明未找到智能匹配；即使智能空页先到，也等待尚未完成的普通搜索，不提前宣布最终空结果。新提交与卸载会取消旧浏览器请求；BFF 传递取消信号，取消后不追加 fallback 查询。稳定键保留用户阅读与选择，版本操作始终使用精确引用。
+
+一次最多加载 20 个 Hybrid 数据集组，并以 V2 cursor 继续。模型短缓存仍为 60 秒；cursor 所需的缓存失效时返回明确错误，当前列表保留，用户可显式重新搜索；不得悄悄重新生成不同 embedding 或改成 lexical 第一页。普通结果与 fallback 用独立 lexical cursor 继续，绝不混用两种排名或 query fingerprint。Edge 只返回成功 DTO 或固定失败原因；guard/预算/并发/开关/熔断/timeout/contract failure 的初次 lexical fallback 由 BFF 使用 V2 façade 执行，Edge 不绕过 guard 访问模型或 Database。自然语言请求、早期结果、fallback 与续页全部 no-store；query 与备注不进入 URL、浏览历史、telemetry 或默认 fragment。
 
 ### 10.4 Published LCIA
 
@@ -817,7 +826,7 @@ Portal 只使用前两种展示详情与显式选中比较；不以公开排名�
 - Database sitemap manifest 仍固定返回 64 个 opaque source shard。Portal 将每个 source shard 按稳定位置取模切成 4 个公开 part，因此根级 `/catalog-{process|flow}-sitemap.xml` 各固定列出 256 项；唯一规范参数为 `?shard={0..63}&part={0..3}`，确保根文件作用域覆盖四种语言；
 - shard 数字只接受规范化 `0..63`，Portal 按 manifest 数组位置选择 opaque cursor 并原样调用 Database；cursor 不进入 URL、XML、响应或日志；
 - 每个 Database source shard 最多 4,096 个 identity；每个公开 part 最多 1,024 个 identity，并为 zh-CN/en/de/fr 各生成一条 `<url>`，每条均列出四个 reciprocal alternate，最终 UTF-8 XML 必须严格小于 5 MiB；4 个 part 的 union 必须无重复、无遗漏地还原 source shard；
-- 最新版本进入 sitemap，历史版本由 Versions 页面发现；
+- 最新版本进入 sitemap；命中的历史公开版本通过搜索展开直接发现，其他公开版本仍可在 Versions 页面浏览；
 - 成功响应默认 `no-store`，确保未验证的平台也满足零陈旧；只有 exact deployment 证明 cache key 精确包含规范 `shard` 参数、到期同步 revalidate、错误不缓存且不自动返回 stale 后，才设置 `PORTAL_SITEMAP_CACHE_MODE=shared-300` 并使用 `public, max-age=0, s-maxage=300, must-revalidate`；Vercel 的 `s-maxage` 会后台异步更新，因此当前禁止该模式；缺失参数表示 index，唯一参数只接受规范十进制 `0..63`，其他 query 全部在 Database 调用前返回 `404/no-store`；配置、上游、DTO 或字节门失败返回 `503/no-store`；禁止 query cache-bust、`stale-while-revalidate` 与 `stale-if-error`；
 - robots 不用于保护数据，真正的权限仍在 Database/Edge。
 
@@ -1224,7 +1233,7 @@ Compatibility spike 必须实测：
 - 搜索页首屏 JavaScript gzip <= 250 KB；
 - 不为隐藏 tab 预加载大型表格、地图或图表。
 
-首次公开以 exact EdgeOne deployment 的受控 cold/warm 浏览器样本作为 launch gate；新站没有足够真实访客时不得伪造 field p75。公开后启动 7 天 RUM 观察，只匿名聚合 LCP、INP、CLS、TTFB、页面族、设备级别和大区，不上传搜索词、自然语言、UUID、候选集、备注或精确访问路径。RUM 不阻塞首次上线；任何持续超预算或错误率异常必须创建跟踪 Issue，并给出修复或回滚处置。
+首次公开保留 exact EdgeOne deployment 的受控 cold/warm 浏览器与兼容性验证；没有足够真实访客时不得声称已取得 field p75。用户已取消 Portal #37 的 RUM 与七天观察，不部署浏览器性能采集器、不启动观察期。现有不含查询原文、UUID 列表、备注或凭据的服务端可靠性日志继续保留；实际故障仍按已有交付流程记录与处置。
 
 ### 18.2 数据查询
 

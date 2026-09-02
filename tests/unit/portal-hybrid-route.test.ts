@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import catalogFixture from "../fixtures/portal/catalog-v1.json";
+import { hybridVersionPage } from "../fixtures/portal/hybrid-v2";
 
 import type { PortalHybridSearchRequest } from "@/lib/hybrid-request";
-import { createPortalHybridPostHandler } from "@/app/internal/hybrid/route";
+import { createPortalHybridPostHandler } from "@/server/hybrid/handler";
 import type { PublicSearchPage } from "@/server/contracts/portal";
 import { PortalDataError } from "@/server/data/supabase-rpc";
 import { queryPortalHybridRaw, type PortalHybridQueryResult } from "@/server/hybrid/client";
@@ -70,6 +71,112 @@ afterEach(() => {
 });
 
 describe("Portal Hybrid same-origin BFF", () => {
+  it("does not start lexical fallback after the user cancelled the incoming request", async () => {
+    const controller = new AbortController();
+    const lexicalFallback =
+      vi.fn<(input: PortalHybridSearchRequest) => Promise<PublicSearchPage>>();
+    const handler = createPortalHybridPostHandler({
+      query: vi.fn<typeof queryPortalHybridRaw>(async (_body, options) => {
+        expect(options?.signal).toBeInstanceOf(AbortSignal);
+        controller.abort();
+        return { status: "fallback", reason: "hybrid_upstream_unavailable" };
+      }),
+      lexicalFallback,
+      logger: vi.fn<PortalTelemetryLogger>(),
+    });
+    const incoming = new Request(request(), { signal: controller.signal });
+    expect((await handler(incoming)).status).toBe(499);
+    expect(lexicalFallback).not.toHaveBeenCalled();
+  });
+
+  const versionInput = {
+    ...input,
+    schemaVersion: "portal.hybrid-search-request.v2" as const,
+    cursor: null as string | null,
+  };
+
+  it("returns early lexical results without invoking the signed model path", async () => {
+    const query = vi.fn<typeof queryPortalHybridRaw>();
+    const lexicalFallback = vi.fn<() => Promise<PublicSearchPage>>(
+      async () => catalogFixture.search as PublicSearchPage,
+    );
+    const handler = createPortalHybridPostHandler({
+      lexicalOnly: true,
+      query,
+      lexicalFallback,
+      logger: vi.fn<PortalTelemetryLogger>(),
+    });
+    const response = await handler(request(versionInput));
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      schemaVersion: "portal.hybrid-bff.v2",
+      mode: "lexical",
+      interpretation: null,
+      fallbackReason: null,
+    });
+    expect(query).not.toHaveBeenCalled();
+    expect(lexicalFallback).toHaveBeenCalledWith(
+      expect.objectContaining({ query: input.query, cursor: null }),
+    );
+  });
+
+  it("preserves exact version groups and continuation in a V2 response", async () => {
+    const handler = createPortalHybridPostHandler({
+      query: vi.fn<typeof queryPortalHybridRaw>(async () => ({
+        status: "available",
+        data: portalHybridSearchPageSchema.parse(hybridVersionPage()),
+      })),
+      logger: vi.fn<PortalTelemetryLogger>(),
+    });
+    const response = await handler(request(versionInput));
+    const payload = await response.json();
+    expect(response.status).toBe(200);
+    expect(payload).toMatchObject({
+      schemaVersion: "portal.hybrid-bff.v2",
+      mode: "hybrid",
+      datasetCount: 1,
+      candidateCount: 2,
+      nextCursor: null,
+    });
+    expect(payload.versionGroups[0].matches).toHaveLength(2);
+    expect(JSON.stringify(payload)).not.toContain(input.query);
+  });
+
+  it.each(["invalid_request", "hybrid_timeout"] as const)(
+    "does not replace a failed cursor with lexical page one (%s)",
+    async (reason) => {
+      const lexicalFallback =
+        vi.fn<(input: PortalHybridSearchRequest) => Promise<PublicSearchPage>>();
+      const handler = createPortalHybridPostHandler({
+        query: vi.fn<typeof queryPortalHybridRaw>(async () => ({ status: "fallback", reason })),
+        lexicalFallback,
+        logger: vi.fn<PortalTelemetryLogger>(),
+      });
+      const response = await handler(request({ ...versionInput, cursor: "opaque_cursor" }));
+      expect(response.status).toBe(reason === "invalid_request" ? 409 : 503);
+      await expect(response.json()).resolves.toEqual({
+        code: reason === "invalid_request" ? "hybrid_cursor_expired" : "hybrid_page_unavailable",
+      });
+      expect(lexicalFallback).not.toHaveBeenCalled();
+    },
+  );
+
+  it("applies the same origin and strict request boundary to early lexical search", async () => {
+    const lexicalFallback =
+      vi.fn<(input: PortalHybridSearchRequest) => Promise<PublicSearchPage>>();
+    const handler = createPortalHybridPostHandler({
+      lexicalOnly: true,
+      lexicalFallback,
+      logger: vi.fn<PortalTelemetryLogger>(),
+    });
+    expect(
+      (await handler(request(versionInput, { origin: "https://attacker.example" }))).status,
+    ).toBe(403);
+    expect((await handler(request({ ...versionInput, state_code: 20 }))).status).toBe(400);
+    expect((await handler(request(input))).status).toBe(400);
+    expect(lexicalFallback).not.toHaveBeenCalled();
+  });
+
   it("returns strict advisory Hybrid results without echoing the raw query", async () => {
     const events: PortalTelemetryEvent[] = [];
     const handler = createPortalHybridPostHandler({

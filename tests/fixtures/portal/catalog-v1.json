@@ -177,7 +177,7 @@
     "modifiedAt": "2026-08-25T12:00:00Z"
   },
   "search": {
-    "schemaVersion": "portal.public-search-page.v1",
+    "schemaVersion": "portal.public-search-page.v2",
     "kind": "process",
     "queryFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "items": [
@@ -285,7 +285,7 @@
     "nextCursor": null
   },
   "facets": {
-    "schemaVersion": "portal.public-facets.v1",
+    "schemaVersion": "portal.public-facets.v2",
     "kind": "all",
     "queryFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "groups": [

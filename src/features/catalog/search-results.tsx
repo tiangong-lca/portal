@@ -2,6 +2,12 @@ import { BookmarkPlusIcon, GitCompareArrowsIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,6 +23,7 @@ import { localePath, type PortalLocale } from "@/i18n/routing";
 import { formatDatasetCitation } from "@/i18n/domain-vocabulary";
 
 import { CitationCopy } from "./citation-copy";
+import { groupSearchResults } from "./search-version-groups";
 
 export type SearchResultLabels = {
   collect: string;
@@ -39,6 +46,8 @@ export type SearchResultLabels = {
   selectForCompare: string;
   source: string;
   technology: string;
+  matchingVersions: string;
+  version: string;
 };
 
 export function SearchResults({
@@ -67,7 +76,7 @@ export function SearchResults({
 
   return (
     <ol className="flex flex-col gap-4">
-      {items.map((item) => {
+      {groupSearchResults(items).map((item) => {
         const detailHref = localePath(locale, `${item.kind}/${encodeURIComponent(item.ref)}`);
         const citation = formatDatasetCitation(locale, {
           name: item.name,
@@ -99,6 +108,7 @@ export function SearchResults({
                   <label className="flex min-h-[44px] w-fit items-center gap-2 text-sm font-medium">
                     <input
                       className="accent-primary size-5"
+                      aria-label={`${labels.selectForCompare} ${item.ref}`}
                       name="ids"
                       type="checkbox"
                       value={item.ref}
@@ -111,7 +121,7 @@ export function SearchResults({
                   {item.ref}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex flex-col gap-4">
                 <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {context.map(({ label, value }) => (
                     <div className="flex min-w-0 flex-col gap-1" key={`${item.ref}:${label}`}>
@@ -122,6 +132,72 @@ export function SearchResults({
                     </div>
                   ))}
                 </dl>
+                {item.matchingVersions && item.matchingVersions.length > 0 ? (
+                  <Accordion collapsible type="single">
+                    <AccordionItem value="versions">
+                      <AccordionTrigger className="min-h-11" type="button">
+                        <span>
+                          {labels.matchingVersions}{" "}
+                          <Badge className="ml-2" variant="secondary">
+                            {item.matchingVersions.length}
+                          </Badge>
+                        </span>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ul className="flex flex-col gap-3">
+                          {item.matchingVersions.map((version) => (
+                            <li
+                              className="bg-muted/40 grid grid-cols-1 gap-3 rounded-lg p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+                              key={version.ref}
+                            >
+                              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                <Link
+                                  className="text-sm font-medium break-words"
+                                  href={localePath(
+                                    locale,
+                                    `${item.kind}/${encodeURIComponent(version.ref)}`,
+                                  )}
+                                >
+                                  {version.name ?? `${labels.version} ${version.version}`}
+                                </Link>
+                                {version.name ? (
+                                  <span className="text-muted-foreground font-mono text-xs">
+                                    {labels.version} {version.version}
+                                  </span>
+                                ) : null}
+                                {version.match ? (
+                                  <span className="text-muted-foreground text-xs">
+                                    {version.match}
+                                  </span>
+                                ) : null}
+                              </div>
+                              {selectable && item.kind === "process" ? (
+                                <label className="flex min-h-11 items-center gap-2 text-sm">
+                                  <input
+                                    aria-label={`${labels.selectForCompare} ${version.ref}`}
+                                    className="accent-primary size-5"
+                                    name="ids"
+                                    type="checkbox"
+                                    value={version.ref}
+                                  />
+                                  {labels.selectForCompare}
+                                </label>
+                              ) : item.kind === "process" ? (
+                                <Button asChild size="sm" variant="outline">
+                                  <Link
+                                    href={`${localePath(locale, "compare")}?v=1&ids=${encodeURIComponent(version.ref)}`}
+                                  >
+                                    {labels.compare}
+                                  </Link>
+                                </Button>
+                              ) : null}
+                            </li>
+                          ))}
+                        </ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                ) : null}
               </CardContent>
               <CardFooter className="flex flex-wrap gap-2">
                 <Button asChild>

@@ -21,8 +21,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
-lastReviewedNote: "Reviewed for Portal #42: the server-only interactive Hybrid timeout and 40-second host ceiling do not change initial HTML, CSP, ISR, Streaming, or strict-profile reopen conditions."
+lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
+lastReviewedNote: "Reviewed for Portal #44: the version-aware progressive POST UI preserves the existing CSP, ISR, native routing and strict-profile reopen boundaries; all 52 local production browser checks pass."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

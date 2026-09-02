@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import catalogFixture from "../fixtures/portal/catalog-v1.json";
 import environmentFixture from "../fixtures/portal/r1-environments.json";
+import { hybridVersionPage } from "../fixtures/portal/hybrid-v2";
 
 import type { PortalHybridSearchRequest } from "@/lib/hybrid-request";
 import {
@@ -63,6 +64,104 @@ function edgePage() {
 }
 
 describe("Portal Hybrid signed client", () => {
+  it("does not sign or call the provider path after its incoming request was cancelled", async () => {
+    const controller = new AbortController();
+    controller.abort();
+    const fetchImplementation = vi.fn<typeof fetch>();
+    await expect(
+      queryPortalHybrid(request, { environment, signal: controller.signal, fetchImplementation }),
+    ).resolves.toEqual({ status: "fallback", reason: "hybrid_upstream_unavailable" });
+    expect(fetchImplementation).not.toHaveBeenCalled();
+  });
+
+  it("binds V2 requests to the grouped version-aware response, never an old V1 page", async () => {
+    const versionRequest = {
+      ...request,
+      schemaVersion: "portal.hybrid-search-request.v2" as const,
+      cursor: null,
+    };
+    const result = await queryPortalHybrid(versionRequest, {
+      environment,
+      fetchImplementation: vi.fn<typeof fetch>(async () => Response.json(hybridVersionPage())),
+    });
+    expect(result).toMatchObject({
+      status: "available",
+      data: { datasetCount: 1, candidateCount: 2, versionGroups: [{ matches: [{}, {}] }] },
+    });
+    await expect(
+      queryPortalHybrid(versionRequest, {
+        environment,
+        fetchImplementation: vi.fn<typeof fetch>(async () => Response.json(edgePage())),
+      }),
+    ).resolves.toEqual({ status: "fallback", reason: "contract_failure" });
+  });
+
+  it("rejects mismatched, unordered, missing or excessive version membership", async () => {
+    const mutations = [
+      (page: ReturnType<typeof hybridVersionPage>) => {
+        page.versionGroups[0]!.matches[1]!.key.id = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+      },
+      (page: ReturnType<typeof hybridVersionPage>) => {
+        page.versionGroups[0]!.matches[1]!.match.score = 1;
+      },
+      (page: ReturnType<typeof hybridVersionPage>) => {
+        page.versionGroups[0]!.matches.pop();
+      },
+      (page: ReturnType<typeof hybridVersionPage>) => {
+        page.candidateCount = 401;
+      },
+      (page: ReturnType<typeof hybridVersionPage>) => {
+        page.items[0]!.match.evidence.semanticRank = 201;
+      },
+      (page: ReturnType<typeof hybridVersionPage>) => {
+        page.nextCursor = "not/a/cursor";
+      },
+    ];
+    for (const mutate of mutations) {
+      const page = hybridVersionPage();
+      mutate(page);
+      await expect(
+        queryPortalHybrid(
+          { ...request, schemaVersion: "portal.hybrid-search-request.v2", cursor: null },
+          {
+            environment,
+            fetchImplementation: vi.fn<typeof fetch>(async () => Response.json(page)),
+          },
+        ),
+      ).resolves.toEqual({ status: "fallback", reason: "contract_failure" });
+    }
+  });
+
+  it("rejects out-of-order V2 representatives, including equal-score id ties", async () => {
+    const page = hybridVersionPage();
+    const second = structuredClone(page.items[0]!);
+    second.key.id = "ffffffff-ffff-4fff-8fff-ffffffffffff";
+    second.match.score = 0.8;
+    page.items.push(second);
+    page.versionGroups.push({
+      key: second.key,
+      matches: [{ key: second.key, match: second.match }],
+    });
+    page.candidateCount = 3;
+    page.datasetCount = 2;
+    const check = () =>
+      queryPortalHybrid(
+        { ...request, schemaVersion: "portal.hybrid-search-request.v2", cursor: null },
+        { environment, fetchImplementation: vi.fn<typeof fetch>(async () => Response.json(page)) },
+      );
+    await expect(check()).resolves.toMatchObject({ status: "available" });
+    second.match.score = page.items[0]!.match.score;
+    await expect(check()).resolves.toMatchObject({ status: "available" });
+    page.items.reverse();
+    page.versionGroups.reverse();
+    await expect(check()).resolves.toEqual({ status: "fallback", reason: "contract_failure" });
+    second.match.score = 1;
+    await expect(check()).resolves.toMatchObject({ status: "available" });
+    page.items.reverse();
+    page.versionGroups.reverse();
+    await expect(check()).resolves.toEqual({ status: "fallback", reason: "contract_failure" });
+  });
+
   it("uses a dedicated bounded Hybrid timeout without widening LCIA", () => {
     const runtimeEnvironment = {
       SUPABASE_URL: environment.supabaseUrl,

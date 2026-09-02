@@ -160,6 +160,8 @@ export default async function SearchPage({
     reference: detail("referenceProduct"),
     referenceYear: detail("referenceYear"),
     selectForCompare: t("selectForCompare"),
+    matchingVersions: t("matchingVersions"),
+    version: t("version"),
     source: detail("sourceDatabase"),
     technology: detail("technology"),
   };
@@ -369,6 +371,7 @@ export default async function SearchPage({
       <Separator />
 
       <HybridSearchPanel
+        key={JSON.stringify({ kind: parsedSearch.kind, filters: parsedSearch.filters })}
         initialFilters={parsedSearch.filters}
         initialKind={parsedSearch.kind}
         labels={{
@@ -389,6 +392,20 @@ export default async function SearchPage({
           queryPlaceholder: hybrid("queryPlaceholder"),
           resultsTitle: hybrid("resultsTitle"),
           running: hybrid("running"),
+          initialDescription: hybrid("initialDescription"),
+          optimizing: hybrid("optimizing"),
+          optimizingDescription: hybrid("optimizingDescription"),
+          updateTitle: hybrid("updateTitle"),
+          updateDescription: hybrid("updateDescription"),
+          showUpdated: hybrid("showUpdated"),
+          optimized: hybrid("optimized"),
+          noMatchesTitle: hybrid("noMatchesTitle"),
+          noMatchesDescription: hybrid("noMatchesDescription"),
+          loadMore: hybrid("loadMore"),
+          loadingMore: hybrid("loadingMore"),
+          pageError: hybrid("pageError"),
+          cursorExpired: hybrid("cursorExpired"),
+          restart: hybrid("restart"),
           semanticQuery: hybrid("semanticQuery"),
           shareCancel: hybrid("shareCancel"),
           shareConfirm: hybrid("shareConfirm"),

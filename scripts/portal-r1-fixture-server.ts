@@ -255,9 +255,9 @@ function sitemapShardResponse(arguments_: Record<string, unknown>) {
 
 function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown {
   switch (name) {
-    case "portal_search_processes_v1":
+    case "portal_search_processes_v2":
       return processSearchResponse();
-    case "portal_search_flows_v1":
+    case "portal_search_flows_v2":
       return flowSearchResponse();
     case "portal_catalog_summary_v1":
       return Object.keys(arguments_).length === 0 ? catalogFixture.catalogSummary : undefined;
@@ -301,7 +301,7 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
         arguments_.p_process_version === catalogFixture.datasetProcess.key.version
         ? catalogFixture.exchanges
         : null;
-    case "portal_facets_v1":
+    case "portal_facets_v2":
       return { ...catalogFixture.facets, kind: arguments_.p_kind };
     case "portal_sitemap_entries_v1":
       return sitemapResponse(arguments_.p_kind);
@@ -405,13 +405,20 @@ function verifyPortalHmac(
 }
 
 function validHybridInput(value: Record<string, unknown>): boolean {
-  if (Object.keys(value).sort().join("\n") !== "filters\nkind\nlimit\nquery\nschemaVersion") {
+  const versioned = value.schemaVersion === "portal.hybrid-search-request.v2";
+  const expectedKeys = versioned
+    ? "cursor\nfilters\nkind\nlimit\nquery\nschemaVersion"
+    : "filters\nkind\nlimit\nquery\nschemaVersion";
+  if (Object.keys(value).sort().join("\n") !== expectedKeys) {
     return false;
   }
   // oxlint-disable-next-line no-control-regex -- The fixture mirrors the exact Edge C0/C1 rejection contract.
   const queryHasControl = /[\u0000-\u001f\u007f-\u009f]/u.test(String(value.query));
   if (
-    value.schemaVersion !== "portal.hybrid-search-request.v1" ||
+    (!versioned && value.schemaVersion !== "portal.hybrid-search-request.v1") ||
+    (versioned &&
+      value.cursor !== null &&
+      (typeof value.cursor !== "string" || !/^[A-Za-z0-9_-]{1,4096}$/u.test(value.cursor))) ||
     (value.kind !== "process" && value.kind !== "flow") ||
     typeof value.query !== "string" ||
     value.query.trim().length === 0 ||
@@ -462,8 +469,23 @@ function hybridSearchResponse(input: Record<string, unknown>) {
   const kind = input.kind as "process" | "flow";
   const sourcePage = kind === "process" ? processSearchResponse() : flowSearchResponse();
   const limit = Number(input.limit);
+  const versioned = input.schemaVersion === "portal.hybrid-search-request.v2";
+  const items = sourcePage.items.slice(0, limit).map((item, index) => ({
+    ...item,
+    match: {
+      kind: "hybrid",
+      algorithmVersion: versioned ? "portal-hybrid-rank-v2" : "portal-hybrid-rank-v1",
+      score: Math.max(0, 0.9 - index * 0.1),
+      reasonCodes: ["lexical_public_projection", "semantic_public_projection"],
+      evidence: {
+        lexicalRank: index + 1,
+        semanticRank: index + 1,
+        semanticDistance: index === 0 ? "0.125" : "0.25",
+      },
+    },
+  }));
   return {
-    schemaVersion: "portal.hybrid-search-page.v1",
+    schemaVersion: versioned ? "portal.hybrid-search-page.v2" : "portal.hybrid-search-page.v1",
     kind,
     queryFingerprint: "c".repeat(64),
     interpretation: {
@@ -479,20 +501,28 @@ function hybridSearchResponse(input: Record<string, unknown>) {
             ]
           : [{ language: "en", value: "public flow" }],
     },
-    items: sourcePage.items.slice(0, limit).map((item, index) => ({
-      ...item,
-      match: {
-        kind: "hybrid",
-        algorithmVersion: "portal-hybrid-rank-v1",
-        score: Math.max(0, 0.9 - index * 0.1),
-        reasonCodes: ["lexical_public_projection", "semantic_public_projection"],
-        evidence: {
-          lexicalRank: index + 1,
-          semanticRank: index + 1,
-          semanticDistance: index === 0 ? "0.125" : "0.25",
-        },
-      },
-    })),
+    items,
+    ...(versioned
+      ? {
+          candidateCount: items.length + (items.length > 0 ? 1 : 0),
+          datasetCount: items.length,
+          nextCursor: null,
+          versionGroups: items.map((item, index) => ({
+            key: item.key,
+            matches: [
+              { key: item.key, match: item.match },
+              ...(index === 0
+                ? [
+                    {
+                      key: { ...item.key, version: "00.99.999" },
+                      match: { ...item.match, score: 0.65 },
+                    },
+                  ]
+                : []),
+            ],
+          })),
+        }
+      : {}),
   };
 }
 
