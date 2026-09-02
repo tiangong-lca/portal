@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import environmentFixture from "../fixtures/portal/r1-environments.json";
 
-import { createPortalHybridPostHandler } from "@/app/internal/hybrid/route";
+import { createPortalHybridPostHandler } from "@/server/hybrid/handler";
 import type { PortalHybridSearchRequest } from "@/lib/hybrid-request";
 import { searchPublicFlows, searchPublicProcesses } from "@/server/data/catalog";
 import { createPortalRpcClient } from "@/server/data/supabase-rpc";
@@ -98,7 +98,7 @@ describe("Portal R2 isolated upstream fixture", () => {
   });
 
   it("turns a fixed Edge guard rejection into real lexical results", async () => {
-    const beforeRpc = fixture.receipts.rpcByName.portal_search_processes_v1 ?? 0;
+    const beforeRpc = fixture.receipts.rpcByName.portal_search_processes_v2 ?? 0;
     const response = await createFixtureHandler()(routeRequest("fixture:guard_unavailable"));
     expect(response.status).toBe(200);
     const body = await response.json();
@@ -109,6 +109,6 @@ describe("Portal R2 isolated upstream fixture", () => {
     });
     expect(body.items).toHaveLength(2);
     expect(body.items[0]).toMatchObject({ match: { kind: "lexical" }, context: {} });
-    expect(fixture.receipts.rpcByName.portal_search_processes_v1).toBe(beforeRpc + 1);
+    expect(fixture.receipts.rpcByName.portal_search_processes_v2).toBe(beforeRpc + 1);
   });
 });

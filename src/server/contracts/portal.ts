@@ -8,7 +8,7 @@ import type {
   TianGongPortalPublicCatalogSummaryV1 as DatabasePublicCatalogSummary,
   UuidExample as DatabaseCatalogUuidExample,
 } from "../../../contracts/database-engine/portal/generated/portal.public-catalog-summary.v1";
-import type { TianGongPortalPublicSearchPageV1 as DatabasePublicSearchPage } from "../../../contracts/database-engine/portal/generated/portal.public-search-page.v1";
+import type { TianGongPortalPublicSearchPageV2 as DatabasePublicSearchPage } from "../../../contracts/database-engine/portal/generated/portal.public-search-page.v2";
 
 export type PublicCatalogSummary = Omit<DatabasePublicCatalogSummary, "examples"> & {
   examples: Array<
@@ -305,7 +305,7 @@ export const publicSearchItemSchema = z.strictObject({
   match: searchMatchSchema,
 });
 const publicSearchPageRuntimeSchema = z.strictObject({
-  schemaVersion: z.literal("portal.public-search-page.v1"),
+  schemaVersion: z.literal("portal.public-search-page.v2"),
   kind: portalDatasetKindSchema,
   queryFingerprint: portalSha256Schema,
   items: z.array(publicSearchItemSchema).max(50),
@@ -379,7 +379,7 @@ export const publicCatalogSummarySchema: z.ZodType<PublicCatalogSummary> =
   publicCatalogSummaryRuntimeSchema;
 
 export const publicFacetsSchema = z.strictObject({
-  schemaVersion: z.literal("portal.public-facets.v1"),
+  schemaVersion: z.literal("portal.public-facets.v2"),
   kind: z.enum(["all", "process", "flow"]),
   queryFingerprint: portalSha256Schema,
   groups: z.array(

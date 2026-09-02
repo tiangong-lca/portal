@@ -93,7 +93,7 @@ async function searchPublicCatalog(
     (page) => page.kind === kind && page.items.every((item) => item.key.kind === kind),
   );
   const page = await clientOrDefault(client).call(
-    kind === "process" ? "portal_search_processes_v1" : "portal_search_flows_v1",
+    kind === "process" ? "portal_search_processes_v2" : "portal_search_flows_v2",
     {
       p_query: parsed.query,
       p_filters: parsed.filters,
@@ -255,7 +255,7 @@ export async function getPublicFacets(
 
   const responseSchema = publicFacetsSchema.refine((facets) => facets.kind === parsed.kind);
   const facets = await clientOrDefault(client).call(
-    "portal_facets_v1",
+    "portal_facets_v2",
     {
       p_kind: parsed.kind,
       p_query: parsed.query,

@@ -255,9 +255,9 @@ function sitemapShardResponse(arguments_: Record<string, unknown>) {
 
 function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown {
   switch (name) {
-    case "portal_search_processes_v1":
+    case "portal_search_processes_v2":
       return processSearchResponse();
-    case "portal_search_flows_v1":
+    case "portal_search_flows_v2":
       return flowSearchResponse();
     case "portal_catalog_summary_v1":
       return Object.keys(arguments_).length === 0 ? catalogFixture.catalogSummary : undefined;
@@ -301,7 +301,7 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
         arguments_.p_process_version === catalogFixture.datasetProcess.key.version
         ? catalogFixture.exchanges
         : null;
-    case "portal_facets_v1":
+    case "portal_facets_v2":
       return { ...catalogFixture.facets, kind: arguments_.p_kind };
     case "portal_sitemap_entries_v1":
       return sitemapResponse(arguments_.p_kind);

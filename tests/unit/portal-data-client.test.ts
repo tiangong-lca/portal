@@ -59,7 +59,7 @@ describe("Portal Supabase public RPC client", () => {
     const client = createPortalRpcClient({ environment, fetchImplementation });
 
     await client.call(
-      "portal_search_processes_v1",
+      "portal_search_processes_v2",
       { p_query: "electricity", p_filters: {}, p_sort: "relevance", p_cursor: null, p_limit: 20 },
       publicSearchPageSchema,
       { mode: "no-store" },
@@ -68,7 +68,7 @@ describe("Portal Supabase public RPC client", () => {
     const [target, init] = fetchImplementation.mock.calls[0]!;
     const headers = new Headers(init?.headers);
     expect(target instanceof URL ? target.href : new Request(target).url).toBe(
-      "https://project.supabase.co/rest/v1/rpc/portal_search_processes_v1",
+      "https://project.supabase.co/rest/v1/rpc/portal_search_processes_v2",
     );
     expect(headers.get("apikey")).toBe(environment.publishableKey);
     expect(headers.get("accept-profile")).toBe("api");
@@ -214,7 +214,7 @@ describe("Portal Supabase public RPC client", () => {
     );
 
     expect(calls[0]).toEqual([
-      "portal_search_processes_v1",
+      "portal_search_processes_v2",
       {
         p_query: "electricity",
         p_filters: { geography: "cn" },
@@ -378,7 +378,7 @@ describe("Portal Supabase public RPC client", () => {
       portal_get_dataset_v1: fixture.datasetProcess,
       portal_list_versions_v1: fixture.versions,
       portal_list_process_exchanges_v1: fixture.exchanges,
-      portal_facets_v1: fixture.facets,
+      portal_facets_v2: fixture.facets,
       portal_sitemap_entries_v1: fixture.sitemap,
       portal_sitemap_manifest_v1: fixture.sitemapManifest,
       portal_sitemap_shard_v1: fixture.sitemapShard,
@@ -413,7 +413,7 @@ describe("Portal Supabase public RPC client", () => {
       "portal_get_dataset_v1",
       "portal_list_versions_v1",
       "portal_list_process_exchanges_v1",
-      "portal_facets_v1",
+      "portal_facets_v2",
       "portal_sitemap_entries_v1",
       "portal_sitemap_manifest_v1",
       "portal_sitemap_shard_v1",
@@ -448,7 +448,7 @@ describe("Portal Supabase public RPC client", () => {
 
     await expect(
       client.call(
-        "portal_search_processes_v1",
+        "portal_search_processes_v2",
         { p_query: "electricity" },
         publicSearchPageSchema,
         { mode: "no-store" },
@@ -456,7 +456,7 @@ describe("Portal Supabase public RPC client", () => {
     ).rejects.toMatchObject({ code: "invalid_response" });
     await expect(
       client.call(
-        "portal_search_processes_v1",
+        "portal_search_processes_v2",
         { p_query: "electricity" },
         publicSearchPageSchema,
         { mode: "no-store" },

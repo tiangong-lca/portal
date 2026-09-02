@@ -147,7 +147,16 @@ export async function queryPortalHybridRaw(
   }
 
   const parsedPage = portalHybridSearchPageSchema.safeParse(payload);
-  if (!parsedPage.success || parsedPage.data.kind !== parsedInput.kind) {
+  const expectedVersion =
+    parsedInput.schemaVersion === "portal.hybrid-search-request.v2"
+      ? "portal.hybrid-search-page.v2"
+      : "portal.hybrid-search-page.v1";
+  if (
+    !parsedPage.success ||
+    parsedPage.data.kind !== parsedInput.kind ||
+    parsedPage.data.schemaVersion !== expectedVersion ||
+    parsedPage.data.items.length > parsedInput.limit
+  ) {
     return fallback("contract_failure");
   }
 

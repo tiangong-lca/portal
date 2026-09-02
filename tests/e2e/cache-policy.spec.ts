@@ -99,14 +99,14 @@ test("reuses short public Search data without sharing dynamic HTML", async ({ re
   const firstCacheControl = parseCacheControl(first.headers()["cache-control"]);
   expect(firstCacheControl.get("private")).toBe(true);
   expect(firstCacheControl.get("no-store")).toBe(true);
-  expect(await rpcReceiptCount(request, "portal_search_processes_v1", searchBody)).toBe(1);
-  expect(await rpcReceiptCount(request, "portal_facets_v1", facetBody)).toBe(1);
+  expect(await rpcReceiptCount(request, "portal_search_processes_v2", searchBody)).toBe(1);
+  expect(await rpcReceiptCount(request, "portal_facets_v2", facetBody)).toBe(1);
 
   const second = await request.get(path);
   expect(second.ok()).toBe(true);
   const secondCacheControl = parseCacheControl(second.headers()["cache-control"]);
   expect(secondCacheControl.get("private")).toBe(true);
   expect(secondCacheControl.get("no-store")).toBe(true);
-  expect(await rpcReceiptCount(request, "portal_search_processes_v1", searchBody)).toBe(1);
-  expect(await rpcReceiptCount(request, "portal_facets_v1", facetBody)).toBe(1);
+  expect(await rpcReceiptCount(request, "portal_search_processes_v2", searchBody)).toBe(1);
+  expect(await rpcReceiptCount(request, "portal_facets_v2", facetBody)).toBe(1);
 });
