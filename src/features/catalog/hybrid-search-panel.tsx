@@ -230,8 +230,12 @@ export function HybridSearchPanel({
             <FieldDescription>{labels.privacy}</FieldDescription>
           </Field>
           <div className="flex flex-wrap gap-2">
-            <Button disabled={!parsedRequest} type="submit">
-              <ScanSearchIcon data-icon="inline-start" />
+            <Button aria-busy={running} disabled={!parsedRequest} type="submit">
+              {running ? (
+                <LoaderCircleIcon className="motion-safe:animate-spin" data-icon="inline-start" />
+              ) : (
+                <ScanSearchIcon data-icon="inline-start" />
+              )}
               {labels.submit}
             </Button>
             <Button

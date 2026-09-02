@@ -120,7 +120,9 @@ test("keeps early selections stable until a late update is accepted and exposes 
     ({ impact }) => impact === "serious" || impact === "critical",
   );
   expect(violations).toEqual([]);
-  await page.getByRole("heading", { name: "Describe the data you need" }).scrollIntoViewIfNeeded();
+  await page
+    .getByRole("heading", { name: "Matching datasets" })
+    .evaluate((element) => element.scrollIntoView({ block: "start" }));
   await page.screenshot({ path: "test-results/hybrid-progressive-mobile-viewport.png" });
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: "test-results/hybrid-progressive-mobile.png", fullPage: true });

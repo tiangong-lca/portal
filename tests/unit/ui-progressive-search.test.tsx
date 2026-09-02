@@ -134,6 +134,10 @@ describe("progressive, version-aware discovery", () => {
   it("keeps early rows and selection until the user explicitly applies the new matching result", async () => {
     const { user, pending, submit, complete } = setup();
     await submit();
+    expect(screen.getByRole("button", { name: messages.Hybrid.submit })).toHaveAttribute(
+      "aria-busy",
+      "true",
+    );
     expect(pending.map((request) => request.url)).toEqual([
       "/internal/hybrid/lexical",
       "/internal/hybrid",
