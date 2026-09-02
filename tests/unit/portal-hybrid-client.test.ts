@@ -64,6 +64,16 @@ function edgePage() {
 }
 
 describe("Portal Hybrid signed client", () => {
+  it("does not sign or call the provider path after its incoming request was cancelled", async () => {
+    const controller = new AbortController();
+    controller.abort();
+    const fetchImplementation = vi.fn<typeof fetch>();
+    await expect(
+      queryPortalHybrid(request, { environment, signal: controller.signal, fetchImplementation }),
+    ).resolves.toEqual({ status: "fallback", reason: "hybrid_upstream_unavailable" });
+    expect(fetchImplementation).not.toHaveBeenCalled();
+  });
+
   it("binds V2 requests to the grouped version-aware response, never an old V1 page", async () => {
     const versionRequest = {
       ...request,

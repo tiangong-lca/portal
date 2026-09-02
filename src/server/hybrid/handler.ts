@@ -276,7 +276,7 @@ export function createPortalHybridPostHandler(dependencies: PortalHybridRouteDep
       }
     }
     try {
-      edgeResult = await query(rawBody, { correlationId });
+      edgeResult = await query(rawBody, { correlationId, signal: request.signal });
     } catch (error) {
       if (error instanceof PortalHybridInputError) {
         return respond(
@@ -328,6 +328,16 @@ export function createPortalHybridPostHandler(dependencies: PortalHybridRouteDep
     }
 
     const fallbackReason = edgeResult.reason as PortalHybridFallbackReason;
+    if (request.signal.aborted) {
+      return respond(
+        { code: "hybrid_upstream_unavailable" },
+        499,
+        "unavailable",
+        "hybrid_upstream_unavailable",
+        0,
+        "portal_bff",
+      );
+    }
     // A failed ranked cursor must never become lexical page one or reorder existing results.
     if (input.schemaVersion === "portal.hybrid-search-request.v2" && input.cursor !== null) {
       return respond(

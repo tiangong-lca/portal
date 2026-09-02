@@ -71,6 +71,24 @@ afterEach(() => {
 });
 
 describe("Portal Hybrid same-origin BFF", () => {
+  it("does not start lexical fallback after the user cancelled the incoming request", async () => {
+    const controller = new AbortController();
+    const lexicalFallback =
+      vi.fn<(input: PortalHybridSearchRequest) => Promise<PublicSearchPage>>();
+    const handler = createPortalHybridPostHandler({
+      query: vi.fn<typeof queryPortalHybridRaw>(async (_body, options) => {
+        expect(options?.signal).toBeInstanceOf(AbortSignal);
+        controller.abort();
+        return { status: "fallback", reason: "hybrid_upstream_unavailable" };
+      }),
+      lexicalFallback,
+      logger: vi.fn<PortalTelemetryLogger>(),
+    });
+    const incoming = new Request(request(), { signal: controller.signal });
+    expect((await handler(incoming)).status).toBe(499);
+    expect(lexicalFallback).not.toHaveBeenCalled();
+  });
+
   const versionInput = {
     ...input,
     schemaVersion: "portal.hybrid-search-request.v2" as const,
@@ -79,7 +97,9 @@ describe("Portal Hybrid same-origin BFF", () => {
 
   it("returns early lexical results without invoking the signed model path", async () => {
     const query = vi.fn<typeof queryPortalHybridRaw>();
-    const lexicalFallback = vi.fn(async () => catalogFixture.search as PublicSearchPage);
+    const lexicalFallback = vi.fn<() => Promise<PublicSearchPage>>(
+      async () => catalogFixture.search as PublicSearchPage,
+    );
     const handler = createPortalHybridPostHandler({
       lexicalOnly: true,
       query,

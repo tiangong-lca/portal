@@ -36,6 +36,18 @@ const matchReasons: Record<string, LocalizedValue> = {
   },
   cas: { "zh-CN": "CAS 号", en: "CAS number", de: "CAS-Nummer", fr: "Numéro CAS" },
   full_text: { "zh-CN": "文本内容", en: "Text content", de: "Textinhalt", fr: "Contenu textuel" },
+  lexical_public_projection: {
+    "zh-CN": "关键词相关",
+    en: "Related keywords",
+    de: "Passende Stichwörter",
+    fr: "Mots-clés associés",
+  },
+  semantic_public_projection: {
+    "zh-CN": "描述与需求相关",
+    en: "Description matches your need",
+    de: "Beschreibung passt zum Bedarf",
+    fr: "Description adaptée au besoin",
+  },
 };
 
 const reviewStatuses: Record<string, LocalizedValue> = {

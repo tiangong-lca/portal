@@ -152,6 +152,8 @@ export default async function BrowsePage({
             reference: detail("referenceProduct"),
             referenceYear: detail("referenceYear"),
             selectForCompare: searchT("selectForCompare"),
+            matchingVersions: searchT("matchingVersions"),
+            version: searchT("version"),
             source: detail("sourceDatabase"),
             technology: detail("technology"),
           }}

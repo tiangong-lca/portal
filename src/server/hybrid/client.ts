@@ -41,6 +41,7 @@ type QueryOptions = {
   now?: () => number;
   nonce?: () => string;
   correlationId?: string;
+  signal?: AbortSignal;
 };
 
 async function parseResponsePayload(response: Response): Promise<unknown> {
@@ -90,6 +91,7 @@ export async function queryPortalHybridRaw(
   const requestBody = new Uint8Array(rawBody.byteLength);
   requestBody.set(rawBody);
   const parsedInput = parsePortalHybridRequestBody(requestBody);
+  if (options.signal?.aborted) return fallback("hybrid_upstream_unavailable");
 
   let environment: PortalHybridEnvironment;
   try {
@@ -128,7 +130,12 @@ export async function queryPortalHybridRaw(
       },
       cache: "no-store",
       redirect: "error",
-      signal: AbortSignal.timeout(environment.edgeTimeoutMilliseconds),
+      signal: options.signal
+        ? AbortSignal.any([
+            options.signal,
+            AbortSignal.timeout(environment.edgeTimeoutMilliseconds),
+          ])
+        : AbortSignal.timeout(environment.edgeTimeoutMilliseconds),
     });
   } catch {
     return fallback("hybrid_upstream_unavailable");
