@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-09-02
-lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
-lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
+lastReviewedAt: 2026-09-03
+lastReviewedCommit: 07b6a89c369b6db6bd837b6ce7156d2f55470f0a
+lastReviewedNote: "Reviewed for Portal #46: untouched search uses existing initial-state copy; true read failures retain unavailable messaging. No new backend call, ranking, visibility, timeout, dependency or RUM behavior is introduced."
 related:
   - AGENTS.md
   - docs/design-plan.md

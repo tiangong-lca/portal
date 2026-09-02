@@ -20,9 +20,9 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-09-02
-lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
-lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
+lastReviewedAt: 2026-09-03
+lastReviewedCommit: 07b6a89c369b6db6bd837b6ce7156d2f55470f0a
+lastReviewedNote: "Reviewed for Portal #46: untouched search uses existing initial-state copy; true read failures retain unavailable messaging. No new backend call, ranking, visibility, timeout, dependency or RUM behavior is introduced."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -58,6 +58,10 @@ R0 exit requires the exact selected Portal `main` commit and EdgeOne Production 
 The local production build at source `32f221bb97f243bc178c5f86bf1c231bba473a2d` passed all 52 Playwright checks, including real same-origin BFF/HMAC fixture round trips, late-result selection preservation, mobile keyboard version expansion, exact references, fallback, no-JavaScript keyword discovery, four-locale/SEO/CSP/cache boundaries, and serious/critical accessibility checks. Unit/integration proof has 163 passing tests with the explicitly credentialed Production probe still skipped. Release regressions also reject cross-group ranking drift and preserve useful lexical results/cursors when Hybrid returns empty in either response order. The client bundle scan and route budgets pass; the search route is 147,524 gzip bytes against its existing 256,000-byte bound.
 
 These are controlled local fixture results, not a new EdgeOne frontend release or production relevance/SLA claim. Only the paired Database/Edge search increment is already live under the one-time exception in workspace #963; its exact backend readback evidence is linked from the design contract. Hosted validation of this frontend remains pending its reviewed release. No RUM collector or seven-day observation will be added.
+
+## Portal #46 initial-state proof
+
+Portal #46 additionally verifies the untouched/failed/successful sidebar states with three typed server-page unit tests. At code `07b6a89c369b6db6bd837b6ce7156d2f55470f0a`, the complete check passed 166 tests (one optional live probe skipped), the production build and unchanged bundle budgets; the 52-test fixture browser suite passed again. This changes only initial-state copy selection, not data calls or search results.
 
 ## CSP disposition
 

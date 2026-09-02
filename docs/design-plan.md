@@ -20,9 +20,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-09-02
-lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
-lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
+lastReviewedAt: 2026-09-03
+lastReviewedCommit: 07b6a89c369b6db6bd837b6ce7156d2f55470f0a
+lastReviewedNote: "Reviewed for Portal #46: untouched search uses existing initial-state copy; true read failures retain unavailable messaging. No new backend call, ranking, visibility, timeout, dependency or RUM behavior is introduced."
 related:
   - AGENTS.md
   - README.md
@@ -363,6 +363,8 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 ### 7.2 搜索页
 
 桌面端采用三栏：动态分面、结果、选择托盘。中尺寸将分面收进 Sheet，托盘变为浮动按钮；移动端单列。
+
+关键词为空、尚未发起目录查询时，分面区域使用已有初始搜索提示，不把未请求的数据描述为后端不可用，也不新增空查询 RPC。只有实际读取失败才显示不可用提示；已成功取得的分面保持正常筛选展示。
 
 搜索流程：
 

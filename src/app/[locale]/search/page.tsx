@@ -246,7 +246,11 @@ export default async function SearchPage({
               <FilterIcon aria-hidden="true" />
               <CardTitle id="facet-heading">{t("facets")}</CardTitle>
               <CardDescription>
-                {facets ? t("description") : t("unavailableDescription")}
+                {facets
+                  ? t("description")
+                  : dataUnavailable
+                    ? t("unavailableDescription")
+                    : t("initialDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
