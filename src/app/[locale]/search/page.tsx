@@ -399,6 +399,8 @@ export default async function SearchPage({
           updateDescription: hybrid("updateDescription"),
           showUpdated: hybrid("showUpdated"),
           optimized: hybrid("optimized"),
+          noMatchesTitle: hybrid("noMatchesTitle"),
+          noMatchesDescription: hybrid("noMatchesDescription"),
           loadMore: hybrid("loadMore"),
           loadingMore: hybrid("loadingMore"),
           pageError: hybrid("pageError"),
