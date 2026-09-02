@@ -21,8 +21,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
-lastReviewedNote: "Reviewed for Portal #42: the dedicated 30-second Hybrid BFF timeout and 40-second host ceiling do not change R0 CSP/ISR/routing evidence; exact hosted Hybrid correctness proof remains pending the candidate deployment."
+lastReviewedCommit: fc5a5ef1c12346f081f6a805d509520cdadba9bd
+lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -51,7 +51,13 @@ R0 exit requires the exact selected Portal `main` commit and EdgeOne Production 
 | Deployment model | Local marker only | One `main`-tracked Production environment serves TDD/release; `PORTAL_PUBLIC_INDEXING=enabled` on exact `bf97795` after SEO/security preflight | Pass |
 | Enforcing CSP + hydration + ISR | Performance profile passes all 50 production Playwright tests with enforcing CSP, Next inline script/style allowed, `unsafe-eval` forbidden, and ISR still static | Exact `bf97795` returns enforcing CSP, no report-only header, required inline allowance, no `unsafe-eval`, working theme/locale events, Streaming completion and cacheable ISR | Pass |
 | Strict no-inline CSP research | Exact enforce command at `b94451c` passes 13/19; executable inline Flight blocks break hydration-dependent paths | No supported renderer-level solution; see [retained spike](csp-isr-spike.md) | Non-blocking upstream follow-up |
-| Rollback/cold start/latency | Local controlled CWV remains inside budgets; production test proves repeated identical Search HTML stays private/no-store while its Search/facet public RPC receipts remain one each under the 30-second Data Cache | Rollback evidence remains `dpldjwibrtb4`/`dppeqhecdjax`. Hosted home p75: LCP 284 ms, INP 16 ms, CLS 0, TTFB 118 ms; cached detail TTFB p75 509 ms. Exact `bf97795` default Search is 355,891 bytes and therefore passes the 512 KiB payload budget; 20 controlled pre-fix samples on 2026-08-30 measured TTFB p95 2.20 s, above the 2 s gate | Search payload/local cache contract pass; exact hosted Search latency recheck open; RUM non-blocking |
+| Rollback/cold start/latency | Local controlled CWV remains inside budgets; production test proves repeated identical Search HTML stays private/no-store while its Search/facet public RPC receipts remain one each under the 30-second Data Cache | Rollback evidence remains `dpldjwibrtb4`/`dppeqhecdjax`. Hosted home p75: LCP 284 ms, INP 16 ms, CLS 0, TTFB 118 ms; cached detail TTFB p75 509 ms. Exact `bf97795` default Search is 355,891 bytes and therefore passes the 512 KiB payload budget; 20 controlled pre-fix samples on 2026-08-30 measured TTFB p95 2.20 s, above the 2 s gate | Search payload/local cache contract pass; exact hosted Search latency recheck open; Portal #37 RUM cancelled |
+
+## Portal #44 version-aware discovery proof
+
+The local production build at source `1e3bcb9c8b7643aab180e38a1cda678737bcf057` passed all 52 Playwright checks, including real same-origin BFF/HMAC fixture round trips, late-result selection preservation, mobile keyboard version expansion, exact references, fallback, no-JavaScript keyword discovery, four-locale/SEO/CSP/cache boundaries, and serious/critical accessibility checks. Unit/integration proof has 160 passing tests with the explicitly credentialed Production probe still skipped. The client bundle scan and route budgets pass; the search route is about 144 KiB gzip against its existing 250 KiB bound.
+
+These are controlled local fixture results, not a new EdgeOne frontend release or production relevance/SLA claim. Only the paired Database/Edge search increment is already live under the one-time exception in workspace #963; its exact backend readback evidence is linked from the design contract. Hosted validation of this frontend remains pending its reviewed release. No RUM collector or seven-day observation will be added.
 
 ## CSP disposition
 

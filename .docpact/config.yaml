@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-09-02"
-lastReviewedCommit: "60bc35bce656daf21da7b4a0827090fb82c66b2c"
-lastReviewedNote: "Reviewed for Portal #42: product/runtime/proof/deployment routes cover the dedicated 30-second Hybrid BFF timeout, 40-second EdgeOne ceiling, environment contract, and correctness-first evidence."
+lastReviewedCommit: "fc5a5ef1c12346f081f6a805d509520cdadba9bd"
+lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
 
 catalog:
   repos:

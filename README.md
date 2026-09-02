@@ -17,8 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 60bc35bce656daf21da7b4a0827090fb82c66b2c
-lastReviewedNote: "Reviewed for Portal #42: the interactive Hybrid BFF has a dedicated bounded 30-second completion window without changing LCIA, lexical Search caching, SEO/ISR, privacy, or the four-language product shell."
+lastReviewedCommit: fc5a5ef1c12346f081f6a805d509520cdadba9bd
+lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -62,6 +62,10 @@ Production 由 `portal/main` 自动发布到 `portal.tiangong.earth`，公开站
 
 公众产品提供 `zh-CN`、`en`、`de`、`fr` 四套独立路由与词典。首页以目录搜索为主，连续的 Process、Flow、地区与来源索引作为浏览入口；详情、版本、输入输出、公开 LCIA、比较、引用、候选清单、错误与空态均使用面向数据使用者的文字。`lca.tiangong.earth` 作为天工 LCA 产品平台入口出现在桌面导航与所有尺寸页脚，不在首页或紧凑导航占用独立宣传区。
 
-关键词搜索默认返回 10 条记录；每组分面最多渲染 8 个常用值和 8 个显式展开值，更多值提示继续缩小条件。Search HTML 始终 private/no-store；只有页面发起的公共关键词与分面 RPC 使用 30 秒 Next Data Cache，缓存按完整请求区分、tag 不含查询原文、错误不缓存。自然语言描述搜索通过同源 BFF 和 Portal HMAC 调用专用 Edge Function；BFF 使用独立、有界的 30 秒完成窗口，优先返回正确 Hybrid 结果，时延只作为优化观测。其 lexical fallback 保持 no-store，预算、并发、Redis guard、上游或开关不可用时不绕过保护措施。
+关键词搜索默认返回 10 条记录；命中的公开版本可展开查看，每组分面最多渲染 8 个常用值和 8 个显式展开值。所有查询只允许 state code 100/200，不把命中版本替换成最新版本。Search HTML 始终 private/no-store；只有页面发起的公共关键词与分面 RPC 使用 30 秒 Next Data Cache，缓存按完整请求区分、tag 不含查询原文、错误不缓存。
 
-公开站点采用性能与 SEO 优先的 enforcing CSP、五分钟首页 ISR、locale-correct 初始 HTML、四语 reciprocal metadata、Dataset JSON-LD 与分片 sitemap。真实 404 保留原 URL、`noindex` 和错误状态；EdgeOne 对未知首段生成通用 raw document 的问题按平台缺陷单独跟踪，不以软跳转或动态化 ISR 页面掩盖。首次上线后的 RUM 为七天非阻断观察，精确托管兼容与发布证据记录在 `docs/r0/`。
+自然语言描述搜索先展示可用的普通结果，并通过同源 BFF / Portal HMAC 继续智能匹配；新结果较晚完成时显示“搜索结果有更新”，由用户主动切换，当前阅读和选择保持不变。向量输入先改写为英文，全文检索保留原始所有语言。Hybrid 以每路 200 个有效版本候选为基线，按最佳匹配版本组织数据集并提供有界继续加载；过期或失败不会静默改成第一页。BFF 保留 30 秒完成窗口和现有安全预算，时延用于优化，不设 Hybrid p95 发布门。所有自然语言 POST、早期普通结果与 fallback 均为 no-store。
+
+公开站点采用性能与 SEO 优先的 enforcing CSP、五分钟首页 ISR、locale-correct 初始 HTML、四语 reciprocal metadata、Dataset JSON-LD 与分片 sitemap。真实 404 保留原 URL、`noindex` 和错误状态；EdgeOne 对未知首段生成通用 raw document 的问题按平台缺陷单独跟踪。Portal #37 的 RUM 与七天观察已按用户要求取消，精确托管兼容与发布证据仍记录在 `docs/r0/`。
+
+Portal #44 的本次后端接入例外使用已在 Main 部署并读回的 Database `470e661` / Edge `08b19d7` 精确提交；正式 PR、promote、前端托管发布及 workspace integration 的状态以 [workspace #963](https://github.com/tiangong-lca/workspace/issues/963) 为准，不能把本地浏览器验证视为新前端已经上线。
