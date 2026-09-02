@@ -21,7 +21,7 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: fc5a5ef1c12346f081f6a805d509520cdadba9bd
+lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
 lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
 related:
   - AGENTS.md
@@ -783,7 +783,7 @@ Database façade 为 `api.portal_hybrid_search_v2(p_kind, p_query_terms, p_query
 
 语义路径固定为“AI 改写 -> 非空规范化英文 `semantic_query_en` -> embedding”，不为了表面并行而向量化原始非英文查询。全文检索保留原始查询和来源里的所有原始语言，英文/中文别名只是补充。改写文本仅是 `source=model_generated`、`advisory=true` 的检索解释，不是数据事实；独立的缓存写入与 Database RPC 可以并行，但不把单个 Database Hybrid RPC 描述成 JavaScript 的两路召回 Promise.all。
 
-自然语言 UI 同时发起 `POST /internal/hybrid/lexical` 与 `POST /internal/hybrid`。前者只读当前 V2 公开目录，不调用模型；后者保持原始 body HMAC、admission 与全部现有预算。先到的普通结果可立即阅读与选择，晚到的智能结果只提示“搜索结果有更新”，点击后才切换；不伪造进度、人工延迟或 AI 完成状态。新提交与卸载会取消旧浏览器请求；BFF 传递取消信号，取消后不追加 fallback 查询。稳定键保留用户阅读与选择，版本操作始终使用精确引用。
+自然语言 UI 同时发起 `POST /internal/hybrid/lexical` 与 `POST /internal/hybrid`。前者只读当前 V2 公开目录，不调用模型；后者保持原始 body HMAC、admission 与全部现有预算。先到的普通结果可立即阅读与选择，晚到的非空智能结果只提示“搜索结果有更新”，点击后才切换；不伪造进度、人工延迟或 AI 完成状态。智能匹配为空时保留普通结果及其翻页游标，并明确说明未找到智能匹配；即使智能空页先到，也等待尚未完成的普通搜索，不提前宣布最终空结果。新提交与卸载会取消旧浏览器请求；BFF 传递取消信号，取消后不追加 fallback 查询。稳定键保留用户阅读与选择，版本操作始终使用精确引用。
 
 一次最多加载 20 个 Hybrid 数据集组，并以 V2 cursor 继续。模型短缓存仍为 60 秒；cursor 所需的缓存失效时返回明确错误，当前列表保留，用户可显式重新搜索；不得悄悄重新生成不同 embedding 或改成 lexical 第一页。普通结果与 fallback 用独立 lexical cursor 继续，绝不混用两种排名或 query fingerprint。Edge 只返回成功 DTO 或固定失败原因；guard/预算/并发/开关/熔断/timeout/contract failure 的初次 lexical fallback 由 BFF 使用 V2 façade 执行，Edge 不绕过 guard 访问模型或 Database。自然语言请求、早期结果、fallback 与续页全部 no-store；query 与备注不进入 URL、浏览历史、telemetry 或默认 fragment。
 

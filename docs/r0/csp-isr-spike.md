@@ -21,7 +21,7 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: fc5a5ef1c12346f081f6a805d509520cdadba9bd
+lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
 lastReviewedNote: "Reviewed for Portal #44: the version-aware progressive POST UI preserves the existing CSP, ISR, native routing and strict-profile reopen boundaries; all 52 local production browser checks pass."
 related:
   - compatibility-matrix.md

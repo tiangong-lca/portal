@@ -21,7 +21,7 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: fc5a5ef1c12346f081f6a805d509520cdadba9bd
+lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
 lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
 related:
   - ../design-plan.md
@@ -55,7 +55,7 @@ R0 exit requires the exact selected Portal `main` commit and EdgeOne Production 
 
 ## Portal #44 version-aware discovery proof
 
-The local production build at source `1e3bcb9c8b7643aab180e38a1cda678737bcf057` passed all 52 Playwright checks, including real same-origin BFF/HMAC fixture round trips, late-result selection preservation, mobile keyboard version expansion, exact references, fallback, no-JavaScript keyword discovery, four-locale/SEO/CSP/cache boundaries, and serious/critical accessibility checks. Unit/integration proof has 160 passing tests with the explicitly credentialed Production probe still skipped. The client bundle scan and route budgets pass; the search route is about 144 KiB gzip against its existing 250 KiB bound.
+The local production build at source `32f221bb97f243bc178c5f86bf1c231bba473a2d` passed all 52 Playwright checks, including real same-origin BFF/HMAC fixture round trips, late-result selection preservation, mobile keyboard version expansion, exact references, fallback, no-JavaScript keyword discovery, four-locale/SEO/CSP/cache boundaries, and serious/critical accessibility checks. Unit/integration proof has 163 passing tests with the explicitly credentialed Production probe still skipped. Release regressions also reject cross-group ranking drift and preserve useful lexical results/cursors when Hybrid returns empty in either response order. The client bundle scan and route budgets pass; the search route is 147,524 gzip bytes against its existing 256,000-byte bound.
 
 These are controlled local fixture results, not a new EdgeOne frontend release or production relevance/SLA claim. Only the paired Database/Edge search increment is already live under the one-time exception in workspace #963; its exact backend readback evidence is linked from the design contract. Hosted validation of this frontend remains pending its reviewed release. No RUM collector or seven-day observation will be added.
 

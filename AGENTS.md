@@ -26,7 +26,7 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: fc5a5ef1c12346f081f6a805d509520cdadba9bd
+lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
 lastReviewedNote: "Reviewed for Portal #44: strict 100/200 exact-version discovery, 200-per-route candidate semantics, English vector input with multilingual full text, explicit progressive updates/cursor failure, the source-pinned online exception and cancellation of Portal #37 RUM are recorded."
 related:
   - README.md
