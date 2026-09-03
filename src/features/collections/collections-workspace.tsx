@@ -276,7 +276,7 @@ export function CollectionsWorkspace({
         <section className="flex flex-col gap-3">
           <div className="flex flex-wrap gap-2">
             <Button
-              className="h-auto min-h-11 whitespace-normal"
+              className="h-auto min-h-11 max-w-full whitespace-normal"
               onClick={() => download(corrupt.raw, "tiangong-portal-unreadable-shortlist.json")}
               type="button"
               variant="outline"
@@ -285,7 +285,7 @@ export function CollectionsWorkspace({
               {labels.downloadCorrupt}
             </Button>
             <Button
-              className="h-auto min-h-11 whitespace-normal"
+              className="h-auto min-h-11 max-w-full whitespace-normal"
               onClick={() => setConfirmClear(true)}
               type="button"
               variant="destructive"
@@ -300,7 +300,7 @@ export function CollectionsWorkspace({
                 <p>{labels.clearConfirmDescription}</p>
                 <div className="flex flex-wrap gap-2">
                   <Button
-                    className="h-auto min-h-11 whitespace-normal"
+                    className="h-auto min-h-11 max-w-full whitespace-normal"
                     onClick={() => {
                       try {
                         localStorage.removeItem(corrupt.key);
@@ -378,7 +378,7 @@ export function CollectionsWorkspace({
           }}
         >
           <FieldLabel htmlFor="collection-member">{labels.memberRef}</FieldLabel>
-          <div className="grid gap-2 sm:grid-cols-[10rem_minmax(0,1fr)_auto] sm:items-center">
+          <div className="grid gap-2 sm:grid-cols-[max-content_minmax(0,1fr)_auto] sm:items-center">
             <select
               aria-label={labels.kind}
               className="border-input bg-background h-11 min-w-0 rounded-lg border px-3 text-sm"
@@ -405,7 +405,7 @@ export function CollectionsWorkspace({
               placeholder={labels.memberPlaceholder}
               value={newRef}
             />
-            <Button className="h-auto min-h-11 whitespace-normal" type="submit">
+            <Button className="h-auto min-h-11 max-w-full whitespace-normal" type="submit">
               <PlusIcon data-icon="inline-start" />
               {labels.add}
             </Button>
@@ -480,7 +480,7 @@ export function CollectionsWorkspace({
                           <div className="flex flex-wrap gap-2">
                             {summary.matches.map((option) => (
                               <Button
-                                className="h-auto min-h-11 whitespace-normal"
+                                className="h-auto min-h-11 max-w-full whitespace-normal"
                                 key={option.kind}
                                 onClick={() => updateMember(key, { kind: option.kind })}
                                 type="button"
@@ -537,7 +537,7 @@ export function CollectionsWorkspace({
                           {href ? (
                             <Button
                               asChild
-                              className="h-auto min-h-11 whitespace-normal"
+                              className="h-auto min-h-11 max-w-full whitespace-normal"
                               variant="outline"
                             >
                               <Link href={href} prefetch={false}>
@@ -546,7 +546,7 @@ export function CollectionsWorkspace({
                             </Button>
                           ) : null}
                           <Button
-                            className="h-auto min-h-11 whitespace-normal"
+                            className="h-auto min-h-11 max-w-full whitespace-normal"
                             onClick={() =>
                               setState({
                                 ...state,
@@ -600,7 +600,7 @@ export function CollectionsWorkspace({
         <CardContent className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             <Button
-              className="h-auto min-h-11 whitespace-normal"
+              className="h-auto min-h-11 max-w-full whitespace-normal"
               disabled={!hydrated || Boolean(corrupt)}
               onClick={() =>
                 download(JSON.stringify(state, null, 2), "tiangong-portal-shortlist.json")
@@ -612,7 +612,7 @@ export function CollectionsWorkspace({
               {labels.export}
             </Button>
             <Button
-              className="h-auto min-h-11 whitespace-normal"
+              className="h-auto min-h-11 max-w-full whitespace-normal"
               disabled={!hydrated}
               onClick={() => fileInput.current?.click()}
               type="button"
@@ -671,7 +671,7 @@ export function CollectionsWorkspace({
               )}
               <div className="flex flex-wrap gap-2">
                 <Button
-                  className="h-auto min-h-11 whitespace-normal"
+                  className="h-auto min-h-11 max-w-full whitespace-normal"
                   disabled={!proposedImport}
                   onClick={() => {
                     if (!proposedImport) return;
@@ -708,7 +708,7 @@ export function CollectionsWorkspace({
         <CardContent className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             <Button
-              className="h-auto min-h-11 whitespace-normal"
+              className="h-auto min-h-11 max-w-full whitespace-normal"
               disabled={state.members.length === 0}
               onClick={() => {
                 void copyShare(null);
@@ -720,7 +720,7 @@ export function CollectionsWorkspace({
               {labels.share}
             </Button>
             <Button
-              className="h-auto min-h-11 whitespace-normal"
+              className="h-auto min-h-11 max-w-full whitespace-normal"
               disabled={state.members.length === 0}
               onClick={() => {
                 setDisclosure(state);
@@ -743,7 +743,7 @@ export function CollectionsWorkspace({
               {previewState(disclosure)}
               <div className="flex flex-wrap gap-2">
                 <Button
-                  className="h-auto min-h-11 whitespace-normal"
+                  className="h-auto min-h-11 max-w-full whitespace-normal"
                   onClick={() => {
                     void copyShare(disclosure);
                   }}

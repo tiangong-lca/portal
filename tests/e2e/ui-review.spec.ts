@@ -15,6 +15,21 @@ async function noOverflow(page: Page) {
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     ),
   ).toBeLessThanOrEqual(1);
+  const clipped = await page.getByRole("button").evaluateAll((buttons) =>
+    buttons
+      .filter((button) => {
+        const card = button.closest('[data-slot="card"]');
+        if (!card) return false;
+        const box = button.getBoundingClientRect();
+        const bounds = card.getBoundingClientRect();
+        return box.width > 0 && (box.right > bounds.right + 1 || box.left < bounds.left - 1);
+      })
+      .map((button) => button.textContent),
+  );
+  expect(
+    clipped,
+    "Buttons must not be clipped by card overflow even when the document itself does not overflow",
+  ).toEqual([]);
 }
 async function accessible(page: Page) {
   expect(
@@ -72,6 +87,7 @@ for (const { locale, width, theme } of [
     );
     await noOverflow(page);
     await accessible(page);
+    await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: info.outputPath("shortlist-share.png"), fullPage: true });
   });
 }
