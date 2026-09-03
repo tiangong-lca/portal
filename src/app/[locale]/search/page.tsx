@@ -26,6 +26,7 @@ import {
   searchParameters,
 } from "@/features/catalog/search-links";
 import { formatGeographyCode } from "@/i18n/geography";
+import { localizeProcessSubtype } from "@/i18n/domain-vocabulary";
 import { localizedText, mapSearchItem } from "@/features/catalog/map-public-data";
 import { partitionFacetValues } from "@/features/catalog/facet-display";
 import { HybridSearchPanel } from "@/features/catalog/hybrid-search-panel";
@@ -166,7 +167,11 @@ export default async function SearchPage({
           ? `${parsedSearch.filters.referenceYearFrom ?? "…"}–${parsedSearch.filters.referenceYearTo ?? "…"}`
           : undefined,
     },
-    { keys: ["subtype"], label: t("processSubtype"), value: parsedSearch.filters.processSubtype },
+    {
+      keys: ["subtype"],
+      label: t("processSubtype"),
+      value: localizeProcessSubtype(parsedSearch.filters.processSubtype, locale),
+    },
     { keys: ["source"], label: t("source"), value: parsedSearch.filters.source },
   ].filter((entry): entry is { keys: string[]; label: string; value: string } =>
     Boolean(entry.value),
@@ -311,7 +316,9 @@ export default async function SearchPage({
                                   : normalizedGroup.includes("geography") ||
                                       normalizedGroup.includes("region")
                                     ? (formatGeographyCode(value.value, locale) ?? value.value)
-                                    : (localizedText(value.label, locale) ?? value.value);
+                                    : normalizedGroup.includes("subtype")
+                                      ? localizeProcessSubtype(value.value, locale)
+                                      : (localizedText(value.label, locale) ?? value.value);
                             const label = `${translatedValue} (${new Intl.NumberFormat(locale).format(value.count)})`;
                             return href ? (
                               <Button

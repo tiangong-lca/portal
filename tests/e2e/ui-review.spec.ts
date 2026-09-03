@@ -193,3 +193,22 @@ test("import previews retain the current shortlist until confirmed", async ({ pa
   await expect(page.getByLabel(en.Collections.note)).toHaveValue("Imported note");
   await expect(page.getByRole("link", { name: "Carbon dioxide", exact: true })).toBeVisible();
 });
+
+test("localizes a Process subtype in both search modes without changing its wire value", async ({
+  page,
+}) => {
+  await page.goto("/zh-CN/search?kind=process&q=electricity&subtype=lci+result");
+  await expect(
+    page.getByRole("link", { name: `${zh.Common.clear}: ${zh.Search.processSubtype}` }),
+  ).toContainText("LCI结果");
+  await page.getByRole("radio", { name: zh.Search.descriptionMode }).click();
+  await expect(page.getByRole("region", { name: zh.Hybrid.activeFilters })).toContainText(
+    "LCI结果",
+  );
+  const submitted = page.waitForRequest(
+    (request) => request.url().endsWith("/internal/hybrid") && request.method() === "POST",
+  );
+  await page.getByLabel(zh.Hybrid.queryLabel).fill("electricity");
+  await page.getByRole("button", { name: zh.Hybrid.submit, exact: true }).click();
+  expect((await submitted).postDataJSON().filters.processSubtype).toBe("lci result");
+});
