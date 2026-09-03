@@ -69,6 +69,8 @@ Source `d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c` passes 223 unit/integration te
 
 The existing enforcing performance CSP, SSG/ISR route classification and native routing remain unchanged. There is no new Proxy, authentication, RUM or observation period. The internal summary route remains a bounded public-only read, and the 34-file Database contract snapshot is byte-identical to promoted Main `521741a064f402c9b674583ef69a5947d1b5885f`. Location labels have a reproducible receipt from released Next `82fd0bf6b96fbeca7c178d71832b475ebbdc07f3`.
 
+Native Edge browser zoom was separately verified on the French shortlist: the browser toolbar reported 200%, viewport width changed from 1,912 to 956 CSS px and devicePixelRatio from 2 to 4, with zero horizontal overflow and readable controls/header. This was a real browser zoom, not a font-size or device-scale simulation. The browser was restored to 100%, width 1,912 and DPR 2 after inspection.
+
 Bundle checks pass without raising limits: home 72,263/122,880 gzip bytes, detail 71,825/184,320, Search 176,072/256,000. The private-marker scan passes. Independent read-only review found no P1; the two P2 findings (capacity misreported as a bad link, and merge preview not reflecting retained local fields) were corrected and regression-tested before this source checkpoint.
 
 These are local candidate results. Exact new EdgeOne publication, live marker and post-release acceptance are still required through [Portal #48](https://github.com/tiangong-lca/portal/issues/48) and [workspace #963](https://github.com/tiangong-lca/workspace/issues/963); no hosted success is inferred from this build.
