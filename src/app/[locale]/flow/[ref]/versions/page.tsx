@@ -68,6 +68,9 @@ export default async function FlowVersionsPage({
         <p className="text-muted-foreground">{t("versionsDescription")}</p>
       </header>
       <VersionsPanel
+        locale={locale}
+        labels={{ view: common("viewVersion"), current: t("currentVersion") }}
+        currentRef={`${dataset.key.id}@${dataset.key.version}`}
         emptyDescription={t("versionsEmpty")}
         emptyTitle={t("versionsTitle")}
         rows={rows}

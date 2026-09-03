@@ -1,7 +1,12 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { isPortalLocale, localePath } from "@/i18n/routing";
 
 export default async function LocaleNotFound() {
   const t = await getTranslations("Common");
+  const requestedLocale = await getLocale();
+  const locale = isPortalLocale(requestedLocale) ? requestedLocale : "en";
 
   return (
     <main
@@ -10,6 +15,14 @@ export default async function LocaleNotFound() {
     >
       <h1 className="font-heading text-3xl font-semibold">{t("notFoundTitle")}</h1>
       <p className="text-muted-foreground">{t("notFoundDescription")}</p>
+      <div className="flex flex-wrap gap-2">
+        <Button asChild className="min-h-11">
+          <Link href={localePath(locale, "search")}>{t("search")}</Link>
+        </Button>
+        <Button asChild className="min-h-11" variant="outline">
+          <Link href={localePath(locale)}>{t("home")}</Link>
+        </Button>
+      </div>
     </main>
   );
 }

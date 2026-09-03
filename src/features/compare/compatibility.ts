@@ -5,6 +5,7 @@ export type CompareCandidate = {
   ref: string;
   name: string;
   functionalUnit?: string;
+  referenceProduct?: string;
   referenceUnit?: string;
   allocationMethod?: string;
   modelingApproach?: string;
@@ -20,6 +21,7 @@ export type CompareCandidate = {
 };
 
 export const compatibilityDimensions = [
+  "referenceProduct",
   "functionalUnit",
   "referenceUnit",
   "allocationMethod",
@@ -69,7 +71,7 @@ function evaluateDimension(
     return "incompatible";
   }
 
-  if (dimension === "lciaMethodRef") return "incompatible";
+  if (dimension === "lciaMethodRef" || dimension === "referenceProduct") return "incompatible";
   return "reference_only";
 }
 

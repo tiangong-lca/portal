@@ -21,8 +21,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: 07b6a89c369b6db6bd837b6ce7156d2f55470f0a
-lastReviewedNote: "Reviewed for Portal #46: untouched search uses existing initial-state copy; true read failures retain unavailable messaging. No new backend call, ranking, visibility, timeout, dependency or RUM behavior is introduced."
+lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
+lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -31,7 +31,7 @@ related:
 
 # Portal R0 Compatibility Matrix
 
-R0 exit requires the exact selected Portal `main` commit and EdgeOne Production deployment on `portal.tiangong.earth` to pass every non-excepted row below. Public indexing and the cacheable enforcing performance CSP are active on exact `bf97795512480dc00f680521cbf36aeab113ecfe`; a real 404/noindex/unchanged-URL EdgeOne generic raw document for unknown first segments remains the accepted platform disposition. The active release gate is default lexical Search latency: the bounded payload passes, while Portal #40's fixed 30-second public data cache still requires exact hosted proof.
+R0 exit requires the exact selected Portal `main` commit and EdgeOne Production deployment on `portal.tiangong.earth` to pass every non-excepted row below. The table retains the exact historical platform-qualification receipts, including public indexing and the cacheable enforcing performance CSP at `bf97795512480dc00f680521cbf36aeab113ecfe`. A real 404/noindex/unchanged-URL EdgeOne generic raw document for unknown first segments remains the accepted platform disposition. New Portal #48 release acceptance must verify the final Main marker, four-language user workflows, public-data boundaries, cache/headers and the controlled lexical payload/latency checks; historical receipts are not a substitute for that exact rollout.
 
 | Capability | Local production evidence | EdgeOne main/Production evidence | Gate |
 | --- | --- | --- | --- |
@@ -62,6 +62,18 @@ These are controlled local fixture results, not a new EdgeOne frontend release o
 ## Portal #46 initial-state proof
 
 Portal #46 additionally verifies the untouched/failed/successful sidebar states with three typed server-page unit tests. At code `07b6a89c369b6db6bd837b6ce7156d2f55470f0a`, the complete check passed 166 tests (one optional live probe skipped), the production build and unchanged bundle budgets; the 52-test fixture browser suite passed again. This changes only initial-state copy selection, not data calls or search results.
+
+## Portal #48 visual and data-user workflow proof
+
+Source `d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c` passes 223 unit/integration tests (one explicitly credentialed live probe skipped), typecheck, strict lint, and all 64 fixture-backed production browser checks. The browser matrix covers zh-CN/en/de/fr, 320/390/768/1024/1440 px, light/dark, keyboard and forced colors, 200% text enlargement, header pointer hits and citation offsets, mobile filter stacking, cross-page exact-version selection, import confirmation and notes-sharing disclosure. Automated all-severity WCAG checks pass on the added visual matrix. Human screenshot review also checks alignment and clipped labels; automated viewport and text-enlargement evidence alone must not be described as real browser-zoom proof.
+
+The existing enforcing performance CSP, SSG/ISR route classification and native routing remain unchanged. There is no new Proxy, authentication, RUM or observation period. The internal summary route remains a bounded public-only read, and the 34-file Database contract snapshot is byte-identical to promoted Main `521741a064f402c9b674583ef69a5947d1b5885f`. Location labels have a reproducible receipt from released Next `82fd0bf6b96fbeca7c178d71832b475ebbdc07f3`.
+
+Native Edge browser zoom was separately verified on the French shortlist: the browser toolbar reported 200%, viewport width changed from 1,912 to 956 CSS px and devicePixelRatio from 2 to 4, with zero horizontal overflow and readable controls/header. This was a real browser zoom, not a font-size or device-scale simulation. The browser was restored to 100%, width 1,912 and DPR 2 after inspection.
+
+Bundle checks pass without raising limits: home 72,263/122,880 gzip bytes, detail 71,825/184,320, Search 176,072/256,000. The private-marker scan passes. Independent read-only review found no P1; the two P2 findings (capacity misreported as a bad link, and merge preview not reflecting retained local fields) were corrected and regression-tested before this source checkpoint.
+
+These are local candidate results. Exact new EdgeOne publication, live marker and post-release acceptance are still required through [Portal #48](https://github.com/tiangong-lca/portal/issues/48) and [workspace #963](https://github.com/tiangong-lca/workspace/issues/963); no hosted success is inferred from this build.
 
 ## CSP disposition
 

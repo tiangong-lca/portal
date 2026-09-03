@@ -73,13 +73,14 @@ export default async function ProcessExchangesPage({
         <p className="text-muted-foreground">{t("exchangesDescription")}</p>
       </header>
       <ExchangesPanel
+        locale={locale}
         caption={t("exchangesDescription")}
         emptyDescription={t("exchangesEmpty")}
         emptyTitle={t("exchangesTitle")}
         labels={{
           amount: t("value"),
           direction: t("direction"),
-          flow: t("referenceProduct"),
+          flow: t("relatedFlow"),
           functionalUnit: t("functionalUnit"),
           kind: t("exchangeKind"),
           no: t("no"),

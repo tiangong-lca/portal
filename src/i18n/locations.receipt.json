@@ -1,0 +1,34 @@
+{
+  "sourceRepository": "linancn/tiangong-lca-next",
+  "sourceCommit": "82fd0bf6b96fbeca7c178d71832b475ebbdc07f3",
+  "sources": [
+    {
+      "locale": "en",
+      "path": "public/locations/ILCDLocations.b65e8d45de515726.min.json.gz",
+      "bytes": 6688,
+      "sha256": "e47cb3299abb9e56ae1ef54d8f3906144975da99ef20a7ebb809a6423ac27e85",
+      "count": 647
+    },
+    {
+      "locale": "zh-CN",
+      "path": "public/locations/ILCDLocations.c406f6ae5aa30ef1_zh.min.json.gz",
+      "bytes": 7568,
+      "sha256": "e2d92a822bc3c97f8d45f6b55b6734aea8e2f86ba047c450be3dec1bc8913208",
+      "count": 647
+    },
+    {
+      "locale": "de",
+      "path": "public/locations/ILCDLocations.7048b701b1dfacb4_de.min.json.gz",
+      "bytes": 6868,
+      "sha256": "77479039e4dbd7484b39c3ef31eaf9df404258bb34b576c66674e5cc718cb0c6",
+      "count": 647
+    },
+    {
+      "locale": "fr",
+      "path": "public/locations/ILCDLocations.3fdd552e27dca310_fr.min.json.gz",
+      "bytes": 6750,
+      "sha256": "ed69e79b8aaa1600609dfa308dff59c856f263e023a1709dc6ab6d0098cdd27a",
+      "count": 647
+    }
+  ]
+}

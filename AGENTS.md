@@ -26,8 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: 07b6a89c369b6db6bd837b6ce7156d2f55470f0a
-lastReviewedNote: "Reviewed for Portal #46: untouched search uses existing initial-state copy; true read failures retain unavailable messaging. No new backend call, ranking, visibility, timeout, dependency or RUM behavior is introduced."
+lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
+lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
 related:
   - README.md
   - docs/design-plan.md
@@ -48,6 +48,10 @@ related:
 - Portal is read-only for LCA data. It must not create, edit, review, publish, withdraw, repair, or recalculate datasets.
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
 - The public product has independent `zh-CN`, `en`, `de`, and `fr` routes and dictionaries. UI copy never falls back across locales; source-data language fallback remains visibly labelled.
+- Availability labels follow explicit metadata/exchange/LCIA capabilities, not a blanket open-data or licence claim. Process and Flow fields remain distinct. Location names come from the receipted four-language ILCD snapshot of released Next; unknown codes remain visible and source scope text is retained.
+- Search exposes keyword/identifier and description modes before results. Explicit filter-only queries execute; untouched Search does not. Mobile filters remain accessible, and headers/overlays preserve pointer, focus and anchor visibility.
+- Comparison retains at most four exact Process versions in memory while navigating; no session or query-text storage is introduced. Matching displayed fields is not scientific verification, and missing system-boundary evidence must not be invented.
+- Shortlist V2 stores explicit Process/Flow/unresolved identities locally, preserves legacy V1 content and notes, confirms replacement imports, and never auto-shares text. Name lookup uses only the internal same-origin public summary helper: at most ten identities per 4 KiB request and four existing public RPC reads in flight, with cancellation and no private text. A partial lookup must not resolve an unknown type.
 - Public lexical Search defaults to 10 result cards while accepting explicit validated limits through 50. Each facet group renders at most 16 linked values (8 visible + 8 disclosed); further values are counted and require a narrower query instead of being hidden in initial HTML/RSC.
 - Portal queries allow only state codes 100 and 200. Version-aware Search/facets use V2; Hybrid groups by the best exact matching version before paging and retains every recalled matching version. Never replace a match with the latest version or boost a dataset by its number of versions.
 - Natural-language discovery starts bounded same-origin lexical and signed Hybrid POSTs. Early rows remain usable; a late intelligent result is applied only by an explicit user action. Cancelled/stale requests and failed/expired pagination must not clear or silently replace displayed rows. Query text stays out of URLs, telemetry and implicit persistence.
@@ -92,7 +96,7 @@ R2 natural-language search is a client enhancement over same-origin `POST /inter
 
 `contracts/database-engine/portal/**` is a byte-identical generated snapshot of one exact promoted Database commit. `pnpm check:database-contracts` verifies its closed inventory, source commit, byte lengths, and SHA-256 manifest; an explicit `--database-root` check additionally compares every file to the authoritative Database Git object. Prettier must ignore this directory because reformatting would destroy the byte identity. The explicit `PORTAL_LIVE_PROBE=true` Production integration test is read-only and default-skipped; normal local/CI tests never contact Production.
 
-Portal #44 has one user-authorized exception, recorded in workspace #963: the 34-file snapshot is pinned to Database `470e66157fc0b363c3360ba952f75280cfa1ff73` and consumes Edge `08b19d7b841395e5d16096ff5258d7ac405c9b6f` after their exact search increment was deployed and read back on Main. This does not establish Git promotion, frontend release or workspace completion and does not change the promoted-source rule for future work.
+Portal's 34-file Database snapshot is pinned to promoted Main `521741a064f402c9b674583ef69a5947d1b5885f` (Database PR #602). The earlier one-time deployment-before-promotion exception is recorded in workspace #963 and no longer needed for this snapshot. Its bytes are unchanged from the already deployed search increment; this repin does not replay production migrations or by itself establish frontend or workspace completion.
 
 Local tests cover both the retained strict CSP probe and the user-approved enforcing performance profile. Only `docs/r0/compatibility-matrix.md` may declare hosted status; public indexing changes only on an exact `portal/main` deployment after four-locale, runtime, cache, HMAC/Redis, brand, private-route noindex, and rollback probes pass.
 

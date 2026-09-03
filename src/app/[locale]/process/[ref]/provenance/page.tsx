@@ -9,6 +9,7 @@ import { localizedText, mapDataset } from "@/features/catalog/map-public-data";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
 import { isPortalLocale } from "@/i18n/routing";
 import { absolutePortalUrl, localizedMetadata } from "@/lib/seo";
+import { localizeConfidence, localizeFieldOrigin } from "@/i18n/domain-vocabulary";
 
 export async function generateMetadata({
   params,
@@ -23,7 +24,7 @@ export async function generateMetadata({
   );
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
-    description: t("provenanceEmpty"),
+    description: t("provenanceDescription"),
     locale,
     path: `process/${record.ref}/provenance`,
     title: `${t("provenanceTitle")} · ${record.name}`,
@@ -40,13 +41,26 @@ export default async function ProcessProvenancePage({
   if (metadata.kind !== "process") return null;
   const t = await getTranslations({ locale, namespace: "Detail" });
   const identityRows = [
-    ["database", metadata.source.databaseId],
-    ["databaseVersion", metadata.source.databaseVersion],
-    ["sourceRecord", metadata.source.sourceRecordId],
-    ["importBatch", dataset.provenance.importBatchId],
-    ["normalizationRule", dataset.provenance.normalizationRuleVersion],
+    [t("sourceDatabaseId"), metadata.source.databaseId],
+    [t("sourceDatabaseVersion"), metadata.source.databaseVersion],
+    [t("sourceRecord"), metadata.source.sourceRecordId],
+    [t("importBatch"), dataset.provenance.importBatchId],
+    [t("normalizationRule"), dataset.provenance.normalizationRuleVersion],
   ].filter((entry): entry is [string, string] => Boolean(entry[1]));
   const hasEvidence = identityRows.length > 0 || dataset.provenance.fieldOrigins.length > 0;
+  const fieldLabels: Record<string, string> = {
+    "metadata.names": t("originalName"),
+    "metadata.referenceProduct": t("referenceProduct"),
+    "metadata.functionalUnit": t("functionalUnit"),
+    "metadata.geography": t("geography"),
+    "metadata.geography.code": t("geography"),
+    "metadata.referenceYear": t("referenceYear"),
+    "metadata.technology": t("technology"),
+    "metadata.classifications": t("classification"),
+    "metadata.allocationAndModeling": t("allocationModeling"),
+    "metadata.cutoffRules": t("cutoffRules"),
+    "metadata.source": t("sourceDatabase"),
+  };
 
   return (
     <section aria-labelledby="provenance-title" className="flex flex-col gap-4">
@@ -78,7 +92,7 @@ export default async function ProcessProvenancePage({
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>{t("evidence")}</CardTitle>
+              <CardTitle>{t("fieldSource")}</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="flex flex-col gap-3">
@@ -87,13 +101,23 @@ export default async function ProcessProvenancePage({
                     className="flex flex-col gap-1 rounded-lg border p-3"
                     key={`${origin.path}:${origin.kind}`}
                   >
+                    <strong className="text-sm">
+                      {fieldLabels[origin.path] ?? t("fieldSource")}
+                    </strong>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline">{origin.kind}</Badge>
+                      <Badge variant="outline">{localizeFieldOrigin(origin.kind, locale)}</Badge>
                       {origin.confidence ? (
-                        <Badge variant="secondary">{origin.confidence}</Badge>
+                        <Badge variant="secondary">
+                          {t("confidence")}: {localizeConfidence(origin.confidence, locale)}
+                        </Badge>
                       ) : null}
                     </div>
-                    <code className="text-xs break-all">{origin.path}</code>
+                    <details>
+                      <summary className="text-muted-foreground cursor-pointer text-xs">
+                        {t("fieldPath")}
+                      </summary>
+                      <code className="text-xs break-all">{origin.path}</code>
+                    </details>
                     {localizedText(origin.reason, locale) ? (
                       <p className="text-muted-foreground text-sm">
                         {localizedText(origin.reason, locale)}

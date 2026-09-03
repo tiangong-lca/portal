@@ -1,15 +1,19 @@
-import { BookmarkPlusIcon, GitCompareArrowsIcon, QuoteIcon } from "lucide-react";
+import { BookmarkPlusIcon, QuoteIcon } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DatasetDetailViewModel } from "@/features/catalog/view-model";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 
 import { CitationCopy } from "./citation-copy";
+import { NavigationLink } from "@/components/shell/navigation-link";
+import { AvailabilityBadges } from "./availability-badges";
+import { HashDisclosure } from "@/components/shell/hash-disclosure";
+import { CompareChoice } from "@/features/compare/selection";
+import { buildMemberFragment } from "@/features/collections/storage-v2";
 
 type DetailHeaderProps = {
   kind: "process" | "flow";
@@ -45,9 +49,16 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline">{kind === "process" ? common("process") : common("flow")}</Badge>
-          <Badge variant={record?.accessLevel === "open" ? "default" : "secondary"}>
-            {record?.accessLevel === "open" ? common("public") : common("metadataOnly")}
-          </Badge>
+          {record ? (
+            <AvailabilityBadges
+              capabilities={record.capabilities}
+              labels={{
+                exchanges: common("exchangesAvailable"),
+                lcia: common("lciaAvailable"),
+                metadata: common("metadataOnly"),
+              }}
+            />
+          ) : null}
         </div>
         <h1 className="font-heading max-w-4xl text-3xl leading-tight font-semibold text-balance sm:text-5xl">
           {record?.name ?? (kind === "process" ? t("processTitle") : t("flowTitle"))}
@@ -62,16 +73,15 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
 
       <div className="flex flex-wrap gap-2">
         {kind === "process" ? (
-          <Button asChild variant="outline">
-            <Link href={`${localePath(locale, "compare")}?v=1&ids=${encodeURIComponent(refValue)}`}>
-              <GitCompareArrowsIcon data-icon="inline-start" />
-              {t("compare")}
-            </Link>
-          </Button>
+          <CompareChoice
+            item={{ ref: refValue, name: record?.name ?? refValue }}
+            label={t("compare")}
+            locale={locale}
+          />
         ) : null}
         <Button asChild variant="outline">
           <Link
-            href={`${localePath(locale, "collections")}#member=${encodeURIComponent(refValue)}`}
+            href={`${localePath(locale, "collections")}${buildMemberFragment({ kind, ref: refValue })}`}
           >
             <BookmarkPlusIcon data-icon="inline-start" />
             {t("collect")}
@@ -92,31 +102,33 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
         <ul className="flex min-w-max items-center gap-1">
           {navigationItems.map(([href, label]) => (
             <li key={href}>
-              <Button asChild size="lg" variant="ghost">
-                <Link href={localePath(locale, href)}>{label}</Link>
-              </Button>
+              <NavigationLink href={localePath(locale, href)}>{label}</NavigationLink>
             </li>
           ))}
         </ul>
       </nav>
 
-      <Card id="citation" size="sm">
-        <CardHeader>
-          <CardTitle>{t("citation")}</CardTitle>
-          <CardDescription>{common("exactVersion")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {record?.citation ? (
+      <HashDisclosure id="citation" label={t("citation")}>
+        {record?.citation ? (
+          <div className="flex flex-col gap-3">
             <CitationCopy
               citation={record.citation}
               copiedLabel={t("citationCopied")}
+              failureLabel={t("copyFailed")}
               copyLabel={t("copyCitation")}
             />
-          ) : (
-            <p className="text-muted-foreground">{t("citationUnavailable")}</p>
-          )}
-        </CardContent>
-      </Card>
+            <CitationCopy
+              citation={refValue}
+              copyLabel={t("copyVersionId")}
+              copiedLabel={t("versionCopied")}
+              failureLabel={t("copyFailed")}
+              showText={false}
+            />
+          </div>
+        ) : (
+          <p className="text-muted-foreground">{t("citationUnavailable")}</p>
+        )}
+      </HashDisclosure>
     </header>
   );
 }

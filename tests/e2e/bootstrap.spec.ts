@@ -4,7 +4,7 @@ test("renders the anonymous Portal bootstrap shell", async ({ page }) => {
   await page.goto("/");
 
   await expect(page).toHaveURL(/\/zh-CN$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("查找可用于生命周期评估的数据");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("查找生命周期评价数据");
   await expect(
     page.getByRole("contentinfo").getByText("面向生命周期评价研究与实践的公开数据目录。"),
   ).toBeVisible();

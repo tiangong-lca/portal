@@ -13,10 +13,10 @@ const geographyPrecision: Record<string, LocalizedValue> = {
   city: { "zh-CN": "城市", en: "City", de: "Stadt", fr: "Ville" },
   other: { "zh-CN": "其他范围", en: "Other area", de: "Anderer Raumbezug", fr: "Autre périmètre" },
   unknown: {
-    "zh-CN": "范围未说明",
-    en: "Area not specified",
-    de: "Raumbezug nicht angegeben",
-    fr: "Périmètre non précisé",
+    "zh-CN": "地理精度未说明",
+    en: "Geographic precision not specified",
+    de: "Geografische Genauigkeit nicht angegeben",
+    fr: "Précision géographique non précisée",
   },
 };
 
@@ -111,16 +111,16 @@ const genericPublicEvidence: LocalizedValue = {
 
 const publicEvidenceReasons: Record<string, LocalizedValue> = {
   state_100_public: {
-    "zh-CN": "已公开发布",
-    en: "Published for public use",
-    de: "Für die öffentliche Nutzung veröffentlicht",
-    fr: "Publié pour un usage public",
+    "zh-CN": "已收录于公开目录",
+    en: "Listed in the public catalog",
+    de: "Im öffentlichen Katalog aufgeführt",
+    fr: "Répertorié dans le catalogue public",
   },
   state_200_metadata_only: {
-    "zh-CN": "公开信息可浏览，数值未开放",
-    en: "Public information is available; values are not open",
-    de: "Öffentliche Angaben sind verfügbar; Werte sind nicht freigegeben",
-    fr: "Les informations sont publiques ; les valeurs ne sont pas ouvertes",
+    "zh-CN": "此记录仅提供元数据",
+    en: "This record provides metadata only",
+    de: "Dieser Eintrag enthält nur Metadaten",
+    fr: "Cette fiche fournit uniquement des métadonnées",
   },
 };
 
@@ -152,18 +152,88 @@ export function localizeLatestVersion(locale: PortalLocale): string {
 
 export function formatDatasetCitation(
   locale: PortalLocale,
-  input: { name: string; ref: string; url: string },
+  input: { name: string; ref: string; url: string; provider?: string },
 ): string {
   const [id, version = input.ref] = input.ref.split("@", 2);
   const identifier = id ? `${id}@${version}` : input.ref;
   switch (locale) {
     case "zh-CN":
-      return `天工 LCA 平台，数据集：${input.name}，版本 ${version}，标识 ${identifier}，访问地址：${input.url}`;
+      return `${input.provider ? `数据提供方：${input.provider}。` : ""}天工 LCA 平台，数据集：${input.name}，版本 ${version}，标识 ${identifier}，访问地址：${input.url}`;
     case "de":
-      return `TianGong LCA Platform, Datensatz: ${input.name}, Version ${version}, Kennung ${identifier}, verfügbar unter ${input.url}`;
+      return `${input.provider ? `Datenanbieter: ${input.provider}. ` : ""}TianGong LCA Platform, Datensatz: ${input.name}, Version ${version}, Kennung ${identifier}, verfügbar unter ${input.url}`;
     case "fr":
-      return `Plateforme TianGong LCA, jeu de données : ${input.name}, version ${version}, identifiant ${identifier}, disponible sur ${input.url}`;
+      return `${input.provider ? `Fournisseur de données : ${input.provider}. ` : ""}Plateforme TianGong LCA, jeu de données : ${input.name}, version ${version}, identifiant ${identifier}, disponible sur ${input.url}`;
     default:
-      return `TianGong LCA Platform, dataset: ${input.name}, version ${version}, identifier ${identifier}, available at ${input.url}`;
+      return `${input.provider ? `Data provider: ${input.provider}. ` : ""}TianGong LCA Platform, dataset: ${input.name}, version ${version}, identifier ${identifier}, available at ${input.url}`;
   }
+}
+
+const flowTypes: Record<string, LocalizedValue> = {
+  product: { "zh-CN": "产品流", en: "Product flow", de: "Produktfluss", fr: "Flux de produit" },
+  elementary: {
+    "zh-CN": "基本流",
+    en: "Elementary flow",
+    de: "Elementarfluss",
+    fr: "Flux élémentaire",
+  },
+  waste: { "zh-CN": "废物流", en: "Waste flow", de: "Abfallfluss", fr: "Flux de déchet" },
+  technosphere: {
+    "zh-CN": "技术流",
+    en: "Technosphere flow",
+    de: "Technosphärenfluss",
+    fr: "Flux de technosphère",
+  },
+  other: { "zh-CN": "其他流", en: "Other flow", de: "Sonstiger Fluss", fr: "Autre flux" },
+  unknown: {
+    "zh-CN": "类型未说明",
+    en: "Type not specified",
+    de: "Typ nicht angegeben",
+    fr: "Type non précisé",
+  },
+};
+
+export function localizeFlowType(value: string, locale: PortalLocale): string {
+  return flowTypes[value]?.[locale] ?? flowTypes.unknown![locale];
+}
+
+export function localizeDirection(value: "input" | "output", locale: PortalLocale): string {
+  const labels = {
+    input: { "zh-CN": "输入", en: "Input", de: "Eingang", fr: "Entrée" },
+    output: { "zh-CN": "输出", en: "Output", de: "Ausgang", fr: "Sortie" },
+  };
+  return labels[value][locale];
+}
+
+export function localizeFieldOrigin(value: string, locale: PortalLocale): string {
+  const labels: Record<string, LocalizedValue> = {
+    original: {
+      "zh-CN": "原始记录",
+      en: "Source record",
+      de: "Quelldatensatz",
+      fr: "Enregistrement source",
+    },
+    normalized: { "zh-CN": "标准化处理", en: "Normalized", de: "Normalisiert", fr: "Normalisé" },
+    derived: {
+      "zh-CN": "规则派生",
+      en: "Rule-derived",
+      de: "Regelbasiert abgeleitet",
+      fr: "Dérivé par une règle",
+    },
+    ai_inferred: {
+      "zh-CN": "AI 推断",
+      en: "AI-inferred",
+      de: "KI-abgeleitet",
+      fr: "Inféré par IA",
+    },
+  };
+  return labels[value]?.[locale] ?? value;
+}
+
+export function localizeConfidence(value: string, locale: PortalLocale): string {
+  const labels: Record<string, LocalizedValue> = {
+    high: { "zh-CN": "高", en: "High", de: "Hoch", fr: "Élevée" },
+    medium: { "zh-CN": "中", en: "Medium", de: "Mittel", fr: "Moyenne" },
+    low: { "zh-CN": "低", en: "Low", de: "Niedrig", fr: "Faible" },
+  };
+  return labels[value]?.[locale] ?? value;
 }

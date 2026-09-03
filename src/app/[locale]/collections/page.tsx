@@ -1,6 +1,6 @@
 import { DatabaseZapIcon } from "lucide-react";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -45,34 +45,9 @@ export default async function CollectionsPage({ params }: PageProps<"/[locale]/c
         <AlertDescription>{t("warningDescription")}</AlertDescription>
       </Alert>
       <CollectionsWorkspace
-        labels={{
-          add: t("add"),
-          candidate: t("candidate"),
-          clearCorrupt: t("clearCorrupt"),
-          downloadCorrupt: t("downloadCorrupt"),
-          empty: t("empty"),
-          error: t("error"),
-          excluded: t("excluded"),
-          export: t("export"),
-          import: t("import"),
-          imported: t("imported"),
-          memberPlaceholder: t("memberPlaceholder"),
-          memberRef: t("memberRef"),
-          note: t("note"),
-          purpose: t("purpose"),
-          remove: t("remove"),
-          researchName: t("researchName"),
-          saved: t("saved"),
-          selected: t("selected"),
-          share: t("share"),
-          shareCancel: t("shareCancel"),
-          shareConfirm: t("shareConfirm"),
-          shareDisclosure: t("shareDisclosure"),
-          sharePreview: t("sharePreview"),
-          shareWithNotes: t("shareWithNotes"),
-          shared: t("shared"),
-          sharedWithNotes: t("sharedWithNotes"),
-        }}
+        locale={locale}
+        labels={(await getMessages({ locale })).Collections}
+        common={(await getMessages({ locale })).Common}
       />
     </main>
   );

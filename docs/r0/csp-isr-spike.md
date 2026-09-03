@@ -20,9 +20,9 @@ checkPaths:
   - edgeone.json
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-09-02
-lastReviewedCommit: 32f221bb97f243bc178c5f86bf1c231bba473a2d
-lastReviewedNote: "Reviewed for Portal #44: the version-aware progressive POST UI preserves the existing CSP, ISR, native routing and strict-profile reopen boundaries; all 52 local production browser checks pass."
+lastReviewedAt: 2026-09-03
+lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
+lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

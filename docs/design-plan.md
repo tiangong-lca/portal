@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: 07b6a89c369b6db6bd837b6ce7156d2f55470f0a
-lastReviewedNote: "Reviewed for Portal #46: untouched search uses existing initial-state copy; true read failures retain unavailable messaging. No new backend call, ranking, visibility, timeout, dependency or RUM behavior is introduced."
+lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
+lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
 related:
   - AGENTS.md
   - README.md
@@ -167,7 +167,7 @@ Portal 只能进一步隐藏能力，不能把 `false` 改成 `true`。
 
 Portal 仓库把一个 exact promoted Database commit 的全部 `contracts/portal/*.schema.json` 与 `generated/*.d.ts` 机械同步到 `contracts/database-engine/portal/**`。该目录不由 Portal 格式化或手工修改；版本化 manifest 固定 canonical repo、40 位 source commit、闭合文件清单、byte length 与 SHA-256。`pnpm check:database-contracts` 每次验证本地 snapshot，提供 Database checkout 时再逐文件对比 Git object。运行时 Zod 仍执行严格 fail-closed 解析，TypeScript DTO 直接使用该 generated contract；不能用 Portal 手写类型替代或通过放宽 Schema 消除 drift。
 
-Portal #44 / workspace #963 仅本次按用户授权使用已部署到 Main 并完成只读回验的候选提交：Database `470e66157fc0b363c3360ba952f75280cfa1ff73`、Edge `08b19d7b841395e5d16096ff5258d7ac405c9b6f`。当前快照包含 17 个 Schema 及 17 个 generated type 文件；[现网证据](https://github.com/tiangong-lca/workspace/issues/963#issuecomment-5508734216) 不等同于 Git promote、前端上线或 workspace integration 完成。该例外不改变以后工作的 promoted-source 要求。
+当前快照固定为 Database 已晋级 Main 的 `521741a064f402c9b674583ef69a5947d1b5885f`（PR #602），包含 17 个 Schema 及 17 个 generated type 文件，与先前已部署搜索增量逐字节一致。Portal #44 曾获准在正式 Git promote 前接入已上线后端，例外的范围与现网回验保留在 [workspace #963](https://github.com/tiangong-lca/workspace/issues/963)。重新固定契约不重跑生产迁移，也不自动证明前端发布或 workspace integration 完成。
 
 ```ts
 type PublicDatasetKey = {
@@ -352,7 +352,7 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 
 首页按专业科学数据目录的任务顺序组织：
 
-1. 用一句直接的任务标题说明“查找可用于生命周期评估的数据”，辅文只解释可检索对象与可核对背景；
+1. 用一句直接的任务标题说明“查找生命周期评价数据”，辅文只解释可检索对象与可核对背景；
 2. 关键词与标识符搜索是首要操作，支持名称、UUID、CAS 号和分类；
 3. 用一个连续目录索引提供 Process、Flow、地区与来源四个入口，不拆成营销功能卡；
 4. 展示当前可发现记录数、最近公开更新时间以及真实可执行的 UUID、CAS、分类示例；
@@ -362,9 +362,9 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 
 ### 7.2 搜索页
 
-桌面端采用三栏：动态分面、结果、选择托盘。中尺寸将分面收进 Sheet，托盘变为浮动按钮；移动端单列。
+宽屏采用分面与结果两栏；中小尺寸把分面收进 Sheet，移动端结果为单列。精确版本选择托盘固定在下方，说明已选数量并可展开名称和版本；所有尺寸上限均为 4 个。导航使用不透明层，Sheet 位于导航之上，锚点滚动按实际导航高度留出空间。
 
-关键词为空、尚未发起目录查询时，分面区域使用已有初始搜索提示，不把未请求的数据描述为后端不可用，也不新增空查询 RPC。只有实际读取失败才显示不可用提示；已成功取得的分面保持正常筛选展示。
+结果之前提供“关键词或编号”与“描述需求”两个模式。关键词为空且没有任何显式筛选条件时才是未提交状态，不发起空查询 RPC，也不显示后端不可用；由地区或来源目录进入的 filter-only URL 是有效查询，必须展示命中结果。切换类型、筛选、普通查询和续页保留仍适用的条件；Flow 去掉 Process subtype。只有实际读取失败才显示不可用提示。
 
 搜索流程：
 
@@ -382,7 +382,9 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 - 后端返回的匹配理由；
 - `选择`、`详情`、`复制引用`。
 
-动态分面计数必须来自后端全结果集聚合，不能由当前页样本推算。首批分面限于已具备索引和稳定字段的：对象类型、访问能力、地区、参考年、Process subtype、数据源。分配方法、技术路线和质量分面在真实数据覆盖与索引验收后加入。
+动态分面计数必须来自后端全结果集聚合，不能由当前页样本推算；单位明确为命中的公开版本，不暗示去重数据集数。首批分面限于已具备索引和稳定字段的：对象类型、访问能力、地区、参考年、Process subtype、数据源。分配方法、技术路线和质量分面在真实数据覆盖与索引验收后加入。
+
+地区名称采用已发布 Next `82fd0bf6b96fbeca7c178d71832b475ebbdc07f3` 的四语 ILCD 地区快照，646 个非 NULL 编码由 `scripts/sync-location-names.mjs` 离线生成，receipt 记录源 commit、文件和摘要。界面展示“名称（编码）”，未知编码原样保留，原始地理说明仍在详情中；不得据显示名称猜测精度、改变筛选值或放宽 LCIA 原始上下文绑定。
 
 Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时才启用；默认使用原始 Process 平铺，不在 Portal 自建合并规则。
 
@@ -390,14 +392,14 @@ Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时�
 
 ### 7.3 Process 详情
 
-固定头部显示：规范化名、原始名、`uuid@version`、公开能力、地区精度、版本切换和操作条。
+固定头部显示数据源名称、`uuid@version`、按显式能力区分的元数据/输入输出/环境影响结果标记、版本切换和操作条。公开能力不等同于任意复用许可。Process 的参考产品和功能单位与 Flow 的 CAS、流类型和参考流属性分开呈现；缺少字段不补写，Flow 不套用过程的时间、功能单位或供给范围标签。
 
 操作条仅包含：
 
 - 比较；
 - 加入本地候选集；
 - 引用；
-- 打开 `tiangong-lca-next`。
+- 全局导航/页脚提供 `tiangong-lca-next` 平台入口，不猜测未签约的具体记录跳转。
 
 内容子路由：
 
@@ -412,22 +414,23 @@ Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时�
 
 ### 7.4 比较
 
-比较 2–4 条 Process。第一屏先输出可比性矩阵，再决定是否并列数值。
+比较 2–4 条 Process 精确版本。选择在 Portal 客户端导航间以内存保留，不写入 sessionStorage 或 localStorage，不持久化查询原文。详情、浏览与搜索共享选择；只有一个版本的比较页显示该版本并提供继续选择/添加精确编号入口。桌面和移动矩阵均显示数据集名称与版本。
 
 判定维度：功能单位、参考流与单位、分配与建模方法、地理代表范围与精度、参考年、技术路线、截止规则、LCIA 方法和 publication。
 
 判定档位：
 
-- 直接可比；
-- 换算后可比；
-- 仅作参考；
-- 不可比。
+- 所列字段一致；
+- 需要单位换算；
+- 需要进一步评估；
+- 已记录字段不兼容；
+- 信息不足，无法判断。
 
-单位换算仅使用明确、版本化的换算契约。任何代理、推断或地理精度不一致必须在结论附近说明。LCIA 数值只有在所有成员都有公开结果且方法/单位满足条件时并列；否则只做元数据对照。
+单位换算仅使用明确、版本化的换算契约。任何代理、推断或地理精度不一致必须在结论附近说明。LCIA 数值只有在所有成员都有公开结果且方法/单位满足条件时并列；否则只做元数据对照。字段一致不是科学适用性结论；当前公开 DTO 没有独立的完整系统边界字段，不能从普通说明中伪造，应提示使用者自行核对。环境影响类别从第一个公开过程版本的有界结果页取得可读名称，不要求用户猜测类别 ID；真正并列数值仍经过所有版本、publication、方法与单位的严格绑定检查。
 
 ### 7.5 本地候选集
 
-候选集是“本地评审辅助集”，不是合规审计系统。它记录研究名称、用途、精确版本成员、候选/排除/采用状态、理由和查询快照。
+候选清单是本地评审辅助工具，不是合规审计系统。它记录可选清单名称、用途、最多 200 个精确版本成员、待核对/排除/选用状态和理由，不自动保存查询。成员按 `kind + UUID@version` 标识，Process/Flow 同编号不同类型不合并，旧版未注明类型的成员保持 unresolved，需完整公开查询结果和显式类型确认。
 
 界面持续提示：
 
@@ -435,6 +438,10 @@ Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时�
 - 可能被浏览器清理；
 - 不跨设备自动同步；
 - 可导出 JSON 并在另一设备导入。
+
+名称补全通过同源内部 `POST /internal/dataset-summaries`，只允许 locale 与最多 10 个 `{kind, ref}`，不接受清单名称、备注、用途、state、team 或用户凭据。请求体最大 4 KiB，公开精确版本 RPC 最多 4 路并发，沿用原有只读超时并传递客户端取消。旧成员的未知类型最多查询 Process/Flow 两路；任一路失败不能从另一侧成功推断唯一类型。响应仅包含请求标识、状态和允许的公开名称/类型/版本；非公开与不存在仍不可区分。清单每页 10 条，只对可见页补全，不自动查完整 200 条。
+
+输入与提交按钮同高对齐，帮助文字单独成行；文件选择由本地化按钮触发，不显示操作系统语言的原生按钮。JSON 导入先解析、显示数量与内容预览，再明确确认替换；默认分享只含类型与编号，含备注分享显示完整可分享内容后再确认。读取失败不覆盖现存存储，写入失败保留内存修改并提示导出；损坏内容隔离，清除需确认，导入替换同样不能静默进行。
 
 ### 7.6 方法论
 
@@ -463,7 +470,7 @@ Portal 不实现匿名反馈写入接口。
 
 GET 中的 identifier/lexical `q` 会进入浏览器历史、EdgeOne access URL 和其默认 24 小时平台日志，界面必须提示不要输入机密内容；应用日志不得再次复制它。跨域 Referrer Policy 固定为 `strict-origin-when-cross-origin`，不向外站发送 path/query。
 
-自然语言 Hybrid 原文不进入 query string：Client island 通过 same-origin POST 提交，Route Handler 与 Edge 均禁止记录 body；刷新恢复使用本地 session state，只有用户显式“分享此查询”时才将原文放入 fragment 并显示泄露预览。研究名称、备注、采用/排除理由同样不进入 query string。
+自然语言 Hybrid 原文不进入 query string：Client island 通过 same-origin POST 提交，Route Handler 与 Edge 均禁止记录 body；不隐式写入浏览器存储，只有用户显式“分享此查询”时才将原文放入 fragment 并显示完整预览。清单名称、备注、采用/排除理由同样不进入 query string。
 
 所有参数由 Zod 严格解析；未知键忽略，非法值回退到安全默认值，超长输入返回可理解的 400 页面而不是 500。
 
@@ -471,7 +478,7 @@ MVP 输入上限：查询 512 个 Unicode code points、解码后的 query strin
 
 ### 8.2 localStorage
 
-键名包含 schema 版本，例如 `tiangong.portal.collections.v1`。读取时执行 schema 校验和迁移；损坏数据被隔离并允许下载原始内容后清除，不直接传入 DOM。
+当前键名为 `tiangong.portal.collections.v2`，优先读取 V2，否则严格读取 V1 并迁移为未知类型，保留原始 V1 副本。读取时执行闭合 schema、类型/版本/重复成员和容量校验；损坏数据隔离，允许导出后明确确认清除，不直接传入 DOM。浏览器存储异常不使整页崩溃，不误报保存成功。
 
 ### 8.3 分享
 

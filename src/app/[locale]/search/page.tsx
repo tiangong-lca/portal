@@ -1,4 +1,5 @@
-import { FilterIcon, SearchIcon } from "lucide-react";
+import { FilterIcon, SearchIcon, XIcon } from "lucide-react";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -14,83 +15,28 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Separator } from "@/components/ui/separator";
+import { KeywordSearchForm } from "@/features/catalog/keyword-search-form";
+import { SearchModes } from "@/features/catalog/search-modes";
+import { ResponsiveFacets } from "@/features/catalog/responsive-facets";
+import { CompareSelectionForm } from "@/features/compare/selection";
+import {
+  facetHref,
+  hasCatalogQuery,
+  searchHref,
+  searchParameters,
+} from "@/features/catalog/search-links";
+import { formatGeographyCode } from "@/i18n/geography";
 import { localizedText, mapSearchItem } from "@/features/catalog/map-public-data";
 import { partitionFacetValues } from "@/features/catalog/facet-display";
 import { HybridSearchPanel } from "@/features/catalog/hybrid-search-panel";
 import { SearchResults } from "@/features/catalog/search-results";
-import { isPortalLocale, localePath, type PortalLocale } from "@/i18n/routing";
+import { isPortalLocale, localePath } from "@/i18n/routing";
 import { localizedMetadata } from "@/lib/seo";
-import {
-  parsePortalSearchUrl,
-  PortalInputError,
-  type PortalSearchUrlInput,
-} from "@/server/contracts/input";
+import { parsePortalSearchUrl, PortalInputError } from "@/server/contracts/input";
 import { getPublicFacets, searchPublicFlows, searchPublicProcesses } from "@/server/data/catalog";
 import { PortalDataError } from "@/server/data/supabase-rpc";
 
 type SearchParams = Record<string, string | string[] | undefined>;
-
-function searchHref(locale: PortalLocale, input: PortalSearchUrlInput, cursor: string): string {
-  const parameters = new URLSearchParams({
-    cursor,
-    kind: input.kind,
-    limit: input.limit.toString(),
-    q: input.query,
-    sort: input.sort,
-    v: "1",
-  });
-  if (input.filters.accessLevel) parameters.set("access", input.filters.accessLevel);
-  if (input.filters.geography) parameters.set("geo", input.filters.geography);
-  if (input.filters.classification) parameters.set("classification", input.filters.classification);
-  if (input.filters.referenceYearFrom !== undefined) {
-    parameters.set("yearFrom", input.filters.referenceYearFrom.toString());
-  }
-  if (input.filters.referenceYearTo !== undefined) {
-    parameters.set("yearTo", input.filters.referenceYearTo.toString());
-  }
-  if (input.filters.processSubtype) parameters.set("subtype", input.filters.processSubtype);
-  if (input.filters.source) parameters.set("source", input.filters.source);
-  return `${localePath(locale, "search")}?${parameters.toString()}`;
-}
-
-function facetHref(
-  locale: PortalLocale,
-  input: PortalSearchUrlInput,
-  groupId: string,
-  value: string,
-): string | null {
-  const queryString = searchHref(locale, input, "facet").split("?", 2)[1];
-  const parameters = new URLSearchParams(queryString);
-  parameters.delete("cursor");
-  const normalizedGroup = groupId.toLowerCase().replaceAll(/[^a-z]/g, "");
-
-  if (normalizedGroup === "kind" || normalizedGroup === "objecttype") {
-    if (value !== "process" && value !== "flow") return null;
-    parameters.set("kind", value);
-    if (value === "flow") parameters.delete("subtype");
-  } else if (normalizedGroup.includes("access")) {
-    if (value !== "open" && value !== "metadata_only") return null;
-    parameters.set("access", value);
-  } else if (normalizedGroup.includes("geography") || normalizedGroup.includes("region")) {
-    parameters.set("geo", value);
-  } else if (normalizedGroup.includes("year")) {
-    if (!/^\d{1,4}$/.test(value)) return null;
-    parameters.set("yearFrom", value);
-    parameters.set("yearTo", value);
-  } else if (normalizedGroup.includes("subtype")) {
-    if (input.kind !== "process") return null;
-    parameters.set("subtype", value);
-  } else if (normalizedGroup.includes("source") || normalizedGroup.includes("database")) {
-    parameters.set("source", value);
-  } else if (normalizedGroup.includes("classification")) {
-    parameters.set("classification", value);
-  } else {
-    return null;
-  }
-
-  return `${localePath(locale, "search")}?${parameters.toString()}`;
-}
 
 export async function generateMetadata({
   params,
@@ -130,6 +76,7 @@ export default async function SearchPage({
   }
 
   const query = parsedSearch.query;
+  const hasQuery = hasCatalogQuery(parsedSearch);
   const [t, hybrid, detail, common] = await Promise.all([
     getTranslations({ locale, namespace: "Search" }),
     getTranslations({ locale, namespace: "Hybrid" }),
@@ -142,10 +89,14 @@ export default async function SearchPage({
   let results: ReturnType<typeof mapSearchItem>[] = [];
   let facets: Awaited<ReturnType<typeof getPublicFacets>> | null = null;
   const resultLabels = {
+    exchangesAvailable: common("exchangesAvailable"),
+    lciaAvailable: common("lciaAvailable"),
+    referenceFlowProperty: detail("referenceFlowProperty"),
     collect: detail("collect"),
     compare: detail("compare"),
     copied: detail("citationCopied"),
     copyCitation: detail("copyCitation"),
+    copyFailure: detail("copyFailed"),
     details: common("details"),
     emptyDescription: t("emptyDescription"),
     emptyTitle: t("emptyTitle"),
@@ -166,7 +117,7 @@ export default async function SearchPage({
     technology: detail("technology"),
   };
 
-  if (query && !inputInvalid) {
+  if (hasQuery && !inputInvalid) {
     try {
       const { kind: _kind, ...searchInput } = parsedSearch;
       const [page, facetPage] = await Promise.all([
@@ -188,6 +139,40 @@ export default async function SearchPage({
     }
   }
 
+  const filterSummary = [
+    {
+      keys: ["access"],
+      label: t("access"),
+      value: parsedSearch.filters.accessLevel
+        ? common(parsedSearch.filters.accessLevel === "open" ? "public" : "metadataOnly")
+        : undefined,
+    },
+    {
+      keys: ["geo"],
+      label: t("region"),
+      value: formatGeographyCode(parsedSearch.filters.geography, locale),
+    },
+    {
+      keys: ["classification"],
+      label: t("classification"),
+      value: parsedSearch.filters.classification,
+    },
+    {
+      keys: ["yearFrom", "yearTo"],
+      label: t("year"),
+      value:
+        parsedSearch.filters.referenceYearFrom !== undefined ||
+        parsedSearch.filters.referenceYearTo !== undefined
+          ? `${parsedSearch.filters.referenceYearFrom ?? "…"}–${parsedSearch.filters.referenceYearTo ?? "…"}`
+          : undefined,
+    },
+    { keys: ["subtype"], label: t("processSubtype"), value: parsedSearch.filters.processSubtype },
+    { keys: ["source"], label: t("source"), value: parsedSearch.filters.source },
+  ].filter((entry): entry is { keys: string[]; label: string; value: string } =>
+    Boolean(entry.value),
+  );
+  const clearFiltersHref = searchHref(locale, { ...parsedSearch, filters: {} }, null);
+
   return (
     <main
       className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8"
@@ -198,232 +183,331 @@ export default async function SearchPage({
         <p className="text-muted-foreground leading-7">{t("description")}</p>
       </header>
 
-      <search>
-        <form action={localePath(locale, "search")} className="flex flex-col gap-2" method="get">
-          <input name="v" type="hidden" value="1" />
-          <input name="kind" type="hidden" value={parsedSearch.kind} />
-          <label className="sr-only" htmlFor="catalog-query">
-            {t("label")}
-          </label>
-          <InputGroup className="min-h-12">
-            <InputGroupAddon>
-              <SearchIcon aria-hidden="true" />
-            </InputGroupAddon>
-            <InputGroupInput
-              defaultValue={query}
-              id="catalog-query"
-              maxLength={512}
-              name="q"
-              placeholder={t("placeholder")}
-              type="search"
-            />
-            <InputGroupAddon align="inline-end">
-              <Button size="lg" type="submit">
-                {t("submit")}
-              </Button>
-            </InputGroupAddon>
-          </InputGroup>
-          <p className="text-muted-foreground text-xs">{t("privacy")}</p>
-        </form>
-      </search>
+      <SearchModes
+        labels={{
+          mode: t("searchMode"),
+          keyword: t("keywordMode"),
+          description: t("descriptionMode"),
+        }}
+        keyword={
+          <>
+            <search>
+              <KeywordSearchForm action={localePath(locale, "search")} key={query}>
+                {Array.from(searchParameters(parsedSearch, null))
+                  .filter(([key]) => key !== "q")
+                  .map(([key, value]) => (
+                    <input key={key} name={key} type="hidden" value={value} />
+                  ))}
+                <label className="sr-only" htmlFor="catalog-query">
+                  {t("label")}
+                </label>
+                <InputGroup className="min-h-12">
+                  <InputGroupAddon>
+                    <SearchIcon aria-hidden="true" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    defaultValue={query}
+                    id="catalog-query"
+                    maxLength={512}
+                    name="q"
+                    placeholder={t("placeholder")}
+                    type="search"
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <Button size="lg" type="submit">
+                      {t("submit")}
+                    </Button>
+                  </InputGroupAddon>
+                </InputGroup>
+                <p className="text-muted-foreground text-xs">{t("privacy")}</p>
+              </KeywordSearchForm>
+            </search>
 
-      <div aria-label={t("objectType")} className="flex flex-wrap gap-2">
-        {(["process", "flow"] as const).map((kind) => (
-          <Button asChild key={kind} variant={parsedSearch.kind === kind ? "default" : "outline"}>
-            <a
-              href={`${localePath(locale, "search")}?v=1&kind=${kind}&q=${encodeURIComponent(query)}`}
-            >
-              {kind === "process" ? common("process") : common("flow")}
-            </a>
-          </Button>
-        ))}
-      </div>
+            <div aria-label={t("objectType")} className="flex flex-wrap gap-2">
+              {(["process", "flow"] as const).map((kind) => (
+                <Button
+                  asChild
+                  key={kind}
+                  variant={parsedSearch.kind === kind ? "default" : "outline"}
+                >
+                  <Link prefetch={false} href={facetHref(locale, parsedSearch, "kind", kind)!}>
+                    {kind === "process" ? common("process") : common("flow")}
+                  </Link>
+                </Button>
+              ))}
+            </div>
 
-      <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
-        <aside aria-labelledby="facet-heading" className="hidden lg:block">
-          <Card size="sm">
-            <CardHeader>
-              <FilterIcon aria-hidden="true" />
-              <CardTitle id="facet-heading">{t("facets")}</CardTitle>
-              <CardDescription>
-                {facets
-                  ? t("description")
-                  : dataUnavailable
-                    ? t("unavailableDescription")
-                    : t("initialDescription")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              {facets
-                ? facets.groups.map((group) => {
-                    const normalizedGroup = group.id.toLowerCase().replaceAll(/[^a-z]/g, "");
-                    const renderValue = (value: (typeof group.values)[number]) => {
-                      const href = facetHref(locale, parsedSearch, group.id, value.value);
-                      const translatedValue =
-                        normalizedGroup === "kind" || normalizedGroup === "objecttype"
-                          ? value.value === "process"
-                            ? common("process")
-                            : value.value === "flow"
-                              ? common("flow")
-                              : value.value
-                          : normalizedGroup.includes("access")
-                            ? value.value === "open"
-                              ? common("public")
-                              : value.value === "metadata_only"
-                                ? common("metadataOnly")
-                                : value.value
-                            : (localizedText(value.label, locale) ?? value.value);
-                      const label = `${translatedValue} (${value.count})`;
-                      return href ? (
-                        <Button
-                          asChild
-                          className="w-full justify-start"
-                          key={value.value}
-                          variant="ghost"
-                        >
-                          <a href={href}>{label}</a>
-                        </Button>
-                      ) : (
-                        <span className="text-muted-foreground text-sm" key={value.value}>
-                          {label}
+            {filterSummary.length > 0 ? (
+              <div aria-label={t("appliedFilters")} className="flex flex-wrap items-center gap-2">
+                {filterSummary.map((entry) => {
+                  const params = searchParameters(parsedSearch, null);
+                  entry.keys.forEach((key) => params.delete(key));
+                  return (
+                    <Button
+                      asChild
+                      className="h-auto min-h-11 whitespace-normal"
+                      key={entry.keys[0]}
+                      variant="outline"
+                    >
+                      <Link
+                        aria-label={`${common("clear")}: ${entry.label}`}
+                        href={`${localePath(locale, "search")}?${params}`}
+                        prefetch={false}
+                      >
+                        <span>
+                          {entry.label}: {entry.value}
                         </span>
-                      );
-                    };
-                    const { disclosed, hiddenCount, visible } = partitionFacetValues(group.values);
-                    return (
-                      <div className="flex flex-col gap-2" key={group.id}>
-                        <strong>{localizedText(group.label, locale) ?? group.id}</strong>
-                        {visible.map(renderValue)}
-                        {disclosed.length > 0 ? (
-                          <details>
-                            <summary className="text-link cursor-pointer text-sm">
-                              {t("moreFilters", { count: disclosed.length })}
-                            </summary>
-                            <div className="mt-2 flex flex-col gap-1">
-                              {disclosed.map(renderValue)}
-                              {hiddenCount > 0 ? (
-                                <p className="text-muted-foreground px-2 pt-2 text-xs leading-5">
-                                  {t("refineMoreFilters", { count: hiddenCount })}
-                                </p>
+                        <XIcon data-icon="inline-end" />
+                      </Link>
+                    </Button>
+                  );
+                })}
+                <Button asChild variant="ghost">
+                  <Link href={clearFiltersHref} prefetch={false}>
+                    {t("clearFilters")}
+                  </Link>
+                </Button>
+              </div>
+            ) : null}
+            <div className="grid gap-6 xl:grid-cols-[16rem_minmax(0,1fr)]">
+              <ResponsiveFacets
+                labels={{
+                  title: t("facets"),
+                  description: t("filtersDescription"),
+                  close: common("close"),
+                }}
+              >
+                <Card size="sm">
+                  <CardHeader data-facet-intro>
+                    <FilterIcon aria-hidden="true" />
+                    <CardTitle>{t("facets")}</CardTitle>
+                    <CardDescription>
+                      {facets
+                        ? t("filtersDescription")
+                        : dataUnavailable
+                          ? t("unavailableDescription")
+                          : t("initialDescription")}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-4">
+                    {facets
+                      ? facets.groups.map((group) => {
+                          const normalizedGroup = group.id.toLowerCase().replaceAll(/[^a-z]/g, "");
+                          const renderValue = (value: (typeof group.values)[number]) => {
+                            const href = facetHref(locale, parsedSearch, group.id, value.value);
+                            const translatedValue =
+                              normalizedGroup === "kind" || normalizedGroup === "objecttype"
+                                ? value.value === "process"
+                                  ? common("process")
+                                  : value.value === "flow"
+                                    ? common("flow")
+                                    : value.value
+                                : normalizedGroup.includes("access")
+                                  ? value.value === "open"
+                                    ? common("public")
+                                    : value.value === "metadata_only"
+                                      ? common("metadataOnly")
+                                      : value.value
+                                  : normalizedGroup.includes("geography") ||
+                                      normalizedGroup.includes("region")
+                                    ? (formatGeographyCode(value.value, locale) ?? value.value)
+                                    : (localizedText(value.label, locale) ?? value.value);
+                            const label = `${translatedValue} (${new Intl.NumberFormat(locale).format(value.count)})`;
+                            return href ? (
+                              <Button
+                                asChild
+                                className="h-auto min-h-11 w-full justify-start text-left break-words whitespace-normal"
+                                key={value.value}
+                                variant="ghost"
+                              >
+                                <Link href={href} prefetch={false}>
+                                  {label}
+                                </Link>
+                              </Button>
+                            ) : (
+                              <span className="text-muted-foreground text-sm" key={value.value}>
+                                {label}
+                              </span>
+                            );
+                          };
+                          const { disclosed, hiddenCount, visible } = partitionFacetValues(
+                            group.values,
+                          );
+                          return (
+                            <div className="flex flex-col gap-2" key={group.id}>
+                              <strong>
+                                {normalizedGroup === "kind" || normalizedGroup === "objecttype"
+                                  ? t("objectType")
+                                  : normalizedGroup.includes("access")
+                                    ? t("access")
+                                    : normalizedGroup.includes("geography") ||
+                                        normalizedGroup.includes("region")
+                                      ? t("region")
+                                      : normalizedGroup.includes("year")
+                                        ? t("year")
+                                        : normalizedGroup.includes("subtype")
+                                          ? t("processSubtype")
+                                          : normalizedGroup.includes("source") ||
+                                              normalizedGroup.includes("database")
+                                            ? t("source")
+                                            : normalizedGroup.includes("classification")
+                                              ? t("classification")
+                                              : (localizedText(group.label, locale) ?? group.id)}
+                              </strong>
+                              {visible.map(renderValue)}
+                              {disclosed.length > 0 ? (
+                                <details>
+                                  <summary className="text-link cursor-pointer text-sm">
+                                    {t("moreFilters", { count: disclosed.length })}
+                                  </summary>
+                                  <div className="mt-2 flex flex-col gap-1">
+                                    {disclosed.map(renderValue)}
+                                    {hiddenCount > 0 ? (
+                                      <p className="text-muted-foreground px-2 pt-2 text-xs leading-5">
+                                        {t("refineMoreFilters", { count: hiddenCount })}
+                                      </p>
+                                    ) : null}
+                                  </div>
+                                </details>
                               ) : null}
                             </div>
-                          </details>
-                        ) : null}
-                      </div>
-                    );
-                  })
-                : facetLabels.map((label) => (
-                    <Button disabled key={label} variant="ghost">
-                      {label}
+                          );
+                        })
+                      : facetLabels.map((label) => (
+                          <Button disabled key={label} variant="ghost">
+                            {label}
+                          </Button>
+                        ))}
+                    {facets ? (
+                      <p className="text-muted-foreground text-xs leading-5">
+                        {t("countsDescription")}
+                      </p>
+                    ) : null}
+                  </CardContent>
+                </Card>
+              </ResponsiveFacets>
+
+              <section aria-labelledby="results-heading" aria-live="polite" className="min-w-0">
+                <h2 className="sr-only" id="results-heading">
+                  {query
+                    ? t("resultsFor", { query })
+                    : hasQuery
+                      ? t("allResultsTitle")
+                      : t("initialTitle")}
+                </h2>
+                {!hasQuery ? (
+                  <Empty className="min-h-80">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <SearchIcon aria-hidden="true" />
+                      </EmptyMedia>
+                      <EmptyTitle>{t("initialTitle")}</EmptyTitle>
+                      <EmptyDescription>{t("initialDescription")}</EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
+                ) : inputInvalid || dataUnavailable ? (
+                  <Alert variant={inputInvalid ? "destructive" : "default"}>
+                    <AlertDescription>
+                      {inputInvalid ? t("emptyDescription") : t("unavailableDescription")}
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <CompareSelectionForm action={localePath(locale, "compare")}>
+                    <input name="v" type="hidden" value="1" />
+                    <SearchResults
+                      items={results}
+                      labels={resultLabels}
+                      locale={locale}
+                      selectable
+                      siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
+                    />
+                    {results.some((item) => item.kind === "process") ? (
+                      <Button
+                        className="h-auto min-h-11 max-w-full self-start whitespace-normal"
+                        type="submit"
+                      >
+                        {t("compareSelected")}
+                      </Button>
+                    ) : null}
+                  </CompareSelectionForm>
+                )}
+                {nextCursor ? (
+                  <nav aria-label={common("next")} className="mt-5 flex justify-end">
+                    <Button asChild variant="outline">
+                      <Link href={searchHref(locale, parsedSearch, nextCursor)} prefetch={false}>
+                        {common("next")}
+                      </Link>
                     </Button>
-                  ))}
-            </CardContent>
-          </Card>
-        </aside>
-
-        <section aria-labelledby="results-heading" aria-live="polite" className="min-w-0">
-          <h2 className="sr-only" id="results-heading">
-            {query ? t("resultsFor", { query }) : t("initialTitle")}
-          </h2>
-          {!query ? (
-            <Empty className="min-h-80">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <SearchIcon aria-hidden="true" />
-                </EmptyMedia>
-                <EmptyTitle>{t("initialTitle")}</EmptyTitle>
-                <EmptyDescription>{t("initialDescription")}</EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          ) : inputInvalid || dataUnavailable ? (
-            <Alert variant={inputInvalid ? "destructive" : "default"}>
-              <AlertDescription>
-                {inputInvalid ? t("emptyDescription") : t("unavailableDescription")}
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <form
-              action={localePath(locale, "compare")}
-              className="flex flex-col gap-4"
-              method="get"
-            >
-              <input name="v" type="hidden" value="1" />
-              <SearchResults
-                items={results}
-                labels={resultLabels}
-                locale={locale}
-                selectable
-                siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
-              />
-              {results.some((item) => item.kind === "process") ? (
-                <Button className="self-start" type="submit">
-                  {t("compareSelected")}
-                </Button>
-              ) : null}
-            </form>
-          )}
-          {nextCursor ? (
-            <nav aria-label={common("next")} className="mt-5 flex justify-end">
-              <Button asChild variant="outline">
-                <a href={searchHref(locale, parsedSearch, nextCursor)}>{common("next")}</a>
-              </Button>
-            </nav>
-          ) : null}
-        </section>
-      </div>
-
-      <Separator />
-
-      <HybridSearchPanel
-        key={JSON.stringify({ kind: parsedSearch.kind, filters: parsedSearch.filters })}
-        initialFilters={parsedSearch.filters}
-        initialKind={parsedSearch.kind}
-        labels={{
-          advisoryDescription: hybrid("advisoryDescription"),
-          advisoryTitle: hybrid("advisoryTitle"),
-          compareSelected: t("compareSelected"),
-          description: hybrid("description"),
-          emptyDescription: hybrid("emptyDescription"),
-          emptyTitle: hybrid("emptyTitle"),
-          error: hybrid("error"),
-          fallbackDescription: hybrid("fallbackDescription"),
-          fallbackTitle: hybrid("fallbackTitle"),
-          flow: hybrid("flow"),
-          kind: hybrid("kind"),
-          privacy: hybrid("privacy"),
-          process: hybrid("process"),
-          queryLabel: hybrid("queryLabel"),
-          queryPlaceholder: hybrid("queryPlaceholder"),
-          resultsTitle: hybrid("resultsTitle"),
-          running: hybrid("running"),
-          initialDescription: hybrid("initialDescription"),
-          optimizing: hybrid("optimizing"),
-          optimizingDescription: hybrid("optimizingDescription"),
-          updateTitle: hybrid("updateTitle"),
-          updateDescription: hybrid("updateDescription"),
-          showUpdated: hybrid("showUpdated"),
-          optimized: hybrid("optimized"),
-          noMatchesTitle: hybrid("noMatchesTitle"),
-          noMatchesDescription: hybrid("noMatchesDescription"),
-          loadMore: hybrid("loadMore"),
-          loadingMore: hybrid("loadingMore"),
-          pageError: hybrid("pageError"),
-          cursorExpired: hybrid("cursorExpired"),
-          restart: hybrid("restart"),
-          semanticQuery: hybrid("semanticQuery"),
-          shareCancel: hybrid("shareCancel"),
-          shareConfirm: hybrid("shareConfirm"),
-          shareDisclosure: hybrid("shareDisclosure"),
-          sharePreview: hybrid("sharePreview"),
-          shareQuery: hybrid("shareQuery"),
-          shared: hybrid("shared"),
-          submit: hybrid("submit"),
-          terms: hybrid("terms"),
-          title: hybrid("title"),
-        }}
-        locale={locale}
-        resultLabels={resultLabels}
-        siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
+                  </nav>
+                ) : null}
+              </section>
+            </div>
+          </>
+        }
+        description={
+          <HybridSearchPanel
+            key={JSON.stringify({ kind: parsedSearch.kind, filters: parsedSearch.filters })}
+            initialFilters={parsedSearch.filters}
+            initialKind={parsedSearch.kind}
+            labels={{
+              activeFilters: hybrid("activeFilters"),
+              clearFilters: hybrid("clearFilters"),
+              technicalPreview: hybrid("technicalPreview"),
+              filterAccess: hybrid("filterAccess"),
+              filterClassification: hybrid("filterClassification"),
+              filterGeography: hybrid("filterGeography"),
+              filterSource: hybrid("filterSource"),
+              filterSubtype: hybrid("filterSubtype"),
+              filterYearFrom: hybrid("filterYearFrom"),
+              filterYearTo: hybrid("filterYearTo"),
+              advisoryDescription: hybrid("advisoryDescription"),
+              advisoryTitle: hybrid("advisoryTitle"),
+              compareSelected: t("compareSelected"),
+              description: hybrid("description"),
+              emptyDescription: hybrid("emptyDescription"),
+              emptyTitle: hybrid("emptyTitle"),
+              error: hybrid("error"),
+              fallbackDescription: hybrid("fallbackDescription"),
+              fallbackTitle: hybrid("fallbackTitle"),
+              flow: hybrid("flow"),
+              flowPlaceholder: hybrid("flowPlaceholder"),
+              kind: hybrid("kind"),
+              privacy: hybrid("privacy"),
+              process: hybrid("process"),
+              queryLabel: hybrid("queryLabel"),
+              queryPlaceholder: hybrid("queryPlaceholder"),
+              resultsTitle: hybrid("resultsTitle"),
+              running: hybrid("running"),
+              initialDescription: hybrid("initialDescription"),
+              optimizing: hybrid("optimizing"),
+              optimizingDescription: hybrid("optimizingDescription"),
+              updateTitle: hybrid("updateTitle"),
+              updateDescription: hybrid("updateDescription"),
+              showUpdated: hybrid("showUpdated"),
+              optimized: hybrid("optimized"),
+              noMatchesTitle: hybrid("noMatchesTitle"),
+              noMatchesDescription: hybrid("noMatchesDescription"),
+              loadMore: hybrid("loadMore"),
+              loadingMore: hybrid("loadingMore"),
+              pageError: hybrid("pageError"),
+              cursorExpired: hybrid("cursorExpired"),
+              restart: hybrid("restart"),
+              semanticQuery: hybrid("semanticQuery"),
+              shareCancel: hybrid("shareCancel"),
+              shareConfirm: hybrid("shareConfirm"),
+              shareDisclosure: hybrid("shareDisclosure"),
+              sharePreview: hybrid("sharePreview"),
+              shareQuery: hybrid("shareQuery"),
+              shared: hybrid("shared"),
+              submit: hybrid("submit"),
+              terms: hybrid("terms"),
+              title: hybrid("title"),
+            }}
+            locale={locale}
+            resultLabels={resultLabels}
+            siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
+          />
+        }
       />
     </main>
   );

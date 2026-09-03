@@ -36,7 +36,7 @@ describe("four-locale public product contract", () => {
     expect(de.Home.title).not.toBe(en.Home.title);
     expect(fr.Home.title).not.toBe(en.Home.title);
     expect(zhCn.Home.title).not.toBe(en.Home.title);
-    expect(zhCn.Home.title).toBe("查找可用于生命周期评估的数据");
+    expect(zhCn.Home.title).toBe("查找生命周期评价数据");
     expect(en.Home.title).toBe("Find data for life cycle assessment");
     expect(de.Home.title).toBe("Daten für Ökobilanzen finden");
     expect(fr.Home.title).toBe("Trouver des données pour l’analyse du cycle de vie");
@@ -48,7 +48,9 @@ describe("four-locale public product contract", () => {
   it("builds stable locale paths and localizes controlled domain vocabulary", () => {
     expect(localePath("de", "process/id@01.00.000")).toBe("/de/process/id@01.00.000");
     expect(localePath("fr", "methodology")).toBe("/fr/methodology");
-    expect(localizeGeographyPrecision("unknown", "de")).toBe("Raumbezug nicht angegeben");
+    expect(localizeGeographyPrecision("unknown", "de")).toBe(
+      "Geografische Genauigkeit nicht angegeben",
+    );
     expect(localizeMatchReasons(["exact_id", "name"], "fr")).toBe("Identifiant exact · Nom");
     expect(localizeReviewStatus("Not reviewed", "zh-CN")).toBe("尚未审核");
   });

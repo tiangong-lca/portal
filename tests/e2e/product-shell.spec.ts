@@ -14,7 +14,7 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.goto("/");
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("查找可用于生命周期评估的数据");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("查找生命周期评价数据");
   await expect(page.getByRole("link", { name: "天工 LCA 平台" }).first()).toHaveAttribute(
     "href",
     "https://lca.tiangong.earth",
@@ -90,7 +90,7 @@ test("renders public search, exact details, numeric context, versions, and lates
   await expect(page.getByRole("heading", { name: "Search the data catalog" })).toBeVisible();
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
   await expect(page.getByText(processRef, { exact: true })).toBeVisible();
-  await expect(page.getByText("Reference product or flow", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Reference product", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Electricity", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Functional unit", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("1 kWh", { exact: true }).first()).toBeVisible();
@@ -149,7 +149,7 @@ test("renders public search, exact details, numeric context, versions, and lates
 
 test("completes the HTML-first search to two-member comparison path", async ({ page }) => {
   await page.goto("/en/search?v=1&kind=process&q=electricity&sort=relevance");
-  const candidates = page.getByRole("checkbox", { name: "Select this Process" });
+  const candidates = page.getByRole("checkbox", { name: "Select for comparison" });
   await expect(candidates).toHaveCount(2);
   await candidates.nth(0).check();
   await candidates.nth(1).check();
@@ -168,9 +168,9 @@ test("completes the HTML-first search to two-member comparison path", async ({ p
   ).toBeVisible();
   await expect(page.getByRole("columnheader", { name: "Electricity, low voltage" })).toBeVisible();
 
-  await page.getByLabel("Impact category").fill("climate-change");
-  await page.getByLabel("Impact category").press("Enter");
-  await expect(page.getByRole("heading", { name: "Comparable LCIA values" })).toBeVisible();
+  await page.getByRole("combobox", { name: "Impact category" }).selectOption("climate-change");
+  await page.getByRole("button", { name: "Published impact results" }).click();
+  await expect(page.getByRole("heading", { name: "Published impact results" })).toBeVisible();
   await expect(page.getByRole("cell", { name: "12.5" })).toBeVisible();
   await expect(page.getByRole("cell", { name: "9.75" })).toBeVisible();
   await expect(page.getByText(/55555555-5555-5555-5555-555555555555@release-2026.1/)).toBeVisible();
@@ -247,14 +247,14 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
 test("keeps the local collection local and shares member IDs only", async ({ context, page }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/collections");
-  await page.getByLabel("Dataset version identifier").fill(processRef);
+  await page.getByLabel("Add by version ID").fill(processRef);
   await page.getByRole("button", { name: "Add to shortlist" }).click();
-  await page.getByLabel("Local note or rationale").fill("private local note");
+  await page.getByLabel("Notes or selection rationale").fill("private local note");
   await page.reload();
   await expect(page.getByText(processRef, { exact: true })).toBeVisible();
-  await expect(page.getByLabel("Local note or rationale")).toHaveValue("private local note");
+  await expect(page.getByLabel("Notes or selection rationale")).toHaveValue("private local note");
 
-  await page.getByRole("button", { name: "Copy link with identifiers only" }).click();
+  await page.getByRole("button", { name: "Copy shortlist link" }).click();
   const shared = await page.evaluate(() => navigator.clipboard.readText());
   expect(shared).toContain("#collection=");
   expect(shared).not.toContain("private local note");
@@ -268,12 +268,20 @@ test("quarantines corrupt local collection data until the user explicitly clears
     localStorage.setItem("tiangong.portal.collections.v1", "{corrupt-json");
   });
   await page.goto("/en/collections");
-  await expect(page.getByRole("button", { name: "Download damaged raw data" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Export raw shortlist data for recovery" }),
+  ).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem("tiangong.portal.collections.v1"))).toBe(
     "{corrupt-json",
   );
-  await page.getByRole("button", { name: "Clear damaged data" }).click();
-  await expect(page.getByRole("button", { name: "Download damaged raw data" })).toBeHidden();
+  await page.getByRole("button", { name: "Clear the unreadable local shortlist" }).click();
+  expect(await page.evaluate(() => localStorage.getItem("tiangong.portal.collections.v1"))).toBe(
+    "{corrupt-json",
+  );
+  await page.getByRole("button", { name: "Confirm clearing saved content" }).click();
+  await expect(
+    page.getByRole("button", { name: "Export raw shortlist data for recovery" }),
+  ).toBeHidden();
 });
 
 test("keeps core controls available at mobile width and 200 percent text zoom", async ({
