@@ -8,6 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 
 import { LocaleSwitcher } from "./locale-switcher";
+import { HeaderOffset } from "./header-offset";
+import { NavigationLink } from "./navigation-link";
 import { ThemeToggle } from "./theme-toggle";
 
 type SiteHeaderProps = {
@@ -26,14 +28,15 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
   ] as const;
 
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/85 sticky top-0 border-b backdrop-blur">
+    <header className="bg-background sticky top-0 z-40 border-b" data-portal-header>
+      <HeaderOffset />
       <a
         className="bg-primary text-primary-foreground focus-visible:ring-ring absolute -translate-y-full rounded-b-lg px-3 py-2 focus:translate-y-0 focus-visible:ring-3"
         href="#main-content"
       >
         {t("skipToContent")}
       </a>
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:px-8">
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:px-8 xl:grid-cols-[auto_minmax(0,1fr)_auto]">
         <Link className="flex min-h-11 items-center gap-3" href={homeHref} prefetch={false}>
           <BrandLogo locale={locale} priority />
           <span className="flex min-w-0 flex-col">
@@ -48,20 +51,27 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
 
         <nav
           aria-label={t("brandName")}
-          className="order-3 col-span-2 w-full overflow-x-auto lg:order-none lg:col-span-1 lg:ml-4"
+          className="order-3 col-span-2 min-w-0 overflow-x-auto xl:order-none xl:col-span-1"
         >
           <ul className="flex min-w-max items-center gap-1">
             {links.map(([href, label]) => (
               <li key={href}>
-                <Button asChild className="min-h-11" size="lg" variant="ghost">
-                  <Link href={href}>{label}</Link>
-                </Button>
+                <NavigationLink
+                  href={href}
+                  matchPrefix={
+                    href === localePath(locale, "browse/process")
+                      ? localePath(locale, "browse")
+                      : undefined
+                  }
+                >
+                  {label}
+                </NavigationLink>
               </li>
             ))}
-            <li aria-hidden="true" className="hidden lg:block">
+            <li aria-hidden="true" className="hidden xl:block">
               <Separator className="mx-1 h-5" orientation="vertical" />
             </li>
-            <li className="hidden lg:block">
+            <li className="hidden xl:block">
               <Button asChild className="min-h-11" size="lg" variant="ghost">
                 <a href="https://lca.tiangong.earth">
                   {t("externalLca")}
@@ -72,7 +82,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
           </ul>
         </nav>
 
-        <div className="order-2 ml-auto flex min-w-0 items-center gap-2 lg:order-none">
+        <div className="order-2 ml-auto flex min-w-0 items-center gap-2 xl:order-none">
           <ThemeToggle
             labels={{
               dark: t("themeDark"),

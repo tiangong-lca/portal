@@ -4,6 +4,14 @@ import { LaptopIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useEffect, useSyncExternalStore } from "react";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type ThemePreference = "light" | "dark" | "system";
 
@@ -34,10 +42,19 @@ function getThemeSnapshot(): ThemePreference {
 }
 
 export function ThemeToggle({ labels }: ThemeToggleProps) {
-  const preference = useSyncExternalStore(subscribe, getThemeSnapshot, () => "system");
+  const preference = useSyncExternalStore<ThemePreference>(
+    subscribe,
+    getThemeSnapshot,
+    () => "system",
+  );
 
   useEffect(() => {
-    const stored = localStorage.getItem(storageKey);
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem(storageKey);
+    } catch {
+      // Theme selection still works when browser persistence is unavailable.
+    }
     const initial =
       stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
 
@@ -45,7 +62,7 @@ export function ThemeToggle({ labels }: ThemeToggleProps) {
 
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const onSystemThemeChange = () => {
-      if ((localStorage.getItem(storageKey) ?? "system") === "system") applyTheme("system");
+      if (getThemeSnapshot() === "system") applyTheme("system");
     };
     media.addEventListener("change", onSystemThemeChange);
 
@@ -54,39 +71,70 @@ export function ThemeToggle({ labels }: ThemeToggleProps) {
 
   const setTheme = (nextTheme: string) => {
     if (nextTheme !== "light" && nextTheme !== "dark" && nextTheme !== "system") return;
-    localStorage.setItem(storageKey, nextTheme);
+    try {
+      localStorage.setItem(storageKey, nextTheme);
+    } catch {
+      // Applying a theme does not depend on local storage access.
+    }
     applyTheme(nextTheme);
   };
 
+  const CurrentIcon =
+    preference === "light" ? SunIcon : preference === "dark" ? MoonIcon : LaptopIcon;
+
   return (
-    <ToggleGroup
-      aria-label={labels.group}
-      onValueChange={setTheme}
-      type="single"
-      value={preference}
-      variant="outline"
-    >
-      <ToggleGroupItem
-        aria-label={labels.light}
-        className="size-[44px] min-h-[44px] min-w-[44px] p-0"
-        value="light"
+    <>
+      <div className="sm:hidden">
+        <Select onValueChange={setTheme} value={preference}>
+          <SelectTrigger
+            aria-label={labels.group}
+            className="min-h-11 w-14"
+            title={labels[preference]}
+          >
+            <SelectValue>
+              <CurrentIcon aria-hidden="true" />
+              <span className="sr-only">{labels[preference]}</span>
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent position="popper">
+            <SelectGroup>
+              <SelectItem value="light">{labels.light}</SelectItem>
+              <SelectItem value="dark">{labels.dark}</SelectItem>
+              <SelectItem value="system">{labels.system}</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <ToggleGroup
+        aria-label={labels.group}
+        className="hidden sm:flex"
+        onValueChange={setTheme}
+        type="single"
+        value={preference}
+        variant="outline"
       >
-        <SunIcon aria-hidden="true" />
-      </ToggleGroupItem>
-      <ToggleGroupItem
-        aria-label={labels.dark}
-        className="size-[44px] min-h-[44px] min-w-[44px] p-0"
-        value="dark"
-      >
-        <MoonIcon aria-hidden="true" />
-      </ToggleGroupItem>
-      <ToggleGroupItem
-        aria-label={labels.system}
-        className="size-[44px] min-h-[44px] min-w-[44px] p-0"
-        value="system"
-      >
-        <LaptopIcon aria-hidden="true" />
-      </ToggleGroupItem>
-    </ToggleGroup>
+        <ToggleGroupItem
+          aria-label={labels.light}
+          className="size-[44px] min-h-[44px] min-w-[44px] p-0"
+          value="light"
+        >
+          <SunIcon aria-hidden="true" />
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          aria-label={labels.dark}
+          className="size-[44px] min-h-[44px] min-w-[44px] p-0"
+          value="dark"
+        >
+          <MoonIcon aria-hidden="true" />
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          aria-label={labels.system}
+          className="size-[44px] min-h-[44px] min-w-[44px] p-0"
+          value="system"
+        >
+          <LaptopIcon aria-hidden="true" />
+        </ToggleGroupItem>
+      </ToggleGroup>
+    </>
   );
 }

@@ -24,7 +24,7 @@
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.505 0.213 27.518);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: var(--brand-light-ring);
@@ -139,6 +139,7 @@
 
 html {
   color-scheme: light;
+  scroll-padding-top: calc(var(--portal-header-height, 8rem) + 1rem);
 }
 
 body {
