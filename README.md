@@ -17,8 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: 07b6a89c369b6db6bd837b6ce7156d2f55470f0a
-lastReviewedNote: "Reviewed for Portal #46: untouched search uses existing initial-state copy; true read failures retain unavailable messaging. No new backend call, ranking, visibility, timeout, dependency or RUM behavior is introduced."
+lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
+lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -35,7 +35,7 @@ Portal 以数据发现为首要任务：
 - **搜索与浏览优先**：按名称、UUID、CAS 号、分类、对象类型、地区或来源进入公开目录。
 - **使用背景完整**：记录页同时提供版本、适用范围、来源、许可、方法、质量与可用结果，缺失内容不补写或补零。
 - **匿名只读**：无需注册即可使用公共查询、详情、比较、引用与本地候选清单；浏览器不持有 Supabase 或 HMAC 凭据。
-- **谨慎比较**：只有功能单位、方法、地区、时间、系统边界与 publication 背景兼容时，才并列展示数值。
+- **谨慎比较**：只有现有公开字段中的功能单位、方法、地区、时间和 publication 背景满足条件时，才并列展示数值；系统边界与研究适用性仍需使用者核对，不能把字段一致当作科学审查结论。
 
 ## 技术形态
 
@@ -68,4 +68,6 @@ Production 由 `portal/main` 自动发布到 `portal.tiangong.earth`，公开站
 
 公开站点采用性能与 SEO 优先的 enforcing CSP、五分钟首页 ISR、locale-correct 初始 HTML、四语 reciprocal metadata、Dataset JSON-LD 与分片 sitemap。真实 404 保留原 URL、`noindex` 和错误状态；EdgeOne 对未知首段生成通用 raw document 的问题按平台缺陷单独跟踪。Portal #37 的 RUM 与七天观察已按用户要求取消，精确托管兼容与发布证据仍记录在 `docs/r0/`。
 
-Portal #44 的本次后端接入例外使用已在 Main 部署并读回的 Database `470e661` / Edge `08b19d7` 精确提交；正式 PR、promote、前端托管发布及 workspace integration 的状态以 [workspace #963](https://github.com/tiangong-lca/workspace/issues/963) 为准，不能把本地浏览器验证视为新前端已经上线。
+Portal #48 完成界面与数据使用者文案回归：不透明分层导航、移动端筛选、前置的搜索模式切换、保留筛选的目录跳转、跨页 2–4 版本对比和清晰的可用性标记。清单 V2 保留旧清单及备注，以精确类型和版本展示名称，导入先预览再确认，分享默认仅编号与类型。名称补全每批最多 10 条、最多 4 个公开 RPC 并发，不传输清单名称、用途或备注。
+
+Database 已通过 PR #602 晋级 Main，34 个契约文件重新固定为 `521741a064f402c9b674583ef69a5947d1b5885f`，内容与先前已部署版本逐字节一致，不重跑生产迁移。前端托管发布及 workspace integration 的状态以 [Portal #48](https://github.com/tiangong-lca/portal/issues/48)、[兼容矩阵](docs/r0/compatibility-matrix.md) 和 [workspace #963](https://github.com/tiangong-lca/workspace/issues/963) 为准，不能把本地浏览器验证视为新前端已经上线。
