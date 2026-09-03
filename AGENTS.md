@@ -26,8 +26,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
-lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
+lastReviewedCommit: 9b388d6a435759d4d9fba981a866124bbcea323e
+lastReviewedNote: "Reviewed for Portal #50: display-only Process subtype vocabulary follows released Next across four locales while retaining wire values and unknown source strings. Hosted #49 evidence is recorded without claiming latency targets met; no backend or budget policy changes."
 related:
   - README.md
   - docs/design-plan.md
@@ -48,6 +48,7 @@ related:
 - Portal is read-only for LCA data. It must not create, edit, review, publish, withdraw, repair, or recalculate datasets.
 - Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
 - The public product has independent `zh-CN`, `en`, `de`, and `fr` routes and dictionaries. UI copy never falls back across locales; source-data language fallback remains visibly labelled.
+- Known Process subtype labels use the released Next four-language vocabulary in facets, active filters and Hybrid summaries. This is display-only: wire values, result identities and unknown authored values remain unchanged.
 - Availability labels follow explicit metadata/exchange/LCIA capabilities, not a blanket open-data or licence claim. Process and Flow fields remain distinct. Location names come from the receipted four-language ILCD snapshot of released Next; unknown codes remain visible and source scope text is retained.
 - Search exposes keyword/identifier and description modes before results. Explicit filter-only queries execute; untouched Search does not. Mobile filters remain accessible, and headers/overlays preserve pointer, focus and anchor visibility.
 - Comparison retains at most four exact Process versions in memory while navigating; no session or query-text storage is introduced. Matching displayed fields is not scientific verification, and missing system-boundary evidence must not be invented.

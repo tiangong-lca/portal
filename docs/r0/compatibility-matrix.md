@@ -21,8 +21,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
-lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
+lastReviewedCommit: 9b388d6a435759d4d9fba981a866124bbcea323e
+lastReviewedNote: "Reviewed for Portal #50: display-only Process subtype vocabulary follows released Next across four locales while retaining wire values and unknown source strings. Hosted #49 evidence is recorded without claiming latency targets met; no backend or budget policy changes."
 related:
   - ../design-plan.md
   - ../../AGENTS.md
@@ -73,7 +73,11 @@ Native Edge browser zoom was separately verified on the French shortlist: the br
 
 Bundle checks pass without raising limits: home 72,263/122,880 gzip bytes, detail 71,825/184,320, Search 176,072/256,000. The private-marker scan passes. Independent read-only review found no P1; the two P2 findings (capacity misreported as a bad link, and merge preview not reflecting retained local fields) were corrected and regression-tested before this source checkpoint.
 
-These are local candidate results. Exact new EdgeOne publication, live marker and post-release acceptance are still required through [Portal #48](https://github.com/tiangong-lca/portal/issues/48) and [workspace #963](https://github.com/tiangong-lca/workspace/issues/963); no hosted success is inferred from this build.
+Portal #49 subsequently merged and published exact Main `91ba3c5ab49f1b92e7a4d8a1f9210f5cabba5af7`; PR and Main CI passed. Independent hosted readback confirmed the production marker and Node 20.19.3, four locale-correct enforcing-CSP homepages, real exact-version Process/Flow pages, the no-store summary helper, 403 cross-origin / 400 private-field rejection, private-route noindex and real 404. Nine real document views plus one same-document shortlist fragment view across four locales and light/dark layouts had zero horizontal overflow, page errors or WCAG findings; header z-index was 40. One network-idle wait timed out; reinspection found the page fully rendered with no outstanding requests, and the live pass used visible UI readiness with bounded network settling instead.
+
+The release records actual performance separately from functional success: twenty lexical requests had p95 TTFB 2,155 ms and 386,046-byte HTML, so the historical 2-second target is **not** claimed met. Process Hybrid returned 20 rows in 9,850 ms and a disjoint 20-row continuation in 2,461 ms. Flow first returned explicit timeout fallback after 26,053 ms; one warm follow-up returned genuine Hybrid in 21,201 ms and a disjoint continuation in 3,632 ms. [Database #603](https://github.com/tiangong-lca/database-engine/issues/603#issuecomment-5520081063) retains this pre-existing cold-read work. No runtime budget, index, source data or performance gate was changed; the user's correctness-first acceptance and no-RUM decision remain in [workspace #963](https://github.com/tiangong-lca/workspace/issues/963).
+
+The hosted copy review identified the remaining raw Process subtype labels, now owned by [Portal #50](https://github.com/tiangong-lca/portal/issues/50). That display-only follow-up and the final exact root integration remain required before the overall user request is closed out.
 
 ## CSP disposition
 
