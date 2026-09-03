@@ -59,6 +59,12 @@ export type ComparableLciaPresentation = {
 };
 
 const dimensionLabels: Record<CompatibilityDimension, Record<PortalLocale, string>> = {
+  referenceProduct: {
+    "zh-CN": "参考产品",
+    en: "Reference product",
+    de: "Referenzprodukt",
+    fr: "Produit de référence",
+  },
   allocationMethod: {
     "zh-CN": "分配方法",
     en: "Allocation method",
@@ -88,7 +94,7 @@ const dimensionLabels: Record<CompatibilityDimension, Record<PortalLocale, strin
     "zh-CN": "LCIA 方法",
     en: "LCIA method",
     de: "LCIA-Methode",
-    fr: "Méthode d’ACVI",
+    fr: "Méthode d’ÉICV",
   },
   modelingApproach: {
     "zh-CN": "建模方法",

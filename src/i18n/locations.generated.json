@@ -1,0 +1,3518 @@
+{
+  "AD": {
+    "en": "Andorra",
+    "zh-CN": "安道尔",
+    "de": "Andorra",
+    "fr": "Andorre"
+  },
+  "AE": {
+    "en": "United Arab Emirates",
+    "zh-CN": "阿拉伯联合酋长国",
+    "de": "Vereinigte Arabische Emirate",
+    "fr": "Émirats arabes unis"
+  },
+  "AF": {
+    "en": "Afghanistan",
+    "zh-CN": "阿富汗",
+    "de": "Afghanistan",
+    "fr": "Afghanistan"
+  },
+  "AFR": {
+    "en": "Sub-Saharan Africa",
+    "zh-CN": "撒哈拉以南非洲",
+    "de": "Subsahara-Afrika",
+    "fr": "Afrique subsaharienne"
+  },
+  "AG": {
+    "en": "Antigua and Barbuda",
+    "zh-CN": "安提瓜和巴布达",
+    "de": "Antigua und Barbuda",
+    "fr": "Antigua-et-Barbuda"
+  },
+  "AI": {
+    "en": "Anguilla",
+    "zh-CN": "安圭拉",
+    "de": "Anguilla",
+    "fr": "Anguilla"
+  },
+  "AL": {
+    "en": "Albania",
+    "zh-CN": "阿尔巴尼亚",
+    "de": "Albanien",
+    "fr": "Albanie"
+  },
+  "AM": {
+    "en": "Armenia",
+    "zh-CN": "亚美尼亚",
+    "de": "Armenien",
+    "fr": "Arménie"
+  },
+  "AO": { "en": "Angola", "zh-CN": "安哥拉", "de": "Angola", "fr": "Angola" },
+  "AQ": {
+    "en": "Antarctica",
+    "zh-CN": "南极洲",
+    "de": "Antarktis",
+    "fr": "Antarctique"
+  },
+  "AR": {
+    "en": "Argentina",
+    "zh-CN": "阿根廷",
+    "de": "Argentinien",
+    "fr": "Argentine"
+  },
+  "AS": {
+    "en": "American Samoa",
+    "zh-CN": "美属萨摩亚",
+    "de": "Amerikanisch-Samoa",
+    "fr": "Samoa américaines"
+  },
+  "AT": {
+    "en": "Austria",
+    "zh-CN": "奥地利",
+    "de": "Österreich",
+    "fr": "Autriche"
+  },
+  "AU": {
+    "en": "Australia",
+    "zh-CN": "澳大利亚",
+    "de": "Australien",
+    "fr": "Australie"
+  },
+  "AW": { "en": "Aruba", "zh-CN": "阿鲁巴", "de": "Aruba", "fr": "Aruba" },
+  "AX": {
+    "en": "Åland Islands",
+    "zh-CN": "奥兰群岛",
+    "de": "Ålandinseln",
+    "fr": "Îles Åland"
+  },
+  "AZ": {
+    "en": "Azerbaijan",
+    "zh-CN": "阿塞拜疆",
+    "de": "Aserbaidschan",
+    "fr": "Azerbaïdjan"
+  },
+  "BA": {
+    "en": "Bosnia and Herzegovina",
+    "zh-CN": "波斯尼亚和黑塞哥维那",
+    "de": "Bosnien und Herzegowina",
+    "fr": "Bosnie-Herzégovine"
+  },
+  "BB": {
+    "en": "Barbados",
+    "zh-CN": "巴巴多斯",
+    "de": "Barbados",
+    "fr": "Barbade"
+  },
+  "BD": {
+    "en": "Bangladesh",
+    "zh-CN": "孟加拉国",
+    "de": "Bangladesch",
+    "fr": "Bangladesh"
+  },
+  "BE": {
+    "en": "Belgium",
+    "zh-CN": "比利时",
+    "de": "Belgien",
+    "fr": "Belgique"
+  },
+  "BF": {
+    "en": "Burkina Faso",
+    "zh-CN": "布基纳法索",
+    "de": "Burkina Faso",
+    "fr": "Burkina Faso"
+  },
+  "BG": {
+    "en": "Bulgaria",
+    "zh-CN": "保加利亚",
+    "de": "Bulgarien",
+    "fr": "Bulgarie"
+  },
+  "BH": { "en": "Bahrain", "zh-CN": "巴林", "de": "Bahrain", "fr": "Bahreïn" },
+  "BI": {
+    "en": "Burundi",
+    "zh-CN": "布隆迪",
+    "de": "Burundi",
+    "fr": "Burundi"
+  },
+  "BJ": { "en": "Benin", "zh-CN": "贝宁", "de": "Benin", "fr": "Bénin" },
+  "BL": {
+    "en": "Saint Barthélemy",
+    "zh-CN": "圣巴泰勒米",
+    "de": "St. Barthélemy",
+    "fr": "Saint-Barthélemy"
+  },
+  "BM": {
+    "en": "Bermuda",
+    "zh-CN": "百慕大",
+    "de": "Bermuda",
+    "fr": "Bermudes"
+  },
+  "BN": {
+    "en": "Brunei Darussalam",
+    "zh-CN": "文莱",
+    "de": "Brunei",
+    "fr": "Brunei"
+  },
+  "BO": {
+    "en": "Bolivia (Plurinational State of)",
+    "zh-CN": "玻利维亚",
+    "de": "Bolivien",
+    "fr": "Bolivie"
+  },
+  "BQ": {
+    "en": "Bonaire, Sint Eustatius and Saba",
+    "zh-CN": "博内尔岛、圣尤斯特歇斯岛和萨巴岛",
+    "de": "Bonaire, Sint Eustatius und Saba",
+    "fr": "Bonaire, Saint-Eustache et Saba"
+  },
+  "BR": { "en": "Brazil", "zh-CN": "巴西", "de": "Brasilien", "fr": "Brésil" },
+  "BS": {
+    "en": "Bahamas",
+    "zh-CN": "巴哈马",
+    "de": "Bahamas",
+    "fr": "Bahamas"
+  },
+  "BT": { "en": "Bhutan", "zh-CN": "不丹", "de": "Bhutan", "fr": "Bhoutan" },
+  "BV": {
+    "en": "Bouvet Island",
+    "zh-CN": "布维岛",
+    "de": "Bouvetinsel",
+    "fr": "Île Bouvet"
+  },
+  "BW": {
+    "en": "Botswana",
+    "zh-CN": "博茨瓦纳",
+    "de": "Botsuana",
+    "fr": "Botswana"
+  },
+  "BY": {
+    "en": "Belarus",
+    "zh-CN": "白俄罗斯",
+    "de": "Belarus",
+    "fr": "Biélorussie"
+  },
+  "BZ": { "en": "Belize", "zh-CN": "伯利兹", "de": "Belize", "fr": "Belize" },
+  "CA": { "en": "Canada", "zh-CN": "加拿大", "de": "Kanada", "fr": "Canada" },
+  "CC": {
+    "en": "Cocos (Keeling) Islands",
+    "zh-CN": "科科斯（基林）群岛",
+    "de": "Kokosinseln",
+    "fr": "Îles des Cocos"
+  },
+  "CD": {
+    "en": "Democratic Republic of the Congo",
+    "zh-CN": "刚果民主共和国",
+    "de": "Demokratische Republik Kongo",
+    "fr": "République démocratique du Congo"
+  },
+  "CENTREL": {
+    "en": "Central european power association",
+    "zh-CN": "中欧电力协会",
+    "de": "Mitteleuropäischer Stromverband",
+    "fr": "Association électrique d'Europe centrale"
+  },
+  "CF": {
+    "en": "Central African Republic",
+    "zh-CN": "中非共和国",
+    "de": "Zentralafrikanische Republik",
+    "fr": "République centrafricaine"
+  },
+  "CG": { "en": "Congo", "zh-CN": "刚果", "de": "Kongo", "fr": "Congo" },
+  "CH": {
+    "en": "Switzerland",
+    "zh-CN": "瑞士",
+    "de": "Schweiz",
+    "fr": "Suisse"
+  },
+  "CI": {
+    "en": "Côte d'Ivoire",
+    "zh-CN": "科特迪瓦",
+    "de": "Côte d’Ivoire",
+    "fr": "Côte d’Ivoire"
+  },
+  "CIS": {
+    "en": "Commonwealth of Independent States",
+    "zh-CN": "独立国家联合体",
+    "de": "Gemeinschaft Unabhängiger Staaten",
+    "fr": "Communauté des États indépendants"
+  },
+  "CK": {
+    "en": "Cook Islands",
+    "zh-CN": "库克群岛",
+    "de": "Cookinseln",
+    "fr": "Îles Cook"
+  },
+  "CL": { "en": "Chile", "zh-CN": "智利", "de": "Chile", "fr": "Chili" },
+  "CM": {
+    "en": "Cameroon",
+    "zh-CN": "喀麦隆",
+    "de": "Kamerun",
+    "fr": "Cameroun"
+  },
+  "CN": { "en": "China", "zh-CN": "中国", "de": "China", "fr": "Chine" },
+  "CN-AH": {
+    "en": "Anhui Sheng,China",
+    "zh-CN": "中国,安徽省",
+    "de": "Provinz Anhui, China",
+    "fr": "Anhui, Chine"
+  },
+  "CN-AH-AQG": {
+    "en": "Anqing Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,安庆市",
+    "de": "Stadt Anqing, Provinz Anhui, China",
+    "fr": "Anqing, Anhui, Chine"
+  },
+  "CN-AH-BBU": {
+    "en": "Bengbu Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,蚌埠市",
+    "de": "Stadt Bengbu, Provinz Anhui, China",
+    "fr": "Bengbu, Anhui, Chine"
+  },
+  "CN-AH-BOZ": {
+    "en": "Bozhou Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,亳州市",
+    "de": "Bozhou Shi, Provinz Anhui, China",
+    "fr": "Bozhou, Anhui, Chine"
+  },
+  "CN-AH-CAH": {
+    "en": "Chaohu Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,巢湖市",
+    "de": "Stadt Chaohu, Provinz Anhui, China",
+    "fr": "Chaohu, Anhui, Chine"
+  },
+  "CN-AH-CIZ": {
+    "en": "Chizhou Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,池州市",
+    "de": "Chizhou Shi, Provinz Anhui, China",
+    "fr": "Chizhou, Anhui, Chine"
+  },
+  "CN-AH-CUZ": {
+    "en": "Chuzhou Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,滁州市",
+    "de": "Stadt Chuzhou, Provinz Anhui, China",
+    "fr": "Chuzhou, Anhui, Chine"
+  },
+  "CN-AH-FYS": {
+    "en": "Fuyang Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,阜阳市",
+    "de": "Stadt Fuyang, Provinz Anhui, China",
+    "fr": "Fuyang, Anhui, Chine"
+  },
+  "CN-AH-HBE": {
+    "en": "Huaibei Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,淮北市",
+    "de": "Stadt Huaibei, Provinz Anhui, China",
+    "fr": "Huaibei, Anhui, Chine"
+  },
+  "CN-AH-HFE": {
+    "en": "Hefei Sh,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,合肥市",
+    "de": "Stadt Hefei, Provinz Anhui, China",
+    "fr": "Hefei, Anhui, Chine"
+  },
+  "CN-AH-HNS": {
+    "en": "Huainan Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,淮南市",
+    "de": "Stadt Huainan, Provinz Anhui, China",
+    "fr": "Huainan, Anhui, Chine"
+  },
+  "CN-AH-HSN": {
+    "en": "Huangshan Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,黄山市",
+    "de": "Stadt Huangshan, Provinz Anhui, China",
+    "fr": "Huangshan, Anhui, Chine"
+  },
+  "CN-AH-LAW": {
+    "en": "Lu'an Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,六安市",
+    "de": "Stadt Lu'an, Provinz Anhui, China",
+    "fr": "Lu'an, Anhui, Chine"
+  },
+  "CN-AH-MAA": {
+    "en": "Ma'anshan Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,马鞍山市",
+    "de": "Stadt Ma'anshan, Provinz Anhui, China",
+    "fr": "Ma'anshan, Anhui, Chine"
+  },
+  "CN-AH-SUZ": {
+    "en": "Suzhou Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,宿州市",
+    "de": "Stadt Suzhou, Provinz Anhui, China",
+    "fr": "Suzhou, Anhui, Chine"
+  },
+  "CN-AH-TOL": {
+    "en": "Tongling Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,铜陵市",
+    "de": "Stadt Tongling, Provinz Anhui, China",
+    "fr": "Tongling, Anhui, Chine"
+  },
+  "CN-AH-WHI": {
+    "en": "Wuhu Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,芜湖市",
+    "de": "Stadt Wuhu, Provinz Anhui, China",
+    "fr": "Wuhu, Anhui, Chine"
+  },
+  "CN-AH-XCI": {
+    "en": "Xuancheng Shi,Anhui Sheng,China",
+    "zh-CN": "中国,安徽省,宣城市",
+    "de": "Xuancheng Shi, Provinz Anhui, China",
+    "fr": "Xuancheng, Anhui, Chine"
+  },
+  "CN-BJ": {
+    "en": "Beijing Shi,China",
+    "zh-CN": "中国,北京市",
+    "de": "Beijing Shi, China",
+    "fr": "Pékin, Chine"
+  },
+  "CN-CQ": {
+    "en": "Chongqing Shi,China",
+    "zh-CN": "中国,重庆市",
+    "de": "Chongqing, China",
+    "fr": "Chongqing, Chine"
+  },
+  "CN-FJ": {
+    "en": "Fujian Sheng,China",
+    "zh-CN": "中国,福建省",
+    "de": "Provinz Fujian, China",
+    "fr": "Fujian, Chine"
+  },
+  "CN-FJ-FOC": {
+    "en": "Fuzhou Shi,Fujian Sheng,China",
+    "zh-CN": "中国,福建省,福州市",
+    "de": "Fuzhou Shi, Provinz Fujian, China",
+    "fr": "Fuzhou, Fujian, Chine"
+  },
+  "CN-FJ-LYF": {
+    "en": "Longyan Shi,Fujian Sheng,China",
+    "zh-CN": "中国,福建省,龙岩市",
+    "de": "Longyan Shi, Provinz Fujian, China",
+    "fr": "Longyan, Fujian, Chine"
+  },
+  "CN-FJ-NDS": {
+    "en": "Ningde Shi,Fujian Sheng,China",
+    "zh-CN": "中国,福建省,宁德市",
+    "de": "Ningde Shi, Provinz Fujian, China",
+    "fr": "Ningde, Fujian, Chine"
+  },
+  "CN-FJ-NPS": {
+    "en": "Nanping Shi,Fujian Sheng,China",
+    "zh-CN": "中国,福建省,南平市",
+    "de": "Nanping Shi, Provinz Fujian, China",
+    "fr": "Nanping, Fujian, Chine"
+  },
+  "CN-FJ-PUT": {
+    "en": "Putian Shi,Fujian Sheng,China",
+    "zh-CN": "中国,福建省,莆田市",
+    "de": "Putian Shi, Provinz Fujian, China",
+    "fr": "Putian, Fujian, Chine"
+  },
+  "CN-FJ-QZJ": {
+    "en": "Quanzhou Shi,Fujian Sheng,China",
+    "zh-CN": "中国,福建省,泉州市",
+    "de": "Quanzhou Shi, Provinz Fujian, China",
+    "fr": "Quanzhou, Fujian, Chine"
+  },
+  "CN-FJ-SMS": {
+    "en": "Sanming Shi,Fujian Sheng,China",
+    "zh-CN": "中国,福建省,三明市",
+    "de": "Sanming Shi, Provinz Fujian, China",
+    "fr": "Sanming, Fujian, Chine"
+  },
+  "CN-FJ-XMN": {
+    "en": "Xiamen Shi,Fujian Sheng,China",
+    "zh-CN": "中国,福建省,厦门市",
+    "de": "Xiamen Shi, Provinz Fujian, China",
+    "fr": "Xiamen, Fujian, Chine"
+  },
+  "CN-FJ-ZZU": {
+    "en": "Zhangzhou Shi,Fujian Sheng,China",
+    "zh-CN": "中国,福建省,漳州市",
+    "de": "Zhangzhou Shi, Provinz Fujian, China",
+    "fr": "Zhangzhou, Fujian, Chine"
+  },
+  "CN-GD": {
+    "en": "Guangdong Sheng,China",
+    "zh-CN": "中国,广东省",
+    "de": "Provinz Guangdong, China",
+    "fr": "Guangdong, Chine"
+  },
+  "CN-GD-CAN": {
+    "en": "Guangzhou Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,广州市",
+    "de": "Guangzhou Shi, Provinz Guangdong, China",
+    "fr": "Guangzhou, Guangdong, Chine"
+  },
+  "CN-GD-CZY": {
+    "en": "Chaozhou Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,潮州市",
+    "de": "Chaozhou, Provinz Guangdong, China",
+    "fr": "Chaozhou, Guangdong, Chine"
+  },
+  "CN-GD-DGG": {
+    "en": "Dongguan Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,东莞市",
+    "de": "Dongguan, Provinz Guangdong, China",
+    "fr": "Dongguan, Guangdong, Chine"
+  },
+  "CN-GD-FOS": {
+    "en": "Foshan Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,佛山市",
+    "de": "Foshan Shi, Provinz Guangdong, China",
+    "fr": "Foshan, Guangdong, Chine"
+  },
+  "CN-GD-HEY": {
+    "en": "Heyuan Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,河源市",
+    "de": "Heyuan, Provinz Guangdong, China",
+    "fr": "Heyuan, Guangdong, Chine"
+  },
+  "CN-GD-HSC": {
+    "en": "Shaoguan Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,韶关市",
+    "de": "Shaoguan Shi, Provinz Guangdong, China",
+    "fr": "Shaoguan, Guangdong, Chine"
+  },
+  "CN-GD-HUI": {
+    "en": "Huizhou Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,惠州市",
+    "de": "Huizhou, Provinz Guangdong, China",
+    "fr": "Huizhou, Guangdong, Chine"
+  },
+  "CN-GD-JIY": {
+    "en": "Jieyang Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,揭阳市",
+    "de": "Jieyang, Provinz Guangdong, China",
+    "fr": "Jieyang, Guangdong, Chine"
+  },
+  "CN-GD-JMN": {
+    "en": "Jiangmen Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,江门市",
+    "de": "Jiangmen Shi, Provinz Guangdong, China",
+    "fr": "Jiangmen, Guangdong, Chine"
+  },
+  "CN-GD-MMI": {
+    "en": "Maoming Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,茂名市",
+    "de": "Maoming Shi, Provinz Guangdong, China",
+    "fr": "Maoming, Guangdong, Chine"
+  },
+  "CN-GD-MXZ": {
+    "en": "Meizhou Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,梅州市",
+    "de": "Meizhou, Provinz Guangdong, China",
+    "fr": "Meizhou, Guangdong, Chine"
+  },
+  "CN-GD-QYN": {
+    "en": "Qingyuan Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,清远市",
+    "de": "Qingyuan, Provinz Guangdong, China",
+    "fr": "Qingyuan, Guangdong, Chine"
+  },
+  "CN-GD-SWA": {
+    "en": "Shantou Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,汕头市",
+    "de": "Shantou Shi, Provinz Guangdong, China",
+    "fr": "Shantou, Guangdong, Chine"
+  },
+  "CN-GD-SWE": {
+    "en": "Shanwei Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,汕尾市",
+    "de": "Shanwei, Provinz Guangdong, China",
+    "fr": "Shanwei, Guangdong, Chine"
+  },
+  "CN-GD-SZX": {
+    "en": "Shenzhen Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,深圳市",
+    "de": "Shenzhen Shi, Provinz Guangdong, China",
+    "fr": "Shenzhen, Guangdong, Chine"
+  },
+  "CN-GD-YFS": {
+    "en": "Yunfu Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,云浮市",
+    "de": "Yunfu, Provinz Guangdong, China",
+    "fr": "Yunfu, Guangdong, Chine"
+  },
+  "CN-GD-YJI": {
+    "en": "Yangjiang Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,阳江市",
+    "de": "Yangjiang, Provinz Guangdong, China",
+    "fr": "Yangjiang, Guangdong, Chine"
+  },
+  "CN-GD-ZHA": {
+    "en": "Zhanjiang Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,湛江市",
+    "de": "Zhanjiang Shi, Provinz Guangdong, China",
+    "fr": "Zhanjiang, Guangdong, Chine"
+  },
+  "CN-GD-ZQG": {
+    "en": "Zhaoqing Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,肇庆市",
+    "de": "Zhaoqing, Provinz Guangdong, China",
+    "fr": "Zhaoqing, Guangdong, Chine"
+  },
+  "CN-GD-ZSN": {
+    "en": "Zhongshan Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,中山市",
+    "de": "Zhongshan, Provinz Guangdong, China",
+    "fr": "Zhongshan, Guangdong, Chine"
+  },
+  "CN-GD-ZUH": {
+    "en": "Zhuhai Shi,Guangdong Sheng,China",
+    "zh-CN": "中国,广东省,珠海市",
+    "de": "Zhuhai Shi, Provinz Guangdong, China",
+    "fr": "Zhuhai, Guangdong, Chine"
+  },
+  "CN-GS": {
+    "en": "Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省",
+    "de": "Provinz Gansu, China",
+    "fr": "Gansu, Chine"
+  },
+  "CN-GS-BYS": {
+    "en": "Baiyin Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,白银市",
+    "de": "Stadt Baiyin, Provinz Gansu, China",
+    "fr": "Baiyin, Gansu, Chine"
+  },
+  "CN-GS-DNX": {
+    "en": "Dingxi Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,定西市",
+    "de": "Stadt Dingxi, Provinz Gansu, China",
+    "fr": "Dingxi, Gansu, Chine"
+  },
+  "CN-GS-GNZ": {
+    "en": "Gannan Zangzu Zizhizhou,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,甘南藏族自治州",
+    "de": "Autonomer Bezirk Gannan der Tibeter, Provinz Gansu, China",
+    "fr": "Préfecture autonome tibétaine de Gannan, Gansu, Chine"
+  },
+  "CN-GS-JCS": {
+    "en": "Jinchang Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,金昌市",
+    "de": "Stadt Jinchang, Provinz Gansu, China",
+    "fr": "Jinchang, Gansu, Chine"
+  },
+  "CN-GS-JQG": {
+    "en": "Jiuquan Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,酒泉市",
+    "de": "Stadt Jiuquan, Provinz Gansu, China",
+    "fr": "Jiuquan, Gansu, Chine"
+  },
+  "CN-GS-JYG": {
+    "en": "Jiayuguan Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,嘉峪关市",
+    "de": "Stadt Jiayuguan, Provinz Gansu, China",
+    "fr": "Jiayuguan, Gansu, Chine"
+  },
+  "CN-GS-LGN": {
+    "en": "Longnan Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,陇南市",
+    "de": "Stadt Longnan, Provinz Gansu, China",
+    "fr": "Longnan, Gansu, Chine"
+  },
+  "CN-GS-LHW": {
+    "en": "Lanzhou Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,兰州市",
+    "de": "Stadt Lanzhou, Provinz Gansu, China",
+    "fr": "Lanzhou, Gansu, Chine"
+  },
+  "CN-GS-LXH": {
+    "en": "Linxia Huizu Zizhizhou,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,临夏回族自治州",
+    "de": "Autonomer Bezirk Linxia der Hui, Provinz Gansu, China",
+    "fr": "Préfecture autonome hui de Linxia, Gansu, Chine"
+  },
+  "CN-GS-PLS": {
+    "en": "Pingliang Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,平凉市",
+    "de": "Stadt Pingliang, Provinz Gansu, China",
+    "fr": "Pingliang, Gansu, Chine"
+  },
+  "CN-GS-QYI": {
+    "en": "Qingyang Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,庆阳市",
+    "de": "Stadt Qingyang, Provinz Gansu, China",
+    "fr": "Qingyang, Gansu, Chine"
+  },
+  "CN-GS-TSU": {
+    "en": "Tianshui Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,天水市",
+    "de": "Stadt Tianshui, Provinz Gansu, China",
+    "fr": "Tianshui, Gansu, Chine"
+  },
+  "CN-GS-WWS": {
+    "en": "Wuwei Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,武威市",
+    "de": "Stadt Wuwei, Provinz Gansu, China",
+    "fr": "Wuwei, Gansu, Chine"
+  },
+  "CN-GS-ZYE": {
+    "en": "Zhangye Shi,Gansu Sheng,China",
+    "zh-CN": "中国,甘肃省,张掖市",
+    "de": "Stadt Zhangye, Provinz Gansu, China",
+    "fr": "Zhangye, Gansu, Chine"
+  },
+  "CN-GX": {
+    "en": "Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区",
+    "de": "Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-BHY": {
+    "en": "Beihai Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,北海市",
+    "de": "Beihai, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Beihai, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-BSS": {
+    "en": "Bose Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,百色市",
+    "de": "Bose, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Bose, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-COZ": {
+    "en": "Chongzuo Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,崇左市",
+    "de": "Chongzuo, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Chongzuo, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-FAN": {
+    "en": "Fangchenggang Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,防城港市",
+    "de": "Fangchenggang, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Fangchenggang, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-GUG": {
+    "en": "Guigang Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,贵港市",
+    "de": "Guigang, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Guigang, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-HCS": {
+    "en": "Hechi Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,河池市",
+    "de": "Hechi, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Hechi, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-HZO": {
+    "en": "Hezhou Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,贺州市",
+    "de": "Hezhou, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Hezhou, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-KWL": {
+    "en": "Guilin Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,桂林市",
+    "de": "Guilin, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Guilin, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-LIB": {
+    "en": "Laibin Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,来宾市",
+    "de": "Laibin, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Laibin, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-LZH": {
+    "en": "Liuzhou Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,柳州市",
+    "de": "Liuzhou, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Liuzhou, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-NNG": {
+    "en": "Nanning Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,南宁市",
+    "de": "Nanning, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Nanning, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-QZH": {
+    "en": "Qinzhou Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,钦州市",
+    "de": "Qinzhou, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Qinzhou, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-WUZ": {
+    "en": "Wuzhou Sh,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,梧州市",
+    "de": "Wuzhou, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Wuzhou, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GX-YUL": {
+    "en": "Yulin Shi,Guangxi Zhuangzu Zizhiqu,China",
+    "zh-CN": "中国,广西壮族自治区,玉林市",
+    "de": "Yulin, Autonomes Gebiet Guangxi der Zhuang, China",
+    "fr": "Yulin, région autonome zhuang du Guangxi, Chine"
+  },
+  "CN-GZ": {
+    "en": "Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省",
+    "de": "Provinz Guizhou, China",
+    "fr": "Guizhou, Chine"
+  },
+  "CN-GZ-ASS": {
+    "en": "Anshun Shi,Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省,安顺市",
+    "de": "Anshun, Provinz Guizhou, China",
+    "fr": "Anshun, Guizhou, Chine"
+  },
+  "CN-GZ-BJD": {
+    "en": "Bijie Diqu,Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省,毕节地区",
+    "de": "Bezirk Bijie, Provinz Guizhou, China",
+    "fr": "District de Bijie, Guizhou, Chine"
+  },
+  "CN-GZ-KWE": {
+    "en": "Guiyang Shi,Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省,贵阳市",
+    "de": "Guiyang, Provinz Guizhou, China",
+    "fr": "Guiyang, Guizhou, Chine"
+  },
+  "CN-GZ-LPS": {
+    "en": "Lupanshui Shi,Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省,六盘水市",
+    "de": "Lupanshui, Provinz Guizhou, China",
+    "fr": "Lupanshui, Guizhou, Chine"
+  },
+  "CN-GZ-QND": {
+    "en": "Qiandongnan Miaozu Dongzu Zizhizhou,Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省,黔东南苗族侗族自治州",
+    "de": "Autonomer Bezirk Qiandongnan der Miao und Dong, Provinz Guizhou, China",
+    "fr": "Préfecture autonome miao et dong de Qiandongnan, Guizhou, Chine"
+  },
+  "CN-GZ-QNZ": {
+    "en": "Qiannan Buyeizu Miaozu Zizhizhou,Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省,黔南布依族苗族自治州",
+    "de": "Autonomer Bezirk Qiannan der Buyei und Miao, Provinz Guizhou, China",
+    "fr": "Préfecture autonome bouyei et miao de Qiannan, Guizhou, Chine"
+  },
+  "CN-GZ-QXZ": {
+    "en": "Qianxinan Buycizu Miaozu Zizhizhou,Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省,黔西南布依族苗族自治州",
+    "de": "Autonomer Bezirk Qianxinan der Buyi und Miao, Provinz Guizhou, China",
+    "fr": "Préfecture autonome bouyei et miao de Qianxinan, Guizhou, Chine"
+  },
+  "CN-GZ-TRD": {
+    "en": "Tongren Diqu,Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省,铜仁地区",
+    "de": "Bezirk Tongren, Provinz Guizhou, China",
+    "fr": "District de Tongren, Guizhou, Chine"
+  },
+  "CN-GZ-ZNY": {
+    "en": "Zunyi Shi,Guizhou Sheng,China",
+    "zh-CN": "中国,贵州省,遵义市",
+    "de": "Zunyi, Provinz Guizhou, China",
+    "fr": "Zunyi, Guizhou, Chine"
+  },
+  "CN-HA": {
+    "en": "Henan Sheng,China",
+    "zh-CN": "中国,河南省",
+    "de": "Provinz Henan, China",
+    "fr": "Henan, Chine"
+  },
+  "CN-HA-AYS": {
+    "en": "Anyang Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,安阳市",
+    "de": "Anyang Shi, Provinz Henan, China",
+    "fr": "Anyang, Henan, Chine"
+  },
+  "CN-HA-CGO": {
+    "en": "Zhengzhou Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,郑州市",
+    "de": "Zhengzhou Shi, Provinz Henan, China",
+    "fr": "Zhengzhou, Henan, Chine"
+  },
+  "CN-HA-HBS": {
+    "en": "Hebi Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,鹤壁市",
+    "de": "Hebi Shi, Provinz Henan, China",
+    "fr": "Hebi, Henan, Chine"
+  },
+  "CN-HA-JZY": {
+    "en": "Jiaozuo Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,焦作市",
+    "de": "Jiaozuo Shi, Provinz Henan, China",
+    "fr": "Jiaozuo, Henan, Chine"
+  },
+  "CN-HA-KFS": {
+    "en": "Kaifeng Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,开封市",
+    "de": "Kaifeng Shi, Provinz Henan, China",
+    "fr": "Kaifeng, Henan, Chine"
+  },
+  "CN-HA-LHS": {
+    "en": "Luohe Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,漯河市",
+    "de": "Luohe Shi, Provinz Henan, China",
+    "fr": "Luohe, Henan, Chine"
+  },
+  "CN-HA-LYA": {
+    "en": "Luoyang Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,洛阳市",
+    "de": "Luoyang Shi, Provinz Henan, China",
+    "fr": "Luoyang, Henan, Chine"
+  },
+  "CN-HA-NYS": {
+    "en": "Nanyang Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,南阳市",
+    "de": "Nanyang Shi, Provinz Henan, China",
+    "fr": "Nanyang, Henan, Chine"
+  },
+  "CN-HA-PDS": {
+    "en": "Pingdingshan Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,平顶山市",
+    "de": "Pingdingshan Shi, Provinz Henan, China",
+    "fr": "Pingdingshan, Henan, Chine"
+  },
+  "CN-HA-PYS": {
+    "en": "Puyang Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,濮阳市",
+    "de": "Puyang Shi, Provinz Henan, China",
+    "fr": "Puyang, Henan, Chine"
+  },
+  "CN-HA-SMX": {
+    "en": "Sanmenxia Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,三门峡市",
+    "de": "Sanmenxia Shi, Provinz Henan, China",
+    "fr": "Sanmenxia, Henan, Chine"
+  },
+  "CN-HA-SQS": {
+    "en": "Shangqiu Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,商丘市",
+    "de": "Shangqiu Shi, Provinz Henan, China",
+    "fr": "Shangqiu, Henan, Chine"
+  },
+  "CN-HA-XCS": {
+    "en": "Xuchang Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,许昌市",
+    "de": "Xuchang Shi, Provinz Henan, China",
+    "fr": "Xuchang, Henan, Chine"
+  },
+  "CN-HA-XXS": {
+    "en": "Xinxiang Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,新乡市",
+    "de": "Xinxiang Shi, Provinz Henan, China",
+    "fr": "Xinxiang, Henan, Chine"
+  },
+  "CN-HA-XYG": {
+    "en": "Xinyang Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,信阳市",
+    "de": "Xinyang Shi, Provinz Henan, China",
+    "fr": "Xinyang, Henan, Chine"
+  },
+  "CN-HA-ZKS": {
+    "en": "Zhoukou Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,周口市",
+    "de": "Zhoukou Shi, Provinz Henan, China",
+    "fr": "Zhoukou, Henan, Chine"
+  },
+  "CN-HA-ZMD": {
+    "en": "Zhumadian Shi,Henan Sheng,China",
+    "zh-CN": "中国,河南省,驻马店市",
+    "de": "Zhumadian Shi, Provinz Henan, China",
+    "fr": "Zhumadian, Henan, Chine"
+  },
+  "CN-HB": {
+    "en": "Hubei Sheng,China",
+    "zh-CN": "中国,湖北省",
+    "de": "Provinz Hubei, China",
+    "fr": "Hubei, Chine"
+  },
+  "CN-HB-ESH": {
+    "en": "Enshi Tujiazu Miaozu Zizhizhou,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,恩施土家族苗族自治州",
+    "de": "Autonomer Bezirk Enshi der Tujia und Miao, Provinz Hubei, China",
+    "fr": "Préfecture autonome tujia et miao d'Enshi, Hubei, Chine"
+  },
+  "CN-HB-EZS": {
+    "en": "Ezhou Sli,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,鄂州市",
+    "de": "Ezhou Sli, Provinz Hubei, China",
+    "fr": "Ezhou, Hubei, Chine"
+  },
+  "CN-HB-HGE": {
+    "en": "Huanggang Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,黄冈市",
+    "de": "Huanggang Shi, Provinz Hubei, China",
+    "fr": "Huanggang, Hubei, Chine"
+  },
+  "CN-HB-HSI": {
+    "en": "Huangshi Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,黄石市",
+    "de": "Huangshi Shi, Provinz Hubei, China",
+    "fr": "Huangshi, Hubei, Chine"
+  },
+  "CN-HB-JGZ": {
+    "en": "Jingzhou Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,荆州市",
+    "de": "Jingzhou Shi, Provinz Hubei, China",
+    "fr": "Jingzhou, Hubei, Chine"
+  },
+  "CN-HB-JMS": {
+    "en": "Jingmen Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,荆门市",
+    "de": "Jingmen Shi, Provinz Hubei, China",
+    "fr": "Jingmen, Hubei, Chine"
+  },
+  "CN-HB-SYE": {
+    "en": "Shiyan Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,十堰市",
+    "de": "Shiyan Shi, Provinz Hubei, China",
+    "fr": "Shiyan, Hubei, Chine"
+  },
+  "CN-HB-SZR": {
+    "en": "Suizhou Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,随州市",
+    "de": "Suizhou Shi, Provinz Hubei, China",
+    "fr": "Suizhou, Hubei, Chine"
+  },
+  "CN-HB-WUH": {
+    "en": "Wuhan Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,武汉市",
+    "de": "Wuhan Shi, Provinz Hubei, China",
+    "fr": "Wuhan, Hubei, Chine"
+  },
+  "CN-HB-XFN": {
+    "en": "Xiangfan Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,襄樊市",
+    "de": "Xiangfan Shi, Provinz Hubei, China",
+    "fr": "Xiangfan, Hubei, Chine"
+  },
+  "CN-HB-XGE": {
+    "en": "Xiaogan Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,孝感市",
+    "de": "Xiaogan Shi, Provinz Hubei, China",
+    "fr": "Xiaogan, Hubei, Chine"
+  },
+  "CN-HB-XNS": {
+    "en": "Xianning Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,咸宁市",
+    "de": "Xianning Shi, Provinz Hubei, China",
+    "fr": "Xianning, Hubei, Chine"
+  },
+  "CN-HB-YCO": {
+    "en": "Yichang Shi,Hubei Sheng,China",
+    "zh-CN": "中国,湖北省,宜昌市",
+    "de": "Yichang Shi, Provinz Hubei, China",
+    "fr": "Yichang, Hubei, Chine"
+  },
+  "CN-HE": {
+    "en": "Hebei Sheng,China",
+    "zh-CN": "中国,河北省",
+    "de": "Hebei-Provinz, China",
+    "fr": "Hebei, Chine"
+  },
+  "CN-HE-BDS": {
+    "en": "Baoding Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,保定市",
+    "de": "Baoding Shi, Hebei-Provinz, China",
+    "fr": "Baoding, Hebei, Chine"
+  },
+  "CN-HE-CDS": {
+    "en": "Chengde Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,承德市",
+    "de": "Chengde Shi, Hebei-Provinz, China",
+    "fr": "Chengde, Hebei, Chine"
+  },
+  "CN-HE-CGZ": {
+    "en": "Cangzhou Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,沧州市",
+    "de": "Cangzhou Shi, Hebei-Provinz, China",
+    "fr": "Cangzhou, Hebei, Chine"
+  },
+  "CN-HE-HDS": {
+    "en": "Handan Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,邯郸市",
+    "de": "Handan Shi, Hebei-Provinz, China",
+    "fr": "Handan, Hebei, Chine"
+  },
+  "CN-HE-HGS": {
+    "en": "Hengshui Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,衡水市",
+    "de": "Hengshui Shi, Hebei-Provinz, China",
+    "fr": "Hengshui, Hebei, Chine"
+  },
+  "CN-HE-LFS": {
+    "en": "Langfang Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,廊坊市",
+    "de": "Langfang Shi, Hebei-Provinz, China",
+    "fr": "Langfang, Hebei, Chine"
+  },
+  "CN-HE-SHP": {
+    "en": "Qinhuangdao Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,秦皇岛市",
+    "de": "Qinhuangdao Shi, Hebei-Provinz, China",
+    "fr": "Qinhuangdao, Hebei, Chine"
+  },
+  "CN-HE-SJW": {
+    "en": "Shijiazhuang Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,石家庄市",
+    "de": "Shijiazhuang Shi, Hebei-Provinz, China",
+    "fr": "Shijiazhuang, Hebei, Chine"
+  },
+  "CN-HE-TGS": {
+    "en": "Tangshan Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,唐山市",
+    "de": "Tangshan Shi, Hebei-Provinz, China",
+    "fr": "Tangshan, Hebei, Chine"
+  },
+  "CN-HE-XTS": {
+    "en": "Xingtai Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,邢台市",
+    "de": "Xingtai Shi, Hebei-Provinz, China",
+    "fr": "Xingtai, Hebei, Chine"
+  },
+  "CN-HE-ZJK": {
+    "en": "Zhangjiakou Shi,Hebei Sheng,China",
+    "zh-CN": "中国,河北省,张家口市",
+    "de": "Zhangjiakou Shi, Hebei-Provinz, China",
+    "fr": "Zhangjiakou, Hebei, Chine"
+  },
+  "CN-HI": {
+    "en": "Hainan Sheng,China",
+    "zh-CN": "中国,海南省",
+    "de": "Provinz Hainan, China",
+    "fr": "Hainan, Chine"
+  },
+  "CN-HI-HAK": {
+    "en": "Haikou Shi,Hainan Sheng,China",
+    "zh-CN": "中国,海南省,海口市",
+    "de": "Haikou, Provinz Hainan, China",
+    "fr": "Haikou, Hainan, Chine"
+  },
+  "CN-HI-SYX": {
+    "en": "Sanva Shi,Hainan Sheng,China",
+    "zh-CN": "中国,海南省,三亚市",
+    "de": "Sanva, Provinz Hainan, China",
+    "fr": "Sanva, Hainan, Chine"
+  },
+  "CN-HL": {
+    "en": "Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省",
+    "de": "Provinz Heilongjiang, China",
+    "fr": "Heilongjiang, Chine"
+  },
+  "CN-HL-DHL": {
+    "en": "Da Hinggan Ling Diqu,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,大兴安岭地区",
+    "de": "Bezirk Da Hinggan Ling, Provinz Heilongjiang, China",
+    "fr": "Région de Da Hinggan Ling, Heilongjiang, Chine"
+  },
+  "CN-HL-DQG": {
+    "en": "Daqing Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,大庆市",
+    "de": "Stadt Daqing, Provinz Heilongjiang, China",
+    "fr": "Daqing, Heilongjiang, Chine"
+  },
+  "CN-HL-HEG": {
+    "en": "Hegang Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,鹤岗市",
+    "de": "Stadt Hegang, Provinz Heilongjiang, China",
+    "fr": "Hegang, Heilongjiang, Chine"
+  },
+  "CN-HL-HEK": {
+    "en": "Heihe Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,黑河市",
+    "de": "Stadt Heihe, Provinz Heilongjiang, China",
+    "fr": "Heihe, Heilongjiang, Chine"
+  },
+  "CN-HL-HRB": {
+    "en": "Harbin Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,哈尔滨市",
+    "de": "Stadt Harbin, Provinz Heilongjiang, China",
+    "fr": "Harbin, Heilongjiang, Chine"
+  },
+  "CN-HL-JMU": {
+    "en": "Jiamusi Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,佳木斯市",
+    "de": "Stadt Jiamusi, Provinz Heilongjiang, China",
+    "fr": "Jiamusi, Heilongjiang, Chine"
+  },
+  "CN-HL-JXI": {
+    "en": "Jixi Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,鸡西市",
+    "de": "Stadt Jixi, Provinz Heilongjiang, China",
+    "fr": "Jixi, Heilongjiang, Chine"
+  },
+  "CN-HL-MDG": {
+    "en": "Mudanjiang Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,牡丹江市",
+    "de": "Stadt Mudanjiang, Provinz Heilongjiang, China",
+    "fr": "Mudanjiang, Heilongjiang, Chine"
+  },
+  "CN-HL-NDG": {
+    "en": "Qiqihar Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,齐齐哈尔市",
+    "de": "Stadt Qiqihar, Provinz Heilongjiang, China",
+    "fr": "Qiqihar, Heilongjiang, Chine"
+  },
+  "CN-HL-QTH": {
+    "en": "Qitaihe Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,七台河市",
+    "de": "Stadt Qitaihe, Provinz Heilongjiang, China",
+    "fr": "Qitaihe, Heilongjiang, Chine"
+  },
+  "CN-HL-SUH": {
+    "en": "Suihua Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,绥化市",
+    "de": "Stadt Suihua, Provinz Heilongjiang, China",
+    "fr": "Suihua, Heilongjiang, Chine"
+  },
+  "CN-HL-SYS": {
+    "en": "Shuangyashan Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,双鸭山市",
+    "de": "Stadt Shuangyashan, Provinz Heilongjiang, China",
+    "fr": "Shuangyashan, Heilongjiang, Chine"
+  },
+  "CN-HL-YCH": {
+    "en": "Yichun Shi,Heilongjiang Sheng,China",
+    "zh-CN": "中国,黑龙江省,伊春市",
+    "de": "Stadt Yichun, Provinz Heilongjiang, China",
+    "fr": "Yichun, Heilongjiang, Chine"
+  },
+  "CN-HN": {
+    "en": "Hunan Sheng,China",
+    "zh-CN": "中国,湖南省",
+    "de": "Provinz Hunan, China",
+    "fr": "Hunan, Chine"
+  },
+  "CN-HN-CDE": {
+    "en": "Changde Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,常德市",
+    "de": "Changde Shi, Provinz Hunan, China",
+    "fr": "Changde, Hunan, Chine"
+  },
+  "CN-HN-CNZ": {
+    "en": "Chenzhou Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,郴州市",
+    "de": "Chenzhou Shi, Provinz Hunan, China",
+    "fr": "Chenzhou, Hunan, Chine"
+  },
+  "CN-HN-CSX": {
+    "en": "Changsha Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,长沙市",
+    "de": "Changsha Shi, Provinz Hunan, China",
+    "fr": "Changsha, Hunan, Chine"
+  },
+  "CN-HN-HHS": {
+    "en": "Huaihua Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,怀化市",
+    "de": "Huaihua Shi, Provinz Hunan, China",
+    "fr": "Huaihua, Hunan, Chine"
+  },
+  "CN-HN-HNY": {
+    "en": "Hengyang Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,衡阳市",
+    "de": "Hengyang Shi, Provinz Hunan, China",
+    "fr": "Hengyang, Hunan, Chine"
+  },
+  "CN-HN-LDI": {
+    "en": "Loudi Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,娄底市",
+    "de": "Loudi Shi, Provinz Hunan, China",
+    "fr": "Loudi, Hunan, Chine"
+  },
+  "CN-HN-SYR": {
+    "en": "Shaoyang Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,邵阳市",
+    "de": "Shaoyang Shi, Provinz Hunan, China",
+    "fr": "Shaoyang, Hunan, Chine"
+  },
+  "CN-HN-XGT": {
+    "en": "Xiangtan Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,湘潭市",
+    "de": "Xiangtan Shi, Provinz Hunan, China",
+    "fr": "Xiangtan, Hunan, Chine"
+  },
+  "CN-HN-XXZ": {
+    "en": "Xiangxi Tujiazu Miaozu Zizhizhou,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,湘西土家族苗族自治州",
+    "de": "Autonomer Bezirk Xiangxi der Tujia und Miao, Provinz Hunan, China",
+    "fr": "Préfecture autonome tujia et miao de Xiangxi, Hunan, Chine"
+  },
+  "CN-HN-YYG": {
+    "en": "Yueyang Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,岳阳市",
+    "de": "Yueyang Shi, Provinz Hunan, China",
+    "fr": "Yueyang, Hunan, Chine"
+  },
+  "CN-HN-YYS": {
+    "en": "Yiyang Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,益阳市",
+    "de": "Yiyang Shi, Provinz Hunan, China",
+    "fr": "Yiyang, Hunan, Chine"
+  },
+  "CN-HN-YZS": {
+    "en": "Yongzhou Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,永州市",
+    "de": "Yongzhou Shi, Provinz Hunan, China",
+    "fr": "Yongzhou, Hunan, Chine"
+  },
+  "CN-HN-ZJJ": {
+    "en": "Zhangjiajie Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,张家界市",
+    "de": "Zhangjiajie Shi, Provinz Hunan, China",
+    "fr": "Zhangjiajie, Hunan, Chine"
+  },
+  "CN-HN-ZZS": {
+    "en": "Zhuzhou Shi,Hunan Sheng,China",
+    "zh-CN": "中国,湖南省,株洲市",
+    "de": "Zhuzhou Shi, Provinz Hunan, China",
+    "fr": "Zhuzhou, Hunan, Chine"
+  },
+  "CN-JL": {
+    "en": "Jilin Sheng,China",
+    "zh-CN": "中国,吉林省",
+    "de": "Provinz Jilin, China",
+    "fr": "Jilin, Chine"
+  },
+  "CN-JL-BCS": {
+    "en": "Baicheng Shi,Jilin Sheng,China",
+    "zh-CN": "中国,吉林省,白城市",
+    "de": "Stadt Baicheng, Provinz Jilin, China",
+    "fr": "Baicheng, Jilin, Chine"
+  },
+  "CN-JL-BSN": {
+    "en": "Baishan Shi,Jilin Sheng,China",
+    "zh-CN": "中国,吉林省,白山市",
+    "de": "Stadt Baishan, Provinz Jilin, China",
+    "fr": "Baishan, Jilin, Chine"
+  },
+  "CN-JL-CGQ": {
+    "en": "Changchun Shi,Jilin Sheng,China",
+    "zh-CN": "中国,吉林省,长春市",
+    "de": "Stadt Changchun, Provinz Jilin, China",
+    "fr": "Changchun, Jilin, Chine"
+  },
+  "CN-JL-JLS": {
+    "en": "Jilin Shi,Jilin Sheng,China",
+    "zh-CN": "中国,吉林省,吉林市",
+    "de": "Stadt Jilin, Provinz Jilin, China",
+    "fr": "Jilin, Jilin, Chine"
+  },
+  "CN-JL-LYH": {
+    "en": "Liaoyuan Shi,Jilin Sheng,China",
+    "zh-CN": "中国,吉林省,辽源市",
+    "de": "Stadt Liaoyuan, Provinz Jilin, China",
+    "fr": "Liaoyuan, Jilin, Chine"
+  },
+  "CN-JL-SPS": {
+    "en": "Siping Shi,Jilin Sheng,China",
+    "zh-CN": "中国,吉林省,四平市",
+    "de": "Stadt Siping, Provinz Jilin, China",
+    "fr": "Siping, Jilin, Chine"
+  },
+  "CN-JL-SYU": {
+    "en": "Songyuan Shi,Jilin Sheng,China",
+    "zh-CN": "中国,吉林省,松原市",
+    "de": "Stadt Songyuan, Provinz Jilin, China",
+    "fr": "Songyuan, Jilin, Chine"
+  },
+  "CN-JL-THS": {
+    "en": "Tonghua Shi,Jilin Sheng,China",
+    "zh-CN": "中国,吉林省,通化市",
+    "de": "Stadt Tonghua, Provinz Jilin, China",
+    "fr": "Tonghua, Jilin, Chine"
+  },
+  "CN-JL-YBZ": {
+    "en": "Yanbian Chosenzu Zizhizhou,Jilin Sheng,China",
+    "zh-CN": "中国,吉林省,延边朝鲜族自治州",
+    "de": "Autonomer Bezirk Yanbian der Koreaner, Provinz Jilin, China",
+    "fr": "Préfecture autonome coréenne de Yanbian, Jilin, Chine"
+  },
+  "CN-JS": {
+    "en": "Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省",
+    "de": "Provinz Jiangsu, China",
+    "fr": "Jiangsu, Chine"
+  },
+  "CN-JS-CZX": {
+    "en": "Changzhou Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,常州市",
+    "de": "Stadt Changzhou, Provinz Jiangsu, China",
+    "fr": "Changzhou, Jiangsu, Chine"
+  },
+  "CN-JS-HAS": {
+    "en": "Huai'an Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,淮安市",
+    "de": "Stadt Huai'an, Provinz Jiangsu, China",
+    "fr": "Huai'an, Jiangsu, Chine"
+  },
+  "CN-JS-LYG": {
+    "en": "Lianyungang Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,连云港市",
+    "de": "Stadt Lianyungang, Provinz Jiangsu, China",
+    "fr": "Lianyungang, Jiangsu, Chine"
+  },
+  "CN-JS-NKG": {
+    "en": "Nanjing Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,南京市",
+    "de": "Stadt Nanjing, Provinz Jiangsu, China",
+    "fr": "Nankin, Jiangsu, Chine"
+  },
+  "CN-JS-NTG": {
+    "en": "Nantong Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,南通市",
+    "de": "Stadt Nantong, Provinz Jiangsu, China",
+    "fr": "Nantong, Jiangsu, Chine"
+  },
+  "CN-JS-SUQ": {
+    "en": "Suqian Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,宿迁市",
+    "de": "Stadt Suqian, Provinz Jiangsu, China",
+    "fr": "Suqian, Jiangsu, Chine"
+  },
+  "CN-JS-SZH": {
+    "en": "Suzhou Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,苏州市",
+    "de": "Stadt Suzhou, Provinz Jiangsu, China",
+    "fr": "Suzhou, Jiangsu, Chine"
+  },
+  "CN-JS-TZS": {
+    "en": "Taizhou Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,泰州市",
+    "de": "Stadt Taizhou, Provinz Jiangsu, China",
+    "fr": "Taizhou, Jiangsu, Chine"
+  },
+  "CN-JS-WUX": {
+    "en": "Wuxi Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,无锡市",
+    "de": "Stadt Wuxi, Provinz Jiangsu, China",
+    "fr": "Wuxi, Jiangsu, Chine"
+  },
+  "CN-JS-XUZ": {
+    "en": "Xuzhou Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,徐州市",
+    "de": "Stadt Xuzhou, Provinz Jiangsu, China",
+    "fr": "Xuzhou, Jiangsu, Chine"
+  },
+  "CN-JS-YCK": {
+    "en": "Yancheng Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,盐城市",
+    "de": "Stadt Yancheng, Provinz Jiangsu, China",
+    "fr": "Yancheng, Jiangsu, Chine"
+  },
+  "CN-JS-YZH": {
+    "en": "Yangzhou Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,扬州市",
+    "de": "Stadt Yangzhou, Provinz Jiangsu, China",
+    "fr": "Yangzhou, Jiangsu, Chine"
+  },
+  "CN-JS-ZHE": {
+    "en": "Zhenjiang Shi,Jiangsu Sheng,China",
+    "zh-CN": "中国,江苏省,镇江市",
+    "de": "Stadt Zhenjiang, Provinz Jiangsu, China",
+    "fr": "Zhenjiang, Jiangsu, Chine"
+  },
+  "CN-JX": {
+    "en": "Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省",
+    "de": "Provinz Jiangxi, China",
+    "fr": "Jiangxi, Chine"
+  },
+  "CN-JX-FUZ": {
+    "en": "Fuzhou Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,抚州市",
+    "de": "Fuzhou Shi, Provinz Jiangxi, China",
+    "fr": "Fuzhou, Jiangxi, Chine"
+  },
+  "CN-JX-GZH": {
+    "en": "Ganzhou Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,赣州市",
+    "de": "Ganzhou Shi, Provinz Jiangxi, China",
+    "fr": "Ganzhou, Jiangxi, Chine"
+  },
+  "CN-JX-JAS": {
+    "en": "Ji'an Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,吉安市",
+    "de": "Ji'an Shi, Provinz Jiangxi, China",
+    "fr": "Ji'an, Jiangxi, Chine"
+  },
+  "CN-JX-JDZ": {
+    "en": "Jingdezhen Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,景德镇市",
+    "de": "Jingdezhen Shi, Provinz Jiangxi, China",
+    "fr": "Jingdezhen, Jiangxi, Chine"
+  },
+  "CN-JX-JIU": {
+    "en": "Jiujiang Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,九江市",
+    "de": "Jiujiang Shi, Provinz Jiangxi, China",
+    "fr": "Jiujiang, Jiangxi, Chine"
+  },
+  "CN-JX-KHN": {
+    "en": "Nanchang Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,南昌市",
+    "de": "Nanchang Shi, Provinz Jiangxi, China",
+    "fr": "Nanchang, Jiangxi, Chine"
+  },
+  "CN-JX-PXS": {
+    "en": "Pingxiang Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,萍乡市",
+    "de": "Pingxiang Shi, Provinz Jiangxi, China",
+    "fr": "Pingxiang, Jiangxi, Chine"
+  },
+  "CN-JX-SRS": {
+    "en": "Shangrao Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,上饶市",
+    "de": "Shangrao Shi, Provinz Jiangxi, China",
+    "fr": "Shangrao, Jiangxi, Chine"
+  },
+  "CN-JX-XYU": {
+    "en": "Xinyu Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,新余市",
+    "de": "Xinyu Shi, Provinz Jiangxi, China",
+    "fr": "Xinyu, Jiangxi, Chine"
+  },
+  "CN-JX-YCN": {
+    "en": "Yichun Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,宜春市",
+    "de": "Yichun Shi, Provinz Jiangxi, China",
+    "fr": "Yichun, Jiangxi, Chine"
+  },
+  "CN-JX-YTS": {
+    "en": "Yingtan Shi,Jiangxi Sheng,China",
+    "zh-CN": "中国,江西省,鹰潭市",
+    "de": "Yingtan Shi, Provinz Jiangxi, China",
+    "fr": "Yingtan, Jiangxi, Chine"
+  },
+  "CN-LN": {
+    "en": "Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省",
+    "de": "Provinz Liaoning, China",
+    "fr": "Liaoning, Chine"
+  },
+  "CN-LN-ASN": {
+    "en": "Anshan Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,鞍山市",
+    "de": "Stadt Anshan, Provinz Liaoning, China",
+    "fr": "Anshan, Liaoning, Chine"
+  },
+  "CN-LN-BXS": {
+    "en": "Benxi Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,本溪市",
+    "de": "Stadt Benxi, Provinz Liaoning, China",
+    "fr": "Benxi, Liaoning, Chine"
+  },
+  "CN-LN-CYS": {
+    "en": "Chaoyang Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,朝阳市",
+    "de": "Stadt Chaoyang, Provinz Liaoning, China",
+    "fr": "Chaoyang, Liaoning, Chine"
+  },
+  "CN-LN-DDG": {
+    "en": "Dandong Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,丹东市",
+    "de": "Stadt Dandong, Provinz Liaoning, China",
+    "fr": "Dandong, Liaoning, Chine"
+  },
+  "CN-LN-DLC": {
+    "en": "Dalian Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,大连市",
+    "de": "Stadt Dalian, Provinz Liaoning, China",
+    "fr": "Dalian, Liaoning, Chine"
+  },
+  "CN-LN-FSN": {
+    "en": "Fushun Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,抚顺市",
+    "de": "Stadt Fushun, Provinz Liaoning, China",
+    "fr": "Fushun, Liaoning, Chine"
+  },
+  "CN-LN-FXS": {
+    "en": "Fuxin Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,阜新市",
+    "de": "Stadt Fuxin, Provinz Liaoning, China",
+    "fr": "Fuxin, Liaoning, Chine"
+  },
+  "CN-LN-HLD": {
+    "en": "Huludao Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,葫芦岛市",
+    "de": "Stadt Huludao, Provinz Liaoning, China",
+    "fr": "Huludao, Liaoning, Chine"
+  },
+  "CN-LN-JNZ": {
+    "en": "Jinzhou Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,锦州市",
+    "de": "Stadt Jinzhou, Provinz Liaoning, China",
+    "fr": "Jinzhou, Liaoning, Chine"
+  },
+  "CN-LN-LYL": {
+    "en": "Liaoyang Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,辽阳市",
+    "de": "Stadt Liaoyang, Provinz Liaoning, China",
+    "fr": "Liaoyang, Liaoning, Chine"
+  },
+  "CN-LN-PJS": {
+    "en": "Panjin Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,盘锦市",
+    "de": "Stadt Panjin, Provinz Liaoning, China",
+    "fr": "Panjin, Liaoning, Chine"
+  },
+  "CN-LN-SHE": {
+    "en": "Shenyang Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,沈阳市",
+    "de": "Stadt Shenyang, Provinz Liaoning, China",
+    "fr": "Shenyang, Liaoning, Chine"
+  },
+  "CN-LN-TLS": {
+    "en": "Tieling Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,铁岭市",
+    "de": "Stadt Tieling, Provinz Liaoning, China",
+    "fr": "Tieling, Liaoning, Chine"
+  },
+  "CN-LN-YIK": {
+    "en": "Yingkou Shi,Liaoning Sheng,China",
+    "zh-CN": "中国,辽宁省,营口市",
+    "de": "Stadt Yingkou, Provinz Liaoning, China",
+    "fr": "Yingkou, Liaoning, Chine"
+  },
+  "CN-NM": {
+    "en": "Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区",
+    "de": "Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Région autonome de Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-ALM": {
+    "en": "Alxa Meng,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,阿拉善盟",
+    "de": "Bund Alxa, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Ligue d'Alxa, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-BTS": {
+    "en": "Baotou Shi,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,包头市",
+    "de": "Stadt Baotou, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Baotou, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-BYR": {
+    "en": "Bayannur Shi,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,巴彦淖尔市",
+    "de": "Stadt Bayannur, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Bayannur, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-CFS": {
+    "en": "Chifeng(Ulanhad)Shi,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,赤峰（乌兰哈达）市",
+    "de": "Stadt Chifeng (Ulanhad), Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Chifeng (Ulanhad), Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-HBR": {
+    "en": "Hulun Buir Shi,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,呼伦贝尔市",
+    "de": "Stadt Hulun Buir, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Hulun Buir, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-HET": {
+    "en": "Hohhot Shi,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,呼和浩特市",
+    "de": "Stadt Hohhot, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Hohhot, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-HIN": {
+    "en": "Hinggan Meng,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,兴安盟",
+    "de": "Bund Hinggan, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Ligue de Hinggan, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-ODS": {
+    "en": "Ordos Shi,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,鄂尔多斯市",
+    "de": "Stadt Ordos, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Ordos, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-TLO": {
+    "en": "Tongliao Shi,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,通辽市",
+    "de": "Stadt Tongliao, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Tongliao, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-ULS": {
+    "en": "Ulanqab Shi,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,乌兰察布市",
+    "de": "Stadt Ulanqab, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Ulanqab, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-WHM": {
+    "en": "Wuhai Shi,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,乌海市",
+    "de": "Stadt Wuhai, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Wuhai, Mongolie-Intérieure, Chine"
+  },
+  "CN-NM-XGO": {
+    "en": "Xilin Gol Meng,Nei Mongol Zizhiqu,China",
+    "zh-CN": "中国,内蒙古自治区,锡林郭勒盟",
+    "de": "Bund Xilin Gol, Autonomes Gebiet Innere Mongolei, China",
+    "fr": "Ligue de Xilin Gol, Mongolie-Intérieure, Chine"
+  },
+  "CN-NX": {
+    "en": "Ningxia Huizu Zizhiqu,China",
+    "zh-CN": "中国,宁夏回族自治区",
+    "de": "Autonomes Gebiet Ningxia der Hui, China",
+    "fr": "Région autonome hui du Ningxia, Chine"
+  },
+  "CN-NX-GYN": {
+    "en": "Guyuan Shi,Ningxia Huizu Zizhiqu,China",
+    "zh-CN": "中国,宁夏回族自治区,固原市",
+    "de": "Stadt Guyuan, Autonomes Gebiet Ningxia der Hui, China",
+    "fr": "Guyuan, région autonome hui du Ningxia, Chine"
+  },
+  "CN-NX-INC": {
+    "en": "Yinchuan Shi,Ningxia Huizu Zizhiqu,China",
+    "zh-CN": "中国,宁夏回族自治区,银川市",
+    "de": "Stadt Yinchuan, Autonomes Gebiet Ningxia der Hui, China",
+    "fr": "Yinchuan, région autonome hui du Ningxia, Chine"
+  },
+  "CN-NX-SZS": {
+    "en": "Shizuishan Shi,Ningxia Huizu Zizhiqu,China",
+    "zh-CN": "中国,宁夏回族自治区,石嘴山市",
+    "de": "Stadt Shizuishan, Autonomes Gebiet Ningxia der Hui, China",
+    "fr": "Shizuishan, région autonome hui du Ningxia, Chine"
+  },
+  "CN-NX-WZS": {
+    "en": "Wuzhong Shi,Ningxia Huizu Zizhiqu,China",
+    "zh-CN": "中国,宁夏回族自治区,吴忠市",
+    "de": "Stadt Wuzhong, Autonomes Gebiet Ningxia der Hui, China",
+    "fr": "Wuzhong, région autonome hui du Ningxia, Chine"
+  },
+  "CN-NX-ZWS": {
+    "en": "Zhongwei Shi,Ningxia Huizu Zizhiqu,China",
+    "zh-CN": "中国,宁夏回族自治区,中卫市",
+    "de": "Stadt Zhongwei, Autonomes Gebiet Ningxia der Hui, China",
+    "fr": "Zhongwei, région autonome hui du Ningxia, Chine"
+  },
+  "CN-QH": {
+    "en": "Qinghai Sheng,China",
+    "zh-CN": "中国,青海省",
+    "de": "Provinz Qinghai, China",
+    "fr": "Qinghai, Chine"
+  },
+  "CN-QH-GOL": {
+    "en": "Golog Zangzu Zizhizhou,Qinghai Sheng,China",
+    "zh-CN": "中国,青海省,果洛藏族自治州",
+    "de": "Autonomer Bezirk Golog der Tibeter, Provinz Qinghai, China",
+    "fr": "Préfecture autonome tibétaine de Golog, Qinghai, Chine"
+  },
+  "CN-QH-HBZ": {
+    "en": "Haibei Zangzu Zizhizhou,Qinghai Sheng,China",
+    "zh-CN": "中国,青海省,海北藏族自治州",
+    "de": "Autonomer Bezirk Haibei der Tibeter, Provinz Qinghai, China",
+    "fr": "Préfecture autonome tibétaine de Haibei, Qinghai, Chine"
+  },
+  "CN-QH-HDD": {
+    "en": "Haidong Diqu,Qinghai Sheng,China",
+    "zh-CN": "中国,青海省,海东地区",
+    "de": "Bezirk Haidong, Provinz Qinghai, China",
+    "fr": "Préfecture de Haidong, Qinghai, Chine"
+  },
+  "CN-QH-HN7": {
+    "en": "Huangnan Zangzu Zizhizhou,Qinghai Sheng,China",
+    "zh-CN": "中国,青海省,黄南藏族自治州",
+    "de": "Autonomer Bezirk Huangnan der Tibeter, Provinz Qinghai, China",
+    "fr": "Préfecture autonome tibétaine de Huangnan, Qinghai, Chine"
+  },
+  "CN-QH-HNN": {
+    "en": "Hainan Zangzu Zizhizhou,Qinghai Sheng,China",
+    "zh-CN": "中国,青海省,海南藏族自治州",
+    "de": "Autonomer Bezirk Hainan der Tibeter, Provinz Qinghai, China",
+    "fr": "Préfecture autonome tibétaine de Hainan, Qinghai, Chine"
+  },
+  "CN-QH-HXZ": {
+    "en": "Haixi Mongolzu Zangzu Zizhizhou,Qinghai Sheng,China",
+    "zh-CN": "中国,青海省,海西蒙古族藏族自治州",
+    "de": "Autonomer Bezirk Haixi der Mongolen und Tibeter, Provinz Qinghai, China",
+    "fr": "Préfecture autonome mongole et tibétaine de Haixi, Qinghai, Chine"
+  },
+  "CN-QH-XNN": {
+    "en": "Xining Shi,Qinghai Sheng,China",
+    "zh-CN": "中国,青海省,西宁市",
+    "de": "Stadt Xining, Provinz Qinghai, China",
+    "fr": "Xining, Qinghai, Chine"
+  },
+  "CN-QH-YSZ": {
+    "en": "Yushu Zangzu Zizhizhou,Qinghai Sheng,China",
+    "zh-CN": "中国,青海省,玉树藏族自治州",
+    "de": "Autonomer Bezirk Yushu der Tibeter, Provinz Qinghai, China",
+    "fr": "Préfecture autonome tibétaine de Yushu, Qinghai, Chine"
+  },
+  "CN-SC": {
+    "en": "Sichuan Sheng,China",
+    "zh-CN": "中国,四川省",
+    "de": "Provinz Sichuan, China",
+    "fr": "Sichuan, Chine"
+  },
+  "CN-SC-ABA": {
+    "en": "Aba(Ngawa)Zangzu Qiangzu Zizhizhou,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,阿坝藏族羌族自治州",
+    "de": "Autonomer Bezirk Aba der Tibeter und Qiang, Provinz Sichuan, China",
+    "fr": "Préfecture autonome tibétaine et qiang d'Aba (Ngawa), Sichuan, Chine"
+  },
+  "CN-SC-BZS": {
+    "en": "Bazhong Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,巴中市",
+    "de": "Bazhong, Provinz Sichuan, China",
+    "fr": "Bazhong, Sichuan, Chine"
+  },
+  "CN-SC-CTU": {
+    "en": "Chengdu Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,成都市",
+    "de": "Chengdu, Provinz Sichuan, China",
+    "fr": "Chengdu, Sichuan, Chine"
+  },
+  "CN-SC-DAZ": {
+    "en": "Dazhou Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,达州市",
+    "de": "Dazhou, Provinz Sichuan, China",
+    "fr": "Dazhou, Sichuan, Chine"
+  },
+  "CN-SC-DEY": {
+    "en": "Deyang Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,德阳市",
+    "de": "Deyang, Provinz Sichuan, China",
+    "fr": "Deyang, Sichuan, Chine"
+  },
+  "CN-SC-GAC": {
+    "en": "Guang'an Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,广安市",
+    "de": "Guang'an, Provinz Sichuan, China",
+    "fr": "Guang'an, Sichuan, Chine"
+  },
+  "CN-SC-GAZ": {
+    "en": "Garzê Zangzu Zizhizhou,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,甘孜藏族自治州",
+    "de": "Autonomer Bezirk Garzê der Tibeter, Provinz Sichuan, China",
+    "fr": "Préfecture autonome tibétaine de Garzê, Sichuan, Chine"
+  },
+  "CN-SC-GYC": {
+    "en": "Guangyuan Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,广元市",
+    "de": "Guangyuan, Provinz Sichuan, China",
+    "fr": "Guangyuan, Sichuan, Chine"
+  },
+  "CN-SC-LES": {
+    "en": "Leshan Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,乐山市",
+    "de": "Leshan, Provinz Sichuan, China",
+    "fr": "Leshan, Sichuan, Chine"
+  },
+  "CN-SC-LSY": {
+    "en": "Liangshan Yizu Zizhizhou,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,凉山彝族自治州",
+    "de": "Autonomer Bezirk Liangshan der Yi, Provinz Sichuan, China",
+    "fr": "Préfecture autonome yi de Liangshan, Sichuan, Chine"
+  },
+  "CN-SC-LUZ": {
+    "en": "Luzhou Sh,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,泸州市",
+    "de": "Luzhou, Provinz Sichuan, China",
+    "fr": "Luzhou, Sichuan, Chine"
+  },
+  "CN-SC-MSS": {
+    "en": "Meishan Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,眉山市",
+    "de": "Meishan, Provinz Sichuan, China",
+    "fr": "Meishan, Sichuan, Chine"
+  },
+  "CN-SC-MYG": {
+    "en": "Mianyang Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,绵阳市",
+    "de": "Mianyang, Provinz Sichuan, China",
+    "fr": "Mianyang, Sichuan, Chine"
+  },
+  "CN-SC-NCO": {
+    "en": "Nanchong Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,南充市",
+    "de": "Nanchong, Provinz Sichuan, China",
+    "fr": "Nanchong, Sichuan, Chine"
+  },
+  "CN-SC-NJS": {
+    "en": "Neijiang Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,内江市",
+    "de": "Neijiang, Provinz Sichuan, China",
+    "fr": "Neijiang, Sichuan, Chine"
+  },
+  "CN-SC-PZH": {
+    "en": "Panzhihua Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,攀枝花市",
+    "de": "Panzhihua, Provinz Sichuan, China",
+    "fr": "Panzhihua, Sichuan, Chine"
+  },
+  "CN-SC-SNS": {
+    "en": "Suining Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,遂宁市",
+    "de": "Suining, Provinz Sichuan, China",
+    "fr": "Suining, Sichuan, Chine"
+  },
+  "CN-SC-YAS": {
+    "en": "Ya'an Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,雅安市",
+    "de": "Ya'an, Provinz Sichuan, China",
+    "fr": "Ya'an, Sichuan, Chine"
+  },
+  "CN-SC-YBS": {
+    "en": "Yibin Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,宜宾市",
+    "de": "Yibin, Provinz Sichuan, China",
+    "fr": "Yibin, Sichuan, Chine"
+  },
+  "CN-SC-ZGS": {
+    "en": "Zigong Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,自贡市",
+    "de": "Zigong, Provinz Sichuan, China",
+    "fr": "Zigong, Sichuan, Chine"
+  },
+  "CN-SC-ZYS": {
+    "en": "Ziyang Shi,Sichuan Sheng,China",
+    "zh-CN": "中国,四川省,资阳市",
+    "de": "Ziyang, Provinz Sichuan, China",
+    "fr": "Ziyang, Sichuan, Chine"
+  },
+  "CN-SD": {
+    "en": "Shandong Sheng,China",
+    "zh-CN": "中国,山东省",
+    "de": "Provinz Shandong, China",
+    "fr": "Shandong, Chine"
+  },
+  "CN-SD-BZH": {
+    "en": "Binzhou Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,滨州市",
+    "de": "Binzhou Shi, Provinz Shandong, China",
+    "fr": "Binzhou, Shandong, Chine"
+  },
+  "CN-SD-DYG": {
+    "en": "Dongying Sh,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,东营市",
+    "de": "Dongying Sh, Provinz Shandong, China",
+    "fr": "Dongying, Shandong, Chine"
+  },
+  "CN-SD-DZS": {
+    "en": "Dezhou Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,德州市",
+    "de": "Dezhou Shi, Provinz Shandong, China",
+    "fr": "Dezhou, Shandong, Chine"
+  },
+  "CN-SD-HZS": {
+    "en": "Heze Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,菏泽市",
+    "de": "Heze Shi, Provinz Shandong, China",
+    "fr": "Heze, Shandong, Chine"
+  },
+  "CN-SD-JNG": {
+    "en": "Jining Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,济宁市",
+    "de": "Jining Shi, Provinz Shandong, China",
+    "fr": "Jining, Shandong, Chine"
+  },
+  "CN-SD-LCH": {
+    "en": "Liaocheng Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,聊城市",
+    "de": "Liaocheng Shi, Provinz Shandong, China",
+    "fr": "Liaocheng, Shandong, Chine"
+  },
+  "CN-SD-LWS": {
+    "en": "Laiwu Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,莱芜市",
+    "de": "Laiwu Shi, Provinz Shandong, China",
+    "fr": "Laiwu, Shandong, Chine"
+  },
+  "CN-SD-LYI": {
+    "en": "Linyi Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,临沂市",
+    "de": "Linyi Shi, Provinz Shandong, China",
+    "fr": "Linyi, Shandong, Chine"
+  },
+  "CN-SD-RZH": {
+    "en": "Rizhao Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,日照市",
+    "de": "Rizhao Shi, Provinz Shandong, China",
+    "fr": "Rizhao, Shandong, Chine"
+  },
+  "CN-SD-TAI": {
+    "en": "Tai'an Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,泰安市",
+    "de": "Tai'an Shi, Provinz Shandong, China",
+    "fr": "Tai'an, Shandong, Chine"
+  },
+  "CN-SD-TAO": {
+    "en": "Qingdao Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,青岛市",
+    "de": "Qingdao Shi, Provinz Shandong, China",
+    "fr": "Qingdao, Shandong, Chine"
+  },
+  "CN-SD-TNA": {
+    "en": "Jinan Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,济南市",
+    "de": "Jinan Shi, Provinz Shandong, China",
+    "fr": "Jinan, Shandong, Chine"
+  },
+  "CN-SD-WEF": {
+    "en": "Weifang Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,潍坊市",
+    "de": "Weifang Shi, Provinz Shandong, China",
+    "fr": "Weifang, Shandong, Chine"
+  },
+  "CN-SD-WEH": {
+    "en": "Weihai Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,威海市",
+    "de": "Weihai Shi, Provinz Shandong, China",
+    "fr": "Weihai, Shandong, Chine"
+  },
+  "CN-SD-YNT": {
+    "en": "Yantai Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,烟台市",
+    "de": "Yantai Shi, Provinz Shandong, China",
+    "fr": "Yantai, Shandong, Chine"
+  },
+  "CN-SD-ZBO": {
+    "en": "Zibo Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,淄博市",
+    "de": "Zibo Shi, Provinz Shandong, China",
+    "fr": "Zibo, Shandong, Chine"
+  },
+  "CN-SD-ZZG": {
+    "en": "Zaozhuang Shi,Shandong Sheng,China",
+    "zh-CN": "中国,山东省,枣庄市",
+    "de": "Zaozhuang Shi, Provinz Shandong, China",
+    "fr": "Zaozhuang, Shandong, Chine"
+  },
+  "CN-SH": {
+    "en": "Shanghai Shi,China",
+    "zh-CN": "中国,上海市",
+    "de": "Stadt Shanghai, China",
+    "fr": "Shanghai, Chine"
+  },
+  "CN-SN": {
+    "en": "Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省",
+    "de": "Provinz Shaanxi, China",
+    "fr": "Shaanxi, Chine"
+  },
+  "CN-SN-ANK": {
+    "en": "Ankang Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,安康市",
+    "de": "Ankang, Provinz Shaanxi, China",
+    "fr": "Ankang, Shaanxi, Chine"
+  },
+  "CN-SN-BJI": {
+    "en": "Baoji Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,宝鸡市",
+    "de": "Baoji, Provinz Shaanxi, China",
+    "fr": "Baoji, Shaanxi, Chine"
+  },
+  "CN-SN-HZJ": {
+    "en": "Hanzhong Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,汉中市",
+    "de": "Hanzhong, Provinz Shaanxi, China",
+    "fr": "Hanzhong, Shaanxi, Chine"
+  },
+  "CN-SN-SIA": {
+    "en": "Xi'an Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,西安市",
+    "de": "Xi'an, Provinz Shaanxi, China",
+    "fr": "Xi'an, Shaanxi, Chine"
+  },
+  "CN-SN-SLH": {
+    "en": "Shangluo Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,商洛市",
+    "de": "Shangluo, Provinz Shaanxi, China",
+    "fr": "Shangluo, Shaanxi, Chine"
+  },
+  "CN-SN-TCN": {
+    "en": "Tongchuan Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,铜川市",
+    "de": "Tongchuan, Provinz Shaanxi, China",
+    "fr": "Tongchuan, Shaanxi, Chine"
+  },
+  "CN-SN-WNA": {
+    "en": "Weinan Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,渭南市",
+    "de": "Weinan, Provinz Shaanxi, China",
+    "fr": "Weinan, Shaanxi, Chine"
+  },
+  "CN-SN-XYS": {
+    "en": "Xianyang Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,咸阳市",
+    "de": "Xianyang, Provinz Shaanxi, China",
+    "fr": "Xianyang, Shaanxi, Chine"
+  },
+  "CN-SN-YLN": {
+    "en": "Yulin Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,榆林市",
+    "de": "Yulin, Provinz Shaanxi, China",
+    "fr": "Yulin, Shaanxi, Chine"
+  },
+  "CN-SN-YNA": {
+    "en": "Yan'an Shi,Shaanxi Sheng,China",
+    "zh-CN": "中国,陕西省,延安市",
+    "de": "Yan'an, Provinz Shaanxi, China",
+    "fr": "Yan'an, Shaanxi, Chine"
+  },
+  "CN-SX": {
+    "en": "Shanxi Sheng,China",
+    "zh-CN": "中国,山西省",
+    "de": "Shanxi-Provinz, China",
+    "fr": "Shanxi, Chine"
+  },
+  "CN-SX-CZS": {
+    "en": "Changzhi Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,长治市",
+    "de": "Changzhi Shi, Shanxi-Provinz, China",
+    "fr": "Changzhi, Shanxi, Chine"
+  },
+  "CN-SX-DTG": {
+    "en": "Datong Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,大同市",
+    "de": "Datong Shi, Shanxi-Provinz, China",
+    "fr": "Datong, Shanxi, Chine"
+  },
+  "CN-SX-JCG": {
+    "en": "Jincheng Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,晋城市",
+    "de": "Jincheng Shi, Shanxi-Provinz, China",
+    "fr": "Jincheng, Shanxi, Chine"
+  },
+  "CN-SX-JZN": {
+    "en": "Jinzhong Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,晋中市",
+    "de": "Stadt Jinzhong, Provinz Shanxi, China",
+    "fr": "Jinzhong, Shanxi, Chine"
+  },
+  "CN-SX-LFN": {
+    "en": "Linfen Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,临汾市",
+    "de": "Stadt Linfen, Provinz Shanxi, China",
+    "fr": "Linfen, Shanxi, Chine"
+  },
+  "CN-SX-LLH": {
+    "en": "Lüliang Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,吕梁市",
+    "de": "Stadt Lüliang, Provinz Shanxi, China",
+    "fr": "Lüliang, Shanxi, Chine"
+  },
+  "CN-SX-SZJ": {
+    "en": "Shuozhou Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,朔州市",
+    "de": "Stadt Shuozhou, Provinz Shanxi, China",
+    "fr": "Shuozhou, Shanxi, Chine"
+  },
+  "CN-SX-TYN": {
+    "en": "Taiyuan Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,太原市",
+    "de": "Taiyuan Shi, Shanxi-Provinz, China",
+    "fr": "Taiyuan, Shanxi, Chine"
+  },
+  "CN-SX-XZS": {
+    "en": "Xinzhou Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,忻州市",
+    "de": "Stadt Xinzhou, Provinz Shanxi, China",
+    "fr": "Xinzhou, Shanxi, Chine"
+  },
+  "CN-SX-YCE": {
+    "en": "Yuncheng Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,运城市",
+    "de": "Stadt Yuncheng, Provinz Shanxi, China",
+    "fr": "Yuncheng, Shanxi, Chine"
+  },
+  "CN-SX-YQS": {
+    "en": "Yangquan Shi,Shanxi Sheng,China",
+    "zh-CN": "中国,山西省,阳泉市",
+    "de": "Yangquan Shi, Shanxi-Provinz, China",
+    "fr": "Yangquan, Shanxi, Chine"
+  },
+  "CN-TJ": {
+    "en": "Tianjin Shi,China",
+    "zh-CN": "中国,天津市",
+    "de": "Tianjin Shi, China",
+    "fr": "Tianjin, Chine"
+  },
+  "CN-XJ": {
+    "en": "Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区",
+    "de": "Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-AKD": {
+    "en": "Aksu Diqu,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,阿克苏地区",
+    "de": "Bezirk Aksu, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture d’Aksu, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-ALD": {
+    "en": "Altay Diqu,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,阿勒泰地区",
+    "de": "Bezirk Altay, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture d’Altay, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-BAG": {
+    "en": "Bayingolin Mongol Zizhizhou,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,巴音郭楞蒙古自治州",
+    "de": "Autonomer Bezirk Bayingolin der Mongolen, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture autonome mongole de Bayingolin, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-BOR": {
+    "en": "Bortala Mongol Zizhizhou,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,博尔塔拉蒙古自治州",
+    "de": "Autonomer Bezirk Bortala der Mongolen, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture autonome mongole de Bortala, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-CJZ": {
+    "en": "Changji Huizu Zizhizhou,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,昌吉回族自治州",
+    "de": "Autonomer Bezirk Changji der Hui, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture autonome hui de Changji, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-HMD": {
+    "en": "Hami(Kumul)Diqu,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,哈密（库木勒）地区",
+    "de": "Bezirk Hami (Kumul), Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture de Hami (Kumul), région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-HOD": {
+    "en": "Hotan Diqu,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,和田地区",
+    "de": "Bezirk Hotan, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture de Hotan, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-ILD": {
+    "en": "Ili Kazak Zizhizhou,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,伊犁哈萨克自治州",
+    "de": "Autonomer Bezirk Ili der Kasachen, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture autonome kazakhe d’Ili, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-KAR": {
+    "en": "Karamay Shi,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,克拉玛依市",
+    "de": "Stadt Karamay, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Karamay, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-KIZ": {
+    "en": "Kizilsu Kirgiz Zizhizhou,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,克孜勒苏柯尔克孜自治州",
+    "de": "Autonomer Bezirk Kizilsu der Kirgisen, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture autonome kirghize de Kizilsu, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-KSI": {
+    "en": "Kashi(Kaxgar)Diqu,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,喀什（喀什噶尔）地区",
+    "de": "Bezirk Kashi (Kaxgar), Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture de Kashi (Kaxgar), région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-TCD": {
+    "en": "Tacheng(Qoqek)Diqu,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,塔城（绰乔克）地区",
+    "de": "Bezirk Tacheng (Qoqek), Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture de Tacheng (Qoqek), région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-TUD": {
+    "en": "Turpan Diqu,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,吐鲁番地区",
+    "de": "Bezirk Turpan, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Préfecture de Turpan, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XJ-URC": {
+    "en": "Urümqi  Shi,Xinjiang Uygur Zizhiqu,China",
+    "zh-CN": "中国,新疆维吾尔自治区,乌鲁木齐市",
+    "de": "Stadt Urümqi, Autonomes Gebiet Xinjiang der Uiguren, China",
+    "fr": "Ürümqi, région autonome ouïghoure du Xinjiang, Chine"
+  },
+  "CN-XZ": {
+    "en": "Xizang Zizhiqu,China",
+    "zh-CN": "中国,西藏自治区",
+    "de": "Autonomes Gebiet Tibet, China",
+    "fr": "Région autonome du Tibet, Chine"
+  },
+  "CN-XZ-LXA": {
+    "en": "Lhasa Shi,Xizang Zizhiqu,China",
+    "zh-CN": "中国,西藏自治区,拉萨市",
+    "de": "Lhasa, Autonomes Gebiet Tibet, China",
+    "fr": "Lhassa, région autonome du Tibet, Chine"
+  },
+  "CN-XZ-NAD": {
+    "en": "Nagqu Diqu,Xizang Zizhiqu,China",
+    "zh-CN": "中国,西藏自治区,那曲地区",
+    "de": "Bezirk Nagqu, Autonomes Gebiet Tibet, China",
+    "fr": "District de Nagqu, région autonome du Tibet, Chine"
+  },
+  "CN-XZ-NGD": {
+    "en": "Ngari Diqu,Xizang Zizhiqu,China",
+    "zh-CN": "中国,西藏自治区,阿里地区",
+    "de": "Bezirk Ngari, Autonomes Gebiet Tibet, China",
+    "fr": "District de Ngari, région autonome du Tibet, Chine"
+  },
+  "CN-XZ-NYD": {
+    "en": "Nyingchi Diqu,Xizang Zizhiqu,China",
+    "zh-CN": "中国,西藏自治区,林芝地区",
+    "de": "Bezirk Nyingchi, Autonomes Gebiet Tibet, China",
+    "fr": "District de Nyingchi, région autonome du Tibet, Chine"
+  },
+  "CN-XZ-QAD": {
+    "en": "Qamdo Diqu,Xizang Zizhiqu,China",
+    "zh-CN": "中国,西藏自治区,昌都地区",
+    "de": "Bezirk Qamdo, Autonomes Gebiet Tibet, China",
+    "fr": "District de Qamdo, région autonome du Tibet, Chine"
+  },
+  "CN-XZ-SND": {
+    "en": "Shannan Diqu,Xizang Zizhiqu,China",
+    "zh-CN": "中国,西藏自治区,山南地区",
+    "de": "Bezirk Shannan, Autonomes Gebiet Tibet, China",
+    "fr": "District de Shannan, région autonome du Tibet, Chine"
+  },
+  "CN-XZ-XID": {
+    "en": "Xigaze Diqu,Xizang Zizhiqu,China",
+    "zh-CN": "中国,西藏自治区,日喀则地区",
+    "de": "Bezirk Xigaze, Autonomes Gebiet Tibet, China",
+    "fr": "District de Xigaze, région autonome du Tibet, Chine"
+  },
+  "CN-YN": {
+    "en": "Yunnan Sheng,China",
+    "zh-CN": "中国,云南省",
+    "de": "Provinz Yunnan, China",
+    "fr": "Yunnan, Chine"
+  },
+  "CN-YN-BOS": {
+    "en": "Baoshan Shi,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,保山市",
+    "de": "Baoshan, Provinz Yunnan, China",
+    "fr": "Baoshan, Yunnan, Chine"
+  },
+  "CN-YN-CXD": {
+    "en": "Chuxiong Yizu Zizhizhou,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,楚雄彝族自治州",
+    "de": "Autonomer Bezirk Chuxiong der Yi, Provinz Yunnan, China",
+    "fr": "Préfecture autonome yi de Chuxiong, Yunnan, Chine"
+  },
+  "CN-YN-DEZ": {
+    "en": "Deqên Zangzu Zizhizhou,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,迪庆藏族自治州",
+    "de": "Autonomer Bezirk Deqên der Tibeter, Provinz Yunnan, China",
+    "fr": "Préfecture autonome tibétaine de Deqên, Yunnan, Chine"
+  },
+  "CN-YN-DHG": {
+    "en": "Dehong Daizu Jingpozu Zizhizhou,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,德宏傣族景颇族自治州",
+    "de": "Autonomer Bezirk Dehong der Dai und Jingpo, Provinz Yunnan, China",
+    "fr": "Préfecture autonome dai et jingpo de Dehong, Yunnan, Chine"
+  },
+  "CN-YN-DLZ": {
+    "en": "Dali Baizu Zizhizhou,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,大理白族自治州",
+    "de": "Autonomer Bezirk Dali der Bai, Provinz Yunnan, China",
+    "fr": "Préfecture autonome bai de Dali, Yunnan, Chine"
+  },
+  "CN-YN-HHZ": {
+    "en": "Honghe Hanizu Yizu Zizhizhou,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,红河哈尼族彝族自治州",
+    "de": "Autonomer Bezirk Honghe der Hani und Yi, Provinz Yunnan, China",
+    "fr": "Préfecture autonome hani et yi de Honghe, Yunnan, Chine"
+  },
+  "CN-YN-KMG": {
+    "en": "Kunming Shi,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,昆明市",
+    "de": "Kunming, Provinz Yunnan, China",
+    "fr": "Kunming, Yunnan, Chine"
+  },
+  "CN-YN-LIH": {
+    "en": "Lincang Shi,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,临沧市",
+    "de": "Lincang, Provinz Yunnan, China",
+    "fr": "Lincang, Yunnan, Chine"
+  },
+  "CN-YN-LJH": {
+    "en": "Lijiang Shi,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,丽江市",
+    "de": "Lijiang, Provinz Yunnan, China",
+    "fr": "Lijiang, Yunnan, Chine"
+  },
+  "CN-YN-NUJ": {
+    "en": "Nujiang Lisuzu Zizhizhou,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,怒江傈僳族自治州",
+    "de": "Autonomer Bezirk Nujiang der Lisu, Provinz Yunnan, China",
+    "fr": "Préfecture autonome lisu de Nujiang, Yunnan, Chine"
+  },
+  "CN-YN-PRS": {
+    "en": "Pu'er Shi,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,普洱市",
+    "de": "Pu'er, Provinz Yunnan, China",
+    "fr": "Pu'er, Yunnan, Chine"
+  },
+  "CN-YN-QJS": {
+    "en": "Qujing Shi,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,曲靖市",
+    "de": "Qujing, Provinz Yunnan, China",
+    "fr": "Qujing, Yunnan, Chine"
+  },
+  "CN-YN-WSZ": {
+    "en": "Wenshan Zhuangzu Miaozu Zizhizhou,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,文山壮族苗族自治州",
+    "de": "Autonomer Bezirk Wenshan der Zhuang und Miao, Provinz Yunnan, China",
+    "fr": "Préfecture autonome zhuang et miao de Wenshan, Yunnan, Chine"
+  },
+  "CN-YN-XSB": {
+    "en": "Xishuangbanna Daizu Zizhizhou,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,西双版纳傣族自治州",
+    "de": "Autonomer Bezirk Xishuangbanna der Dai, Provinz Yunnan, China",
+    "fr": "Préfecture autonome dai de Xishuangbanna, Yunnan, Chine"
+  },
+  "CN-YN-YXS": {
+    "en": "Yuxi Shi,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,玉溪市",
+    "de": "Yuxi, Provinz Yunnan, China",
+    "fr": "Yuxi, Yunnan, Chine"
+  },
+  "CN-YN-ZTS": {
+    "en": "Zhaotong Shi,Yunnan Sheng,China",
+    "zh-CN": "中国,云南省,昭通市",
+    "de": "Zhaotong, Provinz Yunnan, China",
+    "fr": "Zhaotong, Yunnan, Chine"
+  },
+  "CN-ZJ": {
+    "en": "Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省",
+    "de": "Provinz Zhejiang, China",
+    "fr": "Zhejiang, Chine"
+  },
+  "CN-ZJ-HGH": {
+    "en": "Hangzhou Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,杭州市",
+    "de": "Stadt Hangzhou, Provinz Zhejiang, China",
+    "fr": "Hangzhou, Zhejiang, Chine"
+  },
+  "CN-ZJ-HZH": {
+    "en": "Huzhou Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,湖州市",
+    "de": "Stadt Huzhou, Provinz Zhejiang, China",
+    "fr": "Huzhou, Zhejiang, Chine"
+  },
+  "CN-ZJ-JHA": {
+    "en": "Jinhua Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,金华市",
+    "de": "Stadt Jinhua, Provinz Zhejiang, China",
+    "fr": "Jinhua, Zhejiang, Chine"
+  },
+  "CN-ZJ-JIX": {
+    "en": "Jiaxing Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,嘉兴市",
+    "de": "Stadt Jiaxing, Provinz Zhejiang, China",
+    "fr": "Jiaxing, Zhejiang, Chine"
+  },
+  "CN-ZJ-LSS": {
+    "en": "Lishui Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,丽水市",
+    "de": "Stadt Lishui, Provinz Zhejiang, China",
+    "fr": "Lishui, Zhejiang, Chine"
+  },
+  "CN-ZJ-NGB": {
+    "en": "Ningbo Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,宁波市",
+    "de": "Stadt Ningbo, Provinz Zhejiang, China",
+    "fr": "Ningbo, Zhejiang, Chine"
+  },
+  "CN-ZJ-QUZ": {
+    "en": "Quzhou Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,衢州市",
+    "de": "Stadt Quzhou, Provinz Zhejiang, China",
+    "fr": "Quzhou, Zhejiang, Chine"
+  },
+  "CN-ZJ-SXG": {
+    "en": "Shaoxing Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,绍兴市",
+    "de": "Stadt Shaoxing, Provinz Zhejiang, China",
+    "fr": "Shaoxing, Zhejiang, Chine"
+  },
+  "CN-ZJ-TZZ": {
+    "en": "Taizhou Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,台州市",
+    "de": "Stadt Taizhou, Provinz Zhejiang, China",
+    "fr": "Taizhou, Zhejiang, Chine"
+  },
+  "CN-ZJ-WNZ": {
+    "en": "Wenzhou Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,温州市",
+    "de": "Stadt Wenzhou, Provinz Zhejiang, China",
+    "fr": "Wenzhou, Zhejiang, Chine"
+  },
+  "CN-ZJ-ZOS": {
+    "en": "Zhoushan Shi,Zhejiang Sheng,China",
+    "zh-CN": "中国,浙江省,舟山市",
+    "de": "Stadt Zhoushan, Provinz Zhejiang, China",
+    "fr": "Zhoushan, Zhejiang, Chine"
+  },
+  "CO": {
+    "en": "Colombia",
+    "zh-CN": "哥伦比亚",
+    "de": "Kolumbien",
+    "fr": "Colombie"
+  },
+  "CPA": {
+    "en": "Centrally Planned Asia and China",
+    "zh-CN": "中央计划亚洲和中国",
+    "de": "Zentral geplantes Asien und China",
+    "fr": "Asie à économie planifiée et Chine"
+  },
+  "CR": {
+    "en": "Costa Rica",
+    "zh-CN": "哥斯达黎加",
+    "de": "Costa Rica",
+    "fr": "Costa Rica"
+  },
+  "CU": { "en": "Cuba", "zh-CN": "古巴", "de": "Kuba", "fr": "Cuba" },
+  "CV": {
+    "en": "Cabo Verde",
+    "zh-CN": "佛得角",
+    "de": "Cabo Verde",
+    "fr": "Cabo Verde"
+  },
+  "CW": {
+    "en": "Curaçao",
+    "zh-CN": "库拉索",
+    "de": "Curaçao",
+    "fr": "Curaçao"
+  },
+  "CX": {
+    "en": "Christmas Island",
+    "zh-CN": "圣诞岛",
+    "de": "Weihnachtsinsel",
+    "fr": "Île Christmas"
+  },
+  "CY": { "en": "Cyprus", "zh-CN": "塞浦路斯", "de": "Zypern", "fr": "Chypre" },
+  "CZ": {
+    "en": "Czechia",
+    "zh-CN": "捷克",
+    "de": "Tschechien",
+    "fr": "Tchéquie"
+  },
+  "DE": {
+    "en": "Germany",
+    "zh-CN": "德国",
+    "de": "Deutschland",
+    "fr": "Allemagne"
+  },
+  "DJ": {
+    "en": "Djibouti",
+    "zh-CN": "吉布提",
+    "de": "Dschibuti",
+    "fr": "Djibouti"
+  },
+  "DK": {
+    "en": "Denmark",
+    "zh-CN": "丹麦",
+    "de": "Dänemark",
+    "fr": "Danemark"
+  },
+  "DM": {
+    "en": "Dominica",
+    "zh-CN": "多米尼克",
+    "de": "Dominica",
+    "fr": "Dominique"
+  },
+  "DO": {
+    "en": "Dominican Republic",
+    "zh-CN": "多明尼加共和国",
+    "de": "Dominikanische Republik",
+    "fr": "République dominicaine"
+  },
+  "DZ": {
+    "en": "Algeria",
+    "zh-CN": "阿尔及利亚",
+    "de": "Algerien",
+    "fr": "Algérie"
+  },
+  "EAS": {
+    "en": "Eastern Asia",
+    "zh-CN": "东亚",
+    "de": "Ostasien",
+    "fr": "Asie de l'Est"
+  },
+  "EC": {
+    "en": "Ecuador",
+    "zh-CN": "厄瓜多尔",
+    "de": "Ecuador",
+    "fr": "Équateur"
+  },
+  "EC-CC": {
+    "en": "EU Candidate Countries 2005",
+    "zh-CN": "2005年欧盟候选国",
+    "de": "EU-Beitrittskandidaten 2005",
+    "fr": "Pays candidats à l'UE 2005"
+  },
+  "EE": {
+    "en": "Estonia",
+    "zh-CN": "爱沙尼亚",
+    "de": "Estland",
+    "fr": "Estonie"
+  },
+  "EEU": {
+    "en": "Central and Eastern Europe",
+    "zh-CN": "中欧和东欧",
+    "de": "Mittel- und Osteuropa",
+    "fr": "Europe centrale et orientale"
+  },
+  "EG": { "en": "Egypt", "zh-CN": "埃及", "de": "Ägypten", "fr": "Égypte" },
+  "EH": {
+    "en": "Western Sahara",
+    "zh-CN": "西撒哈拉",
+    "de": "Westsahara",
+    "fr": "Sahara occidental"
+  },
+  "ER": {
+    "en": "Eritrea",
+    "zh-CN": "厄立特里亚",
+    "de": "Eritrea",
+    "fr": "Érythrée"
+  },
+  "ES": { "en": "Spain", "zh-CN": "西班牙", "de": "Spanien", "fr": "Espagne" },
+  "ET": {
+    "en": "Ethiopia",
+    "zh-CN": "埃塞俄比亚",
+    "de": "Äthiopien",
+    "fr": "Éthiopie"
+  },
+  "EU-15": { "en": "EU 15", "zh-CN": "欧盟15国", "de": "EU 15", "fr": "UE 15" },
+  "EU-25": { "en": "EU 25", "zh-CN": "欧盟25国", "de": "EU 25", "fr": "UE 25" },
+  "EU-25&CC": {
+    "en": "EU 25 Plus Candidate Countries 2005",
+    "zh-CN": "欧盟25国加2005年候选国",
+    "de": "EU 25 plus Beitrittskandidaten 2005",
+    "fr": "UE 25 et pays candidats 2005"
+  },
+  "EU-25&CC&AC": {
+    "en": "EU 25 Plus Candidate Countries and Associated Countries 2005",
+    "zh-CN": "欧盟25国加2005年候选国及联系国",
+    "de": "EU 25 plus Beitrittskandidaten und assoziierte Länder 2005",
+    "fr": "UE 25, pays candidats et pays associés 2005"
+  },
+  "EU-27": { "en": "EU 27", "zh-CN": "欧盟27国", "de": "EU 27", "fr": "UE 27" },
+  "EU-AC": {
+    "en": "EU Associated Countries 2005",
+    "zh-CN": "2005年欧盟联系国",
+    "de": "Assoziierte EU-Länder 2005",
+    "fr": "Pays associés à l'UE 2005"
+  },
+  "EU-NMC": {
+    "en": "EU New Member Countries 2004",
+    "zh-CN": "2004年欧盟新成员国",
+    "de": "Neue EU-Mitgliedstaaten 2004",
+    "fr": "Nouveaux États membres de l'UE 2004"
+  },
+  "EU+EFTA+UK": {
+    "en": "complete EU",
+    "zh-CN": "完整欧盟",
+    "de": "Gesamte EU",
+    "fr": "UE complète"
+  },
+  "FI": {
+    "en": "Finland",
+    "zh-CN": "芬兰",
+    "de": "Finnland",
+    "fr": "Finlande"
+  },
+  "FJ": { "en": "Fiji", "zh-CN": "斐济", "de": "Fidschi", "fr": "Fidji" },
+  "FK": {
+    "en": "Falkland Islands (Malvinas)",
+    "zh-CN": "福克兰群岛",
+    "de": "Falklandinseln",
+    "fr": "Îles Falkland"
+  },
+  "FM": {
+    "en": "Micronesia (Federated States of)",
+    "zh-CN": "密克罗尼西亚",
+    "de": "Mikronesien",
+    "fr": "Micronésie"
+  },
+  "FO": {
+    "en": "Faroe Islands",
+    "zh-CN": "法罗群岛",
+    "de": "Färöer",
+    "fr": "Îles Féroé"
+  },
+  "FR": { "en": "France", "zh-CN": "法国", "de": "Frankreich", "fr": "France" },
+  "FSU": {
+    "en": "Independent States of the Former Soviet Union",
+    "zh-CN": "前苏联独立国家",
+    "de": "Unabhängige Staaten der ehemaligen Sowjetunion",
+    "fr": "États indépendants de l'ancienne Union soviétique"
+  },
+  "GA": { "en": "Gabon", "zh-CN": "加蓬", "de": "Gabun", "fr": "Gabon" },
+  "GB": {
+    "en": "United Kingdom of Great Britain and Northern Ireland",
+    "zh-CN": "英国",
+    "de": "Vereinigtes Königreich",
+    "fr": "Royaume-Uni"
+  },
+  "GD": {
+    "en": "Grenada",
+    "zh-CN": "格林纳达",
+    "de": "Grenada",
+    "fr": "Grenade"
+  },
+  "GE": {
+    "en": "Georgia",
+    "zh-CN": "格鲁吉亚",
+    "de": "Georgien",
+    "fr": "Géorgie"
+  },
+  "GF": {
+    "en": "French Guiana",
+    "zh-CN": "法属圭亚那",
+    "de": "Französisch-Guayana",
+    "fr": "Guyane"
+  },
+  "GG": {
+    "en": "Guernsey",
+    "zh-CN": "根西岛",
+    "de": "Guernsey",
+    "fr": "Guernesey"
+  },
+  "GH": { "en": "Ghana", "zh-CN": "加纳", "de": "Ghana", "fr": "Ghana" },
+  "GI": {
+    "en": "Gibraltar",
+    "zh-CN": "直布罗陀",
+    "de": "Gibraltar",
+    "fr": "Gibraltar"
+  },
+  "GL": {
+    "en": "Greenland",
+    "zh-CN": "格陵兰",
+    "de": "Grönland",
+    "fr": "Groenland"
+  },
+  "GLO": { "en": "Global", "zh-CN": "全球", "de": "Global", "fr": "Mondial" },
+  "GM": { "en": "Gambia", "zh-CN": "冈比亚", "de": "Gambia", "fr": "Gambie" },
+  "GN": { "en": "Guinea", "zh-CN": "几内亚", "de": "Guinea", "fr": "Guinée" },
+  "GP": {
+    "en": "Guadeloupe",
+    "zh-CN": "瓜德罗普",
+    "de": "Guadeloupe",
+    "fr": "Guadeloupe"
+  },
+  "GQ": {
+    "en": "Equatorial Guinea",
+    "zh-CN": "赤道几内亚",
+    "de": "Äquatorialguinea",
+    "fr": "Guinée équatoriale"
+  },
+  "GR": {
+    "en": "Greece",
+    "zh-CN": "希腊",
+    "de": "Griechenland",
+    "fr": "Grèce"
+  },
+  "GS": {
+    "en": "South Georgia and the South Sandwich Islands",
+    "zh-CN": "南乔治亚岛和南桑德韦奇岛",
+    "de": "Südgeorgien und die Südlichen Sandwichinseln",
+    "fr": "Îles Géorgie du Sud et Sandwich du Sud"
+  },
+  "GT": {
+    "en": "Guatemala",
+    "zh-CN": "危地马拉",
+    "de": "Guatemala",
+    "fr": "Guatemala"
+  },
+  "GU": { "en": "Guam", "zh-CN": "关岛", "de": "Guam", "fr": "Guam" },
+  "GW": {
+    "en": "Guinea-Bissau",
+    "zh-CN": "几内亚比绍",
+    "de": "Guinea-Bissau",
+    "fr": "Guinée-Bissau"
+  },
+  "GY": { "en": "Guyana", "zh-CN": "圭亚那", "de": "Guyana", "fr": "Guyana" },
+  "HK": {
+    "en": "Hongkong Tebiexingzhengqu,China",
+    "zh-CN": "香港",
+    "de": "Hongkong",
+    "fr": "Hong Kong"
+  },
+  "HM": {
+    "en": "Heard Island and McDonald Islands",
+    "zh-CN": "赫德岛和麦克唐纳群岛",
+    "de": "Heard und die McDonaldinseln",
+    "fr": "Îles Heard et McDonald"
+  },
+  "HN": {
+    "en": "Honduras",
+    "zh-CN": "洪都拉斯",
+    "de": "Honduras",
+    "fr": "Honduras"
+  },
+  "HR": {
+    "en": "Croatia",
+    "zh-CN": "克罗地亚",
+    "de": "Kroatien",
+    "fr": "Croatie"
+  },
+  "HT": { "en": "Haiti", "zh-CN": "海地", "de": "Haiti", "fr": "Haïti" },
+  "HU": { "en": "Hungary", "zh-CN": "匈牙利", "de": "Ungarn", "fr": "Hongrie" },
+  "ID": {
+    "en": "Indonesia",
+    "zh-CN": "印度尼西亚",
+    "de": "Indonesien",
+    "fr": "Indonésie"
+  },
+  "IE": { "en": "Ireland", "zh-CN": "爱尔兰", "de": "Irland", "fr": "Irlande" },
+  "IL": { "en": "Israel", "zh-CN": "以色列", "de": "Israel", "fr": "Israël" },
+  "IM": {
+    "en": "Isle of Man",
+    "zh-CN": "马恩岛",
+    "de": "Insel Man",
+    "fr": "Île de Man"
+  },
+  "IN": { "en": "India", "zh-CN": "印度", "de": "Indien", "fr": "Inde" },
+  "IO": {
+    "en": "British Indian Ocean Territory",
+    "zh-CN": "英属印度洋领地",
+    "de": "Britisches Territorium im Indischen Ozean",
+    "fr": "Territoire britannique de l’océan Indien"
+  },
+  "IQ": { "en": "Iraq", "zh-CN": "伊拉克", "de": "Irak", "fr": "Iraq" },
+  "IR": {
+    "en": "Iran (Islamic Republic of)",
+    "zh-CN": "伊朗",
+    "de": "Iran",
+    "fr": "Iran"
+  },
+  "IS": { "en": "Iceland", "zh-CN": "冰岛", "de": "Island", "fr": "Islande" },
+  "IT": { "en": "Italy", "zh-CN": "意大利", "de": "Italien", "fr": "Italie" },
+  "JE": { "en": "Jersey", "zh-CN": "泽西岛", "de": "Jersey", "fr": "Jersey" },
+  "JM": {
+    "en": "Jamaica",
+    "zh-CN": "牙买加",
+    "de": "Jamaika",
+    "fr": "Jamaïque"
+  },
+  "JO": {
+    "en": "Jordan",
+    "zh-CN": "约旦",
+    "de": "Jordanien",
+    "fr": "Jordanie"
+  },
+  "JP": { "en": "Japan", "zh-CN": "日本", "de": "Japan", "fr": "Japon" },
+  "KE": { "en": "Kenya", "zh-CN": "肯尼亚", "de": "Kenia", "fr": "Kenya" },
+  "KG": {
+    "en": "Kyrgyzstan",
+    "zh-CN": "吉尔吉斯斯坦",
+    "de": "Kirgisistan",
+    "fr": "Kirghizstan"
+  },
+  "KH": {
+    "en": "Cambodia",
+    "zh-CN": "柬埔寨",
+    "de": "Kambodscha",
+    "fr": "Cambodge"
+  },
+  "KI": {
+    "en": "Kiribati",
+    "zh-CN": "基里巴斯",
+    "de": "Kiribati",
+    "fr": "Kiribati"
+  },
+  "KM": {
+    "en": "Comoros",
+    "zh-CN": "科摩罗",
+    "de": "Komoren",
+    "fr": "Comores"
+  },
+  "KN": {
+    "en": "Saint Kitts and Nevis",
+    "zh-CN": "圣基茨和尼维斯",
+    "de": "St. Kitts und Nevis",
+    "fr": "Saint-Christophe-et-Niévès"
+  },
+  "KP": {
+    "en": "Democratic People's Republic of Korea",
+    "zh-CN": "朝鲜",
+    "de": "Nordkorea",
+    "fr": "Corée du Nord"
+  },
+  "KR": {
+    "en": "Republic of Korea",
+    "zh-CN": "韩国",
+    "de": "Südkorea",
+    "fr": "Corée du Sud"
+  },
+  "KW": { "en": "Kuwait", "zh-CN": "科威特", "de": "Kuwait", "fr": "Koweït" },
+  "KY": {
+    "en": "Cayman Islands",
+    "zh-CN": "开曼群岛",
+    "de": "Kaimaninseln",
+    "fr": "Îles Caïmans"
+  },
+  "KZ": {
+    "en": "Kazakhstan",
+    "zh-CN": "哈萨克斯坦",
+    "de": "Kasachstan",
+    "fr": "Kazakhstan"
+  },
+  "LA": {
+    "en": "Lao People's Democratic Republic",
+    "zh-CN": "老挝",
+    "de": "Laos",
+    "fr": "Laos"
+  },
+  "LB": { "en": "Lebanon", "zh-CN": "黎巴嫩", "de": "Libanon", "fr": "Liban" },
+  "LC": {
+    "en": "Saint Lucia",
+    "zh-CN": "圣卢西亚",
+    "de": "St. Lucia",
+    "fr": "Sainte-Lucie"
+  },
+  "LI": {
+    "en": "Liechtenstein",
+    "zh-CN": "列支敦士登",
+    "de": "Liechtenstein",
+    "fr": "Liechtenstein"
+  },
+  "LK": {
+    "en": "Sri Lanka",
+    "zh-CN": "斯里兰卡",
+    "de": "Sri Lanka",
+    "fr": "Sri Lanka"
+  },
+  "LR": {
+    "en": "Liberia",
+    "zh-CN": "利比里亚",
+    "de": "Liberia",
+    "fr": "Liberia"
+  },
+  "LS": {
+    "en": "Lesotho",
+    "zh-CN": "莱索托",
+    "de": "Lesotho",
+    "fr": "Lesotho"
+  },
+  "LT": {
+    "en": "Lithuania",
+    "zh-CN": "立陶宛",
+    "de": "Litauen",
+    "fr": "Lituanie"
+  },
+  "LU": {
+    "en": "Luxembourg",
+    "zh-CN": "卢森堡",
+    "de": "Luxemburg",
+    "fr": "Luxembourg"
+  },
+  "LV": {
+    "en": "Latvia",
+    "zh-CN": "拉脱维亚",
+    "de": "Lettland",
+    "fr": "Lettonie"
+  },
+  "LY": { "en": "Libya", "zh-CN": "利比亚", "de": "Libyen", "fr": "Libye" },
+  "MA": { "en": "Morocco", "zh-CN": "摩洛哥", "de": "Marokko", "fr": "Maroc" },
+  "MC": { "en": "Monaco", "zh-CN": "摩纳哥", "de": "Monaco", "fr": "Monaco" },
+  "MD": {
+    "en": "Republic of Moldova",
+    "zh-CN": "摩尔多瓦",
+    "de": "Moldau",
+    "fr": "Moldavie"
+  },
+  "ME": {
+    "en": "Montenegro",
+    "zh-CN": "黑山",
+    "de": "Montenegro",
+    "fr": "Monténégro"
+  },
+  "MEA": {
+    "en": "Middle East and North Africa",
+    "zh-CN": "中东和北非",
+    "de": "Naher Osten und Nordafrika",
+    "fr": "Moyen-Orient et Afrique du Nord"
+  },
+  "MF": {
+    "en": "Saint Martin (French part)",
+    "zh-CN": "圣马丁",
+    "de": "St. Martin",
+    "fr": "Saint-Martin"
+  },
+  "MG": {
+    "en": "Madagascar",
+    "zh-CN": "马达加斯加",
+    "de": "Madagaskar",
+    "fr": "Madagascar"
+  },
+  "MH": {
+    "en": "Marshall Islands",
+    "zh-CN": "马绍尔群岛",
+    "de": "Marshallinseln",
+    "fr": "Îles Marshall"
+  },
+  "MK": {
+    "en": "North Macedonia",
+    "zh-CN": "北马其顿",
+    "de": "Nordmazedonien",
+    "fr": "Macédoine du Nord"
+  },
+  "ML": { "en": "Mali", "zh-CN": "马里", "de": "Mali", "fr": "Mali" },
+  "MM": {
+    "en": "Myanmar",
+    "zh-CN": "缅甸",
+    "de": "Myanmar/Birma",
+    "fr": "Myanmar/Birmanie"
+  },
+  "MN": {
+    "en": "Mongolia",
+    "zh-CN": "蒙古",
+    "de": "Mongolei",
+    "fr": "Mongolie"
+  },
+  "MO": {
+    "en": "Macau Tebiexingzhengqu,China",
+    "zh-CN": "澳门",
+    "de": "Macau",
+    "fr": "Macao"
+  },
+  "MP": {
+    "en": "Northern Mariana Islands",
+    "zh-CN": "北马里亚纳群岛",
+    "de": "Nördliche Marianen",
+    "fr": "Îles Mariannes du Nord"
+  },
+  "MQ": {
+    "en": "Martinique",
+    "zh-CN": "马提尼克",
+    "de": "Martinique",
+    "fr": "Martinique"
+  },
+  "MR": {
+    "en": "Mauritania",
+    "zh-CN": "毛里塔尼亚",
+    "de": "Mauretanien",
+    "fr": "Mauritanie"
+  },
+  "MS": {
+    "en": "Montserrat",
+    "zh-CN": "蒙特塞拉特",
+    "de": "Montserrat",
+    "fr": "Montserrat"
+  },
+  "MT": { "en": "Malta", "zh-CN": "马耳他", "de": "Malta", "fr": "Malte" },
+  "MU": {
+    "en": "Mauritius",
+    "zh-CN": "毛里求斯",
+    "de": "Mauritius",
+    "fr": "Maurice"
+  },
+  "MV": {
+    "en": "Maldives",
+    "zh-CN": "马尔代夫",
+    "de": "Malediven",
+    "fr": "Maldives"
+  },
+  "MW": { "en": "Malawi", "zh-CN": "马拉维", "de": "Malawi", "fr": "Malawi" },
+  "MX": { "en": "Mexico", "zh-CN": "墨西哥", "de": "Mexiko", "fr": "Mexique" },
+  "MY": {
+    "en": "Malaysia",
+    "zh-CN": "马来西亚",
+    "de": "Malaysia",
+    "fr": "Malaisie"
+  },
+  "MZ": {
+    "en": "Mozambique",
+    "zh-CN": "莫桑比克",
+    "de": "Mosambik",
+    "fr": "Mozambique"
+  },
+  "NA": {
+    "en": "Namibia",
+    "zh-CN": "纳米比亚",
+    "de": "Namibia",
+    "fr": "Namibie"
+  },
+  "NC": {
+    "en": "New Caledonia",
+    "zh-CN": "新喀里多尼亚",
+    "de": "Neukaledonien",
+    "fr": "Nouvelle-Calédonie"
+  },
+  "NE": { "en": "Niger", "zh-CN": "尼日尔", "de": "Niger", "fr": "Niger" },
+  "NF": {
+    "en": "Norfolk Island",
+    "zh-CN": "诺福克岛",
+    "de": "Norfolkinsel",
+    "fr": "Île Norfolk"
+  },
+  "NG": {
+    "en": "Nigeria",
+    "zh-CN": "尼日利亚",
+    "de": "Nigeria",
+    "fr": "Nigeria"
+  },
+  "NI": {
+    "en": "Nicaragua",
+    "zh-CN": "尼加拉瓜",
+    "de": "Nicaragua",
+    "fr": "Nicaragua"
+  },
+  "NL": {
+    "en": "Netherlands",
+    "zh-CN": "荷兰",
+    "de": "Niederlande",
+    "fr": "Pays-Bas"
+  },
+  "NO": { "en": "Norway", "zh-CN": "挪威", "de": "Norwegen", "fr": "Norvège" },
+  "NORDEL": {
+    "en": "Nordic countries power association",
+    "zh-CN": "北欧国家电力协会",
+    "de": "Stromverband der nordischen Länder",
+    "fr": "Association électrique des pays nordiques"
+  },
+  "NP": { "en": "Nepal", "zh-CN": "尼泊尔", "de": "Nepal", "fr": "Népal" },
+  "NR": { "en": "Nauru", "zh-CN": "瑙鲁", "de": "Nauru", "fr": "Nauru" },
+  "NU": { "en": "Niue", "zh-CN": "纽埃", "de": "Niue", "fr": "Niué" },
+  "NZ": {
+    "en": "New Zealand",
+    "zh-CN": "新西兰",
+    "de": "Neuseeland",
+    "fr": "Nouvelle-Zélande"
+  },
+  "OCE": {
+    "en": "Oceania",
+    "zh-CN": "大洋洲",
+    "de": "Ozeanien",
+    "fr": "Océanie"
+  },
+  "OM": { "en": "Oman", "zh-CN": "阿曼", "de": "Oman", "fr": "Oman" },
+  "PA": { "en": "Panama", "zh-CN": "巴拿马", "de": "Panama", "fr": "Panama" },
+  "PAO": {
+    "en": "Pacific OECD (Japan, Australia, New Zealand)",
+    "zh-CN": "太平洋经合组织（日本、澳大利亚、新西兰）",
+    "de": "Pazifische OECD (Japan, Australien, Neuseeland)",
+    "fr": "OCDE Pacifique (Japon, Australie, Nouvelle-Zélande)"
+  },
+  "PAS": {
+    "en": "Other Pacific Asia",
+    "zh-CN": "其他太平洋亚洲地区",
+    "de": "Übriges pazifisches Asien",
+    "fr": "Autre Asie du Pacifique"
+  },
+  "PE": { "en": "Peru", "zh-CN": "秘鲁", "de": "Peru", "fr": "Pérou" },
+  "PF": {
+    "en": "French Polynesia",
+    "zh-CN": "法属波利尼西亚",
+    "de": "Französisch-Polynesien",
+    "fr": "Polynésie française"
+  },
+  "PG": {
+    "en": "Papua New Guinea",
+    "zh-CN": "巴布亚新几内亚",
+    "de": "Papua-Neuguinea",
+    "fr": "Papouasie - Nouvelle-Guinée"
+  },
+  "PH": {
+    "en": "Philippines",
+    "zh-CN": "菲律宾",
+    "de": "Philippinen",
+    "fr": "Philippines"
+  },
+  "PK": {
+    "en": "Pakistan",
+    "zh-CN": "巴基斯坦",
+    "de": "Pakistan",
+    "fr": "Pakistan"
+  },
+  "PL": { "en": "Poland", "zh-CN": "波兰", "de": "Polen", "fr": "Pologne" },
+  "PM": {
+    "en": "Saint Pierre and Miquelon",
+    "zh-CN": "圣皮埃尔和密克隆",
+    "de": "St. Pierre und Miquelon",
+    "fr": "Saint-Pierre-et-Miquelon"
+  },
+  "PN": {
+    "en": "Pitcairn",
+    "zh-CN": "皮特凯恩群岛",
+    "de": "Pitcairninseln",
+    "fr": "Îles Pitcairn"
+  },
+  "PR": {
+    "en": "Puerto Rico",
+    "zh-CN": "波多黎各",
+    "de": "Puerto Rico",
+    "fr": "Porto Rico"
+  },
+  "PS": {
+    "en": "Palestine, State of",
+    "zh-CN": "巴勒斯坦*",
+    "de": "Palästina*",
+    "fr": "Palestine*"
+  },
+  "PT": {
+    "en": "Portugal",
+    "zh-CN": "葡萄牙",
+    "de": "Portugal",
+    "fr": "Portugal"
+  },
+  "PW": { "en": "Palau", "zh-CN": "帕劳", "de": "Palau", "fr": "Palaos" },
+  "PY": {
+    "en": "Paraguay",
+    "zh-CN": "巴拉圭",
+    "de": "Paraguay",
+    "fr": "Paraguay"
+  },
+  "QA": { "en": "Qatar", "zh-CN": "卡塔尔", "de": "Katar", "fr": "Qatar" },
+  "RAF": { "en": "Africa", "zh-CN": "非洲", "de": "Afrika", "fr": "Afrique" },
+  "RAM": {
+    "en": "Americas",
+    "zh-CN": "美洲",
+    "de": "Amerika",
+    "fr": "Amériques"
+  },
+  "RAS": {
+    "en": "Asia and Pacific",
+    "zh-CN": "亚洲和太平洋地区",
+    "de": "Asien und Pazifik",
+    "fr": "Asie et Pacifique"
+  },
+  "RE": {
+    "en": "Réunion",
+    "zh-CN": "留尼汪",
+    "de": "Réunion",
+    "fr": "La Réunion"
+  },
+  "RER": { "en": "Europe", "zh-CN": "欧洲", "de": "Europa", "fr": "Europe" },
+  "RLA": {
+    "en": "Latin America & the Caribbean",
+    "zh-CN": "拉丁美洲和加勒比地区",
+    "de": "Lateinamerika und Karibik",
+    "fr": "Amérique latine et Caraïbes"
+  },
+  "RME": {
+    "en": "Middle East",
+    "zh-CN": "中东",
+    "de": "Mittlerer Osten",
+    "fr": "Moyen-Orient"
+  },
+  "RNA": {
+    "en": "Northern America",
+    "zh-CN": "北美",
+    "de": "Nördliches Amerika",
+    "fr": "Amérique septentrionale"
+  },
+  "RNE": {
+    "en": "Near East",
+    "zh-CN": "近东",
+    "de": "Nahost",
+    "fr": "Proche-Orient"
+  },
+  "RO": {
+    "en": "Romania",
+    "zh-CN": "罗马尼亚",
+    "de": "Rumänien",
+    "fr": "Roumanie"
+  },
+  "RS": {
+    "en": "Serbia",
+    "zh-CN": "塞尔维亚",
+    "de": "Serbien",
+    "fr": "Serbie"
+  },
+  "RU": {
+    "en": "Russian Federation",
+    "zh-CN": "俄罗斯",
+    "de": "Russland",
+    "fr": "Russie"
+  },
+  "RW": { "en": "Rwanda", "zh-CN": "卢旺达", "de": "Ruanda", "fr": "Rwanda" },
+  "SA": {
+    "en": "Saudi Arabia",
+    "zh-CN": "沙特阿拉伯",
+    "de": "Saudi-Arabien",
+    "fr": "Arabie saoudite"
+  },
+  "SAS": {
+    "en": "South Asia",
+    "zh-CN": "南亚",
+    "de": "Südasien",
+    "fr": "Asie du Sud"
+  },
+  "SB": {
+    "en": "Solomon Islands",
+    "zh-CN": "所罗门群岛",
+    "de": "Salomonen",
+    "fr": "Îles Salomon"
+  },
+  "SC": {
+    "en": "Seychelles",
+    "zh-CN": "塞舌尔",
+    "de": "Seychellen",
+    "fr": "Seychelles"
+  },
+  "SD": { "en": "Sudan", "zh-CN": "苏丹", "de": "Sudan", "fr": "Soudan" },
+  "SE": { "en": "Sweden", "zh-CN": "瑞典", "de": "Schweden", "fr": "Suède" },
+  "SG": {
+    "en": "Singapore",
+    "zh-CN": "新加坡",
+    "de": "Singapur",
+    "fr": "Singapour"
+  },
+  "SH": {
+    "en": "Saint Helena, Ascension and Tristan da Cunha",
+    "zh-CN": "圣赫勒拿、阿森松和特里斯坦达库尼亚",
+    "de": "St. Helena, Ascension und Tristan da Cunha",
+    "fr": "Sainte-Hélène, Ascension et Tristan da Cunha"
+  },
+  "SI": {
+    "en": "Slovenia",
+    "zh-CN": "斯洛文尼亚",
+    "de": "Slowenien",
+    "fr": "Slovénie"
+  },
+  "SJ": {
+    "en": "Svalbard and Jan Mayen",
+    "zh-CN": "斯瓦尔巴岛和扬马延岛",
+    "de": "Svalbard und Jan Mayen",
+    "fr": "Svalbard et Jan Mayen"
+  },
+  "SK": {
+    "en": "Slovakia",
+    "zh-CN": "斯洛伐克",
+    "de": "Slowakei",
+    "fr": "Slovaquie"
+  },
+  "SL": {
+    "en": "Sierra Leone",
+    "zh-CN": "塞拉利昂",
+    "de": "Sierra Leone",
+    "fr": "Sierra Leone"
+  },
+  "SM": {
+    "en": "San Marino",
+    "zh-CN": "圣马力诺",
+    "de": "San Marino",
+    "fr": "Saint-Marin"
+  },
+  "SN": {
+    "en": "Senegal",
+    "zh-CN": "塞内加尔",
+    "de": "Senegal",
+    "fr": "Sénégal"
+  },
+  "SO": {
+    "en": "Somalia",
+    "zh-CN": "索马里",
+    "de": "Somalia",
+    "fr": "Somalie"
+  },
+  "SR": {
+    "en": "Suriname",
+    "zh-CN": "苏里南",
+    "de": "Suriname",
+    "fr": "Suriname"
+  },
+  "SS": {
+    "en": "South Sudan",
+    "zh-CN": "南苏丹",
+    "de": "Südsudan",
+    "fr": "Soudan du Sud"
+  },
+  "ST": {
+    "en": "Sao Tome and Principe",
+    "zh-CN": "圣多美和普林西比",
+    "de": "São Tomé und Príncipe",
+    "fr": "Sao Tomé-et-Principe"
+  },
+  "SV": {
+    "en": "El Salvador",
+    "zh-CN": "萨尔瓦多",
+    "de": "El Salvador",
+    "fr": "El Salvador"
+  },
+  "SX": {
+    "en": "Sint Maarten (Dutch part)",
+    "zh-CN": "圣马丁",
+    "de": "Sint Maarten",
+    "fr": "Sint-Maarten"
+  },
+  "SY": {
+    "en": "Syrian Arab Republic",
+    "zh-CN": "叙利亚",
+    "de": "Syrien",
+    "fr": "Syrie"
+  },
+  "SZ": {
+    "en": "Eswatini",
+    "zh-CN": "斯威士兰",
+    "de": "Eswatini",
+    "fr": "Eswatini"
+  },
+  "TC": {
+    "en": "Turks and Caicos Islands",
+    "zh-CN": "特克斯和凯科斯群岛",
+    "de": "Turks- und Caicosinseln",
+    "fr": "Îles Turks-et-Caïcos"
+  },
+  "TD": { "en": "Chad", "zh-CN": "乍得", "de": "Tschad", "fr": "Tchad" },
+  "TF": {
+    "en": "French Southern Territories",
+    "zh-CN": "法属南部和南极土地",
+    "de": "Französische Süd- und Antarktisgebiete",
+    "fr": "Terres australes et antarctiques françaises"
+  },
+  "TG": { "en": "Togo", "zh-CN": "多哥", "de": "Togo", "fr": "Togo" },
+  "TH": {
+    "en": "Thailand",
+    "zh-CN": "泰国",
+    "de": "Thailand",
+    "fr": "Thaïlande"
+  },
+  "TJ": {
+    "en": "Tajikistan",
+    "zh-CN": "塔吉克斯坦",
+    "de": "Tadschikistan",
+    "fr": "Tadjikistan"
+  },
+  "TK": {
+    "en": "Tokelau",
+    "zh-CN": "托克劳",
+    "de": "Tokelau",
+    "fr": "Tokélaou"
+  },
+  "TL": {
+    "en": "Timor-Leste",
+    "zh-CN": "东帝汶",
+    "de": "Timor-Leste",
+    "fr": "Timor-Oriental"
+  },
+  "TM": {
+    "en": "Turkmenistan",
+    "zh-CN": "土库曼斯坦",
+    "de": "Turkmenistan",
+    "fr": "Turkménistan"
+  },
+  "TN": {
+    "en": "Tunisia",
+    "zh-CN": "突尼斯",
+    "de": "Tunesien",
+    "fr": "Tunisie"
+  },
+  "TO": { "en": "Tonga", "zh-CN": "汤加", "de": "Tonga", "fr": "Tonga" },
+  "TR": { "en": "Türkiye", "zh-CN": "土耳其", "de": "Türkei", "fr": "Turquie" },
+  "TT": {
+    "en": "Trinidad and Tobago",
+    "zh-CN": "特立尼达和多巴哥",
+    "de": "Trinidad und Tobago",
+    "fr": "Trinité-et-Tobago"
+  },
+  "TV": { "en": "Tuvalu", "zh-CN": "图瓦卢", "de": "Tuvalu", "fr": "Tuvalu" },
+  "TW": {
+    "en": "Taiwan Sheng,China",
+    "zh-CN": "台湾",
+    "de": "Taiwan",
+    "fr": "Taïwan"
+  },
+  "TZ": {
+    "en": "United Republic of Tanzania",
+    "zh-CN": "坦桑尼亚",
+    "de": "Tansania",
+    "fr": "Tanzanie"
+  },
+  "UA": {
+    "en": "Ukraine",
+    "zh-CN": "乌克兰",
+    "de": "Ukraine",
+    "fr": "Ukraine"
+  },
+  "UCTE": {
+    "en": "Union for the Co-ordination of Transmission of Electricity",
+    "zh-CN": "输电协调联盟",
+    "de": "Union für die Koordinierung des Elektrizitätsübertragungsnetzbetriebs",
+    "fr": "Union pour la coordination du transport de l'électricité"
+  },
+  "UG": { "en": "Uganda", "zh-CN": "乌干达", "de": "Uganda", "fr": "Ouganda" },
+  "UM": {
+    "en": "United States Minor Outlying Islands",
+    "zh-CN": "美国本土外小岛屿",
+    "de": "Kleinere Amerikanischen Überseeinseln",
+    "fr": "Îles mineures éloignées des États-Unis"
+  },
+  "US": {
+    "en": "United States of America",
+    "zh-CN": "美国",
+    "de": "Vereinigte Staaten",
+    "fr": "États-Unis"
+  },
+  "UY": {
+    "en": "Uruguay",
+    "zh-CN": "乌拉圭",
+    "de": "Uruguay",
+    "fr": "Uruguay"
+  },
+  "UZ": {
+    "en": "Uzbekistan",
+    "zh-CN": "乌兹别克斯坦",
+    "de": "Usbekistan",
+    "fr": "Ouzbékistan"
+  },
+  "VA": {
+    "en": "Holy See",
+    "zh-CN": "聖座",
+    "de": "Heiliger Stuhl",
+    "fr": "Saint-Siège"
+  },
+  "VC": {
+    "en": "Saint Vincent and the Grenadines",
+    "zh-CN": "圣文森特和格林纳丁斯",
+    "de": "St. Vincent und die Grenadinen",
+    "fr": "Saint-Vincent-et-les-Grenadines"
+  },
+  "VE": {
+    "en": "Venezuela (Bolivarian Republic of)",
+    "zh-CN": "委内瑞拉",
+    "de": "Venezuela",
+    "fr": "Venezuela"
+  },
+  "VG": {
+    "en": "Virgin Islands (British)",
+    "zh-CN": "英属维尔京群岛",
+    "de": "Britische Jungferninseln",
+    "fr": "Îles Vierges britanniques"
+  },
+  "VI": {
+    "en": "Virgin Islands (U.S.)",
+    "zh-CN": "美属维尔京群岛",
+    "de": "Amerikanische Jungferninseln",
+    "fr": "Îles Vierges américaines"
+  },
+  "VN": {
+    "en": "Viet Nam",
+    "zh-CN": "越南",
+    "de": "Vietnam",
+    "fr": "Viêt Nam"
+  },
+  "VU": {
+    "en": "Vanuatu",
+    "zh-CN": "瓦努阿图",
+    "de": "Vanuatu",
+    "fr": "Vanuatu"
+  },
+  "WEU": {
+    "en": "Western Europe",
+    "zh-CN": "西欧",
+    "de": "Westeuropa",
+    "fr": "Europe occidentale"
+  },
+  "WF": {
+    "en": "Wallis and Futuna",
+    "zh-CN": "瓦利斯和富图纳",
+    "de": "Wallis und Futuna",
+    "fr": "Wallis-et-Futuna"
+  },
+  "WS": { "en": "Samoa", "zh-CN": "萨摩亚", "de": "Samoa", "fr": "Samoa" },
+  "YE": { "en": "Yemen", "zh-CN": "也门", "de": "Jemen", "fr": "Yémen" },
+  "YT": {
+    "en": "Mayotte",
+    "zh-CN": "马约特",
+    "de": "Mayotte",
+    "fr": "Mayotte"
+  },
+  "ZA": {
+    "en": "South Africa",
+    "zh-CN": "南非",
+    "de": "Südafrika",
+    "fr": "Afrique du Sud"
+  },
+  "ZM": { "en": "Zambia", "zh-CN": "赞比亚", "de": "Sambia", "fr": "Zambie" },
+  "ZW": {
+    "en": "Zimbabwe",
+    "zh-CN": "津巴布韦",
+    "de": "Simbabwe",
+    "fr": "Zimbabwe"
+  }
+}

@@ -11,6 +11,7 @@ import type {
   PortalHybridBffVersionResponse,
 } from "@/server/hybrid/contracts";
 import type { PortalLocale } from "@/i18n/routing";
+import { formatGeographyCode, geographyName } from "@/i18n/geography";
 import {
   formatDatasetCitation,
   localizeGeographyPrecision,
@@ -18,6 +19,7 @@ import {
   localizeMatchReasons,
   localizePublicEvidence,
   localizeReviewStatus,
+  localizeFlowType,
 } from "@/i18n/domain-vocabulary";
 
 import type {
@@ -68,11 +70,25 @@ function formatGeography(
   locale: Locale,
 ): string {
   return [
-    localizedText(geography.label, locale) ?? geography.code,
+    formatGeographyCode(geography.code, locale) ?? localizedText(geography.label, locale),
     localizeGeographyPrecision(geography.precision, locale),
   ]
     .filter(Boolean)
     .join(" · ");
+}
+
+function geographyDescription(
+  geography: { code: string | null; label: LocalizedText },
+  locale: Locale,
+): string | undefined {
+  const label = localizedText(geography.label, locale);
+  if (
+    !label ||
+    label === geographyName(geography.code, locale) ||
+    label.toUpperCase() === geography.code?.toUpperCase()
+  )
+    return undefined;
+  return label;
 }
 
 export function mapSearchItem(
@@ -85,6 +101,7 @@ export function mapSearchItem(
     [context.source.databaseId, context.source.databaseVersion].filter(Boolean).join(" · ");
   return {
     accessLevel: item.accessLevel,
+    capabilities: item.capabilities,
     functionalUnit: context.functionalUnit
       ? `${context.functionalUnit.amount} ${context.functionalUnit.unit}`
       : undefined,
@@ -94,7 +111,10 @@ export function mapSearchItem(
     name: localizedText(item.names, locale) ?? exactRef(item.key.id, item.key.version),
     quality: localizeReviewStatus(context.quality.reviewStatus, locale),
     ref: exactRef(item.key.id, item.key.version),
-    referenceProduct: localizedText(context.reference.name, locale),
+    referenceProduct:
+      item.key.kind === "process" ? localizedText(context.reference.name, locale) : undefined,
+    referenceFlowProperty:
+      item.key.kind === "flow" ? localizedText(context.reference.name, locale) : undefined,
     referenceYear: item.referenceYear?.toString(),
     source: source || undefined,
     technology: localizedText(context.technology, locale),
@@ -108,6 +128,7 @@ export function mapHybridItem(item: PortalHybridCandidate, locale: Locale): Cata
     [context.source.databaseId, context.source.databaseVersion].filter(Boolean).join(" · ");
   return {
     accessLevel: item.accessLevel,
+    capabilities: item.capabilities,
     functionalUnit: context.functionalUnit
       ? `${context.functionalUnit.amount} ${context.functionalUnit.unit}`
       : undefined,
@@ -117,7 +138,10 @@ export function mapHybridItem(item: PortalHybridCandidate, locale: Locale): Cata
     name: localizedText(item.names, locale) ?? exactRef(item.key.id, item.key.version),
     quality: localizeReviewStatus(context.quality.reviewStatus, locale),
     ref: exactRef(item.key.id, item.key.version),
-    referenceProduct: localizedText(context.reference.name, locale),
+    referenceProduct:
+      item.key.kind === "process" ? localizedText(context.reference.name, locale) : undefined,
+    referenceFlowProperty:
+      item.key.kind === "flow" ? localizedText(context.reference.name, locale) : undefined,
     referenceYear: item.referenceYear?.toString(),
     source: source || undefined,
     technology: localizedText(context.technology, locale),
@@ -147,53 +171,68 @@ export function mapDataset(
   const metadata = dataset.metadata;
   const ref = exactRef(dataset.key.id, dataset.key.version);
   const name = localizedText(metadata.names, locale) ?? ref;
-  const citation = formatDatasetCitation(locale, { name, ref, url: canonicalUrl });
+  const source =
+    localizedText(metadata.source.providerName, locale) ?? metadata.source.databaseId ?? undefined;
+  const citation = formatDatasetCitation(locale, {
+    name,
+    ref,
+    url: canonicalUrl,
+    provider: localizedText(metadata.source.providerName, locale),
+  });
+  const common = {
+    accessLevel: dataset.accessLevel,
+    capabilities: dataset.capabilities,
+    canonicalUrl,
+    citation,
+    classifications:
+      metadata.classifications
+        .map((entry) =>
+          [entry.system, entry.code, localizedText(entry.label, locale)]
+            .filter(Boolean)
+            .join(" · "),
+        )
+        .join("; ") || undefined,
+    description: localizedText(metadata.generalComment, locale),
+    evidence: localizePublicEvidence(dataset.capabilities.reasonCodes, locale),
+    license: metadata.source.licenseId ?? metadata.administration.licenseType ?? undefined,
+    licenseUrl:
+      metadata.source.licenseUrl && /^https?:\/\//iu.test(metadata.source.licenseUrl)
+        ? metadata.source.licenseUrl
+        : undefined,
+    name,
+    originalName: name,
+    ref,
+    source,
+  };
 
   if (metadata.kind === "process") {
     return {
-      accessLevel: dataset.accessLevel,
-      canonicalUrl,
-      citation,
-      evidence: localizePublicEvidence(dataset.capabilities.reasonCodes, locale),
+      ...common,
       functionalUnit: formatFunctionalUnit(metadata.functionalUnit, locale),
       geography: formatGeography(metadata.geography, locale),
+      geographyDescription: geographyDescription(metadata.geography, locale),
       kind: "process",
-      license: metadata.source.licenseId ?? metadata.administration.licenseType ?? undefined,
-      name,
-      ref,
       referenceProduct: localizedText(metadata.referenceProduct, locale),
       referenceYear: metadata.referenceYear?.toString(),
-      source:
-        localizedText(metadata.source.providerName, locale) ??
-        metadata.source.databaseId ??
-        undefined,
       technology: localizedText(metadata.technology, locale),
     };
   }
 
   return {
-    accessLevel: dataset.accessLevel,
-    canonicalUrl,
-    citation,
-    evidence: localizePublicEvidence(dataset.capabilities.reasonCodes, locale),
+    ...common,
+    casNumber: metadata.casNumber ?? undefined,
+    flowType: localizeFlowType(metadata.flowType, locale),
+    synonyms: localizedText(metadata.synonyms, locale),
     geography:
-      [
-        localizedText(metadata.locationOfSupply.label, locale) ?? metadata.locationOfSupply.code,
-        "supply",
-      ]
-        .filter(Boolean)
-        .join(" · ") || undefined,
+      formatGeographyCode(metadata.locationOfSupply.code, locale) ??
+      localizedText(metadata.locationOfSupply.label, locale),
     kind: "flow",
-    license: metadata.source.licenseId ?? metadata.administration.licenseType ?? undefined,
-    name,
-    ref,
-    referenceProduct: metadata.referenceFlowProperty
+    referenceFlowProperty: metadata.referenceFlowProperty
       ? localizedText(metadata.referenceFlowProperty.name, locale)
       : undefined,
-    source:
-      localizedText(metadata.source.providerName, locale) ??
-      metadata.source.databaseId ??
-      undefined,
+    referenceFlowPropertyRef: metadata.referenceFlowProperty
+      ? exactRef(metadata.referenceFlowProperty.id, metadata.referenceFlowProperty.version)
+      : undefined,
   };
 }
 
@@ -238,7 +277,7 @@ export function mapLciaPage(
   const rows = page.rows.map((row) => ({
     evidenceStatus: row.evidenceStatus,
     functionalUnit: `${row.functionalUnit.amount} ${row.functionalUnit.unit}`,
-    geography: `${row.geography.code} · ${row.geography.precision}`,
+    geography: `${formatGeographyCode(row.geography.code, locale) ?? row.geography.code} · ${localizeGeographyPrecision(row.geography.precision, locale)}`,
     impactId: row.impact.id,
     impactName: localizedText(row.impact.name, locale) ?? row.impact.id,
     methodRef: exactRef(row.method.id, row.method.version),
@@ -247,8 +286,16 @@ export function mapLciaPage(
     unit: row.unit,
     value: row.value,
   }));
-  const contextKeys = rows.map((row) =>
-    [row.processRef, row.functionalUnit, row.geography, row.referenceYear].join("\u0000"),
+  const contextKeys = page.rows.map((row) =>
+    JSON.stringify([
+      row.process.id,
+      row.process.version,
+      row.functionalUnit.amount,
+      row.functionalUnit.unit,
+      row.geography.code,
+      row.geography.precision,
+      row.referenceYear,
+    ]),
   );
   if (
     rows.some((row) => row.processRef !== expectedProcessRef) ||
@@ -268,6 +315,8 @@ export function mapVersions(page: PublicVersionPage, locale: Locale): VersionVie
   return page.items.map((item) => {
     const ref = exactRef(item.key.id, item.key.version);
     return {
+      version: item.key.version,
+      isLatest: item.isLatest,
       href: `/${locale}/${item.key.kind}/${encodeURIComponent(ref)}`,
       modifiedAt: item.modifiedAt,
       ref,
@@ -290,6 +339,7 @@ export function mapCompareCandidate(
 
   return {
     allocationMethod: allocationAndModeling,
+    referenceProduct: localizedText(metadata.referenceProduct, locale),
     cutoffRule: localizedText(metadata.cutoffRules, locale),
     functionalUnit:
       metadata.functionalUnit.amount && metadata.functionalUnit.unit

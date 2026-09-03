@@ -6,6 +6,7 @@ const base: CompareCandidate = {
   allocationMethod: "physical",
   cutoffRule: "1%",
   functionalUnit: "1 kg",
+  referenceProduct: "Product A",
   geography: "CN",
   geographyPrecision: "country",
   lciaMethodRef: "11111111-1111-1111-1111-111111111111@01.00.000",
@@ -49,5 +50,17 @@ describe("deterministic comparison", () => {
         },
       ]).status,
     ).toBe("insufficient");
+  });
+
+  it("does not align equal quantities of different reference products", () => {
+    const result = evaluateCompatibility([
+      { ...base, lciaValue: { unit: "kg CO2-Eq", value: "1.0" } },
+      { ...base, referenceProduct: "Product B", lciaValue: { unit: "kg CO2-Eq", value: "2.0" } },
+    ]);
+    expect(result.status).toBe("incompatible");
+    expect(result.canAlignLcia).toBe(false);
+    expect(evaluateCompatibility([base, { ...base, referenceProduct: undefined }]).status).toBe(
+      "insufficient",
+    );
   });
 });

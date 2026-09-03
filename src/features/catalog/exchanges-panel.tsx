@@ -12,6 +12,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { ExchangeViewModel } from "@/features/catalog/view-model";
+import { localizeDirection, localizeFlowType } from "@/i18n/domain-vocabulary";
+import type { PortalLocale } from "@/i18n/routing";
 
 import { DetailEmpty } from "./detail-empty";
 
@@ -32,6 +34,7 @@ type ExchangesPanelProps = {
     no: string;
   };
   rows: ExchangeViewModel[];
+  locale: PortalLocale;
 };
 
 export function ExchangesPanel({
@@ -40,6 +43,7 @@ export function ExchangesPanel({
   emptyTitle,
   labels,
   rows,
+  locale,
 }: ExchangesPanelProps) {
   if (rows.length === 0) {
     return <DetailEmpty description={emptyDescription} icon={NetworkIcon} title={emptyTitle} />;
@@ -58,8 +62,8 @@ export function ExchangesPanel({
                 <dl className="flex flex-col gap-3">
                   {[
                     [labels.flow, row.flowRef],
-                    [labels.direction, row.direction],
-                    [labels.kind, row.kind],
+                    [labels.direction, localizeDirection(row.direction, locale)],
+                    [labels.kind, localizeFlowType(row.kind, locale)],
                     [labels.amount, `${row.amount} ${row.unit}`],
                     [labels.process, row.processRef],
                     [labels.functionalUnit, row.functionalUnit],
@@ -105,13 +109,14 @@ export function ExchangesPanel({
                 </TableCell>
                 <TableCell>
                   {row.direction === "input" ? (
-                    <ArrowDownLeftIcon aria-label="input" />
+                    <ArrowDownLeftIcon aria-hidden="true" />
                   ) : (
-                    <ArrowUpRightIcon aria-label="output" />
+                    <ArrowUpRightIcon aria-hidden="true" />
                   )}
+                  {localizeDirection(row.direction, locale)}
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">{row.kind}</Badge>
+                  <Badge variant="outline">{localizeFlowType(row.kind, locale)}</Badge>
                 </TableCell>
                 <TableCell className="font-mono">
                   {row.amount} {row.unit}

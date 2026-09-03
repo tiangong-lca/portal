@@ -10,6 +10,9 @@ import catalog from "../fixtures/portal/catalog-v1.json";
 import { hybridVersionPage } from "../fixtures/portal/hybrid-v2";
 
 const resultLabels: SearchResultLabels = {
+  exchangesAvailable: messages.Common.exchangesAvailable,
+  lciaAvailable: messages.Common.lciaAvailable,
+  referenceFlowProperty: messages.Detail.referenceFlowProperty,
   collect: "Collect",
   compare: "Compare",
   copied: "Copied",
@@ -162,7 +165,9 @@ describe("progressive, version-aware discovery", () => {
     expect(screen.queryByText("Initial catalog result")).not.toBeInTheDocument();
     expect(window.location.href).not.toContain("electricity");
 
-    const versions = screen.getByRole("button", { name: /Other matching versions/ });
+    const versions = screen.getByRole("button", {
+      name: new RegExp(messages.Search.matchingVersions),
+    });
     versions.focus();
     await user.keyboard("{Enter}");
     expect(screen.getByRole("link", { name: "Version 00.99.999" })).toHaveAttribute(

@@ -142,6 +142,9 @@ export default async function SearchPage({
   let results: ReturnType<typeof mapSearchItem>[] = [];
   let facets: Awaited<ReturnType<typeof getPublicFacets>> | null = null;
   const resultLabels = {
+    exchangesAvailable: common("exchangesAvailable"),
+    lciaAvailable: common("lciaAvailable"),
+    referenceFlowProperty: detail("referenceFlowProperty"),
     collect: detail("collect"),
     compare: detail("compare"),
     copied: detail("citationCopied"),

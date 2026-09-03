@@ -24,6 +24,7 @@ import { formatDatasetCitation } from "@/i18n/domain-vocabulary";
 
 import { CitationCopy } from "./citation-copy";
 import { groupSearchResults } from "./search-version-groups";
+import { AvailabilityBadges } from "./availability-badges";
 
 export type SearchResultLabels = {
   collect: string;
@@ -48,6 +49,9 @@ export type SearchResultLabels = {
   technology: string;
   matchingVersions: string;
   version: string;
+  referenceFlowProperty: string;
+  exchangesAvailable: string;
+  lciaAvailable: string;
 };
 
 export function SearchResults({
@@ -84,7 +88,10 @@ export function SearchResults({
           url: new URL(detailHref, siteOrigin).toString(),
         });
         const context = [
-          { label: labels.reference, value: item.referenceProduct },
+          {
+            label: item.kind === "flow" ? labels.referenceFlowProperty : labels.reference,
+            value: item.kind === "flow" ? item.referenceFlowProperty : item.referenceProduct,
+          },
           { label: labels.functionalUnit, value: item.functionalUnit },
           { label: labels.geography, value: item.geography },
           { label: labels.referenceYear, value: item.referenceYear },
@@ -100,9 +107,14 @@ export function SearchResults({
                   <Badge variant="outline">
                     {item.kind === "process" ? labels.process : labels.flow}
                   </Badge>
-                  <Badge variant={item.accessLevel === "open" ? "default" : "secondary"}>
-                    {item.accessLevel === "open" ? labels.public : labels.metadataOnly}
-                  </Badge>
+                  <AvailabilityBadges
+                    capabilities={item.capabilities}
+                    labels={{
+                      exchanges: labels.exchangesAvailable,
+                      lcia: labels.lciaAvailable,
+                      metadata: labels.metadataOnly,
+                    }}
+                  />
                 </div>
                 {selectable && item.kind === "process" ? (
                   <label className="flex min-h-[44px] w-fit items-center gap-2 text-sm font-medium">
@@ -116,7 +128,11 @@ export function SearchResults({
                     {labels.selectForCompare}
                   </label>
                 ) : null}
-                <CardTitle>{item.name}</CardTitle>
+                <CardTitle>
+                  <Link href={detailHref} prefetch={false}>
+                    {item.name}
+                  </Link>
+                </CardTitle>
                 <CardDescription className="font-mono text-xs break-all">
                   {item.ref}
                 </CardDescription>

@@ -19,7 +19,7 @@ describe("LCIA presentation mapping", () => {
     });
     expect(result.rows[0]).toMatchObject({
       functionalUnit: "1 kWh",
-      geography: "CN · country",
+      geography: "China (CN) · Country",
       processRef,
       referenceYear: "2024",
       value: "12.5",
@@ -37,6 +37,17 @@ describe("LCIA presentation mapping", () => {
     const page = publishedLciaPageSchema.parse({
       ...fixture.lcia,
       mode: "processes_one_impact",
+    });
+    expect(mapLciaPage(page, "en", processRef)).toEqual({ status: "unavailable" });
+  });
+
+  it("keeps raw numeric context binding strict when localized labels would look identical", () => {
+    const page = publishedLciaPageSchema.parse(fixture.lcia);
+    const row = page.rows[0]!;
+    page.rows.push({
+      ...row,
+      impact: { ...row.impact, id: "another-impact" },
+      geography: { ...row.geography, code: "cn" },
     });
     expect(mapLciaPage(page, "en", processRef)).toEqual({ status: "unavailable" });
   });

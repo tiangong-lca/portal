@@ -2,7 +2,7 @@ import { BracesIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DetailEmpty } from "@/features/catalog/detail-empty";
 import { localizedText, mapDataset } from "@/features/catalog/map-public-data";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
@@ -22,7 +22,7 @@ export async function generateMetadata({
   );
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
-    description: t("methodEmpty"),
+    description: t("methodDescription"),
     locale,
     path: `process/${record.ref}/method`,
     title: `${t("methodTitle")} · ${record.name}`,
@@ -39,15 +39,15 @@ export default async function ProcessMethodPage({
   if (metadata.kind !== "process") return null;
   const t = await getTranslations({ locale, namespace: "Detail" });
   const fields = [
-    [t("context"), localizedText(metadata.generalComment, locale)],
+    [t("description"), localizedText(metadata.generalComment, locale)],
     [
       t("functionalUnit"),
       metadata.functionalUnit.amount && metadata.functionalUnit.unit
         ? `${metadata.functionalUnit.amount} ${metadata.functionalUnit.unit}`
         : localizedText(metadata.functionalUnit.description, locale),
     ],
-    [t("method"), localizedText(metadata.allocationAndModeling, locale)],
-    [t("evidence"), localizedText(metadata.cutoffRules, locale)],
+    [t("allocationModeling"), localizedText(metadata.allocationAndModeling, locale)],
+    [t("cutoffRules"), localizedText(metadata.cutoffRules, locale)],
   ].filter((entry): entry is [string, string] => Boolean(entry[1]));
 
   return (
@@ -63,7 +63,6 @@ export default async function ProcessMethodPage({
             <Card key={label} size="sm">
               <CardHeader>
                 <CardTitle>{label}</CardTitle>
-                <CardDescription>{t("methodTitle")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="leading-7">{value}</p>

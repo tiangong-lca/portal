@@ -23,7 +23,7 @@ export async function generateMetadata({
   );
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
-    description: t("qualityEmpty"),
+    description: t("qualityDescription"),
     locale,
     path: `process/${record.ref}/quality`,
     title: `${t("qualityTitle")} · ${record.name}`,

@@ -134,6 +134,9 @@ export default async function BrowsePage({
         <SearchResults
           items={results}
           labels={{
+            exchangesAvailable: common("exchangesAvailable"),
+            lciaAvailable: common("lciaAvailable"),
+            referenceFlowProperty: detail("referenceFlowProperty"),
             collect: detail("collect"),
             compare: detail("compare"),
             copied: detail("citationCopied"),

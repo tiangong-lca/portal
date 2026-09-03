@@ -21,10 +21,10 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
   const homeHref = localePath(locale);
 
   const links = [
-    [localePath(locale, "search?v=1"), t("search")],
-    [localePath(locale, "browse/process"), t("browse")],
-    [localePath(locale, "methodology"), t("methodology")],
-    [localePath(locale, "collections"), t("collections")],
+    [localePath(locale, "search?v=1"), t("search"), t("searchCompact")],
+    [localePath(locale, "browse/process"), t("browse"), t("browseCompact")],
+    [localePath(locale, "methodology"), t("methodology"), t("methodologyCompact")],
+    [localePath(locale, "collections"), t("collections"), t("collectionsCompact")],
   ] as const;
 
   return (
@@ -53,10 +53,11 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
           aria-label={t("brandName")}
           className="order-3 col-span-2 min-w-0 overflow-x-auto xl:order-none xl:col-span-1"
         >
-          <ul className="flex min-w-max items-center gap-1">
-            {links.map(([href, label]) => (
+          <ul className="grid grid-cols-4 gap-1 sm:flex sm:min-w-max sm:items-center">
+            {links.map(([href, label, compactLabel]) => (
               <li key={href}>
                 <NavigationLink
+                  compactLabel={compactLabel}
                   href={href}
                   matchPrefix={
                     href === localePath(locale, "browse/process")

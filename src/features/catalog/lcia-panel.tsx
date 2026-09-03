@@ -17,6 +17,8 @@ import type { LciaViewModel } from "@/features/catalog/view-model";
 type LciaPanelProps = {
   labels: {
     guardUnavailable: string;
+    unavailableTitle: string;
+    failureTitle: string;
     functionalUnit: string;
     geography: string;
     impact: string;
@@ -43,8 +45,8 @@ export function LciaPanel({ labels, locale, result }: LciaPanelProps) {
         <ShieldAlertIcon aria-hidden="true" />
         <AlertTitle>
           {result.status === "temporarily_unavailable"
-            ? labels.guardUnavailable
-            : labels.unavailable}
+            ? labels.failureTitle
+            : labels.unavailableTitle}
         </AlertTitle>
         <AlertDescription>
           {result.status === "temporarily_unavailable"

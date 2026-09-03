@@ -81,6 +81,8 @@ export default async function ProcessLciaPage({
       </header>
       <LciaPanel
         labels={{
+          unavailableTitle: t("lciaEmptyTitle"),
+          failureTitle: t("lciaFailureTitle"),
           functionalUnit: t("functionalUnit"),
           geography: t("geography"),
           guardUnavailable: t("lciaGuardUnavailable"),

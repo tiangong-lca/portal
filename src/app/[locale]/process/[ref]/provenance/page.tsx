@@ -9,6 +9,7 @@ import { localizedText, mapDataset } from "@/features/catalog/map-public-data";
 import { resolvePublicDataset } from "@/features/catalog/resolve-public-dataset";
 import { isPortalLocale } from "@/i18n/routing";
 import { absolutePortalUrl, localizedMetadata } from "@/lib/seo";
+import { localizeConfidence, localizeFieldOrigin } from "@/i18n/domain-vocabulary";
 
 export async function generateMetadata({
   params,
@@ -23,7 +24,7 @@ export async function generateMetadata({
   );
   const t = await getTranslations({ locale, namespace: "Detail" });
   return localizedMetadata({
-    description: t("provenanceEmpty"),
+    description: t("provenanceDescription"),
     locale,
     path: `process/${record.ref}/provenance`,
     title: `${t("provenanceTitle")} · ${record.name}`,
@@ -40,11 +41,11 @@ export default async function ProcessProvenancePage({
   if (metadata.kind !== "process") return null;
   const t = await getTranslations({ locale, namespace: "Detail" });
   const identityRows = [
-    ["database", metadata.source.databaseId],
-    ["databaseVersion", metadata.source.databaseVersion],
-    ["sourceRecord", metadata.source.sourceRecordId],
-    ["importBatch", dataset.provenance.importBatchId],
-    ["normalizationRule", dataset.provenance.normalizationRuleVersion],
+    [t("sourceDatabaseId"), metadata.source.databaseId],
+    [t("sourceDatabaseVersion"), metadata.source.databaseVersion],
+    [t("sourceRecord"), metadata.source.sourceRecordId],
+    [t("importBatch"), dataset.provenance.importBatchId],
+    [t("normalizationRule"), dataset.provenance.normalizationRuleVersion],
   ].filter((entry): entry is [string, string] => Boolean(entry[1]));
   const hasEvidence = identityRows.length > 0 || dataset.provenance.fieldOrigins.length > 0;
 
@@ -78,7 +79,7 @@ export default async function ProcessProvenancePage({
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>{t("evidence")}</CardTitle>
+              <CardTitle>{t("fieldSource")}</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="flex flex-col gap-3">
@@ -88,12 +89,19 @@ export default async function ProcessProvenancePage({
                     key={`${origin.path}:${origin.kind}`}
                   >
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline">{origin.kind}</Badge>
+                      <Badge variant="outline">{localizeFieldOrigin(origin.kind, locale)}</Badge>
                       {origin.confidence ? (
-                        <Badge variant="secondary">{origin.confidence}</Badge>
+                        <Badge variant="secondary">
+                          {t("confidence")}: {localizeConfidence(origin.confidence, locale)}
+                        </Badge>
                       ) : null}
                     </div>
-                    <code className="text-xs break-all">{origin.path}</code>
+                    <details>
+                      <summary className="text-muted-foreground cursor-pointer text-xs">
+                        {t("fieldPath")}
+                      </summary>
+                      <code className="text-xs break-all">{origin.path}</code>
+                    </details>
                     {localizedText(origin.reason, locale) ? (
                       <p className="text-muted-foreground text-sm">
                         {localizedText(origin.reason, locale)}

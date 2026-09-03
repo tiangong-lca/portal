@@ -1,6 +1,8 @@
 export type CatalogKind = "process" | "flow";
 export type AccessLevel = "open" | "metadata_only";
 
+export type DisplayCapabilities = { exchangesVisible: boolean; lciaVisible: boolean };
+
 export type CatalogVersionMatch = {
   ref: string;
   version: string;
@@ -14,6 +16,8 @@ export type CatalogResultViewModel = {
   name: string;
   originalName?: string;
   referenceProduct?: string;
+  referenceFlowProperty?: string;
+  capabilities?: DisplayCapabilities;
   functionalUnit?: string;
   geography?: string;
   referenceYear?: string;
@@ -27,7 +31,15 @@ export type CatalogResultViewModel = {
 };
 
 export type DatasetDetailViewModel = CatalogResultViewModel & {
+  casNumber?: string;
+  classifications?: string;
+  flowType?: string;
+  synonyms?: string;
+  description?: string;
+  geographyDescription?: string;
+  referenceFlowPropertyRef?: string;
   license?: string;
+  licenseUrl?: string;
   citation?: string;
   canonicalUrl?: string;
 };
@@ -79,4 +91,6 @@ export type VersionViewModel = {
   ref: string;
   modifiedAt?: string;
   summary?: string;
+  version: string;
+  isLatest: boolean;
 };
