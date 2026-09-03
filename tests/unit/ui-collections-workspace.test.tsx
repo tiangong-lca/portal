@@ -4,7 +4,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CollectionsWorkspace } from "@/features/collections/collections-workspace";
 import en from "@/i18n/messages/en.json";
 import { collectionsStorageKey } from "@/features/collections/storage";
-import { collectionsStorageKeyV2, emptyCollectionStateV2 } from "@/features/collections/storage-v2";
+import {
+  collectionsStorageKeyV2,
+  emptyCollectionStateV2,
+  encodeDisclosedCollectionFragmentV2,
+} from "@/features/collections/storage-v2";
 
 const labels = {
   ...en.Collections,
@@ -175,6 +179,59 @@ describe("collection persistence", () => {
     fireEvent.click(within(preview).getByRole("button", { name: "Confirm share" }));
     await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
     expect(writeText.mock.calls[0]![0]).toContain("#collection-notes=");
+  });
+
+  it("previews the actual merge result, including existing name, purpose and notes", async () => {
+    localStorage.setItem(collectionsStorageKey, JSON.stringify(legacy));
+    const incoming = {
+      ...emptyCollectionStateV2,
+      researchName: "Shared different name",
+      purpose: "Shared purpose",
+      members: [{ kind: null, ref, note: "Shared different note", status: "candidate" as const }],
+    };
+    history.replaceState(
+      null,
+      "",
+      `/en/collections${encodeDisclosedCollectionFragmentV2(incoming)}`,
+    );
+    mount();
+    const preview = await screen.findByRole("region", { name: labels.importTitle });
+    expect(within(preview).getByText("Private study")).toBeInTheDocument();
+    expect(within(preview).getByText("Private purpose")).toBeInTheDocument();
+    expect(within(preview).getByText("Note: Private rationale")).toBeInTheDocument();
+    expect(within(preview).queryByText("Shared different name")).not.toBeInTheDocument();
+    fireEvent.click(within(preview).getByRole("button", { name: labels.mergeConfirm }));
+    expect(screen.getByLabelText("Research")).toHaveValue("Private study");
+    expect(screen.getByLabelText("Note")).toHaveValue("Private rationale");
+  });
+
+  it("reports capacity rather than blaming a valid member link", async () => {
+    const members = Array.from({ length: 200 }, (_, index) => ({
+      kind: "process",
+      ref: `${String(index).padStart(8, "0")}-0000-0000-0000-000000000000@01.00.000`,
+      note: "",
+      status: "candidate",
+    }));
+    localStorage.setItem(
+      collectionsStorageKeyV2,
+      JSON.stringify({ ...emptyCollectionStateV2, members }),
+    );
+    history.replaceState(null, "", `/en/collections#member=process%3A${encodeURIComponent(ref)}`);
+    mount();
+    expect(await screen.findByText(labels.memberLimit)).toBeInTheDocument();
+    expect(screen.queryByText(labels.invalidLink)).not.toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem(collectionsStorageKeyV2)!).members).toHaveLength(200);
+  });
+
+  it("accepts a same-page member link after confirmed corrupt-storage recovery", async () => {
+    localStorage.setItem(collectionsStorageKeyV2, "unreadable");
+    mount();
+    fireEvent.click(await screen.findByRole("button", { name: labels.clearCorrupt }));
+    fireEvent.click(screen.getByRole("button", { name: labels.clearConfirm }));
+    history.replaceState(null, "", `/en/collections#member=process%3A${encodeURIComponent(ref)}`);
+    fireEvent(window, new HashChangeEvent("hashchange"));
+    expect(await screen.findByRole("link", { name: "Public electricity" })).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem(collectionsStorageKeyV2)!).members[0].ref).toBe(ref);
   });
 
   it("resolves at most ten visible rows and does not refetch when a private note changes", async () => {

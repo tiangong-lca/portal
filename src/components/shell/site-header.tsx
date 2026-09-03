@@ -43,7 +43,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
             <span className="text-muted-foreground hidden text-xs leading-none sm:block">
               {t("productFamily")}
             </span>
-            <span className="font-heading truncate text-sm font-semibold sm:text-base">
+            <span className="font-heading text-sm leading-tight font-semibold sm:text-base">
               {t("productName")}
             </span>
           </span>

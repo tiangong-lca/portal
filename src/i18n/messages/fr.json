@@ -169,13 +169,29 @@
     "shareCancel": "Annuler",
     "shared": "Le lien confirmé de recherche par description a été copié",
     "error": "La recherche par description est indisponible. Utilisez les mots-clés ou réessayez plus tard.",
-    "flowPlaceholder": "Par exemple : dioxyde de carbone émis dans l’air"
+    "flowPlaceholder": "Par exemple : dioxyde de carbone émis dans l’air",
+    "activeFilters": "Filtres actifs",
+    "clearFilters": "Effacer les filtres",
+    "technicalPreview": "Voir les détails de la requête",
+    "filterGeography": "Région",
+    "filterSource": "Source",
+    "filterClassification": "Classification",
+    "filterAccess": "Disponibilité",
+    "filterYearFrom": "À partir de l’année",
+    "filterYearTo": "Jusqu’à l’année",
+    "filterSubtype": "Sous-type de processus"
   },
   "Browse": {
     "title": "Parcourir par {dimension}",
     "description": "Choisissez une valeur pour affiner le catalogue de données.",
     "emptyTitle": "Aucune entrée disponible dans cette rubrique",
-    "emptyDescription": "Essayez une autre rubrique du catalogue ou la recherche publique. Seuls les regroupements présents dans les données source sont affichés."
+    "emptyDescription": "Essayez une autre rubrique du catalogue ou la recherche publique. Seuls les regroupements présents dans les données source sont affichés.",
+    "processTitle": "Jeux de données de processus",
+    "flowTitle": "Jeux de données de flux",
+    "regionTitle": "Parcourir par région",
+    "sourceTitle": "Parcourir par source",
+    "catalogDescription": "Explorez les versions du catalogue public, vérifiez leur périmètre et conservez les jeux de données pertinents pour les examiner.",
+    "countVersions": "{count} versions publiques"
   },
   "Detail": {
     "processTitle": "Jeu de données de processus",
@@ -272,7 +288,8 @@
     "qualityDescription": "Consultez les informations publiques de revue et de qualité de cette version.",
     "provenanceDescription": "Consultez les sources d’origine et le traitement documenté des champs.",
     "copyVersionId": "Copier l’identifiant de version",
-    "versionCopied": "Identifiant de version copié"
+    "versionCopied": "Identifiant de version copié",
+    "copyFailed": "La copie a échoué. Sélectionnez le texte ci-dessous pour le copier manuellement."
   },
   "Compare": {
     "title": "Comparer des jeux de données de processus",
@@ -284,7 +301,7 @@
     "statusDirect": "Les champs affichés correspondent",
     "statusConverted": "Conversion d’unité nécessaire",
     "statusReference": "Évaluation complémentaire nécessaire",
-    "statusIncompatible": "Non comparable",
+    "statusIncompatible": "Champs documentés incompatibles",
     "statusInsufficient": "Informations insuffisantes pour évaluer",
     "metadataOnly": "Seules les informations descriptives sont comparées. Les résultats d’ÉICV absents ou incompatibles ne sont pas placés côte à côte.",
     "member": "Candidat {index}",
@@ -387,6 +404,12 @@
     "provenance": "Sources et provenance",
     "provenanceBody": "Les fiches distinguent les informations documentées dans la source des aides à la recherche. Les informations source absentes ne sont pas complétées.",
     "withdrawal": "Versions et retraits",
-    "withdrawalBody": "Chaque version dispose de son propre lien. Les contenus retirés ou restreints sont supprimés du catalogue."
+    "withdrawalBody": "Chaque version dispose de son propre lien. Les contenus retirés ou restreints sont supprimés du catalogue.",
+    "licensing": "Disponibilité et droits de réutilisation",
+    "licensingBody": "Une entrée du catalogue public n’autorise pas à elle seule la réutilisation des données sous-jacentes. Vérifiez la source et la licence de chaque version ; la disponibilité des entrées et sorties et des résultats d’impact est indiquée séparément.",
+    "searchHelp": "Rechercher en décrivant un besoin",
+    "searchHelpBody": "Décrivez le jeu de données souhaité : produit, région, période et technologie. Le portail peut montrer des premiers résultats par mots-clés pendant qu’il prépare ceux adaptés à votre description. Il s’agit de suggestions de recherche, pas d’une expertise scientifique ni de jeux de données générés par IA.",
+    "selectionHelp": "Conserver et comparer des versions",
+    "selectionHelpBody": "Conservez des versions de processus et de flux avec vos notes dans une sélection. La comparaison porte sur les champs affichés de 2 à 4 versions de processus. Évaluez vous-même les frontières du système et l’adéquation à votre étude ; exportez une sauvegarde avant de changer de navigateur."
   }
 }

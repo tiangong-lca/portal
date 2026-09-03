@@ -169,13 +169,29 @@
     "shareCancel": "Abbrechen",
     "shared": "Der bestätigte Link zur Beschreibungssuche wurde kopiert",
     "error": "Die Beschreibungssuche ist nicht verfügbar. Nutzen Sie die Stichwortsuche oder versuchen Sie es später erneut.",
-    "flowPlaceholder": "Zum Beispiel: Kohlendioxid-Emissionen in die Luft"
+    "flowPlaceholder": "Zum Beispiel: Kohlendioxid-Emissionen in die Luft",
+    "activeFilters": "Aktive Filter",
+    "clearFilters": "Filter zurücksetzen",
+    "technicalPreview": "Anfragedetails ansehen",
+    "filterGeography": "Region",
+    "filterSource": "Quelle",
+    "filterClassification": "Klassifikation",
+    "filterAccess": "Verfügbarkeit",
+    "filterYearFrom": "Ab Jahr",
+    "filterYearTo": "Bis Jahr",
+    "filterSubtype": "Prozessuntertyp"
   },
   "Browse": {
     "title": "Nach {dimension} durchsuchen",
     "description": "Wählen Sie einen Wert, um den Datenkatalog einzugrenzen.",
     "emptyTitle": "In diesem Bereich sind keine Einträge verfügbar",
-    "emptyDescription": "Öffnen Sie einen anderen Katalogbereich oder verwenden Sie die öffentliche Suche. Es werden nur Gruppen aus den Quelldaten angezeigt."
+    "emptyDescription": "Öffnen Sie einen anderen Katalogbereich oder verwenden Sie die öffentliche Suche. Es werden nur Gruppen aus den Quelldaten angezeigt.",
+    "processTitle": "Prozessdatensätze",
+    "flowTitle": "Flussdatensätze",
+    "regionTitle": "Nach Region durchsuchen",
+    "sourceTitle": "Nach Quelle durchsuchen",
+    "catalogDescription": "Erkunden Sie öffentlich gelistete Versionen, prüfen Sie ihren Geltungsbereich und speichern Sie relevante Datensätze zur weiteren Bewertung.",
+    "countVersions": "{count} öffentliche Versionen"
   },
   "Detail": {
     "processTitle": "Prozessdatensatz",
@@ -272,7 +288,8 @@
     "qualityDescription": "Prüfen Sie die veröffentlichten Prüf- und Qualitätsangaben dieser Version.",
     "provenanceDescription": "Prüfen Sie Originalquellen und dokumentierte Feldverarbeitung.",
     "copyVersionId": "Versionskennung kopieren",
-    "versionCopied": "Versionskennung kopiert"
+    "versionCopied": "Versionskennung kopiert",
+    "copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den folgenden Text, um ihn manuell zu kopieren."
   },
   "Compare": {
     "title": "Prozessdatensätze vergleichen",
@@ -284,7 +301,7 @@
     "statusDirect": "Angezeigte Felder stimmen überein",
     "statusConverted": "Einheitenumrechnung erforderlich",
     "statusReference": "Weitere Beurteilung erforderlich",
-    "statusIncompatible": "Nicht vergleichbar",
+    "statusIncompatible": "Dokumentierte Felder sind nicht kompatibel",
     "statusInsufficient": "Nicht genügend Informationen für eine Beurteilung",
     "metadataOnly": "Es werden nur beschreibende Angaben verglichen. Fehlende oder inkompatible LCIA-Ergebnisse werden nicht nebeneinandergestellt.",
     "member": "Kandidat {index}",
@@ -387,6 +404,12 @@
     "provenance": "Quellen und Herkunft",
     "provenanceBody": "Datensatzseiten unterscheiden dokumentierte Quellenangaben von Suchhilfen. Fehlende Quellenangaben bleiben unverändert.",
     "withdrawal": "Versionen und Rücknahmen",
-    "withdrawalBody": "Jede Datensatzversion hat einen eigenen Link. Zurückgezogene oder eingeschränkte Inhalte werden aus dem Katalog entfernt."
+    "withdrawalBody": "Jede Datensatzversion hat einen eigenen Link. Zurückgezogene oder eingeschränkte Inhalte werden aus dem Katalog entfernt.",
+    "licensing": "Verfügbarkeit und Nutzungsrechte",
+    "licensingBody": "Ein öffentlicher Katalogeintrag erlaubt nicht automatisch die Weiterverwendung der zugrunde liegenden Daten. Prüfen Sie Quelle und Lizenz jeder Version; Ein- und Ausgänge sowie Wirkungsergebnisse haben getrennte Verfügbarkeitsangaben.",
+    "searchHelp": "Suche nach einer Bedarfsbeschreibung",
+    "searchHelpBody": "Beschreiben Sie den gesuchten Datensatz mit Produkt, Region, Zeitraum und Technologie. Das Portal kann erste Stichworttreffer zeigen, während es Ergebnisse für Ihre Beschreibung vorbereitet. Dies sind Suchvorschläge, keine wissenschaftliche Prüfung und keine KI-generierten Datensätze.",
+    "selectionHelp": "Versionen speichern und vergleichen",
+    "selectionHelpBody": "Speichern Sie Prozess- und Flussversionen mit Notizen in einer Auswahlliste. Der Vergleich prüft angezeigte Felder von 2–4 Prozessversionen. Bewerten Sie Systemgrenzen und Eignung für Ihre Studie selbst und exportieren Sie vor einem Browserwechsel eine Sicherung."
   }
 }

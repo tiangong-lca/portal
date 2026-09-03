@@ -117,10 +117,10 @@ const publicEvidenceReasons: Record<string, LocalizedValue> = {
     fr: "Répertorié dans le catalogue public",
   },
   state_200_metadata_only: {
-    "zh-CN": "公开信息可浏览，数值未开放",
-    en: "Public information is available; values are not open",
-    de: "Öffentliche Angaben sind verfügbar; Werte sind nicht freigegeben",
-    fr: "Les informations sont publiques ; les valeurs ne sont pas ouvertes",
+    "zh-CN": "此记录仅提供元数据",
+    en: "This record provides metadata only",
+    de: "Dieser Eintrag enthält nur Metadaten",
+    fr: "Cette fiche fournit uniquement des métadonnées",
   },
 };
 

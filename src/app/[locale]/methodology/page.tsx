@@ -31,6 +31,9 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
     [GitCompareArrowsIcon, t("comparability"), t("comparabilityBody")],
     [ScanSearchIcon, t("provenance"), t("provenanceBody")],
     [HistoryIcon, t("withdrawal"), t("withdrawalBody")],
+    [EyeIcon, t("licensing"), t("licensingBody")],
+    [ScanSearchIcon, t("searchHelp"), t("searchHelpBody")],
+    [GitCompareArrowsIcon, t("selectionHelp"), t("selectionHelpBody")],
   ] as const;
 
   return (

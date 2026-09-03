@@ -96,7 +96,9 @@ test("exposes stable landmarks and controls at three responsive widths", async (
     await expect(page.getByRole("banner")).toBeVisible();
     await expect(page.getByRole("main")).toHaveCount(1);
     await expect(page.getByRole("contentinfo")).toBeVisible();
-    await expect(page.getByRole("radiogroup", { name: "Theme" })).toBeVisible();
+    await expect(
+      page.getByRole(viewport.width < 640 ? "combobox" : "radiogroup", { name: "Theme" }),
+    ).toBeVisible();
     await expect(page.getByRole("combobox", { name: "Language" })).toBeVisible();
     const maximumScrollX = await page.evaluate(() => {
       window.scrollTo(Number.MAX_SAFE_INTEGER, window.scrollY);
@@ -125,7 +127,7 @@ test("keeps keyboard focus visible in forced-colors mode", async ({ page }) => {
 test("does not identify the footer link by color alone", async ({ page }) => {
   await page.goto("/en");
   const methodologyLink = page.getByRole("contentinfo").getByRole("link", {
-    name: "Methodology",
+    name: "About the data",
   });
 
   await expect(methodologyLink).toBeVisible();

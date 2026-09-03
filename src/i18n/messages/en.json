@@ -169,13 +169,29 @@
     "shareCancel": "Cancel",
     "shared": "The confirmed description-search link was copied",
     "error": "Description search is unavailable. Use keyword search or try again later.",
-    "flowPlaceholder": "For example: carbon dioxide emitted to air"
+    "flowPlaceholder": "For example: carbon dioxide emitted to air",
+    "activeFilters": "Active filters",
+    "clearFilters": "Clear filters",
+    "technicalPreview": "View request details",
+    "filterGeography": "Geography",
+    "filterSource": "Source",
+    "filterClassification": "Classification",
+    "filterAccess": "Availability",
+    "filterYearFrom": "From year",
+    "filterYearTo": "To year",
+    "filterSubtype": "Process subtype"
   },
   "Browse": {
     "title": "Browse by {dimension}",
     "description": "Choose a value to narrow the data catalog.",
     "emptyTitle": "No entries can be shown in this directory",
-    "emptyDescription": "Try another directory or public search. Only groups present in the source data are shown."
+    "emptyDescription": "Try another directory or public search. Only groups present in the source data are shown.",
+    "processTitle": "Process datasets",
+    "flowTitle": "Flow datasets",
+    "regionTitle": "Browse by geography",
+    "sourceTitle": "Browse by source",
+    "catalogDescription": "Explore publicly listed versions, inspect their scope, and save relevant datasets for review.",
+    "countVersions": "{count} public versions"
   },
   "Detail": {
     "processTitle": "Process dataset",
@@ -272,7 +288,8 @@
     "qualityDescription": "Review the published review and data quality information for this version.",
     "provenanceDescription": "Review the original data sources and recorded field processing.",
     "copyVersionId": "Copy version ID",
-    "versionCopied": "Version ID copied"
+    "versionCopied": "Version ID copied",
+    "copyFailed": "Copy failed. Select the text below to copy it manually."
   },
   "Compare": {
     "title": "Compare Process datasets",
@@ -387,6 +404,12 @@
     "provenance": "Sources and provenance",
     "provenanceBody": "Record pages distinguish documented source information from search assistance. Missing source information remains unfilled.",
     "withdrawal": "Versions and withdrawals",
-    "withdrawalBody": "Each dataset version has its own link. Withdrawn or restricted content is removed from the catalog."
+    "withdrawalBody": "Each dataset version has its own link. Withdrawn or restricted content is removed from the catalog.",
+    "licensing": "Availability and permission to reuse",
+    "licensingBody": "A public catalog entry does not by itself grant permission to reuse the underlying data. Review the source and licence for each version; inputs, outputs and impact results have separate availability indicators.",
+    "searchHelp": "Using description search",
+    "searchHelpBody": "Describe the dataset you need, including product, geography, period and technology. The Portal can show initial keyword matches while it prepares results for your description. These are search suggestions, not a scientific review or an AI-generated dataset.",
+    "selectionHelp": "Saving and comparing versions",
+    "selectionHelpBody": "Use a shortlist to keep Process and Flow versions with your notes. Comparison accepts 2–4 Process versions and checks the displayed fields. Check system boundaries and study suitability yourself, and export a shortlist backup before changing browsers."
   }
 }

@@ -33,6 +33,7 @@ export type SearchResultLabels = {
   compare: string;
   copied: string;
   copyCitation: string;
+  copyFailure: string;
   details: string;
   emptyDescription: string;
   emptyTitle: string;
@@ -227,6 +228,7 @@ export function SearchResults({
                 <CitationCopy
                   citation={citation}
                   copiedLabel={labels.copied}
+                  failureLabel={labels.copyFailure}
                   copyLabel={labels.copyCitation}
                   showText={false}
                 />

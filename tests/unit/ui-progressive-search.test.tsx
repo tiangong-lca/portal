@@ -17,6 +17,7 @@ const resultLabels: SearchResultLabels = {
   compare: "Compare",
   copied: "Copied",
   copyCitation: "Copy citation",
+  copyFailure: "Copy failed",
   details: "Details",
   emptyDescription: "Try another query",
   emptyTitle: "No results",

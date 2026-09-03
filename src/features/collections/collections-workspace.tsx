@@ -95,6 +95,7 @@ export function CollectionsWorkspace({
   const [page, setPage] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
   const storageSnapshot = useRef<CollectionStateV2 | null>(null);
+  const storageBlocked = useRef(false);
   const pageIndex = Math.min(page, Math.max(0, Math.ceil(state.members.length / 10) - 1));
   const visibleMembers = state.members.slice(pageIndex * 10, pageIndex * 10 + 10);
   const { summaries, retry } = useMemberSummaries(visibleMembers, locale);
@@ -104,7 +105,6 @@ export function CollectionsWorkspace({
     let restored = emptyCollectionStateV2;
     let raw: string | null = null;
     let key = collectionsStorageKeyV2;
-    let blocked = false;
     try {
       raw = localStorage.getItem(key);
       if (raw === null) {
@@ -119,13 +119,13 @@ export function CollectionsWorkspace({
         restored = parseCollectionJsonV2(raw);
       } catch {
         setCorrupt({ key, raw });
-        blocked = true;
+        storageBlocked.current = true;
       }
     }
     storageSnapshot.current = restored;
     setState(restored);
     const receiveFragment = () => {
-      if (blocked) return;
+      if (storageBlocked.current) return;
       const hash = window.location.hash;
       try {
         if (hash.startsWith("#collection-notes="))
@@ -138,15 +138,19 @@ export function CollectionsWorkspace({
           storageSnapshot.current = merged;
           setState(merged);
         }
-      } catch {
-        setActionError(labels.invalidLink);
+      } catch (error) {
+        setActionError(
+          error instanceof Error && error.message === "collection_member_limit"
+            ? labels.memberLimit
+            : labels.invalidLink,
+        );
       }
     };
     receiveFragment();
     setHydrated(true);
     window.addEventListener("hashchange", receiveFragment);
     return () => window.removeEventListener("hashchange", receiveFragment);
-  }, [labels.invalidLink]);
+  }, [labels.invalidLink, labels.memberLimit]);
   useEffect(() => {
     if (!hydrated) return;
     storageSnapshot.current = state;
@@ -198,6 +202,17 @@ export function CollectionsWorkspace({
       setActionError(labels.clipboardError);
     }
   };
+  let proposedImport: CollectionStateV2 | null = null;
+  if (pendingImport) {
+    try {
+      proposedImport =
+        pendingImport.source === "file"
+          ? pendingImport.state
+          : mergeDisclosed(state, pendingImport.state);
+    } catch {
+      /* A valid link may exceed local capacity; current data stays intact. */
+    }
+  }
   const previewState = (preview: CollectionStateV2) => (
     <div className="flex flex-col gap-3">
       <dl className="grid gap-3 sm:grid-cols-2">
@@ -213,20 +228,22 @@ export function CollectionsWorkspace({
       </dl>
       <p className="font-medium">{fill(labels.versionCount, { count: preview.members.length })}</p>
       <ul className="flex max-h-80 flex-col gap-3 overflow-y-auto">
-        {preview.members.slice(0, 10).map((member) => (
-          <li className="rounded-lg border p-3 text-sm" key={collectionMemberKey(member)}>
-            <p>{member.kind ? common[member.kind] : labels.unknownKind}</p>
-            <p className="font-mono text-xs break-all">{member.ref}</p>
-            <p>
-              {labels.status}: {labels[member.status]}
-            </p>
-            <p className="break-words whitespace-pre-wrap">
-              {labels.note}: {member.note || common.notProvided}
-            </p>
-          </li>
-        ))}
+        {(preview.members.length <= 20 ? preview.members : preview.members.slice(0, 10)).map(
+          (member) => (
+            <li className="rounded-lg border p-3 text-sm" key={collectionMemberKey(member)}>
+              <p>{member.kind ? common[member.kind] : labels.unknownKind}</p>
+              <p className="font-mono text-xs break-all">{member.ref}</p>
+              <p>
+                {labels.status}: {labels[member.status]}
+              </p>
+              <p className="break-words whitespace-pre-wrap">
+                {labels.note}: {member.note || common.notProvided}
+              </p>
+            </li>
+          ),
+        )}
       </ul>
-      {preview.members.length > 10 ? (
+      {preview.members.length > 20 ? (
         <p className="text-muted-foreground text-sm">
           {fill(labels.previewLimit, { count: preview.members.length })}
         </p>
@@ -287,6 +304,7 @@ export function CollectionsWorkspace({
                     onClick={() => {
                       try {
                         localStorage.removeItem(corrupt.key);
+                        storageBlocked.current = false;
                         setCorrupt(null);
                         setConfirmClear(false);
                         setState(emptyCollectionStateV2);
@@ -373,7 +391,7 @@ export function CollectionsWorkspace({
               }
               value={newKind ?? "unknown"}
             >
-              <option value="unknown">{labels.chooseKind}</option>
+              <option value="unknown">{labels.kind}</option>
               <option value="process">{common.process}</option>
               <option value="flow">{common.flow}</option>
             </select>
@@ -644,18 +662,23 @@ export function CollectionsWorkspace({
                   ? labels.importDescription
                   : labels.mergeDescription}
               </p>
-              {previewState(pendingImport.state)}
+              {proposedImport ? (
+                previewState(proposedImport)
+              ) : (
+                <Alert variant="destructive">
+                  <AlertDescription>{labels.memberLimit}</AlertDescription>
+                </Alert>
+              )}
               <div className="flex flex-wrap gap-2">
                 <Button
                   className="h-auto min-h-11 whitespace-normal"
+                  disabled={!proposedImport}
                   onClick={() => {
+                    if (!proposedImport) return;
                     try {
-                      setState(
-                        pendingImport.source === "file"
-                          ? pendingImport.state
-                          : mergeDisclosed(state, pendingImport.state),
-                      );
+                      setState(proposedImport);
                       setPendingImport(null);
+                      storageBlocked.current = false;
                       setCorrupt(null);
                       setPage(0);
                       setMessage(labels.imported);

@@ -22,7 +22,7 @@ export function ResponsiveFacets({
   const [open, setOpen] = useState(false);
   return (
     <>
-      <div className="xl:hidden">
+      <div className="portal-facets-trigger xl:hidden">
         <Sheet onOpenChange={setOpen} open={open}>
           <SheetTrigger asChild>
             <Button className="min-h-11" variant="outline">
@@ -49,11 +49,11 @@ export function ResponsiveFacets({
           </SheetContent>
         </Sheet>
       </div>
-      <aside aria-label={labels.title} className="hidden xl:block">
+      <aside aria-label={labels.title} className="portal-facets-content hidden xl:block">
         {children}
       </aside>
       <noscript>
-        <div className="xl:hidden">{children}</div>
+        <style>{".portal-facets-content{display:block}.portal-facets-trigger{display:none}"}</style>
       </noscript>
     </>
   );

@@ -169,13 +169,29 @@
     "shareCancel": "取消",
     "shared": "已复制经确认的描述搜索链接",
     "error": "描述搜索暂不可用，请改用关键词搜索或稍后重试。",
-    "flowPlaceholder": "例如：排放到空气的二氧化碳"
+    "flowPlaceholder": "例如：排放到空气的二氧化碳",
+    "activeFilters": "当前筛选条件",
+    "clearFilters": "清除筛选",
+    "technicalPreview": "查看请求详情",
+    "filterGeography": "地区",
+    "filterSource": "来源",
+    "filterClassification": "分类",
+    "filterAccess": "可查看内容",
+    "filterYearFrom": "起始年份",
+    "filterYearTo": "结束年份",
+    "filterSubtype": "过程子类型"
   },
   "Browse": {
     "title": "按{dimension}浏览",
     "description": "选择一个值以缩小数据目录范围。",
     "emptyTitle": "当前目录没有可显示条目",
-    "emptyDescription": "尝试切换目录或使用公开搜索。这里只展示来源数据中已有的分组。"
+    "emptyDescription": "尝试切换目录或使用公开搜索。这里只展示来源数据中已有的分组。",
+    "processTitle": "过程数据集",
+    "flowTitle": "流数据集",
+    "regionTitle": "按地区浏览",
+    "sourceTitle": "按来源浏览",
+    "catalogDescription": "浏览公开目录中的版本，核对适用范围，并保存相关数据集以便后续评估。",
+    "countVersions": "{count} 个公开版本"
   },
   "Detail": {
     "processTitle": "过程数据集",
@@ -272,7 +288,8 @@
     "qualityDescription": "查看此版本已公开的审核和数据质量信息。",
     "provenanceDescription": "查看原始数据来源及字段处理记录。",
     "copyVersionId": "复制版本标识",
-    "versionCopied": "版本标识已复制"
+    "versionCopied": "版本标识已复制",
+    "copyFailed": "复制失败，可选中下方文字手动复制。"
   },
   "Compare": {
     "title": "比较过程数据集",
@@ -284,7 +301,7 @@
     "statusDirect": "所列字段一致",
     "statusConverted": "需要单位换算",
     "statusReference": "需进一步判断",
-    "statusIncompatible": "不可比",
+    "statusIncompatible": "已记录字段不兼容",
     "statusInsufficient": "信息不足，暂不能判断",
     "metadataOnly": "当前只对照描述信息，不并列缺失或不可比的 LCIA 结果。",
     "member": "候选 {index}",
@@ -387,6 +404,12 @@
     "provenance": "来源与追溯",
     "provenanceBody": "记录页区分来源数据与搜索辅助信息；来源中缺失的信息保持缺失。",
     "withdrawal": "版本与撤回",
-    "withdrawalBody": "每个数据集版本都有独立链接；撤回或受限内容会从目录中停止显示。"
+    "withdrawalBody": "每个数据集版本都有独立链接；撤回或受限内容会从目录中停止显示。",
+    "licensing": "公开展示与使用许可",
+    "licensingBody": "数据集出现在公开目录中，并不等于其底层数据可以任意复用。请核对每个版本的来源和许可；输入输出与环境影响结果分别标明是否可查看。",
+    "searchHelp": "如何按需求描述搜索",
+    "searchHelpBody": "描述您需要的数据集，包括产品、地区、时间和技术。门户可先显示关键词匹配结果，再按您的描述更新结果。这些结果是检索建议，不是科学审查结论，也不是 AI 生成的数据集。",
+    "selectionHelp": "保存与对比版本",
+    "selectionHelpBody": "候选清单可保存过程和流的具体版本及备注。对比功能支持 2–4 个过程版本，只核对已展示的字段。系统边界及其对研究的适用性仍需您判断；更换浏览器前请导出清单备份。"
   }
 }

@@ -96,6 +96,7 @@ export default async function SearchPage({
     compare: detail("compare"),
     copied: detail("citationCopied"),
     copyCitation: detail("copyCitation"),
+    copyFailure: detail("copyFailed"),
     details: common("details"),
     emptyDescription: t("emptyDescription"),
     emptyTitle: t("emptyTitle"),
@@ -421,7 +422,10 @@ export default async function SearchPage({
                       siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
                     />
                     {results.some((item) => item.kind === "process") ? (
-                      <Button className="self-start" type="submit">
+                      <Button
+                        className="h-auto min-h-11 max-w-full self-start whitespace-normal"
+                        type="submit"
+                      >
                         {t("compareSelected")}
                       </Button>
                     ) : null}
@@ -446,6 +450,16 @@ export default async function SearchPage({
             initialFilters={parsedSearch.filters}
             initialKind={parsedSearch.kind}
             labels={{
+              activeFilters: hybrid("activeFilters"),
+              clearFilters: hybrid("clearFilters"),
+              technicalPreview: hybrid("technicalPreview"),
+              filterAccess: hybrid("filterAccess"),
+              filterClassification: hybrid("filterClassification"),
+              filterGeography: hybrid("filterGeography"),
+              filterSource: hybrid("filterSource"),
+              filterSubtype: hybrid("filterSubtype"),
+              filterYearFrom: hybrid("filterYearFrom"),
+              filterYearTo: hybrid("filterYearTo"),
               advisoryDescription: hybrid("advisoryDescription"),
               advisoryTitle: hybrid("advisoryTitle"),
               compareSelected: t("compareSelected"),

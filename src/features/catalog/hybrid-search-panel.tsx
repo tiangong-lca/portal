@@ -38,6 +38,7 @@ import {
 } from "@/lib/hybrid-request";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 import { CompareSelectionForm } from "@/features/compare/selection";
+import { formatGeographyCode } from "@/i18n/geography";
 
 export type HybridSearchLabels = {
   advisoryDescription: string;
@@ -82,6 +83,16 @@ export type HybridSearchLabels = {
   pageError: string;
   cursorExpired: string;
   restart: string;
+  activeFilters: string;
+  clearFilters: string;
+  technicalPreview: string;
+  filterGeography: string;
+  filterSource: string;
+  filterClassification: string;
+  filterAccess: string;
+  filterYearFrom: string;
+  filterYearTo: string;
+  filterSubtype: string;
 };
 
 type RequestState = {
@@ -176,6 +187,31 @@ export function HybridSearchPanel({
     return mapProgressiveSearchPage(response, locale);
   }, [locale, response]);
   const keptLexicalResults = search.hybrid === "empty" && results.length > 0;
+  const filterLabels: Record<keyof PortalHybridFilters, string> = {
+    accessLevel: labels.filterAccess,
+    classification: labels.filterClassification,
+    geography: labels.filterGeography,
+    processSubtype: labels.filterSubtype,
+    referenceYearFrom: labels.filterYearFrom,
+    referenceYearTo: labels.filterYearTo,
+    source: labels.filterSource,
+  };
+  const filterEntries = Object.entries(requestState.filters)
+    .filter(
+      ([key, value]) =>
+        value !== undefined && !(key === "processSubtype" && requestState.kind === "flow"),
+    )
+    .map(([key, value]) => ({
+      label: filterLabels[key as keyof PortalHybridFilters],
+      value:
+        key === "geography"
+          ? formatGeographyCode(String(value), locale)
+          : key === "accessLevel"
+            ? value === "open"
+              ? resultLabels.public
+              : resultLabels.metadataOnly
+            : String(value),
+    }));
 
   return (
     <Card>
@@ -199,6 +235,27 @@ export function HybridSearchPanel({
             start(parsedRequest);
           }}
         >
+          {filterEntries.length > 0 ? (
+            <section aria-label={labels.activeFilters} className="rounded-lg border p-3">
+              <p className="text-sm font-medium">{labels.activeFilters}</p>
+              <dl className="mt-2 grid gap-2 sm:grid-cols-2">
+                {filterEntries.map((entry) => (
+                  <div className="min-w-0 text-sm" key={entry.label}>
+                    <dt className="text-muted-foreground">{entry.label}</dt>
+                    <dd className="break-words">{entry.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <Button
+                className="mt-2 h-auto min-h-11 whitespace-normal"
+                onClick={() => setRequestState((current) => ({ ...current, filters: {} }))}
+                type="button"
+                variant="ghost"
+              >
+                {labels.clearFilters}
+              </Button>
+            </section>
+          ) : null}
           <Field>
             <FieldLabel>{labels.kind}</FieldLabel>
             <ToggleGroup
@@ -271,9 +328,30 @@ export function HybridSearchPanel({
               <CardDescription>{labels.shareDisclosure}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <pre className="bg-muted max-h-64 overflow-auto rounded-lg p-3 text-xs break-words whitespace-pre-wrap">
-                {JSON.stringify(parsedRequest, null, 2)}
-              </pre>
+              <dl className="flex flex-col gap-3">
+                <div>
+                  <dt className="text-muted-foreground text-sm">{labels.kind}</dt>
+                  <dd>{parsedRequest.kind === "process" ? labels.process : labels.flow}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground text-sm">{labels.queryLabel}</dt>
+                  <dd className="break-words whitespace-pre-wrap">{parsedRequest.query}</dd>
+                </div>
+                {filterEntries.map((entry) => (
+                  <div key={entry.label}>
+                    <dt className="text-muted-foreground text-sm">{entry.label}</dt>
+                    <dd className="break-words">{entry.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <details>
+                <summary className="text-link min-h-11 cursor-pointer py-3 text-sm">
+                  {labels.technicalPreview}
+                </summary>
+                <pre className="bg-muted max-h-64 overflow-auto rounded-lg p-3 text-xs break-words whitespace-pre-wrap">
+                  {JSON.stringify(parsedRequest, null, 2)}
+                </pre>
+              </details>
               <div className="flex flex-wrap gap-2">
                 <Button
                   onClick={async () => {
@@ -430,7 +508,10 @@ export function HybridSearchPanel({
                   siteOrigin={siteOrigin}
                 />
                 {results.some((item) => item.kind === "process") ? (
-                  <Button className="self-start" type="submit">
+                  <Button
+                    className="h-auto min-h-11 max-w-full self-start whitespace-normal"
+                    type="submit"
+                  >
                     {labels.compareSelected}
                   </Button>
                 ) : null}

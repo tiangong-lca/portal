@@ -114,12 +114,14 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
             <CitationCopy
               citation={record.citation}
               copiedLabel={t("citationCopied")}
+              failureLabel={t("copyFailed")}
               copyLabel={t("copyCitation")}
             />
             <CitationCopy
               citation={refValue}
               copyLabel={t("copyVersionId")}
               copiedLabel={t("versionCopied")}
+              failureLabel={t("copyFailed")}
               showText={false}
             />
           </div>

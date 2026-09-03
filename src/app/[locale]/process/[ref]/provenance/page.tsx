@@ -48,6 +48,19 @@ export default async function ProcessProvenancePage({
     [t("normalizationRule"), dataset.provenance.normalizationRuleVersion],
   ].filter((entry): entry is [string, string] => Boolean(entry[1]));
   const hasEvidence = identityRows.length > 0 || dataset.provenance.fieldOrigins.length > 0;
+  const fieldLabels: Record<string, string> = {
+    "metadata.names": t("originalName"),
+    "metadata.referenceProduct": t("referenceProduct"),
+    "metadata.functionalUnit": t("functionalUnit"),
+    "metadata.geography": t("geography"),
+    "metadata.geography.code": t("geography"),
+    "metadata.referenceYear": t("referenceYear"),
+    "metadata.technology": t("technology"),
+    "metadata.classifications": t("classification"),
+    "metadata.allocationAndModeling": t("allocationModeling"),
+    "metadata.cutoffRules": t("cutoffRules"),
+    "metadata.source": t("sourceDatabase"),
+  };
 
   return (
     <section aria-labelledby="provenance-title" className="flex flex-col gap-4">
@@ -88,6 +101,9 @@ export default async function ProcessProvenancePage({
                     className="flex flex-col gap-1 rounded-lg border p-3"
                     key={`${origin.path}:${origin.kind}`}
                   >
+                    <strong className="text-sm">
+                      {fieldLabels[origin.path] ?? t("fieldSource")}
+                    </strong>
                     <div className="flex flex-wrap gap-2">
                       <Badge variant="outline">{localizeFieldOrigin(origin.kind, locale)}</Badge>
                       {origin.confidence ? (

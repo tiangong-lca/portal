@@ -11,25 +11,30 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/search?v=1");
+  await page.getByRole("radio", { name: "Describe your need" }).click();
   const bffResponsePromise = page.waitForResponse(
     (response) =>
       response.url().endsWith("/internal/hybrid") && response.request().method() === "POST",
   );
   const query = "low-carbon electricity for an industrial site in China";
   await page.getByLabel("Data need").fill(query);
-  await page.getByRole("button", { name: "Find matching data" }).click();
+  await page.getByRole("button", { name: "Find matching datasets" }).click();
   const bffResponse = await bffResponsePromise;
 
   expect(bffResponse.ok()).toBe(true);
   await expect(page).toHaveURL(/\/en\/search\?v=1$/u);
   await expect(page.getByRole("status")).toContainText(
-    /Updated results are ready|Matching to your request is complete/u,
+    /Updated matches are ready|Results updated for your description/u,
   );
   const updatedResults = page.getByRole("button", { name: "View updated results" });
   if (await updatedResults.isVisible()) await updatedResults.click();
-  await expect(page.getByRole("button", { name: "Search interpretation" })).toBeVisible();
   await expect(
-    page.getByText("This interpretation helps retrieve records", { exact: false }),
+    page.getByRole("button", { name: "How your request was interpreted" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("This interpretation guides search", {
+      exact: false,
+    }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Matching datasets" })).toBeVisible();
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
@@ -53,13 +58,13 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 
   await page.getByRole("button", { name: "Preview shared link" }).click();
   await expect(page.getByRole("heading", { name: "What the link will include" })).toBeVisible();
-  await expect(page.getByText(query, { exact: true })).toBeVisible();
+  await expect(page.getByRole("definition").filter({ hasText: query })).toBeVisible();
   await page.getByRole("button", { name: "Confirm and copy query link" }).click();
   const shared = await page.evaluate(() => navigator.clipboard.readText());
   expect(shared).toContain("#hybrid=");
   expect(shared).not.toContain(query);
 
-  const candidates = page.getByRole("checkbox", { name: /^Select this Process /u });
+  const candidates = page.getByRole("checkbox", { name: /^Select for comparison /u });
   await expect(candidates).toHaveCount(2);
   await candidates.nth(0).check();
   await candidates.nth(1).check();
@@ -70,13 +75,14 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 
 test("automatically returns lexical cards for a fixed Hybrid guard rejection", async ({ page }) => {
   await page.goto("/en/search?v=1");
+  await page.getByRole("radio", { name: "Describe your need" }).click();
   const query = "fixture:guard_unavailable";
   await page.getByLabel("Data need").fill(query);
-  await page.getByRole("button", { name: "Find matching data" }).click();
+  await page.getByRole("button", { name: "Find matching datasets" }).click();
 
-  await expect(page.getByText("Keyword search results", { exact: true })).toBeVisible();
+  await expect(page.getByText("Keyword results shown", { exact: true })).toBeVisible();
   await expect(
-    page.getByRole("status").filter({ hasText: "Keyword search results" }),
+    page.getByRole("status").filter({ hasText: "Keyword results shown" }),
   ).not.toContainText("guard_unavailable");
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
   await expect(page).toHaveURL(/\/en\/search\?v=1$/u);
@@ -97,9 +103,10 @@ test("keeps early selections stable until a late update is accepted and exposes 
     await route.fulfill({ response });
   });
   await page.goto("/en/search?v=1");
+  await page.getByRole("radio", { name: "Describe your need" }).click();
   await page.getByLabel("Data need").fill("electricity for an industrial site");
-  await page.getByRole("button", { name: "Find matching data" }).click();
-  const firstSelection = page.getByRole("checkbox", { name: /^Select this Process /u }).first();
+  await page.getByRole("button", { name: "Find matching datasets" }).click();
+  const firstSelection = page.getByRole("checkbox", { name: /^Select for comparison /u }).first();
   await firstSelection.check();
   const selectedRef = await firstSelection.inputValue();
   releaseUpdate();
@@ -107,7 +114,9 @@ test("keeps early selections stable until a late update is accepted and exposes 
   await expect(firstSelection).toBeChecked();
   expect(await firstSelection.inputValue()).toBe(selectedRef);
   await page.getByRole("button", { name: "View updated results" }).click();
-  const versions = page.getByRole("button", { name: /Other matching versions/u }).first();
+  const versions = page
+    .getByRole("button", { name: /Other versions matched in this search/u })
+    .first();
   await versions.focus();
   await page.keyboard.press("Enter");
   const versionLink = page.getByRole("link", { name: "Version 00.99.999" });
@@ -135,19 +144,23 @@ test("shares collection notes only after preview and second confirmation", async
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/collections");
-  await page.getByLabel("Dataset version identifier").fill(processRef);
+  await page.getByLabel("Add by version ID").fill(processRef);
   await page.getByRole("button", { name: "Add to shortlist" }).click();
-  await page.getByLabel("Research name").fill("Private research name");
-  await page.getByLabel("Purpose").fill("Private purpose");
-  await page.getByLabel("Local note or rationale").fill("Private local note");
+  await page.getByLabel("Shortlist name").fill("Private research name");
+  await page.getByLabel("Purpose or research question").fill("Private purpose");
+  await page.getByLabel("Notes or selection rationale").fill("Private local note");
   await page.evaluate(() => navigator.clipboard.writeText("sentinel"));
 
-  await page.getByRole("button", { name: "Preview share with notes" }).click();
-  await expect(page.getByRole("heading", { name: "Disclosure preview" })).toBeVisible();
-  await expect(page.getByText("Private local note", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Share shortlist and notes" }).click();
+  await expect(page.getByRole("heading", { name: "Review before sharing" })).toBeVisible();
+  await expect(
+    page
+      .getByRole("region", { name: "Review before sharing" })
+      .getByText("Notes or selection rationale: Private local note", { exact: true }),
+  ).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("sentinel");
 
-  await page.getByRole("button", { name: "Confirm and copy disclosed link" }).click();
+  await page.getByRole("button", { name: "Confirm and copy link" }).click();
   const shared = await page.evaluate(() => navigator.clipboard.readText());
   expect(shared).toContain("#collection-notes=");
   expect(shared).not.toContain("Private local note");
@@ -156,9 +169,16 @@ test("shares collection notes only after preview and second confirmation", async
   try {
     const receiver = await receiverContext.newPage();
     await receiver.goto(shared);
-    await expect(receiver.getByLabel("Research name")).toHaveValue("Private research name");
-    await expect(receiver.getByLabel("Purpose")).toHaveValue("Private purpose");
-    await expect(receiver.getByLabel("Local note or rationale")).toHaveValue("Private local note");
+    await expect(receiver.getByRole("heading", { name: "Review shortlist import" })).toBeVisible();
+    await expect(receiver.getByLabel("Shortlist name")).toHaveValue("");
+    await receiver.getByRole("button", { name: "Add shared shortlist" }).click();
+    await expect(receiver.getByLabel("Shortlist name")).toHaveValue("Private research name");
+    await expect(receiver.getByLabel("Purpose or research question")).toHaveValue(
+      "Private purpose",
+    );
+    await expect(receiver.getByLabel("Notes or selection rationale")).toHaveValue(
+      "Private local note",
+    );
   } finally {
     await receiverContext.close();
   }
