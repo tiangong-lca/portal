@@ -2,6 +2,51 @@ import type { PortalLocale } from "./routing";
 
 type LocalizedValue = Record<PortalLocale, string>;
 
+// Display vocabulary mirrors released Next 82fd0bf pages_process typeOfDataSet.
+// Keys are source values, not replacement filters; unknown authored values remain intact.
+const processSubtypes: Record<string, LocalizedValue> = {
+  "unit process, single operation": {
+    "zh-CN": "单元过程，单一操作",
+    en: "Unit process, single operation",
+    de: "Prozessmodul, Einzeloperation",
+    fr: "Processus élémentaire, opération unique",
+  },
+  "unit process, black box": {
+    "zh-CN": "单元过程，黑箱",
+    en: "Unit process, black box",
+    de: "Prozessmodul, Blackbox",
+    fr: "Processus élémentaire, boîte noire",
+  },
+  "lci result": {
+    "zh-CN": "LCI结果",
+    en: "LCI result",
+    de: "Sachbilanzergebnis",
+    fr: "Résultat d’ICV",
+  },
+  "partly terminated system": {
+    "zh-CN": "部分终止系统",
+    en: "Partly terminated system",
+    de: "Teilweise abgeschlossenes System",
+    fr: "Système partiellement terminé",
+  },
+  "avoided product system": {
+    "zh-CN": "避免产品系统",
+    en: "Avoided product system",
+    de: "System vermiedener Produkte",
+    fr: "Système de produit évité",
+  },
+};
+
+export function localizeProcessSubtype(
+  value: string | undefined,
+  locale: PortalLocale,
+): string | undefined {
+  if (value === undefined) return undefined;
+  const normalized = value.trim().toLowerCase();
+  const key = normalized === "unit processes, black box" ? "unit process, black box" : normalized;
+  return processSubtypes[key]?.[locale] ?? value;
+}
+
 const geographyPrecision: Record<string, LocalizedValue> = {
   country: { "zh-CN": "国家", en: "Country", de: "Land", fr: "Pays" },
   province: {

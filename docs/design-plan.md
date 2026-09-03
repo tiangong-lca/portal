@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
-lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
+lastReviewedCommit: 9b388d6a435759d4d9fba981a866124bbcea323e
+lastReviewedNote: "Reviewed for Portal #50: display-only Process subtype vocabulary follows released Next across four locales while retaining wire values and unknown source strings. Hosted #49 evidence is recorded without claiming latency targets met; no backend or budget policy changes."
 related:
   - AGENTS.md
   - README.md
@@ -385,6 +385,8 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 动态分面计数必须来自后端全结果集聚合，不能由当前页样本推算；单位明确为命中的公开版本，不暗示去重数据集数。首批分面限于已具备索引和稳定字段的：对象类型、访问能力、地区、参考年、Process subtype、数据源。分配方法、技术路线和质量分面在真实数据覆盖与索引验收后加入。
 
 地区名称采用已发布 Next `82fd0bf6b96fbeca7c178d71832b475ebbdc07f3` 的四语 ILCD 地区快照，646 个非 NULL 编码由 `scripts/sync-location-names.mjs` 离线生成，receipt 记录源 commit、文件和摘要。界面展示“名称（编码）”，未知编码原样保留，原始地理说明仍在详情中；不得据显示名称猜测精度、改变筛选值或放宽 LCIA 原始上下文绑定。
+
+已知 Process subtype 在分面、已选条件和 Hybrid 筛选/分享摘要中使用该 Next 发布版本的四语词条，包括单元过程、LCI 结果、部分终止系统和避免产品系统。历史 black-box 单复数写法仅共用显示词条，保留各自原始筛选值与计数；未知自定义类型不翻译或重写。
 
 Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时才启用；默认使用原始 Process 平铺，不在 Portal 自建合并规则。
 

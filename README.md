@@ -17,8 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
-lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
+lastReviewedCommit: 9b388d6a435759d4d9fba981a866124bbcea323e
+lastReviewedNote: "Reviewed for Portal #50: display-only Process subtype vocabulary follows released Next across four locales while retaining wire values and unknown source strings. Hosted #49 evidence is recorded without claiming latency targets met; no backend or budget policy changes."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -69,5 +69,7 @@ Production 由 `portal/main` 自动发布到 `portal.tiangong.earth`，公开站
 公开站点采用性能与 SEO 优先的 enforcing CSP、五分钟首页 ISR、locale-correct 初始 HTML、四语 reciprocal metadata、Dataset JSON-LD 与分片 sitemap。真实 404 保留原 URL、`noindex` 和错误状态；EdgeOne 对未知首段生成通用 raw document 的问题按平台缺陷单独跟踪。Portal #37 的 RUM 与七天观察已按用户要求取消，精确托管兼容与发布证据仍记录在 `docs/r0/`。
 
 Portal #48 完成界面与数据使用者文案回归：不透明分层导航、移动端筛选、前置的搜索模式切换、保留筛选的目录跳转、跨页 2–4 版本对比和清晰的可用性标记。清单 V2 保留旧清单及备注，以精确类型和版本展示名称，导入先预览再确认，分享默认仅编号与类型。名称补全每批最多 10 条、最多 4 个公开 RPC 并发，不传输清单名称、用途或备注。
+
+Portal #50 补齐线上抽查发现的过程类型枚举：分面、已选条件和描述搜索摘要使用 Next 已发布的四语词条；原始查询值与未知自定义类型不变，不影响检索结果。
 
 Database 已通过 PR #602 晋级 Main，34 个契约文件重新固定为 `521741a064f402c9b674583ef69a5947d1b5885f`，内容与先前已部署版本逐字节一致，不重跑生产迁移。前端托管发布及 workspace integration 的状态以 [Portal #48](https://github.com/tiangong-lca/portal/issues/48)、[兼容矩阵](docs/r0/compatibility-matrix.md) 和 [workspace #963](https://github.com/tiangong-lca/workspace/issues/963) 为准，不能把本地浏览器验证视为新前端已经上线。

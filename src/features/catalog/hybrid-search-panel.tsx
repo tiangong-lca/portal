@@ -39,6 +39,7 @@ import {
 import { localePath, type PortalLocale } from "@/i18n/routing";
 import { CompareSelectionForm } from "@/features/compare/selection";
 import { formatGeographyCode } from "@/i18n/geography";
+import { localizeProcessSubtype } from "@/i18n/domain-vocabulary";
 
 export type HybridSearchLabels = {
   advisoryDescription: string;
@@ -210,7 +211,9 @@ export function HybridSearchPanel({
             ? value === "open"
               ? resultLabels.public
               : resultLabels.metadataOnly
-            : String(value),
+            : key === "processSubtype"
+              ? localizeProcessSubtype(String(value), locale)
+              : String(value),
     }));
 
   return (
