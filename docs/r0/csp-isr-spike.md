@@ -21,8 +21,8 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: d8216506bd7f0e37b27ddfa64cd5bd3f12e4042c
-lastReviewedNote: "Reviewed for Portal #48: explicit public capabilities, locale-safe copy, bounded summary reads, exact-version selection and safe shortlist migration preserve anonymous/CSP/ISR boundaries. 223 tests and 64 production browser checks pass at the reviewed source; exact new hosted acceptance remains a separate release step."
+lastReviewedCommit: 9b388d6a435759d4d9fba981a866124bbcea323e
+lastReviewedNote: "Reviewed for Portal #50: display-only subtype labels leave CSP, ISR, native routing and strict-profile reopen conditions unchanged; all 65 production browser checks pass. The exact prior #49 hosted evidence and timing caveats are recorded in the compatibility matrix."
 related:
   - compatibility-matrix.md
   - ../design-plan.md
