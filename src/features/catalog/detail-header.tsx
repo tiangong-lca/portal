@@ -1,4 +1,4 @@
-import { BookmarkPlusIcon, GitCompareArrowsIcon, QuoteIcon } from "lucide-react";
+import { BookmarkPlusIcon, QuoteIcon } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
@@ -12,6 +12,8 @@ import { CitationCopy } from "./citation-copy";
 import { NavigationLink } from "@/components/shell/navigation-link";
 import { AvailabilityBadges } from "./availability-badges";
 import { HashDisclosure } from "@/components/shell/hash-disclosure";
+import { CompareChoice } from "@/features/compare/selection";
+import { buildMemberFragment } from "@/features/collections/storage-v2";
 
 type DetailHeaderProps = {
   kind: "process" | "flow";
@@ -71,16 +73,15 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
 
       <div className="flex flex-wrap gap-2">
         {kind === "process" ? (
-          <Button asChild variant="outline">
-            <Link href={`${localePath(locale, "compare")}?v=1&ids=${encodeURIComponent(refValue)}`}>
-              <GitCompareArrowsIcon data-icon="inline-start" />
-              {t("compare")}
-            </Link>
-          </Button>
+          <CompareChoice
+            item={{ ref: refValue, name: record?.name ?? refValue }}
+            label={t("compare")}
+            locale={locale}
+          />
         ) : null}
         <Button asChild variant="outline">
           <Link
-            href={`${localePath(locale, "collections")}#member=${encodeURIComponent(refValue)}`}
+            href={`${localePath(locale, "collections")}${buildMemberFragment({ kind, ref: refValue })}`}
           >
             <BookmarkPlusIcon data-icon="inline-start" />
             {t("collect")}

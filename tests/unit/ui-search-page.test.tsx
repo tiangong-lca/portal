@@ -27,6 +27,10 @@ vi.mock("next-intl/server", () => ({
   getTranslations,
   setRequestLocale: vi.fn<(locale: string) => void>(),
 }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn<(href: string) => void>() }),
+  notFound: vi.fn<() => never>(),
+}));
 vi.mock("@/features/catalog/hybrid-search-panel", () => ({
   HybridSearchPanel: () => <div data-testid="hybrid-panel-stub" />,
 }));
@@ -114,11 +118,34 @@ describe("Search page sidebar state (Portal #46)", () => {
     await renderSearchPage({ v: "1", kind: "process", q: "electricity" });
 
     const sidebar = getSidebar();
-    expect(within(sidebar).getByText(searchDictionary.description)).toBeInTheDocument();
+    expect(within(sidebar).getByText(searchDictionary.filtersDescription)).toBeInTheDocument();
     expect(
       within(sidebar).queryByText(searchDictionary.unavailableDescription),
     ).not.toBeInTheDocument();
     expect(within(sidebar).getByRole("link", { name: "Process (1)" })).toBeInTheDocument();
     expect(screen.getByRole("list")).toBeInTheDocument();
   });
+
+  it("executes an explicit geography-only query and preserves the filter in keyword submission", async () => {
+    catalogMocks.searchPublicProcesses.mockResolvedValue(
+      publicSearchPageSchema.parse(fixtureSearch()),
+    );
+    catalogMocks.getPublicFacets.mockResolvedValue(
+      publicFacetsSchema.parse({ ...catalogFixture.facets, kind: "process" }),
+    );
+    await renderSearchPage({ v: "1", kind: "process", geo: "cn" });
+    expect(catalogMocks.searchPublicProcesses).toHaveBeenCalledWith(
+      expect.objectContaining({ query: "", filters: { geography: "cn" } }),
+      undefined,
+      { cache: "short-public" },
+    );
+    expect(
+      screen.getByRole("heading", { name: searchDictionary.allResultsTitle }),
+    ).toBeInTheDocument();
+    expect(document.querySelector('input[name="geo"]')).toHaveValue("cn");
+  });
 });
+
+function fixtureSearch() {
+  return catalogFixture.search;
+}

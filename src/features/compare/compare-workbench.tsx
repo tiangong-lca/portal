@@ -1,4 +1,5 @@
 import { GitCompareArrowsIcon } from "lucide-react";
+import Link from "next/link";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { PortalLocale } from "@/i18n/routing";
+import { localePath, type PortalLocale } from "@/i18n/routing";
+import { formatGeographyCode } from "@/i18n/geography";
+import { localizeGeographyPrecision } from "@/i18n/domain-vocabulary";
 
 import {
   evaluateCompatibility,
@@ -45,6 +48,8 @@ type CompareLabels = {
   evidence: string;
   unit: string;
   value: string;
+  evidenceNotice: string;
+  resultStatus: string;
   status: Record<CompatibilityStatus, string>;
 };
 
@@ -156,7 +161,8 @@ export function CompareWorkbench({
         <GitCompareArrowsIcon aria-hidden="true" />
         <AlertTitle>{labels.status[result.status]}</AlertTitle>
         <AlertDescription>
-          {result.canAlignLcia ? labels.status[result.status] : labels.metadataOnly}
+          <p>{labels.evidenceNotice}</p>
+          {!result.canAlignLcia ? <p>{labels.metadataOnly}</p> : null}
         </AlertDescription>
       </Alert>
       <div className="hidden md:block">
@@ -167,10 +173,18 @@ export function CompareWorkbench({
               <TableHead scope="col">{labels.dimension}</TableHead>
               {candidates.map((candidate, index) => (
                 <TableHead key={candidate.ref} scope="col">
-                  {candidate.name || labels.member(index + 1)}
+                  <Link
+                    className="block max-w-xs whitespace-normal"
+                    href={localePath(locale, `process/${encodeURIComponent(candidate.ref)}`)}
+                  >
+                    {candidate.name || labels.member(index + 1)}
+                  </Link>
+                  <span className="text-muted-foreground block font-mono text-xs">
+                    {candidate.ref.split("@")[1]}
+                  </span>
                 </TableHead>
               ))}
-              <TableHead scope="col">{labels.matrix}</TableHead>
+              <TableHead scope="col">{labels.resultStatus}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -179,7 +193,11 @@ export function CompareWorkbench({
                 <TableHead scope="row">{dimensionLabels[row.dimension][locale]}</TableHead>
                 {row.values.map((value, index) => (
                   <TableCell className="font-mono text-xs" key={candidates[index]?.ref}>
-                    {value ?? labels.notProvided}
+                    {row.dimension === "geography"
+                      ? (formatGeographyCode(value, locale) ?? labels.notProvided)
+                      : row.dimension === "geographyPrecision" && value
+                        ? localizeGeographyPrecision(value, locale)
+                        : (value ?? labels.notProvided)}
                   </TableCell>
                 ))}
                 <TableCell>
@@ -196,12 +214,25 @@ export function CompareWorkbench({
             <h3 className="font-medium">{dimensionLabels[row.dimension][locale]}</h3>
             <dl className="mt-3 flex flex-col gap-2">
               {row.values.map((value, index) => (
-                <div
-                  className="grid grid-cols-[6rem_minmax(0,1fr)] gap-2"
-                  key={candidates[index]?.ref}
-                >
-                  <dt className="text-muted-foreground text-xs">{labels.member(index + 1)}</dt>
-                  <dd className="font-mono text-xs break-all">{value ?? labels.notProvided}</dd>
+                <div className="grid gap-1 rounded-lg border p-3" key={candidates[index]?.ref}>
+                  <dt className="text-muted-foreground text-xs break-words">
+                    <Link
+                      href={localePath(
+                        locale,
+                        `process/${encodeURIComponent(candidates[index]!.ref)}`,
+                      )}
+                    >
+                      {candidates[index]?.name ?? labels.member(index + 1)}
+                    </Link>
+                    <span className="block font-mono">{candidates[index]?.ref.split("@")[1]}</span>
+                  </dt>
+                  <dd className="text-sm break-words">
+                    {row.dimension === "geography"
+                      ? (formatGeographyCode(value, locale) ?? labels.notProvided)
+                      : row.dimension === "geographyPrecision" && value
+                        ? localizeGeographyPrecision(value, locale)
+                        : (value ?? labels.notProvided)}
+                  </dd>
                 </div>
               ))}
             </dl>

@@ -37,6 +37,7 @@ import {
   type PortalHybridSearchRequest,
 } from "@/lib/hybrid-request";
 import { localePath, type PortalLocale } from "@/i18n/routing";
+import { CompareSelectionForm } from "@/features/compare/selection";
 
 export type HybridSearchLabels = {
   advisoryDescription: string;
@@ -54,6 +55,7 @@ export type HybridSearchLabels = {
   process: string;
   queryLabel: string;
   queryPlaceholder: string;
+  flowPlaceholder: string;
   resultsTitle: string;
   running: string;
   semanticQuery: string;
@@ -226,14 +228,21 @@ export function HybridSearchPanel({
               onChange={(event) =>
                 setRequestState((current) => ({ ...current, query: event.target.value }))
               }
-              placeholder={labels.queryPlaceholder}
+              placeholder={
+                requestState.kind === "flow" ? labels.flowPlaceholder : labels.queryPlaceholder
+              }
               rows={3}
               value={requestState.query}
             />
             <FieldDescription>{labels.privacy}</FieldDescription>
           </Field>
           <div className="flex flex-wrap gap-2">
-            <Button aria-busy={running} disabled={!parsedRequest} type="submit">
+            <Button
+              aria-busy={running}
+              className="h-auto min-h-11 whitespace-normal"
+              disabled={!parsedRequest}
+              type="submit"
+            >
               {running ? (
                 <LoaderCircleIcon className="motion-safe:animate-spin" data-icon="inline-start" />
               ) : (
@@ -411,11 +420,7 @@ export function HybridSearchPanel({
               <h3 className="font-heading text-xl font-semibold" ref={resultHeading} tabIndex={-1}>
                 {labels.resultsTitle}
               </h3>
-              <form
-                action={localePath(locale, "compare")}
-                className="flex flex-col gap-4"
-                method="get"
-              >
+              <CompareSelectionForm action={localePath(locale, "compare")}>
                 <input name="v" type="hidden" value="1" />
                 <SearchResults
                   items={results}
@@ -429,7 +434,7 @@ export function HybridSearchPanel({
                     {labels.compareSelected}
                   </Button>
                 ) : null}
-              </form>
+              </CompareSelectionForm>
               {search.pageError ? (
                 <Alert>
                   <AlertDescription>

@@ -1,4 +1,4 @@
-import { BookmarkPlusIcon, GitCompareArrowsIcon } from "lucide-react";
+import { BookmarkPlusIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,8 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/u
 import type { CatalogResultViewModel } from "@/features/catalog/view-model";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 import { formatDatasetCitation } from "@/i18n/domain-vocabulary";
+import { CompareChoice } from "@/features/compare/selection";
+import { buildMemberFragment } from "@/features/collections/storage-v2";
 
 import { CitationCopy } from "./citation-copy";
 import { groupSearchResults } from "./search-version-groups";
@@ -117,16 +119,12 @@ export function SearchResults({
                   />
                 </div>
                 {selectable && item.kind === "process" ? (
-                  <label className="flex min-h-[44px] w-fit items-center gap-2 text-sm font-medium">
-                    <input
-                      className="accent-primary size-5"
-                      aria-label={`${labels.selectForCompare} ${item.ref}`}
-                      name="ids"
-                      type="checkbox"
-                      value={item.ref}
-                    />
-                    {labels.selectForCompare}
-                  </label>
+                  <CompareChoice
+                    checkbox
+                    item={{ name: item.name, ref: item.ref }}
+                    label={labels.selectForCompare}
+                    locale={locale}
+                  />
                 ) : null}
                 <CardTitle>
                   <Link href={detailHref} prefetch={false}>
@@ -188,24 +186,18 @@ export function SearchResults({
                                 ) : null}
                               </div>
                               {selectable && item.kind === "process" ? (
-                                <label className="flex min-h-11 items-center gap-2 text-sm">
-                                  <input
-                                    aria-label={`${labels.selectForCompare} ${version.ref}`}
-                                    className="accent-primary size-5"
-                                    name="ids"
-                                    type="checkbox"
-                                    value={version.ref}
-                                  />
-                                  {labels.selectForCompare}
-                                </label>
+                                <CompareChoice
+                                  checkbox
+                                  item={{ name: version.name ?? item.name, ref: version.ref }}
+                                  label={labels.selectForCompare}
+                                  locale={locale}
+                                />
                               ) : item.kind === "process" ? (
-                                <Button asChild size="sm" variant="outline">
-                                  <Link
-                                    href={`${localePath(locale, "compare")}?v=1&ids=${encodeURIComponent(version.ref)}`}
-                                  >
-                                    {labels.compare}
-                                  </Link>
-                                </Button>
+                                <CompareChoice
+                                  item={{ name: version.name ?? item.name, ref: version.ref }}
+                                  label={labels.compare}
+                                  locale={locale}
+                                />
                               ) : null}
                             </li>
                           ))}
@@ -220,19 +212,14 @@ export function SearchResults({
                   <Link href={detailHref}>{labels.details}</Link>
                 </Button>
                 {item.kind === "process" && !selectable ? (
-                  <Button asChild variant="outline">
-                    <Link
-                      href={`${localePath(locale, "compare")}?v=1&ids=${encodeURIComponent(item.ref)}`}
-                    >
-                      <GitCompareArrowsIcon data-icon="inline-start" />
-                      {labels.compare}
-                    </Link>
-                  </Button>
+                  <CompareChoice
+                    item={{ name: item.name, ref: item.ref }}
+                    label={labels.compare}
+                    locale={locale}
+                  />
                 ) : null}
                 <Button asChild variant="outline">
-                  <Link
-                    href={`${localePath(locale, "collections")}#member=${encodeURIComponent(item.ref)}`}
-                  >
+                  <Link href={`${localePath(locale, "collections")}${buildMemberFragment(item)}`}>
                     <BookmarkPlusIcon data-icon="inline-start" />
                     {labels.collect}
                   </Link>
