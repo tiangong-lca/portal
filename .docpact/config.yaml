@@ -1,8 +1,8 @@
 version: 1
 layout: repo
-lastReviewedAt: "2026-09-03"
-lastReviewedCommit: "9b388d6a435759d4d9fba981a866124bbcea323e"
-lastReviewedNote: "Reviewed for Portal #50: display-only Process subtype vocabulary follows released Next across four locales while retaining wire values and unknown source strings. Hosted #49 evidence is recorded without claiming latency targets met; no backend or budget policy changes."
+lastReviewedAt: "2026-09-06"
+lastReviewedCommit: "b64c9cf041004d5e4e386c9420215058af94d580"
+lastReviewedNote: "Reviewed for Portal #52 / workspace #980 W11: remove only the owned macOS Intel SWC release-age exception. The frozen Next dependency graph, other platform entries, build/SSR versions, deployment and public product behavior remain unchanged."
 
 catalog:
   repos:
