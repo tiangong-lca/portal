@@ -116,6 +116,10 @@ test("keeps keyboard focus visible in forced-colors mode", async ({ page }) => {
   await page.keyboard.press("Tab");
   const skipLink = page.getByRole("link", { name: "Skip to main content" });
   await expect(skipLink).toBeFocused();
+  const target = await skipLink.boundingBox();
+  expect(target!.width).toBeGreaterThanOrEqual(24);
+  expect(target!.height).toBeGreaterThanOrEqual(44);
+  expect(target!.y).toBeGreaterThanOrEqual(0);
   const outline = await skipLink.evaluate((element) => {
     const style = getComputedStyle(element);
     return { style: style.outlineStyle, width: Number.parseFloat(style.outlineWidth) };
