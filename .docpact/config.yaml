@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-09-06"
-lastReviewedCommit: "b64c9cf041004d5e4e386c9420215058af94d580"
-lastReviewedNote: "Reviewed for Portal #52 / workspace #980 W11: remove only the owned macOS Intel SWC release-age exception. The frozen Next dependency graph, other platform entries, build/SSR versions, deployment and public product behavior remain unchanged."
+lastReviewedCommit: "8ed458f1b202f4ea57a8022f94b25d1f9047a908"
+lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
 
 catalog:
   repos:
@@ -39,6 +39,9 @@ ownership:
           - prettier.config.mjs
           - .prettierignore
           - vitest.config.ts
+          - vitest.unit.config.ts
+          - .storybook/**
+          - .gitignore
           - vitest.setup.ts
           - playwright.config.ts
           - edgeone.json
@@ -70,6 +73,9 @@ coverage:
     - prettier.config.mjs
     - .prettierignore
     - vitest.config.ts
+    - vitest.unit.config.ts
+    - .storybook/**
+    - .gitignore
     - vitest.setup.ts
     - playwright.config.ts
     - edgeone.json
@@ -91,6 +97,8 @@ coverage:
     - coverage/**
     - playwright-report/**
     - test-results/**
+    - storybook-static/**
+    - .storybook/public/**
 
 freshness:
   warn_after_commits: 40
@@ -124,6 +132,9 @@ routing:
     proof:
       paths:
         - vitest.config.ts
+        - vitest.unit.config.ts
+        - .storybook/**
+        - .gitignore
         - vitest.setup.ts
         - playwright.config.ts
         - tests/**
@@ -238,6 +249,12 @@ rules:
     triggers:
       - path: vitest.config.ts
         kind: test-config
+      - path: vitest.unit.config.ts
+        kind: test-config
+      - path: .storybook/**
+        kind: component-workspace
+      - path: .gitignore
+        kind: artifact-policy
       - path: vitest.setup.ts
         kind: test-config
       - path: playwright.config.ts

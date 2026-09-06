@@ -22,12 +22,14 @@ checkPaths:
   - src/**
   - public/**
   - tests/**
+  - .storybook/**
+  - vitest.unit.config.ts
   - scripts/**
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-09-06
-lastReviewedCommit: b64c9cf041004d5e4e386c9420215058af94d580
-lastReviewedNote: "Reviewed for Portal #52 / workspace #980 W11: remove only the owned macOS Intel SWC release-age exception. The frozen Next dependency graph, other platform entries, build/SSR versions, deployment and public product behavior remain unchanged."
+lastReviewedCommit: 8ed458f1b202f4ea57a8022f94b25d1f9047a908
+lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
 related:
   - README.md
   - docs/design-plan.md
@@ -90,6 +92,8 @@ Before changing files, run the workspace wrapper with this repository as the exp
 ## Validation contract
 
 Use the scripts declared by the checked-in `package.json`. At minimum, every reviewable change must pass formatting, lint, typecheck, targeted tests, and build when those surfaces exist. UI changes additionally require browser and accessibility verification; server/security changes require contract and negative-path tests.
+
+Storybook owns isolated component review in `.storybook/`, using production CSS, brand assets and all four dictionaries. Run `pnpm build:storybook` and `pnpm test:storybook` for shared UI/story changes, alongside the product gates. Its generated worker and static output remain outside Portal's public assets and deployment. Stories use synthetic fixtures and mocked same-origin reads; they require no production credentials. Accessibility defaults to `error`; existing `todo` exceptions must name a tracked defect and be removed with its fix. The initial two contrast exceptions belong to Portal #55; Storybook is not a screenshot-diff baseline or a replacement for production E2E.
 
 Localized routes own their root document under `app/[locale]`: the initial HTML must set `<html lang>` to the exact validated route locale without request APIs that would turn SSG/ISR into dynamic rendering. Non-localized probes and the global 404 use separate root documents and must preserve the same brand bootstrap, CSP, and noindex boundaries.
 

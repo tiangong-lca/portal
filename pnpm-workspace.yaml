@@ -4,6 +4,12 @@ allowBuilds:
   "@parcel/watcher": true
   "@swc/core": true
   esbuild: true
+  # Storybook generates its worker explicitly in its own static directory.
+  msw: false
+overrides:
+  # Storybook uses Vite 8's native path resolution, so tsconfck and its optional
+  # TypeScript 5 compiler peer are unused. Portal retains TypeScript 7.
+  tsconfck@3.1.6>typescript: "-"
 minimumReleaseAgeExclude:
   - "@next/env@16.3.3"
   - "@next/swc-darwin-arm64@16.3.3"

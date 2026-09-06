@@ -20,9 +20,9 @@ checkPaths:
   - edgeone.json
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-09-03
-lastReviewedCommit: 9b388d6a435759d4d9fba981a866124bbcea323e
-lastReviewedNote: "Reviewed for Portal #50: display-only subtype labels leave CSP, ISR, native routing and strict-profile reopen conditions unchanged; all 65 production browser checks pass. The exact prior #49 hosted evidence and timing caveats are recorded in the compatibility matrix."
+lastReviewedAt: 2026-09-06
+lastReviewedCommit: 8ed458f1b202f4ea57a8022f94b25d1f9047a908
+lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

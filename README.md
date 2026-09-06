@@ -17,8 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-09-06
-lastReviewedCommit: b64c9cf041004d5e4e386c9420215058af94d580
-lastReviewedNote: "Reviewed for Portal #52 / workspace #980 W11: remove only the owned macOS Intel SWC release-age exception. The frozen Next dependency graph, other platform entries, build/SSR versions, deployment and public product behavior remain unchanged."
+lastReviewedCommit: 8ed458f1b202f4ea57a8022f94b25d1f9047a908
+lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -40,6 +40,24 @@ Portal 以数据发现为首要任务：
 ## 技术形态
 
 Next.js App Router 前后端同构，React Server Components 优先，部署到 EdgeOne Makers。终端用户没有登录态；EdgeOne 后端以 Portal 专用 HMAC 请求签名调用专用 Supabase Edge Functions（如 `portal_hybrid_search_v1`）。数据库读取使用 server-only 的公共只读契约，不使用 service-role；MVP 分享只使用 URL fragment 与 JSON，不写 Redis。默认浅色/深色主色与 `tiangong-lca-next` 一致，其余颜色遵循 shadcn/ui + Tailwind v4 最佳实践，并支持部署级主色、Logo 与 favicon 替换。
+
+## 组件开发与检查
+
+Storybook 复用生产 CSS、生成的品牌 token 和四套词典，集中展示 `src/components/ui` 的全部基础组件及搜索、比较、候选清单、输入输出表格等业务组合。工具栏可切换语言、浅深主题和视口；业务场景直接使用产品组件，数据为合成 fixture。
+
+在仓库要求的 Node 24.18.x / pnpm 11.24.0 下执行：
+
+```bash
+pnpm install --frozen-lockfile
+pnpm storybook             # http://localhost:6006
+pnpm build:storybook       # 独立静态输出 storybook-static/
+pnpm exec playwright install chromium
+pnpm test:storybook        # Chromium 渲染、play 交互和 axe 检查
+```
+
+配置、stories 和 fixture 均在 `.storybook/`。清单场景独立初始化并恢复测试 origin 的专用存储键，MSW 拦截同源 API，不需要生产凭据。生成的 worker 仅存在于 `.storybook/public/`；Storybook 不作为 Next 路由或 EdgeOne 发布产物。现有 `pnpm check` 和 `pnpm test:e2e` 继续验证完整产品流程，CI 另外构建和测试 Storybook。`vitest.config.ts` 供 Storybook CLI 和工作台测试面板发现；原有单元/集成配置完整保留于 `vitest.unit.config.ts`，由 `pnpm test` 等脚本显式选择，隔离 Next 配置加载带来的环境注入。
+
+新增或修改共享组件时，补充可复现的正常、空、异常、禁用、长文本或窄屏场景，并对关键行为添加 `play` 断言。默认无障碍检查为 `error`；仅两个已知对比度场景暂设 `todo` 并链接 [Portal #55](https://github.com/tiangong-lca/portal/issues/55)。修复后必须恢复严格检查。场景目录用于发现和讨论现有问题，不代表视觉设计已获认可；目前不包含截图差异基线。
 
 ## 非目标（与其他项目的边界）
 

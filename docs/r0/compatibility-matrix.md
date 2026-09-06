@@ -20,9 +20,9 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
-lastReviewedAt: 2026-09-03
-lastReviewedCommit: 9b388d6a435759d4d9fba981a866124bbcea323e
-lastReviewedNote: "Reviewed for Portal #50: display-only Process subtype vocabulary follows released Next across four locales while retaining wire values and unknown source strings. Hosted #49 evidence is recorded without claiming latency targets met; no backend or budget policy changes."
+lastReviewedAt: 2026-09-06
+lastReviewedCommit: 8ed458f1b202f4ea57a8022f94b25d1f9047a908
+lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
 related:
   - ../design-plan.md
   - ../../AGENTS.md

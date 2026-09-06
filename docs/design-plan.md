@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-06
-lastReviewedCommit: b64c9cf041004d5e4e386c9420215058af94d580
-lastReviewedNote: "Reviewed for Portal #52 / workspace #980 W11: remove only the owned macOS Intel SWC release-age exception. The frozen Next dependency graph, other platform entries, build/SSR versions, deployment and public product behavior remain unchanged."
+lastReviewedCommit: 8ed458f1b202f4ea57a8022f94b25d1f9047a908
+lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
 related:
   - AGENTS.md
   - README.md
@@ -1333,6 +1333,16 @@ format/lint
 → manual product review
 → Production
 ```
+
+### 19.5 组件工作台
+
+Storybook 10.6 使用 Next.js Vite framework，所有配置、CSF stories 与合成 fixture 存放在 `.storybook/`，直接导入已有基础组件及业务组合。预览复用生产 `globals.css`、生成的品牌 token、字体栈和四语言词典；主题与 locale 控件同步预览 document。Storybook 专用样式扫描和 MSW worker 仅属于独立构建，不进入 Next 路由或 EdgeOne 产物。
+
+组件目录覆盖基础控件、搜索卡片与版本、关键词/描述模式、比较选择和矩阵、候选清单、输入输出及证据折叠。场景包含长文本、缺失字段、空态、加载、服务失败、无效输入、存储损坏和移动端。清单 fixture 通过实际请求 schema 校验 MSW 输入，初始化与恢复自身存储键，不访问线上数据。
+
+`pnpm storybook` 启动工作台，`pnpm build:storybook` 输出静态目录，`pnpm test:storybook` 使用与现有 Vitest 4.1.11 匹配的 Chromium provider，运行渲染、交互与 axe 检查。Storybook 10.6 自动装配 preview annotations。Vite 8 采用原生 tsconfig path resolution，依赖图中未使用的 tsconfck 可选 TypeScript 5 peer 被精确移除，Portal 编译器继续固定 TypeScript 7。
+
+CI 保留完整生产测试并增加 Storybook 构建与浏览器门。无障碍默认 `error`；浅色 muted 文本与禁用输入组说明的两个现有对比度失败由 [Portal #55](https://github.com/tiangong-lca/portal/issues/55) 跟踪，对应 story 以 `todo` 明示。后续组件修复应复用这些场景并移除例外。Storybook 场景不是设计认可，也不声称已有截图差异回归；页面布局、跨页导航和托管兼容继续由生产 E2E 与人工检查覆盖。
 
 ## 20. 分期与跨仓交付
 

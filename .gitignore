@@ -1,5 +1,7 @@
 .DS_Store
 node_modules/
+.storybook/public/
+storybook-static/
 .next/
 next-env.d.ts
 src/app/brand.generated.css
