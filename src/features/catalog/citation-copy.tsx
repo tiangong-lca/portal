@@ -24,7 +24,7 @@ export function CitationCopy({
   const [failed, setFailed] = useState(false);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex min-w-0 flex-col gap-3">
       {failed ? (
         <p className="text-destructive text-sm" role="alert">
           {failureLabel}
@@ -33,9 +33,9 @@ export function CitationCopy({
       {showText || failed ? (
         <p className="font-mono text-sm leading-6 break-words">{citation}</p>
       ) : null}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-1 flex-wrap items-stretch gap-3">
         <Button
-          className="h-auto min-h-11 max-w-full whitespace-normal"
+          className={showText ? undefined : "flex-1"}
           onClick={async () => {
             try {
               await navigator.clipboard.writeText(citation);

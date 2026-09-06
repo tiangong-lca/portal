@@ -39,4 +39,15 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-export { Field, FieldDescription, FieldGroup, FieldLabel };
+function FieldError({ className, ...props }: React.ComponentProps<"p">) {
+  return (
+    <p
+      className={cn("text-destructive text-sm font-medium", className)}
+      data-slot="field-error"
+      role="alert"
+      {...props}
+    />
+  );
+}
+
+export { Field, FieldDescription, FieldError, FieldGroup, FieldLabel };

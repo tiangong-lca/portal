@@ -1,4 +1,4 @@
-import { ArrowDownLeftIcon, ArrowUpRightIcon, NetworkIcon } from "lucide-react";
+import { ArrowDownLeftIcon, ArrowUpRightIcon, ChevronDownIcon, NetworkIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +23,7 @@ type ExchangesPanelProps = {
   emptyTitle: string;
   labels: {
     amount: string;
+    context: string;
     direction: string;
     flow: string;
     functionalUnit: string;
@@ -36,6 +37,57 @@ type ExchangesPanelProps = {
   rows: ExchangeViewModel[];
   locale: PortalLocale;
 };
+
+function ExchangeContext({
+  row,
+  labels,
+}: {
+  row: ExchangeViewModel;
+  labels: ExchangesPanelProps["labels"];
+}) {
+  return (
+    <details className="group/exchange min-w-0">
+      <summary className="text-link focus-visible:outline-ring flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg text-sm focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">
+        <ChevronDownIcon
+          aria-hidden="true"
+          className="size-4 shrink-0 transition-transform group-open/exchange:rotate-180"
+        />
+        {labels.context}
+      </summary>
+      <dl className="mt-2 grid gap-3 border-l pl-3">
+        {[
+          [labels.flow, row.flowRef],
+          [labels.process, row.processRef],
+          [labels.functionalUnit, row.functionalUnit],
+          [labels.policy, row.capabilityPolicyVersion],
+        ].map(([label, value]) => (
+          <div className="min-w-0" key={label}>
+            <dt className="text-muted-foreground text-xs">{label}</dt>
+            <dd className="mt-1 font-mono text-xs [overflow-wrap:anywhere]">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </details>
+  );
+}
+
+function ExchangeDirection({ row, locale }: { row: ExchangeViewModel; locale: PortalLocale }) {
+  const Icon = row.direction === "input" ? ArrowDownLeftIcon : ArrowUpRightIcon;
+  return (
+    <span className="inline-flex items-center gap-1.5 text-sm">
+      <Icon aria-hidden="true" className="size-4 shrink-0" />
+      {localizeDirection(row.direction, locale)}
+    </span>
+  );
+}
+
+function ExchangeAmount({ row }: { row: ExchangeViewModel }) {
+  return (
+    <span className="inline-block max-w-full overflow-x-auto align-middle font-mono font-medium whitespace-nowrap tabular-nums">
+      {row.amount} <span className="text-muted-foreground">{row.unit}</span>
+    </span>
+  );
+}
 
 export function ExchangesPanel({
   caption,
@@ -51,34 +103,31 @@ export function ExchangesPanel({
 
   return (
     <>
-      <ul className="flex flex-col gap-3 md:hidden">
+      <ul aria-label={caption} className="flex flex-col gap-3 md:hidden">
         {rows.map((row) => (
           <li key={row.id}>
             <Card size="sm">
               <CardHeader>
-                <CardTitle>{row.flowName}</CardTitle>
+                <CardTitle className="[overflow-wrap:anywhere]">{row.flowName}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <dl className="flex flex-col gap-3">
-                  {[
-                    [labels.flow, row.flowRef],
-                    [labels.direction, localizeDirection(row.direction, locale)],
-                    [labels.kind, localizeFlowType(row.kind, locale)],
-                    [labels.amount, `${row.amount} ${row.unit}`],
-                    [labels.process, row.processRef],
-                    [labels.functionalUnit, row.functionalUnit],
-                    [labels.policy, row.capabilityPolicyVersion],
-                    [
-                      labels.quantitativeReference,
-                      row.isQuantitativeReference ? labels.yes : labels.no,
-                    ],
-                  ].map(([label, value]) => (
-                    <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-2" key={label}>
-                      <dt className="text-muted-foreground text-xs">{label}</dt>
-                      <dd className="text-sm break-all">{value}</dd>
-                    </div>
-                  ))}
+              <CardContent className="flex flex-col gap-3">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <ExchangeDirection row={row} locale={locale} />
+                  <Badge variant="outline">{localizeFlowType(row.kind, locale)}</Badge>
+                </div>
+                <dl className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-2 text-sm">
+                  <dt className="text-muted-foreground">{labels.amount}</dt>
+                  <dd className="min-w-0 text-right">
+                    <ExchangeAmount row={row} />
+                  </dd>
+                  <dt className="text-muted-foreground">{labels.quantitativeReference}</dt>
+                  <dd className="text-right">
+                    {row.isQuantitativeReference ? labels.yes : labels.no}
+                  </dd>
                 </dl>
+                <div className="border-t">
+                  <ExchangeContext row={row} labels={labels} />
+                </div>
               </CardContent>
             </Card>
           </li>
@@ -89,42 +138,46 @@ export function ExchangesPanel({
           <TableCaption>{caption}</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead scope="col">{labels.flow}</TableHead>
+              <TableHead className="w-1/3" scope="col">
+                {labels.flow}
+              </TableHead>
               <TableHead scope="col">{labels.direction}</TableHead>
               <TableHead scope="col">{labels.kind}</TableHead>
-              <TableHead scope="col">{labels.amount}</TableHead>
-              <TableHead scope="col">{labels.process}</TableHead>
-              <TableHead scope="col">{labels.functionalUnit}</TableHead>
-              <TableHead scope="col">{labels.policy}</TableHead>
-              <TableHead scope="col">{labels.quantitativeReference}</TableHead>
+              <TableHead className="text-right" scope="col">
+                {labels.amount}
+              </TableHead>
+              <TableHead className="whitespace-normal" scope="col">
+                {labels.quantitativeReference}
+              </TableHead>
+              <TableHead className="w-1/5 whitespace-normal" scope="col">
+                {labels.context}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {rows.map((row) => (
               <TableRow key={row.id}>
-                <TableCell>
-                  <strong>{row.flowName}</strong>
-                  <br />
-                  <span className="text-muted-foreground font-mono text-xs">{row.flowRef}</span>
+                <TableHead
+                  className="py-3 align-top [overflow-wrap:anywhere] whitespace-normal"
+                  scope="row"
+                >
+                  {row.flowName}
+                </TableHead>
+                <TableCell className="py-3">
+                  <ExchangeDirection row={row} locale={locale} />
                 </TableCell>
-                <TableCell>
-                  {row.direction === "input" ? (
-                    <ArrowDownLeftIcon aria-hidden="true" />
-                  ) : (
-                    <ArrowUpRightIcon aria-hidden="true" />
-                  )}
-                  {localizeDirection(row.direction, locale)}
-                </TableCell>
-                <TableCell>
+                <TableCell className="py-3">
                   <Badge variant="outline">{localizeFlowType(row.kind, locale)}</Badge>
                 </TableCell>
-                <TableCell className="font-mono">
-                  {row.amount} {row.unit}
+                <TableCell className="py-3 text-right whitespace-nowrap">
+                  <ExchangeAmount row={row} />
                 </TableCell>
-                <TableCell className="font-mono text-xs">{row.processRef}</TableCell>
-                <TableCell>{row.functionalUnit}</TableCell>
-                <TableCell className="font-mono text-xs">{row.capabilityPolicyVersion}</TableCell>
-                <TableCell>{row.isQuantitativeReference ? labels.yes : labels.no}</TableCell>
+                <TableCell className="py-3">
+                  {row.isQuantitativeReference ? labels.yes : labels.no}
+                </TableCell>
+                <TableCell className="pt-0">
+                  <ExchangeContext row={row} labels={labels} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

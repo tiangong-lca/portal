@@ -289,7 +289,8 @@
     "provenanceDescription": "Consultez les sources d’origine et le traitement documenté des champs.",
     "copyVersionId": "Copier l’identifiant de version",
     "versionCopied": "Identifiant de version copié",
-    "copyFailed": "La copie a échoué. Sélectionnez le texte ci-dessous pour le copier manuellement."
+    "copyFailed": "La copie a échoué. Sélectionnez le texte ci-dessous pour le copier manuellement.",
+    "exchangeContext": "Identifiants et contexte d’affichage"
   },
   "Compare": {
     "title": "Comparer des jeux de données de processus",
@@ -323,7 +324,9 @@
     "invalidRef": "Saisissez un UUID@version complet.",
     "chooseImpact": "Choisir une catégorie d’impact",
     "noImpactOptions": "Les catégories d’impact ne peuvent pas être sélectionnées ici actuellement. Consultez séparément les résultats publiés de chaque jeu de données.",
-    "moreImpactOptions": "Les premières catégories disponibles sont proposées ici. Consultez la fiche pour en voir davantage."
+    "moreImpactOptions": "Les premières catégories disponibles sont proposées ici. Consultez la fiche pour en voir davantage.",
+    "selectedItems": "Voir les jeux sélectionnés",
+    "attentionFields": "Champs à examiner ({count})"
   },
   "Collections": {
     "title": "Sélection",
@@ -348,7 +351,7 @@
     "shareDisclosure": "Toute personne disposant du lien peut voir le nom de la sélection, l’objectif, le statut des membres et les notes ci-dessous. Vérifiez qu’aucune information n’est confidentielle.",
     "shareConfirm": "Confirmer et copier le lien",
     "shareCancel": "Annuler",
-    "empty": "Aucun jeu de données ajouté pour le moment. Saisissez un identifiant de version ci-dessous ou utilisez « Ajouter à la sélection » sur une fiche.",
+    "empty": "Aucun jeu de données ajouté. Saisissez un identifiant de version ou utilisez Ajouter à la sélection sur la page d’un jeu de données.",
     "saved": "Enregistré dans ce navigateur",
     "imported": "Sélection importée",
     "shared": "Lien de la sélection copié",

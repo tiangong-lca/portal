@@ -105,4 +105,23 @@ export const Toggles: Story = {
       </div>
     );
   },
+  play: async ({ canvas, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)];
+    const process = canvas.getByRole("radio", { name: m.Common.process });
+    const flow = canvas.getByRole("radio", { name: m.Common.flow });
+    await userEvent.hover(flow);
+    await expect(process).toHaveAttribute("aria-checked", "true");
+    await expect(flow).toHaveAttribute("aria-checked", "false");
+    await expect(getComputedStyle(process).textDecorationLine).toContain("underline");
+    await expect(getComputedStyle(flow).textDecorationLine).not.toContain("underline");
+    await userEvent.click(flow);
+    await expect(flow).toHaveAttribute("aria-checked", "true");
+    await expect(process).toHaveAttribute("aria-checked", "false");
+    const toggle = canvas.getByRole("button", { name: m.Collections.selected });
+    await userEvent.click(toggle);
+    await expect(toggle).toHaveAttribute("aria-pressed", "true");
+    await userEvent.keyboard(" ");
+    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  },
 };
+export const DarkToggles: Story = { ...Toggles, globals: { theme: "dark" } };

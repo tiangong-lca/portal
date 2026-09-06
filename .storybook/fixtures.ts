@@ -106,6 +106,7 @@ export function selectionLabels(
     clear: c.clearSelection,
     remove: c.removeSelection,
     continue: c.continueSelecting,
+    selectedItems: c.selectedItems,
     compare: c.openComparison,
     hint: c.selectionHint,
     limit: c.limitReached,
@@ -117,6 +118,7 @@ export function compareLabels(
 ): ComponentProps<typeof CompareWorkbench>["labels"] {
   const { Common: c, Compare: m, Detail: d } = dictionaries[locale];
   return {
+    attentionFields: m.attentionFields,
     dimension: m.dimension,
     emptyDescription: m.emptyDescription,
     emptyTitle: m.emptyTitle,

@@ -1,6 +1,6 @@
 "use client";
 
-import { GitCompareArrowsIcon, XIcon } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, GitCompareArrowsIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -43,6 +43,7 @@ export function CompareSelectionProvider({
     clear: string;
     remove: string;
     continue: string;
+    selectedItems: string;
     compare: string;
     hint: string;
     limit: string;
@@ -100,7 +101,7 @@ export function CompareSelectionProvider({
                   {labels.count.replace("{count}", String(members.length))}
                 </output>
                 {members.length >= 2 ? (
-                  <Button asChild className="h-auto min-h-11 whitespace-normal">
+                  <Button asChild>
                     <Link href={compareSelectionHref(locale, members)} prefetch={false}>
                       <GitCompareArrowsIcon data-icon="inline-start" />
                       {labels.compare}
@@ -110,9 +111,13 @@ export function CompareSelectionProvider({
                   <p className="text-muted-foreground text-sm">{labels.hint}</p>
                 )}
               </div>
-              <details>
-                <summary className="text-link flex min-h-11 cursor-pointer items-center text-sm">
-                  {labels.continue}
+              <details className="group/selection">
+                <summary className="text-link focus-visible:outline-ring flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">
+                  <ChevronDownIcon
+                    aria-hidden="true"
+                    className="size-4 transition-transform group-open/selection:rotate-180"
+                  />
+                  {labels.selectedItems}
                 </summary>
                 <ul className="flex flex-col gap-2">
                   {members.map((item) => (
@@ -141,15 +146,10 @@ export function CompareSelectionProvider({
                   ))}
                 </ul>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  <Button asChild className="h-auto min-h-11 whitespace-normal" variant="outline">
+                  <Button asChild variant="outline">
                     <Link href={localePath(locale, "search?kind=process")}>{labels.continue}</Link>
                   </Button>
-                  <Button
-                    className="h-auto min-h-11 whitespace-normal"
-                    onClick={() => replace([])}
-                    type="button"
-                    variant="ghost"
-                  >
+                  <Button onClick={() => replace([])} type="button" variant="ghost">
                     {labels.clear}
                   </Button>
                 </div>
@@ -197,7 +197,7 @@ export function CompareChoice({
     );
   if (!selection)
     return (
-      <Button asChild className="h-auto min-h-11 whitespace-normal" variant="outline">
+      <Button asChild variant="outline">
         <Link href={compareSelectionHref(locale, [item])}>{label}</Link>
       </Button>
     );
@@ -205,12 +205,16 @@ export function CompareChoice({
     <>
       <Button
         aria-pressed={checked}
-        className="h-auto min-h-11 whitespace-normal"
+        className="aria-pressed:border-primary aria-pressed:bg-primary-subtle aria-pressed:text-link"
         onClick={() => selection.toggle(item)}
         type="button"
-        variant={checked ? "secondary" : "outline"}
+        variant="outline"
       >
-        <GitCompareArrowsIcon data-icon="inline-start" />
+        {checked ? (
+          <CheckIcon aria-hidden="true" data-icon="inline-start" />
+        ) : (
+          <GitCompareArrowsIcon aria-hidden="true" data-icon="inline-start" />
+        )}
         {label}
       </Button>
       <noscript>

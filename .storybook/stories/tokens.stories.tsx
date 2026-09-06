@@ -14,16 +14,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 export const SemanticColors: Story = {
-  tags: ["a11y-pending"],
-  parameters: {
-    a11y: { test: "todo" },
-    docs: {
-      description: {
-        story:
-          "Known light-theme muted-text contrast failure (4.34:1). Tracked in [Portal #55](https://github.com/tiangong-lca/portal/issues/55); preserve this diagnostic until the token pairing is corrected.",
-      },
-    },
-  },
   render: () => (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {[
@@ -45,7 +35,5 @@ export const SemanticColors: Story = {
 };
 export const Dark: Story = {
   ...SemanticColors,
-  tags: ["!a11y-pending"],
-  parameters: { a11y: { test: "error" } },
   globals: { theme: "dark" },
 };

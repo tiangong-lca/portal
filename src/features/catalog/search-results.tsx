@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { ActionGroup } from "@/components/ui/action-group";
 import {
   Card,
   CardContent,
@@ -208,30 +209,32 @@ export function SearchResults({
                   </Accordion>
                 ) : null}
               </CardContent>
-              <CardFooter className="flex flex-wrap gap-2">
-                <Button asChild>
-                  <Link href={detailHref}>{labels.details}</Link>
-                </Button>
-                {item.kind === "process" && !selectable ? (
-                  <CompareChoice
-                    item={{ name: item.name, ref: item.ref }}
-                    label={labels.compare}
-                    locale={locale}
+              <CardFooter className="block">
+                <ActionGroup>
+                  <Button asChild>
+                    <Link href={detailHref}>{labels.details}</Link>
+                  </Button>
+                  {item.kind === "process" && !selectable ? (
+                    <CompareChoice
+                      item={{ name: item.name, ref: item.ref }}
+                      label={labels.compare}
+                      locale={locale}
+                    />
+                  ) : null}
+                  <Button asChild variant="outline">
+                    <Link href={`${localePath(locale, "collections")}${buildMemberFragment(item)}`}>
+                      <BookmarkPlusIcon data-icon="inline-start" />
+                      {labels.collect}
+                    </Link>
+                  </Button>
+                  <CitationCopy
+                    citation={citation}
+                    copiedLabel={labels.copied}
+                    failureLabel={labels.copyFailure}
+                    copyLabel={labels.copyCitation}
+                    showText={false}
                   />
-                ) : null}
-                <Button asChild variant="outline">
-                  <Link href={`${localePath(locale, "collections")}${buildMemberFragment(item)}`}>
-                    <BookmarkPlusIcon data-icon="inline-start" />
-                    {labels.collect}
-                  </Link>
-                </Button>
-                <CitationCopy
-                  citation={citation}
-                  copiedLabel={labels.copied}
-                  failureLabel={labels.copyFailure}
-                  copyLabel={labels.copyCitation}
-                  showText={false}
-                />
+                </ActionGroup>
               </CardFooter>
             </Card>
           </li>

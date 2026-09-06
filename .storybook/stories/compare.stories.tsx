@@ -25,6 +25,15 @@ export const MatchingFields: Story = {
   render: (_, { globals, parameters }) => {
     const locale = storyLocale(globals);
     const candidates = compareCandidates(locale);
+    if (parameters.four) {
+      candidates.push(
+        ...[2, 3].map((index) => ({
+          ...candidates[index % 2]!,
+          ref: refs[index]!,
+          name: `${sampleNames[locale][index % 2]} · ${index + 1}`,
+        })),
+      );
+    }
     if (parameters.missing && candidates[1]) delete candidates[1].cutoffRule;
     if (parameters.incompatible && candidates[1]) candidates[1].referenceUnit = "kg";
     if (parameters.referenceOnly && candidates[1]) candidates[1].referenceYear = "2018";
@@ -51,7 +60,22 @@ export const MatchingFields: Story = {
     );
   },
 };
-export const MissingEvidence: Story = { ...MatchingFields, parameters: { missing: true } };
+export const MissingEvidence: Story = {
+  ...MatchingFields,
+  parameters: { missing: true },
+  play: async ({ canvas, globals }) => {
+    const m = dictionaries[storyLocale(globals)].Compare;
+    await expect(
+      canvas.getByRole("heading", { name: m.attentionFields.replace("{count}", "1") }),
+    ).toBeVisible();
+    const firstDataRow = canvas.queryByRole("table")?.querySelector("tbody tr");
+    if (firstDataRow) await expect(firstDataRow).toHaveTextContent(m.statusInsufficient);
+    else
+      await expect(
+        canvas.getAllByRole("heading", { level: 3 })[0]?.parentElement,
+      ).toHaveTextContent(m.statusInsufficient);
+  },
+};
 export const Incompatible: Story = { ...MatchingFields, parameters: { incompatible: true } };
 export const FurtherAssessment: Story = { ...MatchingFields, parameters: { referenceOnly: true } };
 export const Conversion: Story = { ...MatchingFields, parameters: { converted: true } };
@@ -100,3 +124,30 @@ export const SelectionLimit: Story = {
   },
 };
 export const MobileTray: Story = { ...SelectionTray, globals: mobileGlobals };
+
+export const FourCandidates: Story = {
+  ...MissingEvidence,
+  parameters: { missing: true, four: true },
+};
+export const FourCandidatesMobile: Story = {
+  ...FourCandidates,
+  globals: { ...mobileGlobals, locale: "fr" },
+};
+export const DarkMissingEvidence: Story = { ...MissingEvidence, globals: { theme: "dark" } };
+export const SelectionDisclosure: Story = {
+  ...SelectionTray,
+  play: async ({ canvas, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)];
+    const disclosure = canvas.getByText(m.Compare.selectedItems);
+    await userEvent.click(disclosure);
+    await expect(canvas.getByRole("link", { name: m.Compare.continueSelecting })).toBeVisible();
+    await expect(disclosure.closest("details")).toHaveAttribute("open");
+    const choices = canvas.getAllByRole("button", { name: m.Detail.compare });
+    await expect(choices[0]).toHaveAttribute("aria-pressed", "true");
+    await userEvent.click(choices[1]!);
+    await expect(choices[1]).toHaveAttribute("aria-pressed", "true");
+    await expect(canvas.getByRole("link", { name: m.Compare.openComparison })).toBeVisible();
+    await userEvent.click(choices[1]!);
+    await expect(choices[1]).toHaveAttribute("aria-pressed", "false");
+  },
+};

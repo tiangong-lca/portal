@@ -224,6 +224,7 @@ export default async function ComparePage({
           dimension: t("dimension"),
           evidenceNotice: t("evidenceNotice"),
           resultStatus: t("resultStatus"),
+          attentionFields: t("attentionFields", { count: "{count}" }),
           emptyDescription: t("emptyDescription"),
           emptyTitle: t("emptyTitle"),
           matrix: t("matrix"),

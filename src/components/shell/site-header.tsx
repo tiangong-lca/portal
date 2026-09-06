@@ -31,7 +31,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
     <header className="bg-background sticky top-0 z-40 border-b" data-portal-header>
       <HeaderOffset />
       <a
-        className="bg-primary text-primary-foreground focus-visible:ring-ring absolute -translate-y-full rounded-b-lg px-3 py-2 focus:translate-y-0 focus-visible:ring-3"
+        className="bg-primary text-primary-foreground focus-visible:ring-ring sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-4 focus:z-50 focus:flex focus:min-h-11 focus:items-center focus:rounded-b-lg focus:px-3 focus:py-2 focus-visible:ring-3"
         href="#main-content"
       >
         {t("skipToContent")}

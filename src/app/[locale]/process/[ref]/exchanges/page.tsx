@@ -79,6 +79,7 @@ export default async function ProcessExchangesPage({
         emptyTitle={t("exchangesTitle")}
         labels={{
           amount: t("value"),
+          context: t("exchangeContext"),
           direction: t("direction"),
           flow: t("relatedFlow"),
           functionalUnit: t("functionalUnit"),

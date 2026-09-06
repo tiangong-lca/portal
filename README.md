@@ -17,8 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-09-06
-lastReviewedCommit: 8ed458f1b202f4ea57a8022f94b25d1f9047a908
-lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
+lastReviewedCommit: a01b879485cc95be990e2c5c3f8e40da67a11125
+lastReviewedNote: "Reviewed for Portal #55/#57: shared control density, strict component accessibility and catalog readability preserve exact scientific values, anonymous data boundaries, locale rendering, CSP and hosted-evidence status."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -57,7 +57,7 @@ pnpm test:storybook        # Chromium 渲染、play 交互和 axe 检查
 
 配置、stories 和 fixture 均在 `.storybook/`。清单场景独立初始化并恢复测试 origin 的专用存储键，MSW 拦截同源 API，不需要生产凭据。生成的 worker 仅存在于 `.storybook/public/`；Storybook 不作为 Next 路由或 EdgeOne 发布产物。现有 `pnpm check` 和 `pnpm test:e2e` 继续验证完整产品流程，CI 另外构建和测试 Storybook。`vitest.config.ts` 供 Storybook CLI 和工作台测试面板发现；原有单元/集成配置完整保留于 `vitest.unit.config.ts`，由 `pnpm test` 等脚本显式选择，隔离 Next 配置加载带来的环境注入。
 
-新增或修改共享组件时，补充可复现的正常、空、异常、禁用、长文本或窄屏场景，并对关键行为添加 `play` 断言。默认无障碍检查为 `error`；仅两个已知对比度场景暂设 `todo` 并链接 [Portal #55](https://github.com/tiangong-lca/portal/issues/55)。修复后必须恢复严格检查。场景目录用于发现和讨论现有问题，不代表视觉设计已获认可；目前不包含截图差异基线。
+新增或修改共享组件时，补充可复现的正常、空、异常、禁用、长文本或窄屏场景，并对关键行为添加 `play` 断言。无障碍检查统一为 `error`，所有场景执行严格检查。共享控件常规高度为 44px，紧凑控件为 32px；操作组在窄屏按两列排列并允许长标签换行。比较优先显示需要关注的字段，输入输出表通过展开项保留精确标识和展示依据。场景目录用于发现和讨论现有问题，不代表视觉设计已获认可；目前不包含截图差异基线。
 
 ## 非目标（与其他项目的边界）
 
