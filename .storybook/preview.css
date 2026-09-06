@@ -1,0 +1,5 @@
+@import "../src/app/globals.css";
+
+/* Hidden Storybook files are scanned only by this entry point. */
+@source "./stories";
+@source "./preview.tsx";

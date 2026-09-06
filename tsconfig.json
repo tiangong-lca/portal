@@ -30,6 +30,8 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "vitest.setup.ts",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx",
     "*.config.ts"
   ],
   "exclude": ["node_modules"]
