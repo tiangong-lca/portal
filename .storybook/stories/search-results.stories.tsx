@@ -27,7 +27,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Actual SearchResults cards and action groups. Mixed button heights and existing selection copy remain visible for design review.",
+          "Actual SearchResults cards use shared comfortable action sizes and a two-column action group on narrow screens. Long labels wrap without truncating the action.",
       },
     },
   },
@@ -52,7 +52,25 @@ const meta = {
 } satisfies Meta<typeof SearchResults>;
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const ProcessAndFlow: Story = {};
+export const ProcessAndFlow: Story = {
+  play: async ({ canvasElement }) => {
+    const group = canvasElement.querySelector('[data-slot="action-group"]')!;
+    const controls = [...group.querySelectorAll<HTMLElement>('[data-slot="button"]')];
+    const bounds = group.getBoundingClientRect();
+    for (const control of controls) {
+      const box = control.getBoundingClientRect();
+      await expect(box.height).toBeGreaterThanOrEqual(44);
+      await expect(box.right).toBeLessThanOrEqual(bounds.right + 1);
+      const sameRow = controls.filter(
+        (other) => Math.abs(other.getBoundingClientRect().top - box.top) < 1,
+      );
+      for (const other of sameRow)
+        await expect(
+          Math.abs(other.getBoundingClientRect().height - box.height),
+        ).toBeLessThanOrEqual(1);
+    }
+  },
+};
 export const Empty: Story = { parameters: { empty: true } };
 export const MissingMetadata: Story = { parameters: { missing: true } };
 export const MatchingVersions: Story = {
@@ -77,5 +95,8 @@ export const SelectForComparison: Story = {
     ).toHaveAttribute("href", expect.stringContaining("ids="));
   },
 };
-export const MobileGerman: Story = { globals: { ...mobileGlobals, locale: "de" } };
+export const MobileGerman: Story = {
+  ...ProcessAndFlow,
+  globals: { ...mobileGlobals, locale: "de" },
+};
 export const DarkFrench: Story = { globals: { theme: "dark", locale: "fr" } };

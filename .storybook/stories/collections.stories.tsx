@@ -145,12 +145,23 @@ export const AddAfterCorrection: Story = {
     await userEvent.clear(input);
     await userEvent.type(input, refs[0]);
     await userEvent.selectOptions(canvas.getByRole("combobox", { name: m.kind }), "process");
+    await expect(input).toHaveAttribute("aria-invalid", "false");
+    await expect(canvas.queryByText(m.invalidRef)).not.toBeInTheDocument();
     await userEvent.click(canvas.getByRole("button", { name: m.add }));
     await expect(await canvas.findByRole("link", { name: sampleNames[locale][0] })).toBeVisible();
     await expect(input).toHaveAttribute("aria-invalid", "false");
   },
 };
-export const CorruptStorage: Story = { parameters: { corrupt: true } };
+export const CorruptStorage: Story = {
+  parameters: { corrupt: true },
+  play: async ({ canvas, globals }) => {
+    const m = dictionaries[storyLocale(globals)].Collections;
+    await expect(await canvas.findByText(m.corruptError)).toBeVisible();
+    await expect(canvas.queryByText(m.empty)).not.toBeInTheDocument();
+    await expect(canvas.getByRole("textbox", { name: m.memberRef })).toBeDisabled();
+    await expect(localStorage.getItem(collectionsStorageKeyV2)).toBe("{broken-fixture");
+  },
+};
 export const MobileGerman: Story = {
   ...ResolvedAmbiguousAndMissing,
   globals: { ...mobileGlobals, locale: "de" },

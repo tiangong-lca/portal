@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-06
-lastReviewedCommit: 8ed458f1b202f4ea57a8022f94b25d1f9047a908
-lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
+lastReviewedCommit: a01b879485cc95be990e2c5c3f8e40da67a11125
+lastReviewedNote: "Reviewed for Portal #55/#57: shared control density, strict component accessibility and catalog readability preserve exact scientific values, anonymous data boundaries, locale rendering, CSP and hosted-evidence status."
 related:
   - AGENTS.md
   - README.md
@@ -418,6 +418,8 @@ Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时�
 
 比较 2–4 条 Process 精确版本。选择在 Portal 客户端导航间以内存保留，不写入 sessionStorage 或 localStorage，不持久化查询原文。详情、浏览与搜索共享选择；只有一个版本的比较页显示该版本并提供继续选择/添加精确编号入口。桌面和移动矩阵均显示数据集名称与版本。
 
+比较摘要列出需要关注的字段，矩阵先显示缺失或不同的字段，再显示一致项。状态同时使用图标与文字；一致项保持中性，不使用科学验证通过的表述。移动端集中列出候选名称和版本，各维度用稳定的候选序号对应。普通字段使用正文字体，方法与 publication 标识使用等宽字体。
+
 判定维度：功能单位、参考流与单位、分配与建模方法、地理代表范围与精度、参考年、技术路线、截止规则、LCIA 方法和 publication。
 
 判定档位：
@@ -443,7 +445,7 @@ Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时�
 
 名称补全通过同源内部 `POST /internal/dataset-summaries`，只允许 locale 与最多 10 个 `{kind, ref}`，不接受清单名称、备注、用途、state、team 或用户凭据。请求体最大 4 KiB，公开精确版本 RPC 最多 4 路并发，沿用原有只读超时并传递客户端取消。旧成员的未知类型最多查询 Process/Flow 两路；任一路失败不能从另一侧成功推断唯一类型。响应仅包含请求标识、状态和允许的公开名称/类型/版本；非公开与不存在仍不可区分。清单每页 10 条，只对可见页补全，不自动查完整 200 条。
 
-输入与提交按钮同高对齐，帮助文字单独成行；文件选择由本地化按钮触发，不显示操作系统语言的原生按钮。JSON 导入先解析、显示数量与内容预览，再明确确认替换；默认分享只含类型与编号，含备注分享显示完整可分享内容后再确认。读取失败不覆盖现存存储，写入失败保留内存修改并提示导出；损坏内容隔离，清除需确认，导入替换同样不能静默进行。
+输入与提交按钮同高对齐，帮助文字单独成行；格式错误使用独立错误样式，纠正并离开输入框后重新校验。存储未能读取时不宣称清单为空；文件选择由本地化按钮触发，不显示操作系统语言的原生按钮。JSON 导入先解析、显示数量与内容预览，再明确确认替换；默认分享只含类型与编号，含备注分享显示完整可分享内容后再确认。读取失败不覆盖现存存储，写入失败保留内存修改并提示导出；损坏内容隔离，清除需确认，导入替换同样不能静默进行。
 
 ### 7.6 方法论
 
@@ -929,6 +931,12 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 
 信息架构参考同类公开数据服务的成熟做法：Federal LCA Commons 以仓库与数据集发现为中心；GBIF 在首屏给出直接价值陈述与主搜索；NASA Earthdata 把搜索、主题浏览和工具入口分层；European Platform on LCA / LCDN 在记录语境中强调提供方、版本、方法、质量和文档。Portal 只借鉴这些任务层级与信息边界，不复制其视觉资产、文案或品牌。
 
+常规 Button、Input、Select、InputGroup 和 Toggle 使用 44px 高度（多行按钮为最小高度）；`sm` 为 32px 紧凑尺寸，Button 的 `xs` 24px 仅用于有明确密度需求的内嵌操作，`lg` 为 48px。Button/Select/Toggle 使用 `size`，Input/InputGroup 使用 `controlSize`，保留原生 Input 的 `size` 字符宽度属性。Sheet 关闭按钮使用 44px。`ActionGroup` 在窄屏按两列等宽排列，同一行控件拉齐；长本地化标签完整换行。
+
+Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选择以勾选图标标明状态，保留稳定的可访问名称和 pressed/checked 语义。禁用态只作用于控件，组内仍需阅读的说明保留正常对比度。InputGroup 附加区域将焦点转给相应的可用 Input 或 Textarea，按钮保留自己的操作。
+
+输入输出表主要显示流、方向、类型、原始数量与单位及定量参考意义。数量右对齐并与单位保持同行，禁止转换为浮点数或改变精度。逐行原生展开项保留 Flow/Process 精确版本、功能单位和展示依据，支持键盘；移动端使用相同信息层级。
+
 ### 13.2 默认主色：与 `tiangong-lca-next` 一致
 
 只对齐 `tiangong-lca-next/config/branding.ts` 当前两套主色，不复制 Ant Design 的完整 token 或算法：
@@ -1342,7 +1350,7 @@ Storybook 10.6 使用 Next.js Vite framework，所有配置、CSF stories 与合
 
 `pnpm storybook` 启动工作台，`pnpm build:storybook` 输出静态目录，`pnpm test:storybook` 使用与现有 Vitest 4.1.11 匹配的 Chromium provider，运行渲染、交互与 axe 检查。Storybook 10.6 自动装配 preview annotations。Vite 8 采用原生 tsconfig path resolution，依赖图中未使用的 tsconfck 可选 TypeScript 5 peer 被精确移除，Portal 编译器继续固定 TypeScript 7。
 
-CI 保留完整生产测试并增加 Storybook 构建与浏览器门。无障碍默认 `error`；浅色 muted 文本与禁用输入组说明的两个现有对比度失败由 [Portal #55](https://github.com/tiangong-lca/portal/issues/55) 跟踪，对应 story 以 `todo` 明示。后续组件修复应复用这些场景并移除例外。Storybook 场景不是设计认可，也不声称已有截图差异回归；页面布局、跨页导航和托管兼容继续由生产 E2E 与人工检查覆盖。
+CI 保留完整生产测试并增加 Storybook 构建与浏览器门。所有场景的无障碍检查均为 `error`。回归场景覆盖输入组焦点转移、禁用说明、选中与悬停区分、清单格式纠正与存储损坏、比较托盘、四个候选和输入输出依据展开。Storybook 场景不是设计认可，也不声称已有截图差异回归；页面布局、跨页导航和托管兼容继续由生产 E2E 与人工检查覆盖。
 
 ## 20. 分期与跨仓交付
 

@@ -21,8 +21,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-09-06
-lastReviewedCommit: 8ed458f1b202f4ea57a8022f94b25d1f9047a908
-lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
+lastReviewedCommit: a01b879485cc95be990e2c5c3f8e40da67a11125
+lastReviewedNote: "Reviewed for Portal #55/#57: shared control density, strict component accessibility and catalog readability preserve exact scientific values, anonymous data boundaries, locale rendering, CSP and hosted-evidence status."
 related:
   - ../design-plan.md
   - ../../AGENTS.md

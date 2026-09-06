@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isExactDatasetRef } from "@/features/catalog/exact-ref";
@@ -82,7 +82,7 @@ export function CollectionsWorkspace({
   const [state, setState] = useState<CollectionStateV2>(emptyCollectionStateV2);
   const [newRef, setNewRef] = useState("");
   const [newKind, setNewKind] = useState<DatasetIdentity["kind"]>(null);
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState<"invalidRef" | "memberLimit" | null>(null);
   const [actionError, setActionError] = useState("");
   const [message, setMessage] = useState("");
   const [hydrated, setHydrated] = useState(false);
@@ -276,7 +276,6 @@ export function CollectionsWorkspace({
         <section className="flex flex-col gap-3">
           <div className="flex flex-wrap gap-2">
             <Button
-              className="h-auto min-h-11 max-w-full whitespace-normal"
               onClick={() => download(corrupt.raw, "tiangong-portal-unreadable-shortlist.json")}
               type="button"
               variant="outline"
@@ -284,12 +283,7 @@ export function CollectionsWorkspace({
               <DownloadIcon data-icon="inline-start" />
               {labels.downloadCorrupt}
             </Button>
-            <Button
-              className="h-auto min-h-11 max-w-full whitespace-normal"
-              onClick={() => setConfirmClear(true)}
-              type="button"
-              variant="destructive"
-            >
+            <Button onClick={() => setConfirmClear(true)} type="button" variant="destructive">
               {labels.clearCorrupt}
             </Button>
           </div>
@@ -300,7 +294,6 @@ export function CollectionsWorkspace({
                 <p>{labels.clearConfirmDescription}</p>
                 <div className="flex flex-wrap gap-2">
                   <Button
-                    className="h-auto min-h-11 max-w-full whitespace-normal"
                     onClick={() => {
                       try {
                         localStorage.removeItem(corrupt.key);
@@ -338,7 +331,6 @@ export function CollectionsWorkspace({
               <Field>
                 <FieldLabel htmlFor="collection-name">{labels.researchName}</FieldLabel>
                 <Input
-                  className="min-h-11"
                   id="collection-name"
                   maxLength={128}
                   onChange={(event) => setState({ ...state, researchName: event.target.value })}
@@ -364,16 +356,16 @@ export function CollectionsWorkspace({
             event.preventDefault();
             const ref = newRef.trim();
             if (!isExactDatasetRef(ref)) {
-              setFormError(labels.invalidRef);
+              setFormError("invalidRef");
               return;
             }
             try {
               setState(mergeCollectionMembers(state, [{ kind: newKind, ref }]));
               setNewRef("");
-              setFormError("");
+              setFormError(null);
               setPage(0);
             } catch {
-              setFormError(labels.memberLimit);
+              setFormError("memberLimit");
             }
           }}
         >
@@ -398,24 +390,32 @@ export function CollectionsWorkspace({
             <Input
               aria-describedby="collection-member-help"
               aria-invalid={Boolean(formError)}
-              className="h-11 min-w-0"
+              className="min-w-0"
               id="collection-member"
               maxLength={46}
+              onBlur={() => {
+                if (formError === "invalidRef" && isExactDatasetRef(newRef.trim())) {
+                  setFormError(null);
+                }
+              }}
               onChange={(event) => setNewRef(event.target.value)}
               placeholder={labels.memberPlaceholder}
               value={newRef}
             />
-            <Button className="h-auto min-h-11 max-w-full whitespace-normal" type="submit">
+            <Button type="submit">
               <PlusIcon data-icon="inline-start" />
               {labels.add}
             </Button>
           </div>
-          <FieldDescription id="collection-member-help">
-            {formError || labels.memberHelp}
-          </FieldDescription>
+          {formError ? (
+            <FieldError id="collection-member-help">{labels[formError]}</FieldError>
+          ) : (
+            <FieldDescription id="collection-member-help">{labels.memberHelp}</FieldDescription>
+          )}
         </form>
 
-        {state.members.length === 0 ? (
+        {state.members.length === 0 && (!hydrated || corrupt || readFailed) ? null : state.members
+            .length === 0 ? (
           <Alert>
             <AlertDescription>
               <p>{labels.empty}</p>
@@ -480,7 +480,6 @@ export function CollectionsWorkspace({
                           <div className="flex flex-wrap gap-2">
                             {summary.matches.map((option) => (
                               <Button
-                                className="h-auto min-h-11 max-w-full whitespace-normal"
                                 key={option.kind}
                                 onClick={() => updateMember(key, { kind: option.kind })}
                                 type="button"
@@ -535,18 +534,13 @@ export function CollectionsWorkspace({
                         </Field>
                         <div className="flex flex-wrap gap-2">
                           {href ? (
-                            <Button
-                              asChild
-                              className="h-auto min-h-11 max-w-full whitespace-normal"
-                              variant="outline"
-                            >
+                            <Button asChild variant="outline">
                               <Link href={href} prefetch={false}>
                                 {common.details}
                               </Link>
                             </Button>
                           ) : null}
                           <Button
-                            className="h-auto min-h-11 max-w-full whitespace-normal"
                             onClick={() =>
                               setState({
                                 ...state,
@@ -600,7 +594,6 @@ export function CollectionsWorkspace({
         <CardContent className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             <Button
-              className="h-auto min-h-11 max-w-full whitespace-normal"
               disabled={!hydrated || Boolean(corrupt)}
               onClick={() =>
                 download(JSON.stringify(state, null, 2), "tiangong-portal-shortlist.json")
@@ -612,7 +605,6 @@ export function CollectionsWorkspace({
               {labels.export}
             </Button>
             <Button
-              className="h-auto min-h-11 max-w-full whitespace-normal"
               disabled={!hydrated}
               onClick={() => fileInput.current?.click()}
               type="button"
@@ -671,7 +663,6 @@ export function CollectionsWorkspace({
               )}
               <div className="flex flex-wrap gap-2">
                 <Button
-                  className="h-auto min-h-11 max-w-full whitespace-normal"
                   disabled={!proposedImport}
                   onClick={() => {
                     if (!proposedImport) return;
@@ -708,7 +699,6 @@ export function CollectionsWorkspace({
         <CardContent className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             <Button
-              className="h-auto min-h-11 max-w-full whitespace-normal"
               disabled={state.members.length === 0}
               onClick={() => {
                 void copyShare(null);
@@ -720,7 +710,6 @@ export function CollectionsWorkspace({
               {labels.share}
             </Button>
             <Button
-              className="h-auto min-h-11 max-w-full whitespace-normal"
               disabled={state.members.length === 0}
               onClick={() => {
                 setDisclosure(state);
@@ -743,7 +732,6 @@ export function CollectionsWorkspace({
               {previewState(disclosure)}
               <div className="flex flex-wrap gap-2">
                 <Button
-                  className="h-auto min-h-11 max-w-full whitespace-normal"
                   onClick={() => {
                     void copyShare(disclosure);
                   }}

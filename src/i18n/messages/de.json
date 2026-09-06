@@ -289,7 +289,8 @@
     "provenanceDescription": "Prüfen Sie Originalquellen und dokumentierte Feldverarbeitung.",
     "copyVersionId": "Versionskennung kopieren",
     "versionCopied": "Versionskennung kopiert",
-    "copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den folgenden Text, um ihn manuell zu kopieren."
+    "copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den folgenden Text, um ihn manuell zu kopieren.",
+    "exchangeContext": "Kennungen und Darstellungskontext"
   },
   "Compare": {
     "title": "Prozessdatensätze vergleichen",
@@ -323,7 +324,9 @@
     "invalidRef": "Geben Sie eine vollständige UUID@Version ein.",
     "chooseImpact": "Wirkungskategorie auswählen",
     "noImpactOptions": "Wirkungskategorien können hier derzeit nicht ausgewählt werden. Sehen Sie die veröffentlichten Ergebnisse der einzelnen Datensätze an.",
-    "moreImpactOptions": "Hier werden die ersten verfügbaren Kategorien aufgeführt. Weitere finden Sie in den Datensatzdetails."
+    "moreImpactOptions": "Hier werden die ersten verfügbaren Kategorien aufgeführt. Weitere finden Sie in den Datensatzdetails.",
+    "selectedItems": "Ausgewählte Datensätze ansehen",
+    "attentionFields": "Zu prüfende Felder ({count})"
   },
   "Collections": {
     "title": "Auswahlliste",
@@ -348,7 +351,7 @@
     "shareDisclosure": "Alle Personen mit dem Link können den folgenden Namen der Auswahlliste, den Zweck, den Auswahlstatus und die Notizen sehen. Prüfen Sie, ob vertrauliche Inhalte dabei sind.",
     "shareConfirm": "Bestätigen und Link kopieren",
     "shareCancel": "Abbrechen",
-    "empty": "Noch keine Datensätze hinzugefügt. Geben Sie unten eine Versionskennung ein oder verwenden Sie „Zur Auswahlliste hinzufügen“ auf einer Datensatzseite.",
+    "empty": "Noch keine Datensätze hinzugefügt. Geben Sie eine Versionskennung ein oder wählen Sie auf einer Datensatzseite Zur Merkliste hinzufügen.",
     "saved": "In diesem Browser gespeichert",
     "imported": "Auswahlliste importiert",
     "shared": "Listen-Link kopiert",

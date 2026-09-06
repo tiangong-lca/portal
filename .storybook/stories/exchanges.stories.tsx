@@ -18,6 +18,7 @@ export const DataTable: Story = {
         emptyTitle={d.exchangesTitle}
         labels={{
           amount: d.value,
+          context: d.exchangeContext,
           direction: d.direction,
           flow: c.flow,
           functionalUnit: d.functionalUnit,
@@ -54,4 +55,29 @@ export const EvidenceDisclosure: Story = {
     await userEvent.click(canvas.getByText(m.releaseDetails));
     await expect(canvas.getByText(m.verificationCode)).toBeVisible();
   },
+};
+
+export const ProvenanceDisclosure: Story = {
+  ...DataTable,
+  play: async ({ canvas, userEvent, globals }) => {
+    const locale = storyLocale(globals);
+    const row = exchangeRows(locale)[0]!;
+    const triggers = canvas
+      .getAllByText(dictionaries[locale].Detail.exchangeContext)
+      .filter(
+        (element) => element.tagName === "SUMMARY" && element.getBoundingClientRect().height > 0,
+      );
+    const disclosure = triggers[0]!.closest("details")!;
+    await expect(disclosure).not.toHaveAttribute("open");
+    await userEvent.click(triggers[0]!);
+    await expect(disclosure).toHaveAttribute("open");
+    await expect(disclosure).toHaveTextContent(row.flowRef);
+    await expect(disclosure).toHaveTextContent(row.processRef);
+    await expect(disclosure).toHaveTextContent(row.capabilityPolicyVersion);
+    await expect(disclosure).toHaveTextContent(row.functionalUnit);
+  },
+};
+export const MobileProvenance: Story = {
+  ...ProvenanceDisclosure,
+  globals: { ...mobileGlobals, locale: "fr" },
 };

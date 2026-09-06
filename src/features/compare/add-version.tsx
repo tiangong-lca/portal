@@ -49,14 +49,14 @@ export function AddCompareVersion({
           <Input
             aria-describedby="add-compare-hint"
             aria-invalid={invalid}
-            className="min-h-11 min-w-0"
+            className="min-w-0"
             id="add-compare-version"
             maxLength={46}
             name="ids"
             placeholder="00000000-0000-0000-0000-000000000000@01.00.000"
             required
           />
-          <Button className="h-auto min-h-11 whitespace-normal" type="submit" variant="outline">
+          <Button type="submit" variant="outline">
             {labels.add}
           </Button>
         </div>

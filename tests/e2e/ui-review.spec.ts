@@ -77,7 +77,16 @@ for (const { locale, width, theme } of [
       ).toBeLessThanOrEqual(1);
       expect(Math.abs(box!.height - button!.height)).toBeLessThanOrEqual(1);
     }
+    await input.fill("invalid-version");
+    await add.click();
+    await expect(input).toHaveAttribute("aria-invalid", "true");
+    await expect(
+      page.getByRole("alert").filter({ hasText: t.Collections.invalidRef }),
+    ).toBeVisible();
     await input.fill(processRef);
+    await input.press("Tab");
+    await expect(input).toHaveAttribute("aria-invalid", "false");
+    await expect(page.getByText(t.Collections.invalidRef)).toHaveCount(0);
     await add.click();
     await page.getByLabel(t.Collections.note).fill("Local review note");
     await expect(page.getByRole("link", { name: /Electricity|电力/ }).first()).toBeVisible();
@@ -135,13 +144,13 @@ test("selection survives detail navigation and comparison names stay visible on 
   await expect(
     page
       .getByRole("main")
-      .getByRole("link", { name: "Electricity, medium voltage", exact: true })
+      .getByRole("link", { name: /Electricity, medium voltage/ })
       .first(),
   ).toBeVisible();
   await expect(
     page
       .getByRole("main")
-      .getByRole("link", { name: "Electricity, low voltage", exact: true })
+      .getByRole("link", { name: /Electricity, low voltage/ })
       .first(),
   ).toBeVisible();
   await noOverflow(page);
@@ -212,3 +221,44 @@ test("localizes a Process subtype in both search modes without changing its wire
   await page.getByRole("button", { name: zh.Hybrid.submit, exact: true }).click();
   expect((await submitted).postDataJSON().filters.processSubtype).toBe("lci result");
 });
+
+for (const { locale, width, theme } of [
+  { locale: "de", width: 390, theme: "light" },
+  { locale: "fr", width: 390, theme: "dark" },
+  { locale: "en", width: 1280, theme: "light" },
+  { locale: "zh-CN", width: 1280, theme: "dark" },
+] as const) {
+  test(`comparison and exchange readability ${locale} ${width}px ${theme}`, async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.addInitScript(
+      (value) => localStorage.setItem("tiangong.portal.theme.v1", value),
+      theme,
+    );
+    const t = messages[locale];
+    await page.goto(
+      `/${locale}/compare?v=1&ids=${encodeURIComponent(`${processRef},${secondRef}`)}`,
+    );
+    await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
+    await noOverflow(page);
+    await accessible(page);
+    await page.screenshot({ path: info.outputPath("compare.png"), fullPage: true });
+    await page.goto(`/${locale}/process/${processRef}/exchanges`);
+    const disclosure = page
+      .getByRole("main")
+      .locator("summary:visible")
+      .filter({ hasText: t.Detail.exchangeContext })
+      .first();
+    await expect(disclosure).toBeVisible();
+    await expect(disclosure.locator("..")).not.toHaveAttribute("open");
+    await disclosure.click();
+    await expect(disclosure.locator("..")).toHaveAttribute("open");
+    await expect(disclosure.locator("..")).toContainText(processRef);
+    await expect(disclosure.locator("..")).toContainText(t.Detail.functionalUnit);
+    await expect(disclosure.locator("..")).toContainText(t.Detail.policyVersion);
+    await noOverflow(page);
+    await accessible(page);
+    await page.screenshot({ path: info.outputPath("exchanges.png"), fullPage: true });
+  });
+}

@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ActionGroup } from "@/components/ui/action-group";
 import type { DatasetDetailViewModel } from "@/features/catalog/view-model";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 
@@ -71,7 +72,7 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
         ) : null}
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <ActionGroup>
         {kind === "process" ? (
           <CompareChoice
             item={{ ref: refValue, name: record?.name ?? refValue }}
@@ -93,7 +94,7 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
             {t("citation")}
           </a>
         </Button>
-      </div>
+      </ActionGroup>
 
       <nav
         aria-label={kind === "process" ? t("processTitle") : t("flowTitle")}

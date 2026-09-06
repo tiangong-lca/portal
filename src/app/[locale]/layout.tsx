@@ -39,6 +39,7 @@ export default async function PortalLocaleLayout({ children, params }: LayoutPro
               clear: compare("clearSelection"),
               remove: compare("removeSelection"),
               continue: compare("continueSelecting"),
+              selectedItems: compare("selectedItems"),
               compare: compare("openComparison"),
               hint: compare("selectionHint"),
               limit: compare("limitReached"),

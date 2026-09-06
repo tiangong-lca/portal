@@ -28,8 +28,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-09-06
-lastReviewedCommit: 8ed458f1b202f4ea57a8022f94b25d1f9047a908
-lastReviewedNote: "Reviewed for Portal #54: isolated Storybook development and component validation preserve Portal runtime, CSP, deployment and hosted-evidence boundaries; two existing contrast findings are tracked in Portal #55."
+lastReviewedCommit: a01b879485cc95be990e2c5c3f8e40da67a11125
+lastReviewedNote: "Reviewed for Portal #55/#57: shared control density, strict component accessibility and catalog readability preserve exact scientific values, anonymous data boundaries, locale rendering, CSP and hosted-evidence status."
 related:
   - README.md
   - docs/design-plan.md
@@ -93,7 +93,7 @@ Before changing files, run the workspace wrapper with this repository as the exp
 
 Use the scripts declared by the checked-in `package.json`. At minimum, every reviewable change must pass formatting, lint, typecheck, targeted tests, and build when those surfaces exist. UI changes additionally require browser and accessibility verification; server/security changes require contract and negative-path tests.
 
-Storybook owns isolated component review in `.storybook/`, using production CSS, brand assets and all four dictionaries. Run `pnpm build:storybook` and `pnpm test:storybook` for shared UI/story changes, alongside the product gates. Its generated worker and static output remain outside Portal's public assets and deployment. Stories use synthetic fixtures and mocked same-origin reads; they require no production credentials. Accessibility defaults to `error`; existing `todo` exceptions must name a tracked defect and be removed with its fix. The initial two contrast exceptions belong to Portal #55; Storybook is not a screenshot-diff baseline or a replacement for production E2E.
+Storybook owns isolated component review in `.storybook/`, using production CSS, brand assets and all four dictionaries. Run `pnpm build:storybook` and `pnpm test:storybook` for shared UI/story changes, alongside the product gates. Its generated worker and static output remain outside Portal's public assets and deployment. Stories use synthetic fixtures and mocked same-origin reads; they require no production credentials. Accessibility is strict (`error`) in every story. Storybook is not a screenshot-diff baseline or a replacement for production E2E. Shared controls use 44px comfortable defaults and explicit compact sizes; selection has a persistent visual cue, and disabled controls must not fade informative group descriptions.
 
 Localized routes own their root document under `app/[locale]`: the initial HTML must set `<html lang>` to the exact validated route locale without request APIs that would turn SSG/ISR into dynamic rendering. Non-localized probes and the global 404 use separate root documents and must preserve the same brand bootstrap, CSP, and noindex boundaries.
 

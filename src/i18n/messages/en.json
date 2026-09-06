@@ -289,7 +289,8 @@
     "provenanceDescription": "Review the original data sources and recorded field processing.",
     "copyVersionId": "Copy version ID",
     "versionCopied": "Version ID copied",
-    "copyFailed": "Copy failed. Select the text below to copy it manually."
+    "copyFailed": "Copy failed. Select the text below to copy it manually.",
+    "exchangeContext": "Identifiers and display context"
   },
   "Compare": {
     "title": "Compare Process datasets",
@@ -323,7 +324,9 @@
     "invalidRef": "Enter a complete UUID@version.",
     "chooseImpact": "Choose an impact category",
     "noImpactOptions": "Impact categories cannot be selected here at present. View each dataset’s published results separately.",
-    "moreImpactOptions": "The first available categories are listed here. View dataset details for more."
+    "moreImpactOptions": "The first available categories are listed here. View dataset details for more.",
+    "selectedItems": "Review selected datasets",
+    "attentionFields": "Fields needing attention ({count})"
   },
   "Collections": {
     "title": "Shortlist",
@@ -348,7 +351,7 @@
     "shareDisclosure": "Anyone with the link can view the shortlist name, purpose, selection status, and notes below. Check that nothing is confidential.",
     "shareConfirm": "Confirm and copy link",
     "shareCancel": "Cancel",
-    "empty": "No datasets added yet. Enter a version ID below, or use Add to shortlist on a dataset page.",
+    "empty": "No datasets added yet. Enter a version ID, or use Add to shortlist on a dataset page.",
     "saved": "Saved in this browser",
     "imported": "Shortlist imported",
     "shared": "Shortlist link copied",

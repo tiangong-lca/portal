@@ -289,7 +289,8 @@
     "provenanceDescription": "查看原始数据来源及字段处理记录。",
     "copyVersionId": "复制版本标识",
     "versionCopied": "版本标识已复制",
-    "copyFailed": "复制失败，可选中下方文字手动复制。"
+    "copyFailed": "复制失败，可选中下方文字手动复制。",
+    "exchangeContext": "标识与展示依据"
   },
   "Compare": {
     "title": "比较过程数据集",
@@ -323,7 +324,9 @@
     "invalidRef": "请输入完整的 UUID@版本号。",
     "chooseImpact": "选择环境影响类别",
     "noImpactOptions": "当前无法选择环境影响类别，可分别查看各数据集的已公开结果。",
-    "moreImpactOptions": "此处列出首批可用类别；更多类别请查看数据集详情。"
+    "moreImpactOptions": "此处列出首批可用类别；更多类别请查看数据集详情。",
+    "selectedItems": "查看已选数据集",
+    "attentionFields": "需要关注的字段（{count}）"
   },
   "Collections": {
     "title": "候选清单",
@@ -348,7 +351,7 @@
     "shareDisclosure": "获得链接的人可查看下列清单名称、用途、选择状态和备注。请确认没有机密内容。",
     "shareConfirm": "确认并复制链接",
     "shareCancel": "取消",
-    "empty": "尚未添加数据集。可在下方输入版本标识，或在数据集页选择加入候选清单。",
+    "empty": "尚未添加数据集。可输入版本标识，或在数据集页面选择“加入清单”。",
     "saved": "已保存到此浏览器",
     "imported": "已导入清单",
     "shared": "已复制清单链接",

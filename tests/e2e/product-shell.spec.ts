@@ -111,8 +111,15 @@ test("renders public search, exact details, numeric context, versions, and lates
 
   await page.goto(`/en/process/${processRef}/exchanges`);
   await expect(page.getByRole("cell", { name: "1.25 kg" })).toBeVisible();
-  await expect(page.getByRole("cell", { name: "1 kWh" })).toBeVisible();
-  await expect(page.getByRole("cell", { name: "portal-capability-policy.v1" })).toBeVisible();
+  const exchangeContext = page
+    .locator("summary:visible")
+    .filter({ hasText: "Identifiers and display context" })
+    .first();
+  await exchangeContext.click();
+  await expect(exchangeContext.locator("..").getByText("1 kWh", { exact: true })).toBeVisible();
+  await expect(
+    exchangeContext.locator("..").getByText("portal-capability-policy.v1", { exact: true }),
+  ).toBeVisible();
 
   await page.goto(`/en/process/${processRef}/lcia`);
   await expect(page.getByRole("cell", { name: "12.5" })).toBeVisible();
