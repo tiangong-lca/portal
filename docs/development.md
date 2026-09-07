@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 408566f4c1177240e532bb52669e3761f435be4b
+lastReviewedCommit: bb4ea8200a290b7e34a9c6fce676f56c01eb46b0
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #67: isolated page design references reuse the existing pnpm and Storybook workflow; the lint script includes their directory and hosted release obligations remain unchanged."
+lastReviewedNote: "Reviewed for Portal #67 visual refinement: locked dev-only fonts and their bundled notices support repeatable Storybook rendering; the existing development, review and hosted release boundaries remain unchanged."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -103,6 +103,8 @@ Read the current top-level and selected command help before forming payloads. Di
 Use existing pnpm scripts and `pnpm exec` for installed binaries when an upstream skill shows generic `npm` or `npx` examples. Do not initialize an existing Storybook or upgrade dependencies as a side effect of ordinary UI work. Permission requests follow the active environment and existing user authorization; a generic skill's sandbox guidance does not override them.
 
 If MCP is unavailable, use the CLI. If that interface is also unavailable, continue applicable checks through repository scripts and inspect the rendered Storybook or product UI in the browser; report the unavailable review interface. A passing build alone does not prove visual quality or replace interaction/accessibility checks.
+
+The isolated catalog references import locked Fontsource variable-font dev dependencies. Vite serves their Unicode-range assets locally; public Portal routes do not import them. The matching upstream OFL notices are retained in `.storybook/public/fonts/` and copied into static Storybook output. When updating these fonts, refresh their notices from the reviewed packages and verify the dependency license check, emitted assets and rendered Chinese/Latin metrics.
 
 ## Project skills
 

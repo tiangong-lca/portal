@@ -7,7 +7,6 @@ import {
   FileTextIcon,
   GitCompareArrowsIcon,
   InfoIcon,
-  QuoteIcon,
 } from "lucide-react";
 import { Button } from "../../src/components/ui/button";
 import { Alert, AlertDescription } from "../../src/components/ui/alert";
@@ -65,19 +64,25 @@ export function DetailReference({
         <div className="cr-detail-eyebrow">
           <span>{d.processTitle}</span>
           <span>{r.sampleSource}</span>
+          <Availability record={record} labels={m} />
         </div>
         <div className="cr-detail-title">
           <h1>{record.name}</h1>
-          <Availability record={record} labels={m} />
         </div>
         <p className="cr-detail-lead">{record.description}</p>
         <div className="cr-detail-actions">
-          <Button onClick={onSave} variant={saved ? "secondary" : "default"} aria-pressed={saved}>
+          <Button
+            size="sm"
+            onClick={onSave}
+            variant={saved ? "secondary" : "default"}
+            aria-pressed={saved}
+          >
             {saved ? <CheckIcon aria-hidden="true" /> : <BookmarkIcon aria-hidden="true" />}
             {saved ? r.saved : d.collect}
           </Button>
           <Button
             variant="outline"
+            size="sm"
             onClick={onSelect}
             aria-pressed={selected}
             disabled={selectionFull && !selected}
@@ -88,12 +93,6 @@ export function DetailReference({
               <GitCompareArrowsIcon aria-hidden="true" />
             )}
             {selected ? m.Compare.removeSelection : d.compare}
-          </Button>
-          <Button variant="ghost" asChild>
-            <a href="#cr-citation">
-              <QuoteIcon aria-hidden="true" />
-              {d.citation}
-            </a>
           </Button>
         </div>
       </div>

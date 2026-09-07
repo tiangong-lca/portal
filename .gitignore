@@ -1,6 +1,7 @@
 .DS_Store
 node_modules/
-.storybook/public/
+.storybook/public/*
+!.storybook/public/fonts/
 .agents/skills/storybook-*/
 .agents/skills/.storybook-install-*/
 storybook-static/

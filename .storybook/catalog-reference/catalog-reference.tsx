@@ -33,6 +33,8 @@ import { referenceCitation, referenceDatasets } from "./data";
 import { SearchReference, type ReferenceFilters } from "./search-page";
 import { DetailReference } from "./detail-page";
 import { Metadata, ReferenceFooter } from "./shared";
+import "@fontsource-variable/source-sans-3/wght.css";
+import "@fontsource-variable/noto-sans-sc/wght.css";
 import "./reference.css";
 
 type CatalogReferenceProps = {
@@ -223,7 +225,7 @@ export function CatalogReference({
         <SelectTrigger aria-label={m.Common.language} className="cr-language">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent aria-label={m.Common.language} position="popper">
+        <SelectContent className="cr-surface" aria-label={m.Common.language} position="popper">
           <SelectGroup>
             {locales.map((value) => (
               <SelectItem key={value} value={value}>
@@ -237,7 +239,7 @@ export function CatalogReference({
   );
 
   return (
-    <div className="catalog-reference">
+    <div className="catalog-reference" data-view={record ? "detail" : "search"}>
       <a className="cr-skip" href="#cr-main">
         {m.Common.skipToContent}
       </a>
@@ -275,7 +277,7 @@ export function CatalogReference({
                   <span className="cr-count">{saved.length}</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent className="cr-panel" closeLabel={m.Common.close}>
+              <SheetContent className="cr-surface cr-panel" closeLabel={m.Common.close}>
                 <SheetHeader>
                   <SheetTitle>{m.Common.collections}</SheetTitle>
                   <SheetDescription>{m.CatalogReference.sessionOnly}</SheetDescription>
@@ -320,7 +322,7 @@ export function CatalogReference({
                   <MenuIcon aria-hidden="true" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="cr-panel" closeLabel={m.Common.close}>
+              <SheetContent className="cr-surface cr-panel" closeLabel={m.Common.close}>
                 <SheetHeader>
                   <SheetTitle>{m.CatalogReference.menu}</SheetTitle>
                   <SheetDescription>{m.CatalogReference.menuDescription}</SheetDescription>
@@ -442,7 +444,7 @@ export function CatalogReference({
                   <ArrowUpRightIcon aria-hidden="true" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="cr-comparison-panel" closeLabel={m.Common.close}>
+              <SheetContent className="cr-surface cr-comparison-panel" closeLabel={m.Common.close}>
                 <SheetHeader>
                   <SheetTitle>{m.CatalogReference.compare}</SheetTitle>
                   <SheetDescription>{m.CatalogReference.comparisonNotice}</SheetDescription>

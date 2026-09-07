@@ -173,7 +173,6 @@ export function SearchReference(props: SearchReferenceProps) {
         <div className="cr-title-line">
           <div>
             <h1 id="cr-search-title">{m.CatalogReference.catalog}</h1>
-            <p>{m.CatalogReference.intro}</p>
           </div>
         </div>
         <search aria-label={m.Search.title}>
@@ -208,10 +207,7 @@ export function SearchReference(props: SearchReferenceProps) {
                 </InputGroupAddon>
               )}
             </InputGroup>
-            <Button type="submit">
-              {m.Common.search}
-              <SearchIcon aria-hidden="true" />
-            </Button>
+            <Button type="submit">{m.Common.search}</Button>
           </form>
         </search>
         <div className="cr-search-help">
@@ -235,7 +231,6 @@ export function SearchReference(props: SearchReferenceProps) {
                   {m.CatalogReference.resultCount.replace("{count}", String(matches.length))}
                 </span>
               </h2>
-              <p>{m.CatalogReference.resultNote}</p>
             </div>
             <Button
               variant="ghost"
@@ -259,7 +254,7 @@ export function SearchReference(props: SearchReferenceProps) {
                   )}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" closeLabel={m.Common.close}>
+              <SheetContent side="left" className="cr-surface" closeLabel={m.Common.close}>
                 <SheetHeader>
                   <SheetTitle>{m.Search.facets}</SheetTitle>
                   <SheetDescription>{m.Search.description}</SheetDescription>
@@ -331,11 +326,10 @@ export function SearchReference(props: SearchReferenceProps) {
                             {record.name}
                           </a>
                         </h3>
-                        <Availability record={record} labels={m} />
                       </div>
                       <Button
                         variant="ghost"
-                        size="icon"
+                        size="icon-sm"
                         aria-label={`${saved.includes(record.ref) ? m.CatalogReference.unsave : m.Detail.collect}: ${record.name}`}
                         aria-pressed={saved.includes(record.ref)}
                         onClick={() => props.onSave(record.ref)}
@@ -349,12 +343,10 @@ export function SearchReference(props: SearchReferenceProps) {
                     </div>
                     <Metadata record={record} labels={m} />
                     <p className="cr-match">
-                      <span>
-                        {m.CatalogReference.matchIn} · {m.CatalogReference.description}
-                      </span>
                       <MatchText text={record.description} query={query} />
                     </p>
                     <div className="cr-record-source">
+                      <Availability record={record} labels={m} />
                       <span>{m.CatalogReference.sampleSource}</span>
                       <span className="cr-mono">v{record.ref.split("@")[1]}</span>
                     </div>

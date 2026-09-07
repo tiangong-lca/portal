@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 408566f4c1177240e532bb52669e3761f435be4b
+lastReviewedCommit: bb4ea8200a290b7e34a9c6fce676f56c01eb46b0
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #67: full-page design proposals stay isolated in Storybook with synthetic data and explicit visual review before adoption into public routes."
+lastReviewedNote: "Reviewed for Portal #67 visual refinement: the isolated proposal now calibrates loaded variable fonts, text roles, aligned result fields and reading columns. Production adoption still requires design acceptance."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -203,3 +203,5 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 样板使用明确标注的合成身份、记录、匹配说明和计数。交互覆盖查找、筛选、选择、打开详情、返回、候选清单与引用，状态只保留在当前预览中。示例数值保持精度，缺失信息保持缺失，字段对齐不提供科学可比性结论。该样板不验证真实排名、动态分面、线上许可或公开能力。
 
 搜索样板以连续记录、对齐的地区/时间/单位和可读的匹配片段为核心；详情样板先展示参考产品、单位、地区和时间，再展开范围、输入输出、证据与精确版本。设计验收需要完整页面的桌面、窄屏、浅深主题与长文本审阅；自动测试通过不代表该提案已经成为正式设计基线。
+
+样板通过开发依赖随站点提供 Source Sans 3 与 Noto Sans SC 可变字体，仅在样板及其弹层作用域内使用。辅助说明、正文、长文阅读、记录标题和页面标题采用明确的字号角色；中文标题保留自然字距，西文标题只做轻微收紧。搜索结果在宽屏将名称和说明与适用字段分列，窄屏恢复连续阅读；详情阅读列与侧栏共同决定列宽，不再在宽列中另加脱离网格的正文宽度限制。主要搜索保留 44px 控件，详情和行内操作使用 32px 紧凑尺寸，手机的详情操作与逐行收藏恢复至少 44px。字体大小、字重、圆角与密度的这些调整属于待审样板，不能据此覆盖全站正式组件。
