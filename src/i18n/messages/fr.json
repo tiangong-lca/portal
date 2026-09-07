@@ -424,7 +424,7 @@
     "resultCount": "{count} versions de processus",
     "allRegions": "Toutes les régions",
     "allYears": "Toutes les années",
-    "allAccess": "Tous les niveaux d’accès",
+    "allAccess": "Tous les contenus",
     "resultNote": "Correspondances dans les noms, produits de référence et descriptions",
     "matchIn": "Correspondance dans",
     "description": "Description du jeu de données",
@@ -464,6 +464,12 @@
     "recordsShown": "Les {count} versions correspondantes sont affichées",
     "resetSearch": "Réinitialiser la recherche",
     "menu": "Navigation et affichage",
-    "menuDescription": "Parcourir le catalogue, choisir la langue et le thème."
+    "menuDescription": "Parcourir le catalogue, choisir la langue et le thème.",
+    "filter": "Filtrer",
+    "publicContent": "Contenu public",
+    "availabilityExchanges": "Avec entrées et sorties",
+    "availabilityMetadata": "Description uniquement",
+    "exchangesHelp": "Cette version contient des entrées et sorties publiques, consultables sur la page de détail.",
+    "metadataHelp": "Cette version fournit une description et des informations de base. Les entrées et sorties ne sont pas publiques."
   }
 }

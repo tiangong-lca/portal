@@ -345,7 +345,17 @@
   font-size: var(--cr-caption);
   font-weight: 400;
 }
-.cr-results-toolbar > button {
+.cr-results-toolbar > div:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.cr-results-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+}
+.cr-results-actions > button {
   color: var(--muted-foreground);
 }
 .cr-filter-mobile {
@@ -431,6 +441,32 @@
   width: 13px;
   height: 13px;
 }
+.catalog-reference .cr-availability-icon {
+  color: var(--muted-foreground);
+}
+.catalog-reference
+  .cr-availability-icon:is(:hover, [data-state="instant-open"], [data-state="delayed-open"]) {
+  color: var(--foreground);
+  background: var(--muted);
+}
+.cr-availability-tip {
+  z-index: 60;
+  max-width: min(280px, calc(100vw - 32px));
+  padding: 12px 14px;
+  color: var(--popover-foreground);
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--cr-radius);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
+  overflow-wrap: anywhere;
+}
+.cr-availability-tip strong {
+  display: block;
+  font-weight: 600;
+}
+.cr-availability-tip p {
+  margin: 4px 0 0;
+}
 .cr-row-meta {
   display: grid;
   grid-template-columns: 1.15fr 1fr 1fr;
@@ -491,6 +527,12 @@
   margin-top: 12px;
   font-size: var(--cr-caption);
   color: var(--muted-foreground);
+}
+.cr-source-version {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 .cr-mono {
   font-family: var(--font-mono);
@@ -988,7 +1030,6 @@
   }
   .cr-filter-mobile {
     display: block;
-    margin-bottom: 16px;
   }
   .cr-selection-names > span {
     max-width: 180px;
@@ -1127,13 +1168,23 @@
   }
   .cr-results-toolbar {
     align-items: flex-start;
+    flex-direction: column;
     gap: 8px;
   }
   .cr-results-toolbar h2 {
     gap: 4px 8px;
   }
-  .cr-results-toolbar > button {
-    max-width: 132px;
+  .cr-results-actions {
+    width: 100%;
+    justify-content: space-between;
+    align-items: stretch;
+  }
+  .cr-results-actions > button {
+    min-width: 0;
+    flex-shrink: 1;
+  }
+  .cr-results-actions button {
+    min-height: 44px;
   }
   .cr-result {
     gap: 8px;
@@ -1166,11 +1217,11 @@
     margin-top: 10px !important;
   }
   .cr-record-source {
-    gap: 6px 10px;
+    gap: 0 10px;
   }
-  .cr-record-source .cr-availability {
-    margin-right: 100%;
-    white-space: nowrap;
+  .cr-availability-icon {
+    min-width: 44px;
+    min-height: 44px;
   }
   .cr-filter-option {
     min-height: 44px;

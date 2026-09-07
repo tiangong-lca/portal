@@ -3,6 +3,7 @@ import { expect, spyOn, waitFor, within } from "storybook/test";
 import { CatalogReference } from "../catalog-reference/catalog-reference";
 import { SearchReference } from "../catalog-reference/search-page";
 import { DetailReference } from "../catalog-reference/detail-page";
+import { Availability } from "../catalog-reference/shared";
 import { referenceCitation, referenceDatasets } from "../catalog-reference/data";
 import { dictionaries, mobileGlobals, storyLocale } from "../fixtures";
 import { localeNames } from "../../src/i18n/routing";
@@ -10,7 +11,7 @@ import { localeNames } from "../../src/i18n/routing";
 const meta = {
   title: "Design references/Catalog pages",
   component: CatalogReference,
-  subcomponents: { SearchReference, DetailReference },
+  subcomponents: { SearchReference, DetailReference, Availability },
   tags: ["!autodocs"],
   args: { locale: "zh-CN" },
   parameters: {
@@ -78,7 +79,9 @@ export const FiltersAndEmptyRecovery: Story = {
   globals: { viewport: { value: "desktop", isRotated: false } },
   play: async ({ canvas, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)];
-    await userEvent.click(canvas.getByRole("radio", { name: new RegExp(m.Common.metadataOnly) }));
+    await userEvent.click(
+      canvas.getByRole("radio", { name: new RegExp(m.CatalogReference.availabilityMetadata) }),
+    );
     await expect(canvas.getAllByRole("checkbox")).toHaveLength(3);
     const input = canvas.getByRole("textbox", { name: m.Search.label });
     await userEvent.clear(input);
@@ -98,7 +101,9 @@ export const MobileFilterKeyboard: Story = {
     await userEvent.keyboard("{Enter}");
     const body = within(canvasElement.ownerDocument.body);
     await waitFor(() => expect(body.getByRole("dialog", { name: m.Search.facets })).toBeVisible());
-    await userEvent.click(body.getByRole("radio", { name: new RegExp(m.Common.metadataOnly) }));
+    await userEvent.click(
+      body.getByRole("radio", { name: new RegExp(m.CatalogReference.availabilityMetadata) }),
+    );
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(trigger).toHaveFocus());
     await expect(canvas.getAllByRole("checkbox")).toHaveLength(3);
@@ -121,6 +126,42 @@ export const MobileFilterKeyboard: Story = {
     await expect(canvas.getByRole("textbox", { name: dictionaries.fr.Search.label })).toHaveValue(
       m.CatalogReference.queryExample,
     );
+  },
+};
+export const PublicContentHelp: Story = {
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)];
+    const r = m.CatalogReference;
+    const body = within(canvasElement.ownerDocument.body);
+    const available = canvas.getAllByRole("button", {
+      name: `${r.publicContent}: ${r.availabilityExchanges}`,
+    })[0]!;
+    const metadata = canvas.getAllByRole("button", {
+      name: `${r.publicContent}: ${r.availabilityMetadata}`,
+    })[0]!;
+    await userEvent.hover(available);
+    const tooltip = await body.findByRole("tooltip");
+    await expect(tooltip).toHaveTextContent(r.exchangesHelp);
+    await userEvent.hover(tooltip);
+    await expect(tooltip).toBeVisible();
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
+    await userEvent.hover(canvas.getByRole("textbox", { name: m.Search.label }));
+    available.focus();
+    await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.exchangesHelp);
+    await userEvent.tab();
+    await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
+    await userEvent.click(metadata);
+    await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.metadataHelp);
+    await userEvent.keyboard("{Escape}");
+    await expect(metadata).toHaveFocus();
+    await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
+    await userEvent.keyboard("{Enter}");
+    await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.metadataHelp);
+    await userEvent.click(canvas.getByRole("textbox", { name: m.Search.label }));
+    await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
+    await userEvent.click(available);
+    await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.exchangesHelp);
   },
 };
 export const ShortlistAndSelectionLimit: Story = {

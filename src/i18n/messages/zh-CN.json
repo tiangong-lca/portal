@@ -424,7 +424,7 @@
     "resultCount": "{count} 个过程版本",
     "allRegions": "全部地区",
     "allYears": "全部年份",
-    "allAccess": "全部公开范围",
+    "allAccess": "全部内容",
     "resultNote": "按名称、参考产品及描述匹配",
     "matchIn": "匹配位置",
     "description": "数据集说明",
@@ -464,6 +464,12 @@
     "recordsShown": "已显示全部 {count} 个匹配版本",
     "resetSearch": "重置搜索",
     "menu": "导航与显示",
-    "menuDescription": "浏览数据目录，选择语言和显示主题。"
+    "menuDescription": "浏览数据目录，选择语言和显示主题。",
+    "filter": "筛选",
+    "publicContent": "公开内容",
+    "availabilityExchanges": "含输入输出",
+    "availabilityMetadata": "仅数据说明",
+    "exchangesHelp": "这个版本公开了输入与输出条目，可在详情页查看。",
+    "metadataHelp": "这个版本提供数据说明和基本信息，未公开输入与输出条目。"
   }
 }

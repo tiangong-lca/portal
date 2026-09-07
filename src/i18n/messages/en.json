@@ -424,7 +424,7 @@
     "resultCount": "{count} process versions",
     "allRegions": "All regions",
     "allYears": "All years",
-    "allAccess": "All access levels",
+    "allAccess": "All content",
     "resultNote": "Matched in names, reference products and descriptions",
     "matchIn": "Matched in",
     "description": "Dataset description",
@@ -464,6 +464,12 @@
     "recordsShown": "All {count} matching versions shown",
     "resetSearch": "Reset search",
     "menu": "Navigation and display",
-    "menuDescription": "Browse the catalog and choose a language and theme."
+    "menuDescription": "Browse the catalog and choose a language and theme.",
+    "filter": "Filter",
+    "publicContent": "Public content",
+    "availabilityExchanges": "Inputs & outputs",
+    "availabilityMetadata": "Description only",
+    "exchangesHelp": "This version includes public input and output entries. View them on the detail page.",
+    "metadataHelp": "This version provides a description and basic information. Input and output entries are not public."
   }
 }

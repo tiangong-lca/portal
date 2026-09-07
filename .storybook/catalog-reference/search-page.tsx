@@ -69,17 +69,17 @@ function FilterControls({
   }[] = [
     {
       key: "access",
-      title: m.Search.access,
+      title: m.CatalogReference.publicContent,
       all: m.CatalogReference.allAccess,
       options: [
         {
           value: "open",
-          label: m.Common.exchangesAvailable,
+          label: m.CatalogReference.availabilityExchanges,
           count: records.filter((r) => r.open).length,
         },
         {
           value: "metadata",
-          label: m.Common.metadataOnly,
+          label: m.CatalogReference.availabilityMetadata,
           count: records.filter((r) => !r.open).length,
         },
       ],
@@ -232,41 +232,43 @@ export function SearchReference(props: SearchReferenceProps) {
                 </span>
               </h2>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              aria-label={m.CatalogReference.sort}
-              aria-pressed={props.newest}
-              onClick={props.onSort}
-            >
-              {props.newest ? m.CatalogReference.yearDescending : m.CatalogReference.relevance}
-              <ChevronDownIcon aria-hidden="true" />
-            </Button>
-          </div>
-          <div className="cr-filter-mobile">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline">
-                  <SlidersHorizontalIcon aria-hidden="true" />
-                  {m.Search.facets}
-                  {activeFilters.length > 0 && (
-                    <span className="cr-count">{activeFilters.length}</span>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="cr-surface" closeLabel={m.Common.close}>
-                <SheetHeader>
-                  <SheetTitle>{m.Search.facets}</SheetTitle>
-                  <SheetDescription>{m.Search.description}</SheetDescription>
-                </SheetHeader>
-                <div className="cr-filter-sheet">
-                  <FilterControls {...props} />
-                  <SheetClose asChild>
-                    <Button>{m.CatalogReference.applyFilters}</Button>
-                  </SheetClose>
-                </div>
-              </SheetContent>
-            </Sheet>
+            <div className="cr-results-actions">
+              <div className="cr-filter-mobile">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" aria-label={m.Search.facets}>
+                      <SlidersHorizontalIcon aria-hidden="true" />
+                      {m.CatalogReference.filter}
+                      {activeFilters.length > 0 && (
+                        <span className="cr-count">{activeFilters.length}</span>
+                      )}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="cr-surface" closeLabel={m.Common.close}>
+                    <SheetHeader>
+                      <SheetTitle>{m.Search.facets}</SheetTitle>
+                      <SheetDescription>{m.Search.description}</SheetDescription>
+                    </SheetHeader>
+                    <div className="cr-filter-sheet">
+                      <FilterControls {...props} />
+                      <SheetClose asChild>
+                        <Button>{m.CatalogReference.applyFilters}</Button>
+                      </SheetClose>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label={m.CatalogReference.sort}
+                aria-pressed={props.newest}
+                onClick={props.onSort}
+              >
+                {props.newest ? m.CatalogReference.yearDescending : m.CatalogReference.relevance}
+                <ChevronDownIcon aria-hidden="true" />
+              </Button>
+            </div>
           </div>
           {activeFilters.length > 0 && (
             <div className="cr-active-filters">
@@ -276,8 +278,8 @@ export function SearchReference(props: SearchReferenceProps) {
                     ? (props.records.find((r) => r.region === value)?.geography ?? value)
                     : key === "access"
                       ? value === "open"
-                        ? m.Common.exchangesAvailable
-                        : m.Common.metadataOnly
+                        ? m.CatalogReference.availabilityExchanges
+                        : m.CatalogReference.availabilityMetadata
                       : value;
                 return (
                   <Button
@@ -346,9 +348,11 @@ export function SearchReference(props: SearchReferenceProps) {
                       <MatchText text={record.description} query={query} />
                     </p>
                     <div className="cr-record-source">
-                      <Availability record={record} labels={m} />
                       <span>{m.CatalogReference.sampleSource}</span>
-                      <span className="cr-mono">v{record.ref.split("@")[1]}</span>
+                      <span className="cr-source-version">
+                        <span className="cr-mono">v{record.ref.split("@")[1]}</span>
+                        <Availability record={record} labels={m} compact />
+                      </span>
                     </div>
                   </article>
                 </li>

@@ -424,7 +424,7 @@
     "resultCount": "{count} Prozessversionen",
     "allRegions": "Alle Regionen",
     "allYears": "Alle Jahre",
-    "allAccess": "Alle Zugriffsbereiche",
+    "allAccess": "Alle Inhalte",
     "resultNote": "Treffer in Namen, Referenzprodukten und Beschreibungen",
     "matchIn": "Gefunden in",
     "description": "Datensatzbeschreibung",
@@ -464,6 +464,12 @@
     "recordsShown": "Alle {count} passenden Versionen angezeigt",
     "resetSearch": "Suche zurücksetzen",
     "menu": "Navigation und Anzeige",
-    "menuDescription": "Datenkatalog öffnen, Sprache und Darstellung auswählen."
+    "menuDescription": "Datenkatalog öffnen, Sprache und Darstellung auswählen.",
+    "filter": "Filtern",
+    "publicContent": "Öffentliche Inhalte",
+    "availabilityExchanges": "Mit Ein- und Ausgängen",
+    "availabilityMetadata": "Nur Beschreibung",
+    "exchangesHelp": "Diese Version enthält öffentliche Ein- und Ausgangseinträge. Sie sind auf der Detailseite einsehbar.",
+    "metadataHelp": "Diese Version bietet eine Beschreibung und grundlegende Informationen. Ein- und Ausgangseinträge sind nicht öffentlich."
   }
 }
