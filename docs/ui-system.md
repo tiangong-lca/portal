@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 3341a500616f1657a6a1696df87f0c4ba1e7930b
+lastReviewedCommit: 408566f4c1177240e532bb52669e3761f435be4b
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
+lastReviewedNote: "Reviewed for Portal #67: full-page design proposals stay isolated in Storybook with synthetic data and explicit visual review before adoption into public routes."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -195,3 +195,11 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 组件及组合提供准确的 `component` / `subcomponents` 与 `@import` 模块引用。[manifest 检查](../scripts/check-storybook-manifest.mjs)验证覆盖、真实导入与关键 Props。Autodocs 和 Component Meta 的编译器适配由[精确包 hook](../scripts/pnpm-hooks.cjs)管理，版本以脚本和锁文件为准；升级时重新验证实际 API 文档、MCP 协议和场景。
 
 比较先显示需要关注的字段，并保留展开查看所有字段；LCIA 数值和单位保持原样，数据集/方法的精确版本可展开。目录覆盖与通过测试不能替代面向数据使用者的视觉审阅。
+
+### 完整页面设计样板
+
+尚未采纳的页面设计可放在 `.storybook/catalog-reference/`，由 `Design references/Catalog pages` 的完整场景独立审阅。样板复用正式基础组件、品牌、语义 token 与四语字典；页面布局和样板状态只存在于 Storybook，公开路由不得导入这些模块或样式。通过设计审阅后，再以独立交付将选定的组合模式接入实际页面和服务端数据契约。
+
+样板使用明确标注的合成身份、记录、匹配说明和计数。交互覆盖查找、筛选、选择、打开详情、返回、候选清单与引用，状态只保留在当前预览中。示例数值保持精度，缺失信息保持缺失，字段对齐不提供科学可比性结论。该样板不验证真实排名、动态分面、线上许可或公开能力。
+
+搜索样板以连续记录、对齐的地区/时间/单位和可读的匹配片段为核心；详情样板先展示参考产品、单位、地区和时间，再展开范围、输入输出、证据与精确版本。设计验收需要完整页面的桌面、窄屏、浅深主题与长文本审阅；自动测试通过不代表该提案已经成为正式设计基线。

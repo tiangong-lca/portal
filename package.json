@@ -31,7 +31,7 @@
     "sync:database-contracts": "node scripts/sync-database-contracts.mjs --write",
     "check:database-contracts": "node scripts/sync-database-contracts.mjs --check",
     "typecheck": "next typegen && tsc --noEmit",
-    "lint": "oxlint --deny-warnings --type-aware --import-plugin --react-plugin --vitest-plugin --jsx-a11y-plugin --nextjs-plugin src tests scripts .storybook/*.ts .storybook/*.tsx .storybook/stories next.config.ts playwright.config.ts vitest.config.ts vitest.unit.config.ts",
+    "lint": "oxlint --deny-warnings --type-aware --import-plugin --react-plugin --vitest-plugin --jsx-a11y-plugin --nextjs-plugin src tests scripts .storybook/*.ts .storybook/*.tsx .storybook/stories .storybook/catalog-reference next.config.ts playwright.config.ts vitest.config.ts vitest.unit.config.ts",
     "format": "prettier --write . --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore",
     "format:check": "prettier --check . --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore",
     "test": "vitest run --config vitest.unit.config.ts",
