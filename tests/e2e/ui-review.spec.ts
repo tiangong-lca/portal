@@ -130,6 +130,36 @@ test("mobile filters layer above the sticky header, close on selection and prese
   expect((await form.boundingBox())!.y).toBeLessThan(844);
 });
 
+test("mobile shell menus expose named options and restore keyboard focus", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/fr/search?geo=cn&q=electricity");
+  for (const label of [fr.Common.language, fr.Common.theme]) {
+    const trigger = page.getByRole("combobox", { name: label });
+    await trigger.click();
+    await expect(page.getByRole("listbox", { name: label })).toBeVisible();
+    await page.getByRole("listbox", { name: label }).evaluate(async (element) => {
+      await Promise.all(
+        element
+          .getAnimations({ subtree: true })
+          .map((animation) => animation.finished.catch(() => undefined)),
+      );
+    });
+    await expect(page.getByRole("option", { selected: true })).toBeFocused();
+    await page
+      .locator("[data-portal-header] a")
+      .first()
+      .evaluate((element) => (element as HTMLElement).focus());
+    await expect(page.getByRole("option", { selected: true })).toBeFocused();
+    await accessible(page);
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("listbox")).toBeHidden();
+    await expect(trigger).toBeFocused();
+  }
+  await page.getByRole("combobox", { name: fr.Common.language }).click();
+  await page.getByRole("option", { name: "Deutsch" }).click();
+  await expect(page).toHaveURL(/\/de\/search\?geo=cn&q=electricity$/);
+});
+
 test("selection survives detail navigation and comparison names stay visible on mobile", async ({
   page,
 }) => {

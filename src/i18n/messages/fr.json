@@ -290,7 +290,8 @@
     "copyVersionId": "Copier l’identifiant de version",
     "versionCopied": "Identifiant de version copié",
     "copyFailed": "La copie a échoué. Sélectionnez le texte ci-dessous pour le copier manuellement.",
-    "exchangeContext": "Identifiants et contexte d’affichage"
+    "exchangeContext": "Identifiants et contexte d’affichage",
+    "lciaContext": "Versions du jeu de données et de la méthode"
   },
   "Compare": {
     "title": "Comparer des jeux de données de processus",

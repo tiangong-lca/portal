@@ -1,4 +1,4 @@
-import { ShieldAlertIcon, SigmaIcon } from "lucide-react";
+import { ChevronDownIcon, ShieldAlertIcon } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { LciaViewModel } from "@/features/catalog/view-model";
+import type { LciaValueViewModel, LciaViewModel } from "@/features/catalog/view-model";
 
 type LciaPanelProps = {
   labels: {
@@ -29,6 +29,7 @@ type LciaPanelProps = {
     published: string;
     referenceYear: string;
     releaseDetails: string;
+    context: string;
     unavailable: string;
     unit: string;
     value: string;
@@ -37,6 +38,48 @@ type LciaPanelProps = {
   locale: string;
   result: LciaViewModel;
 };
+
+function ResultContext({
+  row,
+  labels,
+}: {
+  row: LciaValueViewModel;
+  labels: LciaPanelProps["labels"];
+}) {
+  return (
+    <details className="group/result min-w-0">
+      <summary className="text-link focus-visible:outline-ring flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg text-sm focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">
+        <ChevronDownIcon
+          aria-hidden="true"
+          className="size-4 shrink-0 transition-transform group-open/result:rotate-180"
+        />
+        {labels.context}
+      </summary>
+      <dl className="mt-2 grid gap-3 border-l pl-3">
+        {[
+          [labels.method, row.methodRef],
+          [labels.process, row.processRef],
+        ].map(([label, value]) => (
+          <div className="min-w-0" key={label}>
+            <dt className="text-muted-foreground text-xs">{label}</dt>
+            <dd className="mt-1 font-mono text-xs [overflow-wrap:anywhere]">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </details>
+  );
+}
+
+function ResultValue({ row }: { row: LciaValueViewModel }) {
+  return (
+    <span className="inline-flex max-w-full flex-wrap items-baseline gap-x-2 gap-y-1">
+      <span className="max-w-full overflow-x-auto font-mono font-semibold whitespace-nowrap tabular-nums">
+        {row.value}
+      </span>
+      <span className="text-muted-foreground text-sm">{row.unit}</span>
+    </span>
+  );
+}
 
 export function LciaPanel({ labels, locale, result }: LciaPanelProps) {
   if (result.status !== "available") {
@@ -88,29 +131,35 @@ export function LciaPanel({ labels, locale, result }: LciaPanelProps) {
           ))}
         </dl>
       </details>
-      <ul className="flex flex-col gap-3 md:hidden">
+      <ul aria-label={labels.publication} className="flex flex-col gap-3 md:hidden">
         {result.rows.map((row) => (
           <li key={`${row.processRef}:${row.methodRef}:${row.impactId}`}>
             <Card size="sm">
               <CardHeader>
-                <CardTitle>{row.impactName}</CardTitle>
+                <CardTitle className="[overflow-wrap:anywhere]">{row.impactName}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <dl className="flex flex-col gap-3">
+              <CardContent className="flex flex-col gap-3">
+                <dl>
+                  <dt className="sr-only">{labels.value}</dt>
+                  <dd className="text-lg">
+                    <ResultValue row={row} />
+                  </dd>
+                </dl>
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
                   {[
-                    [labels.value, `${row.value} ${row.unit}`],
-                    [labels.method, row.methodRef],
-                    [labels.process, row.processRef],
                     [labels.functionalUnit, row.functionalUnit],
                     [labels.geography, row.geography],
                     [labels.referenceYear, row.referenceYear],
                   ].map(([label, value]) => (
-                    <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-2" key={label}>
+                    <div className="min-w-0" key={label}>
                       <dt className="text-muted-foreground text-xs">{label}</dt>
-                      <dd className="text-sm break-all">{value}</dd>
+                      <dd className="mt-1 text-sm [overflow-wrap:anywhere]">{value}</dd>
                     </div>
                   ))}
                 </dl>
+                <div className="border-t">
+                  <ResultContext row={row} labels={labels} />
+                </div>
               </CardContent>
             </Card>
           </li>
@@ -124,28 +173,36 @@ export function LciaPanel({ labels, locale, result }: LciaPanelProps) {
           <TableHeader>
             <TableRow>
               <TableHead scope="col">{labels.impact}</TableHead>
-              <TableHead scope="col">{labels.value}</TableHead>
-              <TableHead scope="col">{labels.unit}</TableHead>
-              <TableHead scope="col">{labels.method}</TableHead>
-              <TableHead scope="col">{labels.process}</TableHead>
-              <TableHead scope="col">{labels.functionalUnit}</TableHead>
+              <TableHead className="text-right" scope="col">
+                {labels.value} / {labels.unit}
+              </TableHead>
+              <TableHead className="whitespace-normal" scope="col">
+                {labels.functionalUnit}
+              </TableHead>
               <TableHead scope="col">{labels.geography}</TableHead>
-              <TableHead scope="col">{labels.referenceYear}</TableHead>
+              <TableHead className="whitespace-normal" scope="col">
+                {labels.referenceYear}
+              </TableHead>
+              <TableHead className="w-1/5 whitespace-normal" scope="col">
+                {labels.context}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {result.rows.map((row) => (
               <TableRow key={`${row.processRef}:${row.methodRef}:${row.impactId}`}>
-                <TableCell>
-                  <SigmaIcon aria-hidden="true" /> {row.impactName}
+                <TableHead scope="row" className="py-3 [overflow-wrap:anywhere] whitespace-normal">
+                  {row.impactName}
+                </TableHead>
+                <TableCell className="py-3 text-right">
+                  <ResultValue row={row} />
                 </TableCell>
-                <TableCell className="font-mono font-semibold">{row.value}</TableCell>
-                <TableCell>{row.unit}</TableCell>
-                <TableCell className="font-mono text-xs">{row.methodRef}</TableCell>
-                <TableCell className="font-mono text-xs">{row.processRef}</TableCell>
-                <TableCell>{row.functionalUnit}</TableCell>
+                <TableCell className="whitespace-normal">{row.functionalUnit}</TableCell>
                 <TableCell>{row.geography}</TableCell>
                 <TableCell>{row.referenceYear}</TableCell>
+                <TableCell className="whitespace-normal">
+                  <ResultContext row={row} labels={labels} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

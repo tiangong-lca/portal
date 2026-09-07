@@ -96,7 +96,7 @@ export function ThemeToggle({ labels }: ThemeToggleProps) {
               <span className="sr-only">{labels[preference]}</span>
             </SelectValue>
           </SelectTrigger>
-          <SelectContent position="popper">
+          <SelectContent aria-label={labels.group} position="popper">
             <SelectGroup>
               <SelectItem value="light">{labels.light}</SelectItem>
               <SelectItem value="dark">{labels.dark}</SelectItem>

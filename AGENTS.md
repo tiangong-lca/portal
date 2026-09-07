@@ -27,9 +27,9 @@ checkPaths:
   - scripts/**
   - .github/workflows/**
   - edgeone.json
-lastReviewedAt: 2026-09-06
-lastReviewedCommit: a01b879485cc95be990e2c5c3f8e40da67a11125
-lastReviewedNote: "Reviewed for Portal #55/#57: shared control density, strict component accessibility and catalog readability preserve exact scientific values, anonymous data boundaries, locale rendering, CSP and hosted-evidence status."
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: 6d1202d8dd2af123b376452951c1d65a650c0a15
+lastReviewedNote: "Reviewed for Portal #58: real page compositions and deterministic async stories, responsive detail and LCIA presentation, and accessible shell menus preserve exact values, anonymous reads, four locales, production rendering, CSP and hosted-evidence boundaries."
 related:
   - README.md
   - docs/design-plan.md
