@@ -1,4 +1,4 @@
-import { FilterIcon, SearchIcon, XIcon } from "lucide-react";
+import { SearchIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -6,7 +6,6 @@ import { notFound } from "next/navigation";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
@@ -27,8 +26,8 @@ import {
 } from "@/features/catalog/search-links";
 import { formatGeographyCode } from "@/i18n/geography";
 import { localizeProcessSubtype } from "@/i18n/domain-vocabulary";
-import { localizedText, mapSearchItem } from "@/features/catalog/map-public-data";
-import { partitionFacetValues } from "@/features/catalog/facet-display";
+import { mapSearchItem } from "@/features/catalog/map-public-data";
+import { FacetsPanel } from "@/features/catalog/facets-panel";
 import { HybridSearchPanel } from "@/features/catalog/hybrid-search-panel";
 import { SearchResults } from "@/features/catalog/search-results";
 import { isPortalLocale, localePath } from "@/i18n/routing";
@@ -84,7 +83,6 @@ export default async function SearchPage({
     getTranslations({ locale, namespace: "Detail" }),
     getTranslations({ locale, namespace: "Common" }),
   ]);
-  const facetLabels = [t("objectType"), t("access"), t("region"), t("year"), t("source")];
   let dataUnavailable = false;
   let nextCursor: string | null = null;
   let results: ReturnType<typeof mapSearchItem>[] = [];
@@ -177,6 +175,7 @@ export default async function SearchPage({
     Boolean(entry.value),
   );
   const clearFiltersHref = searchHref(locale, { ...parsedSearch, filters: {} }, null);
+  const facetContent = await FacetsPanel({ locale, parsedSearch, facets, dataUnavailable });
 
   return (
     <main
@@ -282,116 +281,7 @@ export default async function SearchPage({
                   close: common("close"),
                 }}
               >
-                <Card size="sm">
-                  <CardHeader data-facet-intro>
-                    <FilterIcon aria-hidden="true" />
-                    <CardTitle>{t("facets")}</CardTitle>
-                    <CardDescription>
-                      {facets
-                        ? t("filtersDescription")
-                        : dataUnavailable
-                          ? t("unavailableDescription")
-                          : t("initialDescription")}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-4">
-                    {facets
-                      ? facets.groups.map((group) => {
-                          const normalizedGroup = group.id.toLowerCase().replaceAll(/[^a-z]/g, "");
-                          const renderValue = (value: (typeof group.values)[number]) => {
-                            const href = facetHref(locale, parsedSearch, group.id, value.value);
-                            const translatedValue =
-                              normalizedGroup === "kind" || normalizedGroup === "objecttype"
-                                ? value.value === "process"
-                                  ? common("process")
-                                  : value.value === "flow"
-                                    ? common("flow")
-                                    : value.value
-                                : normalizedGroup.includes("access")
-                                  ? value.value === "open"
-                                    ? common("public")
-                                    : value.value === "metadata_only"
-                                      ? common("metadataOnly")
-                                      : value.value
-                                  : normalizedGroup.includes("geography") ||
-                                      normalizedGroup.includes("region")
-                                    ? (formatGeographyCode(value.value, locale) ?? value.value)
-                                    : normalizedGroup.includes("subtype")
-                                      ? localizeProcessSubtype(value.value, locale)
-                                      : (localizedText(value.label, locale) ?? value.value);
-                            const label = `${translatedValue} (${new Intl.NumberFormat(locale).format(value.count)})`;
-                            return href ? (
-                              <Button
-                                asChild
-                                className="h-auto min-h-11 w-full justify-start text-left break-words whitespace-normal"
-                                key={value.value}
-                                variant="ghost"
-                              >
-                                <Link href={href} prefetch={false}>
-                                  {label}
-                                </Link>
-                              </Button>
-                            ) : (
-                              <span className="text-muted-foreground text-sm" key={value.value}>
-                                {label}
-                              </span>
-                            );
-                          };
-                          const { disclosed, hiddenCount, visible } = partitionFacetValues(
-                            group.values,
-                          );
-                          return (
-                            <div className="flex flex-col gap-2" key={group.id}>
-                              <strong>
-                                {normalizedGroup === "kind" || normalizedGroup === "objecttype"
-                                  ? t("objectType")
-                                  : normalizedGroup.includes("access")
-                                    ? t("access")
-                                    : normalizedGroup.includes("geography") ||
-                                        normalizedGroup.includes("region")
-                                      ? t("region")
-                                      : normalizedGroup.includes("year")
-                                        ? t("year")
-                                        : normalizedGroup.includes("subtype")
-                                          ? t("processSubtype")
-                                          : normalizedGroup.includes("source") ||
-                                              normalizedGroup.includes("database")
-                                            ? t("source")
-                                            : normalizedGroup.includes("classification")
-                                              ? t("classification")
-                                              : (localizedText(group.label, locale) ?? group.id)}
-                              </strong>
-                              {visible.map(renderValue)}
-                              {disclosed.length > 0 ? (
-                                <details>
-                                  <summary className="text-link cursor-pointer text-sm">
-                                    {t("moreFilters", { count: disclosed.length })}
-                                  </summary>
-                                  <div className="mt-2 flex flex-col gap-1">
-                                    {disclosed.map(renderValue)}
-                                    {hiddenCount > 0 ? (
-                                      <p className="text-muted-foreground px-2 pt-2 text-xs leading-5">
-                                        {t("refineMoreFilters", { count: hiddenCount })}
-                                      </p>
-                                    ) : null}
-                                  </div>
-                                </details>
-                              ) : null}
-                            </div>
-                          );
-                        })
-                      : facetLabels.map((label) => (
-                          <Button disabled key={label} variant="ghost">
-                            {label}
-                          </Button>
-                        ))}
-                    {facets ? (
-                      <p className="text-muted-foreground text-xs leading-5">
-                        {t("countsDescription")}
-                      </p>
-                    ) : null}
-                  </CardContent>
-                </Card>
+                {facetContent}
               </ResponsiveFacets>
 
               <section aria-labelledby="results-heading" aria-live="polite" className="min-w-0">

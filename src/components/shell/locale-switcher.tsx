@@ -32,13 +32,15 @@ export function LocaleSwitcher({ currentLocale, label }: LocaleSwitcherProps) {
     <div className="flex items-center gap-2">
       <LanguagesIcon aria-hidden="true" className="hidden sm:block" />
       <Select onValueChange={switchLocale} value={currentLocale}>
-        <SelectTrigger aria-label={label} className="min-h-11 w-14 sm:min-w-28">
-          <span className="sm:hidden">
-            {currentLocale === "zh-CN" ? "中" : currentLocale.toUpperCase()}
-          </span>
-          <SelectValue className="hidden sm:flex" />
+        <SelectTrigger aria-label={label} className="min-h-11 w-16 sm:min-w-28">
+          <SelectValue>
+            <span aria-hidden="true" className="sm:hidden">
+              {currentLocale === "zh-CN" ? "中" : currentLocale.toUpperCase()}
+            </span>
+            <span className="sr-only sm:not-sr-only">{localeNames[currentLocale]}</span>
+          </SelectValue>
         </SelectTrigger>
-        <SelectContent position="popper">
+        <SelectContent aria-label={label} position="popper">
           <SelectGroup>
             {locales.map((locale) => (
               <SelectItem key={locale} value={locale}>

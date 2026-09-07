@@ -290,7 +290,8 @@
     "copyVersionId": "Copy version ID",
     "versionCopied": "Version ID copied",
     "copyFailed": "Copy failed. Select the text below to copy it manually.",
-    "exchangeContext": "Identifiers and display context"
+    "exchangeContext": "Identifiers and display context",
+    "lciaContext": "Dataset and method versions"
   },
   "Compare": {
     "title": "Compare Process datasets",

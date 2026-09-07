@@ -4,6 +4,7 @@ import * as React from "react";
 import { Select as SelectPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
+import { isolateModalContent } from "./modal-inert";
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react";
 
 function Select({ ...props }: React.ComponentProps<typeof SelectPrimitive.Root>) {
@@ -53,13 +54,30 @@ function SelectTrigger({
 function SelectContent({
   className,
   children,
+  ref,
   position = "item-aligned",
   align = "center",
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
+  const contentRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      const restoreBackground = isolateModalContent(node);
+      const cleanup = typeof ref === "function" ? ref(node) : undefined;
+      if (ref && typeof ref !== "function") ref.current = node;
+      return () => {
+        restoreBackground();
+        if (typeof cleanup === "function") cleanup();
+        else if (typeof ref === "function") ref(null);
+        else if (ref) ref.current = null;
+      };
+    },
+    [ref],
+  );
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
+        ref={contentRef}
         data-slot="select-content"
         data-align-trigger={position === "item-aligned"}
         className={cn(

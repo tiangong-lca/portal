@@ -290,7 +290,8 @@
     "copyVersionId": "复制版本标识",
     "versionCopied": "版本标识已复制",
     "copyFailed": "复制失败，可选中下方文字手动复制。",
-    "exchangeContext": "标识与展示依据"
+    "exchangeContext": "标识与展示依据",
+    "lciaContext": "数据集与方法版本"
   },
   "Compare": {
     "title": "比较过程数据集",

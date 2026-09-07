@@ -94,6 +94,7 @@ export default async function ProcessLciaPage({
           published: t("published"),
           referenceYear: t("referenceYear"),
           releaseDetails: t("releaseDetails"),
+          context: t("lciaContext"),
           unavailable: t("lciaUnavailable"),
           unit: t("unit"),
           value: t("value"),

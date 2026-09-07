@@ -20,9 +20,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-09-06
-lastReviewedCommit: a01b879485cc95be990e2c5c3f8e40da67a11125
-lastReviewedNote: "Reviewed for Portal #55/#57: shared control density, strict component accessibility and catalog readability preserve exact scientific values, anonymous data boundaries, locale rendering, CSP and hosted-evidence status."
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: 6d1202d8dd2af123b376452951c1d65a650c0a15
+lastReviewedNote: "Reviewed for Portal #58: real page compositions and deterministic async stories, responsive detail and LCIA presentation, and accessible shell menus preserve exact values, anonymous reads, four locales, production rendering, CSP and hosted-evidence boundaries."
 related:
   - AGENTS.md
   - README.md
@@ -413,6 +413,8 @@ Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时�
 - Provenance：来源库、记录 ID、导入批次、规范化规则版本；
 - Versions：历史版本、变更摘要和精确链接；
 - Relationships：扩展阶段，只有稳定关系契约存在时提供。
+
+详情长标题按当前语言断词，必要时在长词内部换行，避免窄屏裁剪。LCIA 数值和单位优先展示，功能单位、地区、参考年持续可见；精确数据集与方法版本按结果逐项展开，发布批次、数据包和校验值仍在发布信息中。数值不换算、不舍入、不拆散数字。
 
 ### 7.4 比较
 
@@ -1024,6 +1026,7 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 - 不写 raw `dark:` 颜色覆盖；
 - 不用 `space-x/y`，使用 flex/grid + gap；
 - Dialog/Sheet/Drawer 必须有可访问 Title；
+- Select 菜单有可访问名称，展开时背景使用原生 `inert` 隔离焦点，关闭或卸载后恢复既有属性与触发器焦点；
 - Badge、Empty、Alert、Skeleton、Separator 使用官方组件，不手搓同类 markup；
 - 业务组件组合 shadcn primitives，`components/ui` 保持可追踪上游差异。
 
@@ -1346,7 +1349,9 @@ format/lint
 
 Storybook 10.6 使用 Next.js Vite framework，所有配置、CSF stories 与合成 fixture 存放在 `.storybook/`，直接导入已有基础组件及业务组合。预览复用生产 `globals.css`、生成的品牌 token、字体栈和四语言词典；主题与 locale 控件同步预览 document。Storybook 专用样式扫描和 MSW worker 仅属于独立构建，不进入 Next 路由或 EdgeOne 产物。
 
-组件目录覆盖基础控件、搜索卡片与版本、关键词/描述模式、比较选择和矩阵、候选清单、输入输出及证据折叠。场景包含长文本、缺失字段、空态、加载、服务失败、无效输入、存储损坏和移动端。清单 fixture 通过实际请求 schema 校验 MSW 输入，初始化与恢复自身存储键，不访问线上数据。
+组件目录覆盖基础控件、真实 SiteHeader 与主题/语言菜单、Process/Flow DetailHeader 和 Overview、Versions、LCIA、填充的 ResponsiveFacets、搜索卡片与版本、关键词/描述模式、比较选择和矩阵、候选清单、输入输出及证据折叠。服务端展示组件在 loader 中执行；Vite alias 只替代请求级翻译和服务端品牌配置，使用四套实际字典和默认品牌值，不把 Next 服务端运行时引入预览。搜索路由与场景共用 FacetsPanel。
+
+场景包含德语/法语长文本、缺失字段、空态、加载、服务失败、无效输入、存储损坏、390px 与浅深主题。Hybrid 请求由 play 明确释放，验证早期结果/选择保留、显式更新与焦点、新查询取消旧请求、迟到结果、续页失败和过期。清单覆盖文件导入预览/确认/取消、含备注链接确认前保留本地状态、分享取消及容量限制。清单 fixture 通过实际请求 schema 校验 MSW 输入；清单和主题场景初始化与恢复自身存储键，不访问线上数据。原生锚点导航和键盘默认行为继续由生产浏览器测试验证。
 
 `pnpm storybook` 启动工作台，`pnpm build:storybook` 输出静态目录，`pnpm test:storybook` 使用与现有 Vitest 4.1.11 匹配的 Chromium provider，运行渲染、交互与 axe 检查。Storybook 10.6 自动装配 preview annotations。Vite 8 采用原生 tsconfig path resolution，依赖图中未使用的 tsconfck 可选 TypeScript 5 peer 被精确移除，Portal 编译器继续固定 TypeScript 7。
 

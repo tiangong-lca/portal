@@ -45,7 +45,9 @@ const preview: Preview = {
       },
     },
     options: {
-      storySort: { order: ["Foundations", "Primitives", "Catalog", "Compare", "Shortlist"] },
+      storySort: {
+        order: ["Foundations", "Primitives", "Shell", "Catalog", "Compare", "Shortlist"],
+      },
     },
   },
   loaders: [
@@ -62,18 +64,23 @@ const preview: Preview = {
     }),
   ],
   beforeEach({ globals }) {
+    const url = window.location.href;
     document.documentElement.lang = storyLocale(globals);
     document.documentElement.classList.toggle("dark", globals.theme === "dark");
     document.documentElement.dataset.theme = globals.theme === "dark" ? "dark" : "light";
+    return () => window.history.replaceState(null, "", url);
   },
   decorators: [
-    (Story, { globals }) => {
+    (Story, { globals, parameters }) => {
       const locale = storyLocale(globals);
+      const Surface = parameters.pageLayout ? "div" : "main";
       return (
         <NextIntlClientProvider locale={locale} messages={dictionaries[locale]} timeZone="UTC">
-          <main className="bg-background text-foreground min-h-screen p-4 sm:p-6">
+          <Surface
+            className={`bg-background text-foreground min-h-screen ${parameters.pageLayout ? "" : "p-4 sm:p-6"}`}
+          >
             <Story key={locale} />
-          </main>
+          </Surface>
         </NextIntlClientProvider>
       );
     },

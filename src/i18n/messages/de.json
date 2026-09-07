@@ -290,7 +290,8 @@
     "copyVersionId": "Versionskennung kopieren",
     "versionCopied": "Versionskennung kopiert",
     "copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den folgenden Text, um ihn manuell zu kopieren.",
-    "exchangeContext": "Kennungen und Darstellungskontext"
+    "exchangeContext": "Kennungen und Darstellungskontext",
+    "lciaContext": "Datensatz- und Methodenversionen"
   },
   "Compare": {
     "title": "Prozessdatensätze vergleichen",

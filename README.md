@@ -16,9 +16,9 @@ checkPaths:
   - AGENTS.md
   - docs/design-plan.md
   - package.json
-lastReviewedAt: 2026-09-06
-lastReviewedCommit: a01b879485cc95be990e2c5c3f8e40da67a11125
-lastReviewedNote: "Reviewed for Portal #55/#57: shared control density, strict component accessibility and catalog readability preserve exact scientific values, anonymous data boundaries, locale rendering, CSP and hosted-evidence status."
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: 6d1202d8dd2af123b376452951c1d65a650c0a15
+lastReviewedNote: "Reviewed for Portal #58: real page compositions and deterministic async stories, responsive detail and LCIA presentation, and accessible shell menus preserve exact values, anonymous reads, four locales, production rendering, CSP and hosted-evidence boundaries."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -43,7 +43,7 @@ Next.js App Router 前后端同构，React Server Components 优先，部署到 
 
 ## 组件开发与检查
 
-Storybook 复用生产 CSS、生成的品牌 token 和四套词典，集中展示 `src/components/ui` 的全部基础组件及搜索、比较、候选清单、输入输出表格等业务组合。工具栏可切换语言、浅深主题和视口；业务场景直接使用产品组件，数据为合成 fixture。
+Storybook 复用生产 CSS、生成的品牌 token 和四套词典，集中展示 `src/components/ui` 的全部基础组件及全局导航、搜索筛选、详情、版本、LCIA、比较、候选清单和输入输出表格等业务组合。工具栏可切换语言、浅深主题和视口；业务场景直接使用产品组件，数据为合成 fixture。
 
 在仓库要求的 Node 24.18.x / pnpm 11.24.0 下执行：
 
@@ -55,9 +55,9 @@ pnpm exec playwright install chromium
 pnpm test:storybook        # Chromium 渲染、play 交互和 axe 检查
 ```
 
-配置、stories 和 fixture 均在 `.storybook/`。清单场景独立初始化并恢复测试 origin 的专用存储键，MSW 拦截同源 API，不需要生产凭据。生成的 worker 仅存在于 `.storybook/public/`；Storybook 不作为 Next 路由或 EdgeOne 发布产物。现有 `pnpm check` 和 `pnpm test:e2e` 继续验证完整产品流程，CI 另外构建和测试 Storybook。`vitest.config.ts` 供 Storybook CLI 和工作台测试面板发现；原有单元/集成配置完整保留于 `vitest.unit.config.ts`，由 `pnpm test` 等脚本显式选择，隔离 Next 配置加载带来的环境注入。
+配置、stories 和 fixture 均在 `.storybook/`。服务端展示组件在 loader 中直接执行，只有请求级翻译与服务端品牌配置使用 Storybook 专用替代；搜索页和场景共用同一分面组件。清单与主题场景独立初始化并恢复测试 origin 的专用存储键，MSW 拦截同源 API，不需要生产凭据。生成的 worker 仅存在于 `.storybook/public/`；Storybook 不作为 Next 路由或 EdgeOne 发布产物。现有 `pnpm check` 和 `pnpm test:e2e` 继续验证完整产品流程，CI 另外构建和测试 Storybook。`vitest.config.ts` 供 Storybook CLI 和工作台测试面板发现；原有单元/集成配置完整保留于 `vitest.unit.config.ts`，由 `pnpm test` 等脚本显式选择，隔离 Next 配置加载带来的环境注入。
 
-新增或修改共享组件时，补充可复现的正常、空、异常、禁用、长文本或窄屏场景，并对关键行为添加 `play` 断言。无障碍检查统一为 `error`，所有场景执行严格检查。共享控件常规高度为 44px，紧凑控件为 32px；操作组在窄屏按两列排列并允许长标签换行。比较优先显示需要关注的字段，输入输出表通过展开项保留精确标识和展示依据。场景目录用于发现和讨论现有问题，不代表视觉设计已获认可；目前不包含截图差异基线。
+新增或修改共享组件时，补充可复现的正常、空、异常、禁用、长文本或窄屏场景，并对关键行为添加 `play` 断言。无障碍检查统一为 `error`，所有场景执行严格检查。共享控件常规高度为 44px，紧凑控件为 32px；操作组在窄屏按两列排列并允许长标签换行。比较优先显示需要关注的字段，输入输出表通过展开项保留精确标识和展示依据。组合场景覆盖搜索早期结果、显式应用更新、旧请求取消、过期与失败续页，以及清单导入预览、确认、取消、含备注链接和成员上限；请求由 play 显式释放，避免依赖固定延时。下拉菜单展开状态也执行严格无障碍检查，背景不能接收焦点，关闭后恢复原状态。LCIA 数值与单位保持原样，精确数据集及方法版本可逐项展开。场景目录用于发现和讨论现有问题，不代表视觉设计已获认可；目前不包含截图差异基线。
 
 ## 非目标（与其他项目的边界）
 

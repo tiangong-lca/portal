@@ -61,7 +61,7 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
             />
           ) : null}
         </div>
-        <h1 className="font-heading max-w-4xl text-3xl leading-tight font-semibold text-balance sm:text-5xl">
+        <h1 className="font-heading max-w-4xl text-3xl leading-tight font-semibold text-balance [overflow-wrap:anywhere] hyphens-auto sm:text-5xl">
           {record?.name ?? (kind === "process" ? t("processTitle") : t("flowTitle"))}
         </h1>
         <p className="text-muted-foreground font-mono text-sm break-all">{refValue}</p>
