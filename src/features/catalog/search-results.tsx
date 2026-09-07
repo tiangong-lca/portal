@@ -58,6 +58,7 @@ export type SearchResultLabels = {
   lciaAvailable: string;
 };
 
+/** @import import { SearchResults } from "@/features/catalog/search-results"; */
 export function SearchResults({
   items,
   labels,

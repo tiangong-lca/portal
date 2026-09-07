@@ -28,8 +28,8 @@ checkPaths:
   - .github/workflows/**
   - edgeone.json
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 6d1202d8dd2af123b376452951c1d65a650c0a15
-lastReviewedNote: "Reviewed for Portal #58: real page compositions and deterministic async stories, responsive detail and LCIA presentation, and accessible shell menus preserve exact values, anonymous reads, four locales, production rendering, CSP and hosted-evidence boundaries."
+lastReviewedCommit: 4c25b464944b13d27c9a9dfa34a5b30f15b60338
+lastReviewedNote: "Reviewed for Portal #61: local Storybook MCP, component manifests, isolated docgen compiler and Git-ignored project skills preserve anonymous public reads, four locales, production bundles, CSP and hosted-evidence boundaries."
 related:
   - README.md
   - docs/design-plan.md
@@ -94,6 +94,8 @@ Before changing files, run the workspace wrapper with this repository as the exp
 Use the scripts declared by the checked-in `package.json`. At minimum, every reviewable change must pass formatting, lint, typecheck, targeted tests, and build when those surfaces exist. UI changes additionally require browser and accessibility verification; server/security changes require contract and negative-path tests.
 
 Storybook owns isolated component review in `.storybook/`, using production CSS, brand assets and all four dictionaries. Run `pnpm build:storybook` and `pnpm test:storybook` for shared UI/story changes, alongside the product gates. Its generated worker and static output remain outside Portal's public assets and deployment. Stories use synthetic fixtures and mocked same-origin reads; they require no production credentials. Accessibility is strict (`error`) in every story. Storybook is not a screenshot-diff baseline or a replacement for production E2E. Shared controls use 44px comfortable defaults and explicit compact sizes; selection has a persistent visual cue, and disabled controls must not fade informative group descriptions.
+
+Storybook MCP is local development tooling at `http://localhost:6006/mcp`. Use `docs-list` and `docs-show` before component work, discover affected stories with `stories-changed` or `stories-find-by-component`, run `test-run` with accessibility enabled, and publish a curated `review-create` result for visual changes. Existing product/CI gates remain required. Keep `component`/`subcomponents` metadata and `@import` annotations accurate; the static Storybook build checks manifest coverage and representative APIs. Its TypeScript 6 compiler API is isolated to exact docgen packages by `scripts/pnpm-hooks.cjs`; Portal retains TypeScript 7. If installed, use the official project-local `storybook-stories` skill in `.agents/skills/`; the four `storybook-*` skill directories are intentionally ignored by Git and are not build dependencies. README owns local connection and skill provenance instructions.
 
 Localized routes own their root document under `app/[locale]`: the initial HTML must set `<html lang>` to the exact validated route locale without request APIs that would turn SSG/ISR into dynamic rendering. Non-localized probes and the global 404 use separate root documents and must preserve the same brand bootstrap, CSP, and noindex boundaries.
 

@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** @import import { Table } from "@/components/ui/table"; */
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div className="relative w-full overflow-x-auto" data-slot="table-container">
@@ -14,10 +15,12 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   );
 }
 
+/** @import import { TableHeader } from "@/components/ui/table"; */
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return <thead className={cn("[&_tr]:border-b", className)} data-slot="table-header" {...props} />;
 }
 
+/** @import import { TableBody } from "@/components/ui/table"; */
 function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   return (
     <tbody
@@ -28,6 +31,7 @@ function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   );
 }
 
+/** @import import { TableRow } from "@/components/ui/table"; */
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
@@ -38,6 +42,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   );
 }
 
+/** @import import { TableHead } from "@/components/ui/table"; */
 function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return (
     <th
@@ -51,6 +56,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   );
 }
 
+/** @import import { TableCell } from "@/components/ui/table"; */
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td
@@ -61,6 +67,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   );
 }
 
+/** @import import { TableCaption } from "@/components/ui/table"; */
 function TableCaption({ className, ...props }: React.ComponentProps<"caption">) {
   return (
     <caption

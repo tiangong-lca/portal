@@ -19,6 +19,7 @@ const alertVariants = cva(
   },
 );
 
+/** @import import { Alert } from "@/components/ui/alert"; */
 function Alert({
   className,
   variant,
@@ -34,6 +35,7 @@ function Alert({
   );
 }
 
+/** @import import { AlertTitle } from "@/components/ui/alert"; */
 function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -44,6 +46,7 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/** @import import { AlertDescription } from "@/components/ui/alert"; */
 function AlertDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

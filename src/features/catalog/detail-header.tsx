@@ -23,6 +23,7 @@ type DetailHeaderProps = {
   refValue: string;
 };
 
+/** @import import { DetailHeader } from "@/features/catalog/detail-header"; */
 export async function DetailHeader({ kind, locale, record, refValue }: DetailHeaderProps) {
   const [t, common] = await Promise.all([
     getTranslations({ locale, namespace: "Detail" }),

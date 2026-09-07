@@ -24,6 +24,7 @@ const badgeVariants = cva(
   },
 );
 
+/** @import import { Badge } from "@/components/ui/badge"; */
 function Badge({
   className,
   variant = "default",

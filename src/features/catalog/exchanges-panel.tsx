@@ -89,6 +89,7 @@ function ExchangeAmount({ row }: { row: ExchangeViewModel }) {
   );
 }
 
+/** @import import { ExchangesPanel } from "@/features/catalog/exchanges-panel"; */
 export function ExchangesPanel({
   caption,
   emptyDescription,

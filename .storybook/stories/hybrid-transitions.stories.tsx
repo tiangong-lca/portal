@@ -92,6 +92,8 @@ function refinedPage(
 }
 
 const meta = {
+  component: HybridSearchPanel,
+  subcomponents: { CompareSelectionProvider },
   title: "Catalog/Progressive search",
   tags: ["!autodocs"],
   parameters: { msw: handlers },
@@ -119,7 +121,7 @@ const meta = {
   },
 } satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 const query = "Storybook synthetic electricity request";
 
 export const EarlyResults: Story = {

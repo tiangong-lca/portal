@@ -9,6 +9,7 @@ import type { PortalLocale } from "@/i18n/routing";
 
 import { DetailEmpty } from "./detail-empty";
 
+/** @import import { VersionsPanel } from "@/features/catalog/versions-panel"; */
 export function VersionsPanel({
   emptyDescription,
   emptyTitle,

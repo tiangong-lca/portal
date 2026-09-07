@@ -181,6 +181,7 @@ function valueClass(dimension: CompatibilityDimension, value: string | undefined
   return `[overflow-wrap:anywhere] ${!value ? "text-warning" : ""} ${dimension === "lciaMethodRef" || dimension === "publicationRef" ? "font-mono text-xs" : "text-sm"}`;
 }
 
+/** @import import { CompareWorkbench } from "@/features/compare/compare-workbench"; */
 export function CompareWorkbench({
   candidates,
   labels,

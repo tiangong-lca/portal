@@ -7,6 +7,8 @@ import { catalogItems, dictionaries, mobileGlobals, resultLabels, storyLocale } 
 import { facetSearch, populatedFacets } from "../composition-fixtures";
 
 const meta = {
+  component: ResponsiveFacets,
+  subcomponents: { SearchResults, FacetsPanel },
   title: "Catalog/Responsive facets",
   tags: ["!autodocs"],
   loaders: [
@@ -47,7 +49,7 @@ const meta = {
   },
 } satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Populated: Story = { globals: { viewport: { value: "desktop", isRotated: false } } };
 export const Initial: Story = { parameters: { empty: true } };
 export const Unavailable: Story = { parameters: { unavailable: true } };

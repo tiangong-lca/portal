@@ -19,9 +19,27 @@ import { Toggle } from "../../src/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "../../src/components/ui/toggle-group";
 import { dictionaries, storyLocale, mobileGlobals } from "../fixtures";
 
-const meta = { title: "Primitives/Disclosure and selection" } satisfies Meta;
+const meta = {
+  component: Accordion,
+  subcomponents: {
+    Button,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+    Sheet,
+    SheetTrigger,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetDescription,
+    Toggle,
+    ToggleGroup,
+    ToggleGroupItem,
+  },
+  title: "Primitives/Disclosure and selection",
+} satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 export const AccordionDisclosure: Story = {
   render: (_, { globals }) => {
     const m = dictionaries[storyLocale(globals)].Detail;

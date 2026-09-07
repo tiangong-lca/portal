@@ -26,6 +26,7 @@ const toggleVariants = cva(
   },
 );
 
+/** @import import { Toggle } from "@/components/ui/toggle"; */
 function Toggle({
   className,
   size = "default",

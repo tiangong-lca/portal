@@ -12,6 +12,7 @@ const ToggleGroupContext = React.createContext<VariantProps<typeof toggleVariant
   variant: "default",
 });
 
+/** @import import { ToggleGroup } from "@/components/ui/toggle-group"; */
 function ToggleGroup({
   children,
   className,
@@ -34,6 +35,7 @@ function ToggleGroup({
   );
 }
 
+/** @import import { ToggleGroupItem } from "@/components/ui/toggle-group"; */
 function ToggleGroupItem({
   children,
   className,

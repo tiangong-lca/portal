@@ -115,6 +115,7 @@ function shareRequest(state: RequestState): PortalHybridSearchRequest {
   });
 }
 
+/** @import import { HybridSearchPanel } from "@/features/catalog/hybrid-search-panel"; */
 export function HybridSearchPanel({
   initialFilters,
   initialKind,

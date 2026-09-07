@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
-/** Native GET remains the no-JavaScript fallback; client navigation preserves selected versions. */
+/** Native GET remains the no-JavaScript fallback; client navigation preserves selected versions.
+ * @import import { KeywordSearchForm } from "@/features/catalog/keyword-search-form";
+ */
 export function KeywordSearchForm({ action, children }: { action: string; children: ReactNode }) {
   const router = useRouter();
   return (

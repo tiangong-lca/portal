@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** @import import { Card } from "@/components/ui/card"; */
 function Card({
   className,
   size = "default",
@@ -20,6 +21,7 @@ function Card({
   );
 }
 
+/** @import import { CardHeader } from "@/components/ui/card"; */
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -33,6 +35,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/** @import import { CardTitle } from "@/components/ui/card"; */
 function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -46,6 +49,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/** @import import { CardDescription } from "@/components/ui/card"; */
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -66,12 +70,14 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/** @import import { CardContent } from "@/components/ui/card"; */
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div data-slot="card-content" className={cn("px-(--card-spacing)", className)} {...props} />
   );
 }
 
+/** @import import { CardFooter } from "@/components/ui/card"; */
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

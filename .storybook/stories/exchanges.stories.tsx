@@ -4,9 +4,13 @@ import { ExchangesPanel } from "../../src/features/catalog/exchanges-panel";
 import { HashDisclosure } from "../../src/components/shell/hash-disclosure";
 import { dictionaries, exchangeRows, mobileGlobals, storyLocale } from "../fixtures";
 
-const meta = { title: "Catalog/Exchanges and disclosure" } satisfies Meta;
+const meta = {
+  component: ExchangesPanel,
+  subcomponents: { HashDisclosure },
+  title: "Catalog/Exchanges and disclosure",
+} satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 export const DataTable: Story = {
   render: (_, { globals, parameters }) => {
     const locale = storyLocale(globals);

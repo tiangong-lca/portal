@@ -7,6 +7,10 @@ import { cn } from "@/lib/utils";
 import { isolateModalContent } from "./modal-inert";
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react";
 
+/**
+ * Single-value selection. Use value/onValueChange for controlled state or defaultValue for uncontrolled state.
+ * @import import { Select } from "@/components/ui/select";
+ */
 function Select({ ...props }: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" {...props} />;
 }
@@ -21,10 +25,18 @@ function SelectGroup({ className, ...props }: React.ComponentProps<typeof Select
   );
 }
 
+/**
+ * Displays the selected option or a placeholder when the value is empty.
+ * @import import { SelectValue } from "@/components/ui/select";
+ */
 function SelectValue({ ...props }: React.ComponentProps<typeof SelectPrimitive.Value>) {
   return <SelectPrimitive.Value data-slot="select-value" {...props} />;
 }
 
+/**
+ * Label the trigger with a Label or aria-label. Default size is 44px; sm is the explicit 32px compact option.
+ * @import import { SelectTrigger } from "@/components/ui/select";
+ */
 function SelectTrigger({
   className,
   size = "default",
@@ -51,6 +63,10 @@ function SelectTrigger({
   );
 }
 
+/**
+ * Portal-mounted options with background focus isolation and restoration on close.
+ * @import import { SelectContent } from "@/components/ui/select";
+ */
 function SelectContent({
   className,
   children,
@@ -116,6 +132,10 @@ function SelectLabel({ className, ...props }: React.ComponentProps<typeof Select
   );
 }
 
+/**
+ * An option with a non-empty value and a visible localized label.
+ * @import import { SelectItem } from "@/components/ui/select";
+ */
 function SelectItem({
   className,
   children,

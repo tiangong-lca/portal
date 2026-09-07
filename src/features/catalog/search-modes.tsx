@@ -12,6 +12,7 @@ function isSharedDescription() {
   return window.location.hash.startsWith("#hybrid=");
 }
 
+/** @import import { SearchModes } from "@/features/catalog/search-modes"; */
 export function SearchModes({
   keyword,
   description,

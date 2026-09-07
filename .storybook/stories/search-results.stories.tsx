@@ -14,6 +14,7 @@ import {
 const meta = {
   title: "Catalog/Search results",
   component: SearchResults,
+  subcomponents: { CompareSelectionProvider },
   tags: ["!autodocs"],
   argTypes: { items: { control: false }, labels: { control: false }, locale: { control: false } },
   args: {

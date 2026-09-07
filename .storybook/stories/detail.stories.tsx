@@ -10,6 +10,8 @@ import { dictionaries, mobileGlobals, refs, selectionLabels, storyLocale } from 
 import { detailRecord, lciaLabels, lciaResult } from "../composition-fixtures";
 
 const meta = {
+  component: DetailHeader,
+  subcomponents: { CompareSelectionProvider, OverviewPanel, VersionsPanel, LciaPanel },
   title: "Catalog/Dataset detail",
   tags: ["!autodocs"],
   beforeEach({ globals, parameters }) {
@@ -87,7 +89,7 @@ const meta = {
   },
 } satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Process: Story = {
   play: async ({ canvas, userEvent, globals }) => {
     const locale = storyLocale(globals);

@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+/** @import import { ResponsiveFacets } from "@/features/catalog/responsive-facets"; */
 export function ResponsiveFacets({
   children,
   labels,

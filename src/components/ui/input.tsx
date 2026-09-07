@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** @import import { Input } from "@/components/ui/input"; */
 function Input({
   className,
   type,

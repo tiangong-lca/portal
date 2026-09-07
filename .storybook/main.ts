@@ -5,9 +5,27 @@ const config: StorybookConfig = {
   stories: ["./stories/**/*.stories.tsx"],
   staticDirs: ["./public"],
   framework: "@storybook/nextjs-vite",
-  addons: ["@storybook/addon-docs", "@storybook/addon-a11y", "@storybook/addon-vitest"],
+  addons: [
+    "@storybook/addon-docs",
+    "@storybook/addon-a11y",
+    "@storybook/addon-vitest",
+    "@storybook/addon-mcp",
+  ],
   core: { disableTelemetry: true },
-  typescript: { reactDocgen: "react-docgen" },
+  features: {
+    componentsManifest: true,
+    changeDetection: true,
+    experimentalReview: true,
+    experimentalReactComponentMeta: true,
+  },
+  typescript: {
+    reactDocgen: "react-docgen-typescript",
+    reactDocgenTypescriptOptions: {
+      include: ["src/**/*.tsx", ".storybook/**/*.tsx"],
+      shouldExtractLiteralValuesFromEnum: true,
+      shouldRemoveUndefinedFromOptional: true,
+    },
+  },
   async viteFinal(config) {
     const { mergeConfig } = await import("vite");
     return mergeConfig(config, {

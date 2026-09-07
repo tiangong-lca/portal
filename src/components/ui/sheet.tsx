@@ -7,10 +7,12 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
 
+/** @import import { Sheet } from "@/components/ui/sheet"; */
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
 
+/** @import import { SheetTrigger } from "@/components/ui/sheet"; */
 function SheetTrigger({ ...props }: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
   return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
 }
@@ -39,6 +41,7 @@ function SheetOverlay({
   );
 }
 
+/** @import import { SheetContent } from "@/components/ui/sheet"; */
 function SheetContent({
   className,
   children,
@@ -77,6 +80,7 @@ function SheetContent({
   );
 }
 
+/** @import import { SheetHeader } from "@/components/ui/sheet"; */
 function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -97,6 +101,7 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/** @import import { SheetTitle } from "@/components/ui/sheet"; */
 function SheetTitle({ className, ...props }: React.ComponentProps<typeof SheetPrimitive.Title>) {
   return (
     <SheetPrimitive.Title
@@ -107,6 +112,7 @@ function SheetTitle({ className, ...props }: React.ComponentProps<typeof SheetPr
   );
 }
 
+/** @import import { SheetDescription } from "@/components/ui/sheet"; */
 function SheetDescription({
   className,
   ...props
