@@ -1,8 +1,8 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-09-07"
-lastReviewedCommit: 216e70971900b811fff5342e04a1e0a7a1a4dc47
-lastReviewedNote: "Reviewed for Portal #63: pnpm-managed project skills, immutable source locks, verified restoration and explicit updates remain local development tooling; anonymous runtime, hosted evidence, CSP and release gates are unchanged."
+lastReviewedCommit: "3341a500616f1657a6a1696df87f0c4ba1e7930b"
+lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
 
 catalog:
   repos:
@@ -11,9 +11,7 @@ catalog:
       canonicalRepo: tiangong-lca/portal
       entryDoc: AGENTS.md
       workflowDocs:
-        - docs/design-plan.md
-        - docs/r0/compatibility-matrix.md
-        - docs/r0/csp-isr-spike.md
+        - docs/development.md
       workspaceIntegrationRequired: true
 
 ownership:
@@ -109,6 +107,19 @@ freshness:
 
 routing:
   intents:
+    components:
+      paths:
+        - src/components/**
+        - src/app/globals.css
+        - src/config/brand*
+        - src/i18n/**
+        - .storybook/**
+        - docs/ui-system.md
+    development:
+      paths:
+        - docs/development.md
+        - skills-lock.json
+        - scripts/install-skills.mjs
     product-plan:
       paths:
         - docs/design-plan.md
@@ -159,6 +170,8 @@ docInventory:
   include:
     - AGENTS.md
     - README.md
+    - docs/development.md
+    - docs/ui-system.md
     - docs/design-plan.md
     - docs/r0/compatibility-matrix.md
     - docs/r0/csp-isr-spike.md
@@ -174,144 +187,272 @@ rules:
     repo: portal
     triggers:
       - path: AGENTS.md
-        kind: doc-contract
-      - path: .docpact/config.yaml
-        kind: doc-ai-layer
+        kind: agent-entry
       - path: README.md
         kind: repo-landing
+      - path: .docpact/config.yaml
+        kind: documentation-routing
+      - path: scripts/docpact
+        kind: documentation-tool
+      - path: scripts/docpact-gate.sh
+        kind: documentation-check
+      - path: scripts/install-git-hooks.sh
+        kind: local-check
+      - path: .githooks/**
+        kind: local-check
+      - path: .github/workflows/ai-doc-lint.yml
+        kind: documentation-ci
     requiredDocs:
       - path: AGENTS.md
         mode: review_or_update
       - path: README.md
         mode: review_or_update
+      - path: docs/development.md
+        mode: review_or_update
       - path: .docpact/config.yaml
         mode: review_or_update
-      - path: docs/design-plan.md
-        mode: review_or_update
-    reason: Repository boundaries, landing guidance, documentation routing, and the implementation plan must stay aligned.
+    reason: "Repository entrypoints and documentation checks must preserve portable setup, ownership and tracked delivery."
 
-  - id: portal-design-plan-contract
+  - id: portal-product-plan-contract
     scope: repo
     repo: portal
     triggers:
       - path: docs/design-plan.md
-        kind: technical-plan
+        kind: product-specification
     requiredDocs:
       - path: docs/design-plan.md
         mode: review_or_update
-      - path: AGENTS.md
+    reason: "The product plan owns feature behavior, data access, privacy, rendering and deployment requirements; shared UI and development procedures are linked to their owners."
+
+  - id: portal-ui-contract
+    scope: repo
+    repo: portal
+    triggers:
+      - path: docs/ui-system.md
+        kind: ui-standard
+      - path: src/components/**
+        kind: shared-ui
+      - path: src/app/globals.css
+        kind: ui-style
+      - path: src/app/brand.generated.css
+        kind: brand-style
+      - path: src/app/theme-integrity.generated.ts
+        kind: brand-bootstrap
+      - path: src/config/brand*
+        kind: brand-config
+      - path: src/i18n/**
+        kind: localization
+      - path: src/lib/utils.ts
+        kind: ui-utility
+      - path: public/**
+        kind: public-asset
+      - path: components.json
+        kind: ui-system
+      - path: postcss.config.mjs
+        kind: ui-style
+      - path: scripts/validate-brand-config.mjs
+        kind: brand-check
+      - path: scripts/generate-brand-css.mjs
+        kind: brand-generator
+      - path: scripts/generate-theme-integrity.mjs
+        kind: brand-generator
+      - path: scripts/sync-location-names.mjs
+        kind: vocabulary-source
+      - path: tests/unit/ui-*.test.*
+        kind: ui-behavior
+      - path: tests/unit/brand-*.test.ts
+        kind: brand-check
+      - path: tests/unit/i18n-locales.test.ts
+        kind: dictionary-check
+      - path: tests/e2e/accessibility.spec.ts
+        kind: ui-accessibility
+      - path: tests/e2e/ui-review.spec.ts
+        kind: ui-review
+    requiredDocs:
+      - path: docs/ui-system.md
         mode: review_or_update
-      - path: README.md
+    reason: "Shared presentation, brand assets, localization and UI checks follow the focused component and accessibility standards."
+
+  - id: portal-component-workspace-contract
+    scope: repo
+    repo: portal
+    triggers:
+      - path: .storybook/**
+        kind: component-workspace
+      - path: vitest.config.ts
+        kind: component-test-config
+      - path: scripts/check-storybook-manifest.mjs
+        kind: component-documentation
+      - path: scripts/pnpm-hooks.cjs
+        kind: component-docgen
+      - path: skills-lock.json
+        kind: skill-source-lock
+      - path: scripts/install-skills.mjs
+        kind: skill-restoration
+      - path: scripts/licenses/storybook-mcp.txt
+        kind: skill-license
+      - path: tests/unit/install-skills.test.ts
+        kind: skill-restoration-check
+    requiredDocs:
+      - path: docs/ui-system.md
         mode: review_or_update
-    reason: Product, data, security, UI, release, and cross-repository target state is owned by one plan.
+      - path: docs/development.md
+        mode: review_or_update
+    reason: "Isolated component review and local MCP/skills tooling require UI standards and reproducible development procedures; they do not establish hosted release evidence."
+
+  - id: portal-development-contract
+    scope: repo
+    repo: portal
+    triggers:
+      - path: docs/development.md
+        kind: development-workflow
+      - path: package.json
+        kind: package-scripts
+      - path: pnpm-lock.yaml
+        kind: dependency-lock
+      - path: pnpm-workspace.yaml
+        kind: package-policy
+      - path: tsconfig.json
+        kind: compiler-config
+      - path: prettier.config.mjs
+        kind: format-config
+      - path: .prettierignore
+        kind: format-policy
+      - path: .node-version
+        kind: build-toolchain
+      - path: .npmrc
+        kind: package-policy
+      - path: .gitignore
+        kind: artifact-policy
+      - path: vitest.unit.config.ts
+        kind: test-config
+      - path: vitest.setup.ts
+        kind: test-setup
+      - path: playwright.config.ts
+        kind: browser-test-config
+      - path: scripts/**
+        kind: development-tool
+      - path: .github/workflows/ci.yml
+        kind: product-ci
+      - path: tests/mocks/**
+        kind: test-support
+    requiredDocs:
+      - path: docs/development.md
+        mode: review_or_update
+    reason: "Toolchain, local checks, dependency restoration and CI orchestration are owned by the development workflow; runtime-specific files activate their additional rules."
 
   - id: portal-product-runtime-contract
     scope: repo
     repo: portal
     triggers:
-      - path: package.json
-        kind: package-runtime
-      - path: pnpm-lock.yaml
-        kind: dependency-lock
-      - path: pnpm-workspace.yaml
-        kind: package-runtime
-      - path: components.json
-        kind: ui-system
-      - path: tsconfig.json
-        kind: compiler-config
-      - path: next.config.ts
-        kind: framework-config
-      - path: postcss.config.mjs
-        kind: style-config
-      - path: prettier.config.mjs
-        kind: format-config
-      - path: .prettierignore
-        kind: format-config
+      - path: src/features/**
+        kind: feature-behavior
+      - path: src/server/**
+        kind: server-data-access
+      - path: src/app/**/*.tsx
+        kind: product-page
+      - path: src/app/**/*.ts
+        kind: route-handler
+      - path: src/app/*.tsx
+        kind: root-document
+      - path: src/app/*.ts
+        kind: route-metadata
+      - path: src/lib/catalog-*.ts
+        kind: catalog-seo
+      - path: src/lib/seo.ts
+        kind: seo
+      - path: src/lib/fragment-codec.ts
+        kind: browser-state
+      - path: src/lib/hybrid-request.ts
+        kind: hybrid-request
+      - path: src/lib/collection-summaries.ts
+        kind: public-summary
+      - path: src/i18n/request.ts
+        kind: locale-rendering
+      - path: src/i18n/routing.ts
+        kind: locale-routing
       - path: contracts/database-engine/portal/**
-        kind: generated-database-contract
-      - path: .node-version
-        kind: runtime-version
-      - path: .npmrc
-        kind: package-policy
-      - path: src/**
-        kind: product-code
-      - path: public/**
-        kind: public-asset
+        kind: generated-public-contract
+      - path: scripts/sync-database-contracts.mjs
+        kind: contract-snapshot
+      - path: scripts/portal-r1-fixture-server.ts
+        kind: public-data-fixture
+      - path: tests/unit/portal-*.test.ts
+        kind: public-data-test
+      - path: tests/unit/catalog-sitemap.test.ts
+        kind: sitemap-test
+      - path: tests/unit/browser-private-markers.test.ts
+        kind: privacy-test
+      - path: tests/integration/**
+        kind: integration-test
+      - path: tests/fixtures/**
+        kind: public-contract-fixture
+      - path: tests/e2e/**
+        kind: product-browser-test
     requiredDocs:
       - path: docs/design-plan.md
         mode: review_or_update
-      - path: AGENTS.md
-        mode: review_or_update
-      - path: README.md
-        mode: review_or_update
-    reason: Portal runtime changes must stay inside the anonymous read-only product and architecture contract.
+    reason: "Product features, same-origin routes and public data adapters must preserve the anonymous read-only behavior, exact identities, privacy and data contracts."
 
-  - id: portal-proof-and-deployment-contract
+  - id: portal-hosted-compatibility-contract
     scope: repo
     repo: portal
     triggers:
-      - path: skills-lock.json
-        kind: skill-dependency-lock
-      - path: vitest.config.ts
-        kind: test-config
-      - path: vitest.unit.config.ts
-        kind: test-config
-      - path: .storybook/**
-        kind: component-workspace
-      - path: .gitignore
-        kind: artifact-policy
-      - path: vitest.setup.ts
-        kind: test-config
-      - path: playwright.config.ts
-        kind: test-config
-      - path: tests/**
-        kind: test
       - path: docs/r0/**
-        kind: validation-doc
-      - path: scripts/**
-        kind: validation-tool
-      - path: .githooks/**
-        kind: local-gate
-      - path: .github/workflows/**
-        kind: ci
+        kind: hosted-evidence
       - path: edgeone.json
         kind: deployment-config
       - path: .env.example
-        kind: env-contract
+        kind: deployment-environment
+      - path: next.config.ts
+        kind: rendering-config
+      - path: src/config/content-security-policy.ts
+        kind: csp-policy
+      - path: src/config/deployment-build.ts
+        kind: deployment-marker
+      - path: src/app/*/layout.tsx
+        kind: locale-document
+      - path: src/app/root-document.tsx
+        kind: root-document
+      - path: src/app/global-not-found.tsx
+        kind: global-404
+      - path: src/app/(default)/**
+        kind: native-redirect
+      - path: src/app/r0-compat/**
+        kind: compatibility-probe
+      - path: src/server/routing/**
+        kind: native-routing
+      - path: src/server/r0-compat/**
+        kind: compatibility-probe
+      - path: public/brand/theme-init.js
+        kind: csp-bootstrap
+      - path: tests/unit/edgeone-*.test.ts
+        kind: platform-test
+      - path: tests/unit/r0-compat-env.test.ts
+        kind: probe-test
+      - path: tests/unit/default-locale-redirect.test.ts
+        kind: native-routing-test
+      - path: tests/unit/deployment-build.test.ts
+        kind: deployment-marker-test
+      - path: tests/unit/bootstrap.test.tsx
+        kind: root-document-test
+      - path: tests/unit/ui-csp-brand-origin.test.ts
+        kind: csp-test
+      - path: tests/unit/ui-theme-integrity.test.ts
+        kind: csp-integrity-test
+      - path: tests/e2e/r0-compat.spec.ts
+        kind: hosted-compatibility-test
+      - path: tests/e2e/security.spec.ts
+        kind: security-test
+      - path: tests/e2e/cache-policy.spec.ts
+        kind: cache-test
+      - path: tests/e2e/performance.spec.ts
+        kind: performance-test
     requiredDocs:
       - path: docs/design-plan.md
         mode: review_or_update
-      - path: AGENTS.md
-        mode: review_or_update
-      - path: README.md
-        mode: review_or_update
-      - path: .docpact/config.yaml
-        mode: review_or_update
       - path: docs/r0/compatibility-matrix.md
         mode: review_or_update
-    reason: Proof, environment, and deployment changes must preserve release gates and secret boundaries.
-
-  - id: portal-csp-isr-compatibility-contract
-    scope: repo
-    repo: portal
-    triggers:
-      - path: docs/r0/csp-isr-spike.md
-        kind: validation-doc
-      - path: docs/r0/compatibility-matrix.md
-        kind: release-gate
-      - path: next.config.ts
-        kind: framework-config
-      - path: edgeone.json
-        kind: response-policy
-      - path: src/app/[locale]/layout.tsx
-        kind: locale-policy
-      - path: src/app/r0-compat/**
-        kind: compatibility-route
-      - path: tests/e2e/r0-compat.spec.ts
-        kind: compatibility-test
-    requiredDocs:
       - path: docs/r0/csp-isr-spike.md
         mode: review_or_update
-      - path: docs/r0/compatibility-matrix.md
-        mode: review_or_update
-    reason: Changes to the strict CSP, App Router rendering, or ISR compatibility boundary must re-evaluate the retained R0 evidence.
+    reason: "Changes affecting hosted rendering, native redirects, CSP, cache or deployment retain the runtime requirements and exact compatibility evidence."

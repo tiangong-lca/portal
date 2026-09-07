@@ -12,6 +12,8 @@ whenToUpdate:
   - when Portal target state, acceptance criteria, owner boundaries, or delivery phases change
 checkPaths:
   - docs/design-plan.md
+  - docs/ui-system.md
+  - docs/development.md
   - AGENTS.md
   - README.md
   - src/**
@@ -21,9 +23,11 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 216e70971900b811fff5342e04a1e0a7a1a4dc47
-lastReviewedNote: "Reviewed for Portal #63: pnpm-managed project skills, immutable source locks, verified restoration and explicit updates remain local development tooling; anonymous runtime, hosted evidence, CSP and release gates are unchanged."
+lastReviewedCommit: 3341a500616f1657a6a1696df87f0c4ba1e7930b
+lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
 related:
+  - docs/ui-system.md
+  - docs/development.md
   - AGENTS.md
   - README.md
 ---
@@ -167,7 +171,7 @@ Portal 只能进一步隐藏能力，不能把 `false` 改成 `true`。
 
 Portal 仓库把一个 exact promoted Database commit 的全部 `contracts/portal/*.schema.json` 与 `generated/*.d.ts` 机械同步到 `contracts/database-engine/portal/**`。该目录不由 Portal 格式化或手工修改；版本化 manifest 固定 canonical repo、40 位 source commit、闭合文件清单、byte length 与 SHA-256。`pnpm check:database-contracts` 每次验证本地 snapshot，提供 Database checkout 时再逐文件对比 Git object。运行时 Zod 仍执行严格 fail-closed 解析，TypeScript DTO 直接使用该 generated contract；不能用 Portal 手写类型替代或通过放宽 Schema 消除 drift。
 
-当前快照固定为 Database 已晋级 Main 的 `521741a064f402c9b674583ef69a5947d1b5885f`（PR #602），包含 17 个 Schema 及 17 个 generated type 文件，与先前已部署搜索增量逐字节一致。Portal #44 曾获准在正式 Git promote 前接入已上线后端，例外的范围与现网回验保留在 [workspace #963](https://github.com/tiangong-lca/workspace/issues/963)。重新固定契约不重跑生产迁移，也不自动证明前端发布或 workspace integration 完成。
+快照的精确 Database 提交、闭合文件清单和哈希以 [manifest](../contracts/database-engine/portal/manifest.json) 为准。重新固定契约只更新 Portal 的公开类型快照，不重跑生产迁移，也不自动证明前端发布或 workspace integration 完成。
 
 ```ts
 type PublicDatasetKey = {
@@ -916,175 +920,47 @@ Cache key 必须包含 locale、kind、id、version、public capability、public
 
 ### 13.1 设计方向
 
-视觉方向是“专业科学数据目录”：信息结构稳定、留白克制、分隔清楚、检索优先，不采用营销 SaaS、政府公文站、聊天产品或开发仪表盘的造型。
-
-可识别的核心元素是连续目录索引：Process、Flow、地区与来源共享一个表面与统一行结构，帮助访问者建立数据空间坐标。首页不把 provenance 状态做成装饰性证据轨；版本、来源、许可、方法、质量和 publication 等信任信息只在目录概览、结果行或记录页的实际使用位置出现。
-
-品牌紫只用于主要行动、链接、焦点和少量导航信号；Source Sans 3 承担正文与标题，IBM Plex Mono 只用于 UUID、版本、日期、计数和确有必要的技术标识。Card、Table、Alert、Empty、Input Group、Button 与 Separator 使用 shadcn/ui 语义 token，浅色与深色分别校准。不得加入渐变英雄区、装饰插画、伪统计、悬浮玻璃卡或与数据任务无关的品牌口号。开发阶段的 `R1/R2`、`LEXICAL/HYBRID`、`POST`、`LIVE · 5 MIN`、`LOCALSTORAGE`、rank、score、reason code、schema、BFF、façade、telemetry 等标签不得出现在公众 UI。
-
-公众文字遵循“用户先于实现”的顺序：先说明能做什么、看到什么、下一步是什么，再在必要位置解释限制。按钮使用可预期动作；错误同时说明状态与恢复方式；空态提供下一步；不把内部安全/缓存/发布结构当作卖点。首页首屏只完成“找到公开 LCA 数据并理解使用背景”这一件事，Search 只显示完成检索所需的字段，完整技术与质量原文进入详情页。
-
-术语冲突按以下顺序收敛：
-
-1. TIDAS/ILCD glossary 拥有 Process、Flow、Exchange、functional unit、reference flow、LCI/LCIA、review/validation/compliance 等领域概念；
-2. `tiangong-lca-next` 当前 locale style guide 拥有四语 UI 语气、按钮、错误和产品术语（例如法语普通产品文案使用 `ÉICV`）；
-3. `tiangong-lca-next-docs` 当前四语内容提供公众任务表达与帮助链接；
-4. Portal 只在匿名只读场景下缩短说明，不改变领域含义；无法本地化的上游数据值显示来源语言，不伪装成本地翻译。
-
-信息架构参考同类公开数据服务的成熟做法：Federal LCA Commons 以仓库与数据集发现为中心；GBIF 在首屏给出直接价值陈述与主搜索；NASA Earthdata 把搜索、主题浏览和工具入口分层；European Platform on LCA / LCDN 在记录语境中强调提供方、版本、方法、质量和文档。Portal 只借鉴这些任务层级与信息边界，不复制其视觉资产、文案或品牌。
-
-常规 Button、Input、Select、InputGroup 和 Toggle 使用 44px 高度（多行按钮为最小高度）；`sm` 为 32px 紧凑尺寸，Button 的 `xs` 24px 仅用于有明确密度需求的内嵌操作，`lg` 为 48px。Button/Select/Toggle 使用 `size`，Input/InputGroup 使用 `controlSize`，保留原生 Input 的 `size` 字符宽度属性。Sheet 关闭按钮使用 44px。`ActionGroup` 在窄屏按两列等宽排列，同一行控件拉齐；长本地化标签完整换行。
-
-Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选择以勾选图标标明状态，保留稳定的可访问名称和 pressed/checked 语义。禁用态只作用于控件，组内仍需阅读的说明保留正常对比度。InputGroup 附加区域将焦点转给相应的可用 Input 或 Textarea，按钮保留自己的操作。
-
-输入输出表主要显示流、方向、类型、原始数量与单位及定量参考意义。数量右对齐并与单位保持同行，禁止转换为浮点数或改变精度。逐行原生展开项保留 Flow/Process 精确版本、功能单位和展示依据，支持键盘；移动端使用相同信息层级。
+见 [UI 规范：设计方向](ui-system.md#设计方向)。
 
 ### 13.2 默认主色：与 `tiangong-lca-next` 一致
 
-只对齐 `tiangong-lca-next/config/branding.ts` 当前两套主色，不复制 Ant Design 的完整 token 或算法：
-
-| Theme | Portal `--brand-primary` / `--primary` 默认值 |
-| ----- | --------------------------------------------- |
-| Light | `#5C246A`                                     |
-| Dark  | `#9E3FFD`                                     |
-
-背景、surface、文字、muted、border、popover、sidebar、状态色和图表色使用 Portal 自身的 Radix + shadcn Nova + Tailwind v4 semantic CSS variables，并遵守以下原则：
-
-- 使用 OKLCH 与 `@theme inline`；组件只消费 semantic token；
-- Light/Dark 不做简单反相，各自保证层级、可读性和 Focus Ring；
-- success、warning、danger、info 是独立语义色，不由品牌主色派生；
-- 所有前景/背景组合满足 WCAG 2.2 AA；
-- 不引入 Ant Design 依赖，也不追随其非主色 token 漂移。
-
-默认 Logo 与 Next 同源：浅色 `/brand/logo.svg` 对应 Next `/logo.svg`，深色 `/brand/logo-dark.svg` 对应 Next `/logo_dark.svg`，favicon 对应 `/favicon.ico`。Portal 首次引入时复制 exact reviewed assets，并保存来源 repo、commit 与 SHA-256 receipt；运行时不依赖 sibling repo 路径。
+见 [UI 规范：默认主色：与 `tiangong-lca-next` 一致](ui-system.md#默认主色与-tiangong-lca-next-一致)。
 
 ### 13.3 可替换主色配置
 
-品牌色是部署级配置，不是用户偏好或数据库数据。支持：
-
-- `PORTAL_LIGHT_PRIMARY`，默认 `#5C246A`；
-- `PORTAL_DARK_PRIMARY`，默认 `#9E3FFD`；
-- `PORTAL_BRAND_VERSION`，用于 cache、视觉证据和回滚标识。
-
-约束：
-
-1. Zod 只接受规范化 `#RRGGBB`；非法配置使 build/boot fail closed；
-2. 以浅/深 seed 在 OKLCH 中生成 50–950 primitive scale，并计算 primary/hover/active/subtle/foreground/ring/sidebar-primary；
-3. success、warning、danger、info 使用 Portal UI 框架的独立语义色，不随主色变化；
-4. `globals.css` 用 Tailwind v4 `@theme inline` 将 `--color-primary` 等映射到运行时 CSS variables；组件只使用 `bg-primary`、`text-primary-foreground`、`ring-ring` 等 semantic utilities；
-5. Root Server Layout 输出已转义、已验证的 light/dark CSS variables；不拼接动态 Tailwind class；
-6. 主题组合必须通过 WCAG 2.2 AA 对比度、focus ring 和 forced-colors 检查，否则部署失败；
-7. 配置变化产生新 deployment，不允许运行中跨请求切品牌，避免 CDN/ISR cache 混色。
+见 [UI 规范：可替换主色配置](ui-system.md#可替换主色配置)。
 
 ### 13.4 Logo 与 favicon 替换
 
-支持部署变量：
-
-- `PORTAL_LIGHT_LOGO`，默认 `/brand/logo.svg`；
-- `PORTAL_DARK_LOGO`，默认 `/brand/logo-dark.svg`；
-- `PORTAL_LOGO_MARK`，移动端/窄导航可选，默认复用当前主题 Logo；
-- `PORTAL_FAVICON`，默认 `/brand/favicon.ico`；
-- `PORTAL_LOGO_ALT_ZH` / `PORTAL_LOGO_ALT_EN`；
-- `PORTAL_LOGO_WIDTH` / `PORTAL_LOGO_HEIGHT`，默认按源文件 `170.08 × 170.08` 比例。
-
-规则：
-
-- 首选同源 `/brand/**` 资产；允许远端时只接受 HTTPS 和 `PORTAL_BRAND_ASSET_ORIGIN` allowlist；
-- SVG 以 `<img>`/`next/image` 外部资源方式呈现，不把未受信 SVG inline 注入 DOM；
-- 必须声明 width/height 或 aspect ratio，避免 CLS；加载失败回退默认 Logo 与文本品牌名；
-- Light/Dark/System 切换同步选择对应 Logo；在 `<html>` 水合前用最小内联主题脚本恢复 localStorage 偏好，System 模式使用 `prefers-color-scheme`，避免 Logo 与主题 hydration flash；
-- Header、移动导航、favicon、manifest icons、Open Graph image/brand metadata 使用同一 `BrandConfig`；
-- Alt 文本本地化；旁边已有可见品牌文字时纯图形 mark 使用 `alt=""`；
-- Logo/主色替换不提供匿名上传或管理 API。通过 EdgeOne 环境变量或受审查的 `public/brand/**` 资产修改，重新部署后生效。
+见 [UI 规范：Logo 与 favicon 替换](ui-system.md#logo-与-favicon-替换)。
 
 ### 13.5 字体与密度
 
-- 西文/数字：`Source Sans 3`；
-- CJK：`Noto Sans SC` / `PingFang SC` / `Microsoft YaHei` 回退；
-- UUID、版本、数值：`IBM Plex Mono`，启用 tabular numerals；
-- 正文 14px 起，主要结果行触达高度不低于 44px；
-- 8px 布局网格，6px 基础圆角，细边框优先于阴影；
-- 字体从站点自身提供或使用可靠系统回退，不依赖运行时访问 Google Fonts。
+见 [UI 规范：字体与密度](ui-system.md#字体与密度)。
 
 ### 13.6 shadcn/ui
 
-目标基线为 Radix primitives + Nova 风格。实现时先用当前 shadcn CLI 获取项目 context，再从官方 `@shadcn` registry 选择组件；不未经选择引入第三方 registry。
-
-优先组合：
-
-- InputGroup、Command、Dialog：统一搜索和命令面板；
-- Sidebar/Sheet、Accordion、Checkbox：分面；
-- Table、Card、Badge、Tooltip、HoverCard：结果与详情；
-- Tabs 只用于局部状态，详情主内容使用路由；
-- Resizable、ScrollArea：三栏桌面布局；
-- Empty、Alert、Skeleton、Spinner、Sonner：空态、错误和反馈；
-- ToggleGroup：密度、主题和比较视图切换。
-
-规则：
-
-- `className` 只做布局，颜色/字体通过 semantic token 与 variant；
-- 不写 raw `dark:` 颜色覆盖；
-- 不用 `space-x/y`，使用 flex/grid + gap；
-- Dialog/Sheet/Drawer 必须有可访问 Title；
-- Select 菜单有可访问名称，展开时背景使用原生 `inert` 隔离焦点，关闭或卸载后恢复既有属性与触发器焦点；
-- Badge、Empty、Alert、Skeleton、Separator 使用官方组件，不手搓同类 markup；
-- 业务组件组合 shadcn primitives，`components/ui` 保持可追踪上游差异。
+见 [UI 规范：shadcn/ui](ui-system.md#shadcnui)。
 
 ## 14. 无障碍、国际化与响应式
 
 ### 14.1 无障碍
 
-基线升级为 WCAG 2.2 AA：
-
-- 状态不只靠颜色；
-- 全站键盘可达、焦点清晰、顺序稳定；
-- 200% zoom 不丢内容或操作；
-- 触控目标满足 WCAG 2.2；
-- 尊重 `prefers-reduced-motion`；
-- 快捷键在 input、textarea、select、contenteditable 和组合控件中禁用；
-- 表格有 caption、行列 header 和可理解的排序状态；
-- 图表提供精确数据表，地图提供等价可筛选列表；
-- Field origin 标记有文字、图标、`aria-label` 和解释。
-- 人工发布验收不设置 VoiceOver/屏幕阅读器走查门；语义 HTML/ARIA、自动 WCAG、纯键盘、焦点、缩放、reduced motion、主题与响应式要求保持不变。
+见 [UI 规范：无障碍](ui-system.md#无障碍)。
 
 ### 14.2 国际化
 
-- 正式公开 `zh-CN`、`en`、`de` 与 `fr`，URL 段与 html lang 分别保持这四个规范值；与 Docs/TIDAS 的 `/de`、`/fr` 公共路径一致，不把 Next 内部 `de-DE`/`fr-FR` adapter tag 暴露为 Portal URL；
-- 使用 `next-intl` 的 locale segment 与 Server Component 消息加载；
-- 日期、数字、单位和复数规则本地化；
-- 四份消息字典具有完全相同的闭合 key topology；缺 key、整段英语复制、未翻译开发标签或跨语言 UI fallback 均使构建/测试失败；
-- UI 语言与数据内容语言分离；
-- 数据字段回退到其他语言时明确标记来源，不伪装成本地化原文；
-- 切换语言保留同一对象、版本、查询和分面。
+见 [UI 规范：国际化](ui-system.md#国际化)。
 
 ### 14.3 响应式
 
-- `>=1280px`：三栏完整工作区；
-- `768–1279px`：分面 Sheet + 收起托盘；
-- `<768px`：单列、比较最多 2 条、以查询和阅读为主；
-- 地图移动端默认表格视图；
-- 高密度表格在窄屏改为定义列表，不横向压缩关键信息。
+见 [UI 规范：响应式](ui-system.md#响应式)。
 
 ## 15. 技术栈与依赖政策
 
 ### 15.1 当前验证基线
 
-下表是方案形成时已通过官方文档或 npm registry 核对的稳定基线。真正 scaffold 前重新查询一次；确认兼容后全部 exact pin，不在 `package.json` 使用范围符号。
-
-| 层                 | 基线                                   |
-| ------------------ | -------------------------------------- |
-| Node build         | `24.18.0`                              |
-| package manager    | `pnpm 11.24.0`                         |
-| Next.js            | `16.3.3`                               |
-| React / React DOM  | `19.2.8`                               |
-| TypeScript         | `7.0.2`                                |
-| Tailwind CSS       | `4.3.3`                                |
-| shadcn CLI         | 当前稳定 `4.19.0`，生成的源码进入仓库  |
-| i18n               | `next-intl 4.13.7`                     |
-| runtime validation | `zod 4.4.3`                            |
-| unit test          | `Vitest 4.1.11` + Testing Library      |
-| browser test       | `Playwright 1.62.1`                    |
-| formatting/lint    | Prettier + Oxlint，沿用 workspace 约定 |
+安装版本与包管理器以 [package.json](../package.json)、[pnpm-lock.yaml](../pnpm-lock.yaml) 和 [.node-version](../.node-version) 为准；[开发指南](development.md#setup-and-repository-roots)说明工具链验证。新增或升级依赖前，通过官方资料确认最新稳定且兼容的版本，依赖使用 exact pin。构建 Node 与托管 SSR 的兼容要求分别由工具链配置和[部署要求](#17-edgeone-makers-部署)约束。
 
 MVP 不引入重量级状态管理、客户端查询缓存、Chart 或 Map 依赖。Server Components、URL、React state 与 localStorage 已覆盖主要需求；LCIA 图形先用可访问的轻量 SVG/CSS，地图依赖留到扩展阶段。
 
@@ -1255,7 +1131,7 @@ Compatibility spike 必须实测：
 - 搜索页首屏 JavaScript gzip <= 250 KB；
 - 不为隐藏 tab 预加载大型表格、地图或图表。
 
-首次公开保留 exact EdgeOne deployment 的受控 cold/warm 浏览器与兼容性验证；没有足够真实访客时不得声称已取得 field p75。用户已取消 Portal #37 的 RUM 与七天观察，不部署浏览器性能采集器、不启动观察期。现有不含查询原文、UUID 列表、备注或凭据的服务端可靠性日志继续保留；实际故障仍按已有交付流程记录与处置。
+首次公开保留 exact EdgeOne deployment 的受控 cold/warm 浏览器与兼容性验证；没有足够真实访客时不得声称已取得 field p75。不部署浏览器性能采集器、不启动观察期。现有不含查询原文、UUID 列表、备注或凭据的服务端可靠性日志继续保留；实际故障仍按已有交付流程记录与处置。
 
 ### 18.2 数据查询
 
@@ -1347,19 +1223,7 @@ format/lint
 
 ### 19.5 组件工作台
 
-Storybook 10.6 使用 Next.js Vite framework，所有配置、CSF stories 与合成 fixture 存放在 `.storybook/`，直接导入已有基础组件及业务组合。预览复用生产 `globals.css`、生成的品牌 token、字体栈和四语言词典；主题与 locale 控件同步预览 document。Storybook 专用样式扫描和 MSW worker 仅属于独立构建，不进入 Next 路由或 EdgeOne 产物。
-
-组件目录覆盖基础控件、真实 SiteHeader 与主题/语言菜单、Process/Flow DetailHeader 和 Overview、Versions、LCIA、填充的 ResponsiveFacets、搜索卡片与版本、关键词/描述模式、比较选择和矩阵、候选清单、输入输出及证据折叠。服务端展示组件在 loader 中执行；Vite alias 只替代请求级翻译和服务端品牌配置，使用四套实际字典和默认品牌值，不把 Next 服务端运行时引入预览。搜索路由与场景共用 FacetsPanel。
-
-场景包含德语/法语长文本、缺失字段、空态、加载、服务失败、无效输入、存储损坏、390px 与浅深主题。Hybrid 请求由 play 明确释放，验证早期结果/选择保留、显式更新与焦点、新查询取消旧请求、迟到结果、续页失败和过期。清单覆盖文件导入预览/确认/取消、含备注链接确认前保留本地状态、分享取消及容量限制。清单 fixture 通过实际请求 schema 校验 MSW 输入；清单和主题场景初始化与恢复自身存储键，不访问线上数据。原生锚点导航和键盘默认行为继续由生产浏览器测试验证。
-
-`pnpm storybook` 启动工作台，`pnpm build:storybook` 输出静态目录，`pnpm test:storybook` 使用与现有 Vitest 4.1.11 匹配的 Chromium provider，运行渲染、交互与 axe 检查。Storybook 10.6 自动装配 preview annotations。Vite 8 采用原生 tsconfig path resolution，依赖图中未使用的 tsconfck 可选 TypeScript 5 peer 被精确移除，Portal 编译器继续固定 TypeScript 7。
-
-`@storybook/addon-mcp` 10.6.0 在固定本机端口提供组件查询、源码到场景映射、严格测试和审阅页面。启用组件 manifest、变更检测、审阅与 React Component Meta 类型提取；真实组件及组合声明 `component` / `subcomponents`，用 `@import` 指向仓库实际模块。Button/Select 的变体、尺寸、状态与回调均可查询。文档解析器仍依赖 JavaScript 编译器 API，pnpm hook 仅为精确版本的文档包提供 TypeScript 6.0.3，产品构建继续使用 TypeScript 7。独立静态构建检查 manifest 覆盖、导入与关键 Props。MCP/manifest 属于上游预览能力，升级需要验证协议与实际文档返回值。
-
-Agent 从组件文档开始，修改后查询受影响场景，通过 MCP 执行交互和无障碍检查，再展示审阅结果。官方四个 skills 由固定版本 Skills CLI 与已提交的 `skills-lock.json` 管理；`pnpm skills:install` 校验上游提交和原始内容哈希后，以 `storybook-` 前缀安装到本机项目 `.agents/skills/`，保留交叉引用、许可证和来源。生成目录由 Git 忽略，普通依赖安装、构建和 CI 不下载技能。维护者通过 `pnpm skills:update <full-commit-sha>` 显式生成新锁，审阅并提交后由团队恢复。Codex MCP 连接由本机配置管理，地址和操作步骤见 README。该能力只服务本地 UI 开发，不增加公众产品的 MCP/API 路由或远端数据权限。
-
-CI 保留完整生产测试并增加 Storybook 构建与浏览器门。所有场景的无障碍检查均为 `error`。回归场景覆盖输入组焦点转移、禁用说明、选中与悬停区分、清单格式纠正与存储损坏、比较托盘、四个候选和输入输出依据展开。Storybook 场景不是设计认可，也不声称已有截图差异回归；页面布局、跨页导航和托管兼容继续由生产 E2E 与人工检查覆盖。
+[UI 规范](ui-system.md#storybook-场景与审阅)拥有隔离场景、fixture、交互和无障碍要求；[开发指南](development.md#storybook-and-mcp)拥有 Storybook、MCP 和项目 skills 的安装、操作及本地检查。组件开发工具不增加公众机器接口或远端数据权限，生产流程与发布验证仍按本方案执行。
 
 ## 20. 分期与跨仓交付
 
@@ -1483,13 +1347,7 @@ Portal 已在 workspace delivery profile 中注册为 `portal`，所有新工作
 - 每次变更先 route，完成后运行 strict validation、doctor/coverage（治理改动时）与 merge-base lint；
 - review metadata 必须引用实际审阅的祖先提交，不引用自身 metadata-only commit。
 
-当前验证命令：
-
-```bash
-scripts/docpact validate-config --root /Users/davidli/projects/workspace/tiangong-lca-portal --strict --format json
-scripts/docpact list-rules --root /Users/davidli/projects/workspace/tiangong-lca-portal --format json
-scripts/docpact coverage --root /Users/davidli/projects/workspace/tiangong-lca-portal --format json
-```
+可移植的路径解析、当前命令和检查顺序见[开发指南](development.md#documentation-ownership-and-checks)。
 
 ## 23. 最终验收
 
