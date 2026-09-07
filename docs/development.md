@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 66387323780a044ab237e7715aba03ef55a3719d
+lastReviewedCommit: f1fc4132b04a4d8d23c2085f270debac3358b620
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #67 copy refinement: removing redundant helper copy and a synthetic source placeholder stays within the isolated fixture and Storybook workflow. Setup, dependencies, production privacy and hosted-release procedures remain unchanged."
+lastReviewedNote: "Reviewed for Portal #67 version styling: both reference pages reuse the existing Badge and locally served body font, preserving exact version data. Setup, dependencies, Storybook validation and hosted-release procedures remain unchanged."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

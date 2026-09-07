@@ -8,6 +8,7 @@ import {
   GitCompareArrowsIcon,
   InfoIcon,
 } from "lucide-react";
+import { Badge } from "../../src/components/ui/badge";
 import { Button } from "../../src/components/ui/button";
 import { Alert, AlertDescription } from "../../src/components/ui/alert";
 import { referenceCitation, type ReferenceDataset } from "./data";
@@ -253,7 +254,11 @@ export function DetailReference({
               </div>
               <div>
                 <dt>{m.Search.version}</dt>
-                <dd className="cr-mono">{record.ref.split("@")[1]}</dd>
+                <dd>
+                  <Badge variant="outline" className="cr-version">
+                    v{record.ref.split("@")[1]}
+                  </Badge>
+                </dd>
               </div>
               <div>
                 <dt>{r.exactIdentity}</dt>

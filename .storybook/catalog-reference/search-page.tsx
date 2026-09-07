@@ -6,6 +6,7 @@ import {
   SlidersHorizontalIcon,
   XIcon,
 } from "lucide-react";
+import { Badge } from "../../src/components/ui/badge";
 import { Button } from "../../src/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../../src/components/ui/input-group";
 import {
@@ -342,7 +343,10 @@ export function SearchReference(props: SearchReferenceProps) {
                     </p>
                     <div className="cr-record-source">
                       <span className="cr-source-version">
-                        <span className="cr-mono">v{record.ref.split("@")[1]}</span>
+                        <Badge variant="outline" className="cr-version">
+                          <span className="sr-only">{m.Search.version}: </span>v
+                          {record.ref.split("@")[1]}
+                        </Badge>
                         <Availability record={record} labels={m} compact />
                       </span>
                     </div>

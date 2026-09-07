@@ -19,7 +19,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Interactive search and dataset-detail design proposal. Records, match snippets, counts and licenses are synthetic fixtures; source names are not supplied. The search header contains the query and submit action, and example citations use only the supplied record name, year and exact identity. Search/filter/order, exact-version selection, in-preview shortlist, record navigation and citation interactions work locally. No public route imports this proposal; no API, ranking model or persistence is exercised. Visual acceptance is pending human design review.",
+          "Interactive search and dataset-detail design proposal. Records, match snippets, counts and licenses are synthetic fixtures; source names are not supplied. The search header contains the query and submit action, and example citations use only the supplied record name, year and exact identity. Standalone versions share a noninteractive badge with the body typeface and tabular digits across results and detail; full technical identities retain monospace. Search/filter/order, exact-version selection, in-preview shortlist, record navigation and citation interactions work locally. No public route imports this proposal; no API, ranking model or persistence is exercised. Visual acceptance is pending human design review.",
       },
     },
   },

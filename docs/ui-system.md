@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 66387323780a044ab237e7715aba03ef55a3719d
+lastReviewedCommit: f1fc4132b04a4d8d23c2085f270debac3358b620
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #67 copy refinement: the search header omits redundant helper copy, and absent fixture source names stay absent from results and citations and read as not provided in detail. Production design acceptance remains pending."
+lastReviewedNote: "Reviewed for Portal #67 version styling: standalone versions use one noninteractive badge treatment with the body typeface and tabular digits across both reference pages. Exact values and technical identities remain intact; production design acceptance remains pending."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -206,6 +206,6 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 
 样板通过开发依赖随站点提供 Source Sans 3 与 Noto Sans SC 可变字体，仅在样板及其弹层作用域内使用。辅助说明、正文、长文阅读、记录标题和页面标题采用明确的字号角色；中文标题保留自然字距，西文标题只做轻微收紧。搜索结果在宽屏将名称和说明与适用字段分列，窄屏恢复连续阅读；详情阅读列与侧栏共同决定列宽，不再在宽列中另加脱离网格的正文宽度限制。主要搜索保留 44px 控件，详情和行内操作使用 32px 紧凑尺寸，手机的详情操作与逐行收藏恢复至少 44px。字体大小、字重、圆角与密度的这些调整属于待审样板，不能据此覆盖全站正式组件。
 
-搜索样板在分面侧栏收起时，将筛选入口与排序放在同一结果工具栏；手机上这组操作排到结果数量下方，触控高度至少 44px。结果行保留版本文字，公开内容状态使用图标，悬停、键盘聚焦和点击均可查看说明，支持 Escape、移出焦点和点击外部关闭；手机图标触控区域至少 44px。筛选选项与详情仍显示“含输入输出”或“仅数据说明”的四语文字，不用勾号暗示审核、质量或许可结论。
+搜索样板在分面侧栏收起时，将筛选入口与排序放在同一结果工具栏；手机上这组操作排到结果数量下方，触控高度至少 44px。搜索结果与详情中的独立版本号统一使用 24px 高、13px 字号、4px 圆角的中性标签，采用正文字体与等宽数字，保留 `v` 前缀和原始版本字符串；标签是文本，不提供操作。完整 UUID@version 与精确数量仍保留技术字体。公开内容状态使用图标，悬停、键盘聚焦和点击均可查看说明，支持 Escape、移出焦点和点击外部关闭；手机图标触控区域至少 44px。筛选选项与详情仍显示“含输入输出”或“仅数据说明”的四语文字，不用勾号暗示审核、质量或许可结论。
 
 样板搜索框下不再重复展示搜索模式或隐私提示；这不改变真实搜索与分享流程的隐私要求。合成数据说明在页面底部统一展示。样板未提供逐条来源名称，列表和标题区不补造统一来源，详情来源显示“未提供”，示例引用只组合已有的名称、年份和精确版本标识。
