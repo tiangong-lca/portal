@@ -210,13 +210,6 @@ export function SearchReference(props: SearchReferenceProps) {
             <Button type="submit">{m.Common.search}</Button>
           </form>
         </search>
-        <div className="cr-search-help">
-          <span>{m.CatalogReference.keyword}</span>
-          <details>
-            <summary>{m.CatalogReference.privacyLabel}</summary>
-            <p>{m.Search.privacy}</p>
-          </details>
-        </div>
       </section>
       <div className="cr-search-layout">
         <aside className="cr-desktop-filters" aria-label={m.Search.facets}>
@@ -348,7 +341,6 @@ export function SearchReference(props: SearchReferenceProps) {
                       <MatchText text={record.description} query={query} />
                     </p>
                     <div className="cr-record-source">
-                      <span>{m.CatalogReference.sampleSource}</span>
                       <span className="cr-source-version">
                         <span className="cr-mono">v{record.ref.split("@")[1]}</span>
                         <Availability record={record} labels={m} compact />

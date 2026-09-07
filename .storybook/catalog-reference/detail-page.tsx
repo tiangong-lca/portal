@@ -63,7 +63,6 @@ export function DetailReference({
         </Button>
         <div className="cr-detail-eyebrow">
           <span>{d.processTitle}</span>
-          <span>{r.sampleSource}</span>
           <Availability record={record} labels={m} />
         </div>
         <div className="cr-detail-title">
@@ -246,7 +245,7 @@ export function DetailReference({
             <dl>
               <div>
                 <dt>{d.sourceDatabase}</dt>
-                <dd>{r.sampleSource}</dd>
+                <dd>{missing}</dd>
               </div>
               <div>
                 <dt>{d.license}</dt>

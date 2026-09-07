@@ -206,5 +206,5 @@ export function referenceDatasets(locale: PortalLocale): ReferenceDataset[] {
 }
 
 export function referenceCitation(record: ReferenceDataset, locale: PortalLocale) {
-  return `${dictionaries[locale].CatalogReference.sampleSource}. ${record.name}. ${record.year ?? dictionaries[locale].Common.notProvided}. ${record.ref}.`;
+  return `${record.name}. ${record.year ?? dictionaries[locale].Common.notProvided}. ${record.ref}.`;
 }

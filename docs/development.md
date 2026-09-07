@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 7f09d4b893d6277e5259fe69665698be548b622a
+lastReviewedCommit: 66387323780a044ab237e7715aba03ef55a3719d
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #67 search controls: the public-content help interaction uses the existing Radix dependency and Storybook test/review workflow. No setup, package or hosted-release procedure changes are needed."
+lastReviewedNote: "Reviewed for Portal #67 copy refinement: removing redundant helper copy and a synthetic source placeholder stays within the isolated fixture and Storybook workflow. Setup, dependencies, production privacy and hosted-release procedures remain unchanged."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
