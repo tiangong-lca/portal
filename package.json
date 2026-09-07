@@ -44,7 +44,9 @@
     "check:licenses": "node scripts/check-dependency-licenses.mjs",
     "check:vulnerabilities": "pnpm audit --audit-level high",
     "check:supply-chain": "pnpm check:licenses && pnpm check:vulnerabilities",
-    "check": "pnpm check:toolchain && pnpm check:brand && pnpm check:database-contracts && pnpm check:licenses && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:bundle-budget && pnpm check:bundle"
+    "check": "pnpm check:toolchain && pnpm check:brand && pnpm check:database-contracts && pnpm check:licenses && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:bundle-budget && pnpm check:bundle",
+    "skills:install": "node scripts/install-skills.mjs",
+    "skills:update": "node scripts/install-skills.mjs --update"
   },
   "dependencies": {
     "class-variance-authority": "0.7.1",
@@ -92,6 +94,7 @@
     "prettier": "3.9.6",
     "prettier-plugin-tailwindcss": "0.8.1",
     "shadcn": "4.19.0",
+    "skills": "1.5.24",
     "storybook": "10.6.0",
     "tailwindcss": "4.3.3",
     "tsx": "4.23.12",

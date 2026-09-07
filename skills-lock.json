@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "skills": {
+    "init": {
+      "source": "storybookjs/mcp",
+      "ref": "cc266eb62129ec00c72d1360ec0cb6a34305a4cf",
+      "sourceType": "github",
+      "skillPath": "packages/codex-plugin/plugins/storybook/skills/init/SKILL.md",
+      "computedHash": "5ee8d5e1c09e417952277fc2c9514ddd4721e063e71974a15230a041943b2259"
+    },
+    "setup": {
+      "source": "storybookjs/mcp",
+      "ref": "cc266eb62129ec00c72d1360ec0cb6a34305a4cf",
+      "sourceType": "github",
+      "skillPath": "packages/codex-plugin/plugins/storybook/skills/setup/SKILL.md",
+      "computedHash": "860022a63258920dfaf4c3a70aaa35156e2b85ec3fbce99fddeffbedd13ed66b"
+    },
+    "stories": {
+      "source": "storybookjs/mcp",
+      "ref": "cc266eb62129ec00c72d1360ec0cb6a34305a4cf",
+      "sourceType": "github",
+      "skillPath": "packages/codex-plugin/plugins/storybook/skills/stories/SKILL.md",
+      "computedHash": "dcc3b30bc34f89d980f552dc90c1f2bf21256fb7c0cf312dbb42be95d699bd52"
+    },
+    "upgrade": {
+      "source": "storybookjs/mcp",
+      "ref": "cc266eb62129ec00c72d1360ec0cb6a34305a4cf",
+      "sourceType": "github",
+      "skillPath": "packages/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md",
+      "computedHash": "4b478abd51eeb3e9e0599eda4e448381c87f819b4c3ae2101d37fd2500602271"
+    }
+  }
+}

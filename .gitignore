@@ -2,6 +2,7 @@
 node_modules/
 .storybook/public/
 .agents/skills/storybook-*/
+.agents/skills/.storybook-install-*/
 storybook-static/
 .next/
 next-env.d.ts

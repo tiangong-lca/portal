@@ -17,8 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 4c25b464944b13d27c9a9dfa34a5b30f15b60338
-lastReviewedNote: "Reviewed for Portal #61: local Storybook MCP, component manifests, isolated docgen compiler and Git-ignored project skills preserve anonymous public reads, four locales, production bundles, CSP and hosted-evidence boundaries."
+lastReviewedCommit: 216e70971900b811fff5342e04a1e0a7a1a4dc47
+lastReviewedNote: "Reviewed for Portal #63: pnpm-managed project skills, immutable source locks, verified restoration and explicit updates remain local development tooling; anonymous runtime, hosted evidence, CSP and release gates are unchanged."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -68,7 +68,25 @@ codex mcp get portal_storybook
 
 连接写入本机 Codex 配置。新会话加载工具；已有会话可从 Portal 目录运行 `STORYBOOK_FEATURE_AI_CLI=1 pnpm exec storybook ai --help`，按当前 CLI 帮助调用同一组工具。开发流程为 `docs-list` → `docs-show` → 修改组件和 stories → `stories-changed` / `stories-find-by-component` → `test-run`（保留 a11y）→ `review-create`。Story ID 使用工具返回值。服务需要保持运行，静态构建不提供本地开发与测试 MCP 服务。
 
-官方 skills 安装在项目本机目录 `.agents/skills/storybook-{init,setup,stories,upgrade}/`，由 `.gitignore` 排除，不随仓库提交，也不依赖用户级插件。来源为 [Storybook 官方 Codex skills](https://github.com/storybookjs/mcp/tree/cc266eb62129ec00c72d1360ec0cb6a34305a4cf/packages/codex-plugin/plugins/storybook/skills)，每个本地目录保留 LICENSE 和 UPSTREAM.md；仅将技能名称与交叉引用改为 `storybook-` 前缀。更新时重新核对上游。日常使用 `$storybook-stories`；现有工作台无需再次初始化。
+官方 skills 由项目固定版本的 [Skills CLI](https://github.com/vercel-labs/skills) 管理。`pnpm-lock.yaml` 锁定 CLI 及其依赖，提交到 Git 的 `skills-lock.json` 锁定四个技能的上游提交、路径与内容哈希。团队成员拉取仓库后，在 Portal 目录执行：
+
+```bash
+pnpm install --frozen-lockfile
+pnpm skills:install
+```
+
+`skills:install` 需要 Git 和 GitHub 网络访问，在临时目录调用固定版本 CLI 的 `experimental_install`，按已提交锁文件校验全部原始内容，再安装到 `.agents/skills/storybook-{init,setup,stories,upgrade}/`。这些生成目录仍由 Git 忽略；普通 `pnpm install`、构建和 CI 不下载技能。恢复命令不改写锁文件，下载、缺失文件或哈希校验失败时保留现有技能。重复运行会覆盖这四个生成目录中的本地改动，其他项目技能保留。
+
+来源为 [Storybook 官方 Codex skills](https://github.com/storybookjs/mcp/tree/cc266eb62129ec00c72d1360ec0cb6a34305a4cf/packages/codex-plugin/plugins/storybook/skills)。锁文件保留官方 `init/setup/stories/upgrade` 名称，安装入口将技能名称与交叉引用转换为现有的 `storybook-` 前缀，并生成 LICENSE 和 UPSTREAM.md。许可证副本位于 `scripts/licenses/storybook-mcp.txt`。日常使用 `$storybook-stories`；现有工作台无需再次初始化，也不需要用户级插件。
+
+维护者先审阅新的官方源码和许可证，再使用完整提交 SHA 更新：
+
+```bash
+pnpm skills:update <40-character-storybook-commit-sha>
+git diff -- skills-lock.json
+```
+
+更新入口在临时目录通过 `skills add` 生成并验证新锁，安装成功后写回 `skills-lock.json`。审阅并提交锁文件后，其他成员重新运行 `pnpm skills:install` 即可同步。需要修改上游适配或许可证时，同步修改安装脚本或许可证副本；不要直接编辑 Git 忽略的生成目录。升级 Skills CLI 本身使用 `pnpm add -D -E skills@<reviewed-version>`，提交 `package.json`、`pnpm-lock.yaml` 及 pnpm 配置的实际变化，并重新验证恢复入口。
 
 组件 manifest 使用 `experimentalReactComponentMeta` 提取完整类型与 `@import` 源码引用，Autodocs 使用 `react-docgen-typescript`。二者仍属于 Storybook 的预览能力。`scripts/pnpm-hooks.cjs` 为指定版本的文档解析器提供独立 TypeScript 6.0.3，因为它们依赖 TypeScript 7 已移除的 JavaScript 编译器 API；产品的 TypeScript 7 工具链保持独立。`pnpm build:storybook` 同时检查全部场景的文档覆盖、导入路径和 Button/Select 的关键 API，升级时必须重新验证。原始文档可在 [manifest 检查页](http://localhost:6006/manifests/components.html) 查看。
 
