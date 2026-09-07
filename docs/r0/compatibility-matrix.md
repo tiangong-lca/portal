@@ -21,8 +21,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 4c25b464944b13d27c9a9dfa34a5b30f15b60338
-lastReviewedNote: "Reviewed for Portal #61: local Storybook MCP, component manifests, isolated docgen compiler and Git-ignored project skills preserve anonymous public reads, four locales, production bundles, CSP and hosted-evidence boundaries."
+lastReviewedCommit: 216e70971900b811fff5342e04a1e0a7a1a4dc47
+lastReviewedNote: "Reviewed for Portal #63: pnpm-managed project skills, immutable source locks, verified restoration and explicit updates remain local development tooling; anonymous runtime, hosted evidence, CSP and release gates are unchanged."
 related:
   - ../design-plan.md
   - ../../AGENTS.md

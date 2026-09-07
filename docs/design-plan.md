@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 4c25b464944b13d27c9a9dfa34a5b30f15b60338
-lastReviewedNote: "Reviewed for Portal #61: local Storybook MCP, component manifests, isolated docgen compiler and Git-ignored project skills preserve anonymous public reads, four locales, production bundles, CSP and hosted-evidence boundaries."
+lastReviewedCommit: 216e70971900b811fff5342e04a1e0a7a1a4dc47
+lastReviewedNote: "Reviewed for Portal #63: pnpm-managed project skills, immutable source locks, verified restoration and explicit updates remain local development tooling; anonymous runtime, hosted evidence, CSP and release gates are unchanged."
 related:
   - AGENTS.md
   - README.md
@@ -1357,7 +1357,7 @@ Storybook 10.6 使用 Next.js Vite framework，所有配置、CSF stories 与合
 
 `@storybook/addon-mcp` 10.6.0 在固定本机端口提供组件查询、源码到场景映射、严格测试和审阅页面。启用组件 manifest、变更检测、审阅与 React Component Meta 类型提取；真实组件及组合声明 `component` / `subcomponents`，用 `@import` 指向仓库实际模块。Button/Select 的变体、尺寸、状态与回调均可查询。文档解析器仍依赖 JavaScript 编译器 API，pnpm hook 仅为精确版本的文档包提供 TypeScript 6.0.3，产品构建继续使用 TypeScript 7。独立静态构建检查 manifest 覆盖、导入与关键 Props。MCP/manifest 属于上游预览能力，升级需要验证协议与实际文档返回值。
 
-Agent 从组件文档开始，修改后查询受影响场景，通过 MCP 执行交互和无障碍检查，再展示审阅结果。官方四个 skills 以 `storybook-` 前缀安装在本机项目 `.agents/skills/` 并由 Git 忽略，不作为共享仓库或 CI 的依赖。Codex MCP 连接由本机配置管理，地址和操作步骤见 README。该能力只服务本地 UI 开发，不增加公众产品的 MCP/API 路由或远端数据权限。
+Agent 从组件文档开始，修改后查询受影响场景，通过 MCP 执行交互和无障碍检查，再展示审阅结果。官方四个 skills 由固定版本 Skills CLI 与已提交的 `skills-lock.json` 管理；`pnpm skills:install` 校验上游提交和原始内容哈希后，以 `storybook-` 前缀安装到本机项目 `.agents/skills/`，保留交叉引用、许可证和来源。生成目录由 Git 忽略，普通依赖安装、构建和 CI 不下载技能。维护者通过 `pnpm skills:update <full-commit-sha>` 显式生成新锁，审阅并提交后由团队恢复。Codex MCP 连接由本机配置管理，地址和操作步骤见 README。该能力只服务本地 UI 开发，不增加公众产品的 MCP/API 路由或远端数据权限。
 
 CI 保留完整生产测试并增加 Storybook 构建与浏览器门。所有场景的无障碍检查均为 `error`。回归场景覆盖输入组焦点转移、禁用说明、选中与悬停区分、清单格式纠正与存储损坏、比较托盘、四个候选和输入输出依据展开。Storybook 场景不是设计认可，也不声称已有截图差异回归；页面布局、跨页导航和托管兼容继续由生产 E2E 与人工检查覆盖。
 
