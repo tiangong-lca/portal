@@ -7,106 +7,87 @@ authoritative: true
 owner: tiangong-lca-portal
 language: en
 whenToUse:
-  - when changing Portal product behavior, server-side data access, branding, deployment, tests, or repository governance
-  - when routing work from lca-workspace into tiangong-lca-portal
+  - when entering Portal or choosing the owner, workflow and documentation for a change
 whenToUpdate:
-  - when repository ownership, hard product boundaries, branch policy, validation commands, or deployment rules change
+  - when standing repository boundaries, task entrypoints or delivery requirements change
 checkPaths:
   - AGENTS.md
   - README.md
-  - docs/design-plan.md
+  - docs/development.md
+  - docs/ui-system.md
   - .docpact/config.yaml
-  - package.json
-  - skills-lock.json
-  - .prettierignore
-  - contracts/database-engine/portal/**
-  - src/**
-  - public/**
-  - tests/**
-  - .storybook/**
-  - vitest.unit.config.ts
-  - scripts/**
-  - .github/workflows/**
-  - edgeone.json
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 216e70971900b811fff5342e04a1e0a7a1a4dc47
-lastReviewedNote: "Reviewed for Portal #63: pnpm-managed project skills, immutable source locks, verified restoration and explicit updates remain local development tooling; anonymous runtime, hosted evidence, CSP and release gates are unchanged."
+lastReviewedCommit: 3341a500616f1657a6a1696df87f0c4ba1e7930b
+lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
 related:
-  - README.md
+  - docs/development.md
+  - docs/ui-system.md
   - docs/design-plan.md
   - .docpact/config.yaml
 ---
 
-# tiangong-lca-portal Repository Contract
+# Portal agent guide
 
-`tiangong-lca-portal` owns the anonymous public LCA discovery product: its Next.js App Router UI, same-origin server boundary, public DTO adapters, branding, SEO, accessibility, tests, and EdgeOne deployment configuration.
+Portal owns the anonymous, read-only LCA discovery UI, same-origin server adapters, branding, SEO, accessibility and EdgeOne configuration. Start with the [development workflow](docs/development.md); read the [UI standards](docs/ui-system.md) for component work and the relevant [product/technical sections](docs/design-plan.md) for feature or server behavior.
 
-## Hard boundaries
+## Repository map
 
-- End users are anonymous. Do not add registration, login, account, user JWT, or session persistence.
-- Portal never holds a Supabase secret key, `service_role`, existing global `SERVICE_API_KEY`, or an ordinary Supabase user credential.
-- The browser never calls Supabase directly. Database and Edge access stays in `src/server/**` with `server-only` boundaries.
-- EdgeOne server code signs only the dedicated Portal Supabase Edge Function requests with the versioned HMAC contract in `docs/design-plan.md`.
-- Database schema, RPC, RLS, ACL, and indexes belong to `database-engine`; Edge runtime and HMAC verification belong to `tiangong-lca-edge-functions`.
-- Portal is read-only for LCA data. It must not create, edit, review, publish, withdraw, repair, or recalculate datasets.
-- Default light/dark primary colors are `#5C246A` and `#9E3FFD`. Other colors use semantic shadcn/ui and Tailwind CSS tokens.
-- The public product has independent `zh-CN`, `en`, `de`, and `fr` routes and dictionaries. UI copy never falls back across locales; source-data language fallback remains visibly labelled.
-- Known Process subtype labels use the released Next four-language vocabulary in facets, active filters and Hybrid summaries. This is display-only: wire values, result identities and unknown authored values remain unchanged.
-- Availability labels follow explicit metadata/exchange/LCIA capabilities, not a blanket open-data or licence claim. Process and Flow fields remain distinct. Location names come from the receipted four-language ILCD snapshot of released Next; unknown codes remain visible and source scope text is retained.
-- Search exposes keyword/identifier and description modes before results. Explicit filter-only queries execute; untouched Search does not. Mobile filters remain accessible, and headers/overlays preserve pointer, focus and anchor visibility.
-- Comparison retains at most four exact Process versions in memory while navigating; no session or query-text storage is introduced. Matching displayed fields is not scientific verification, and missing system-boundary evidence must not be invented.
-- Shortlist V2 stores explicit Process/Flow/unresolved identities locally, preserves legacy V1 content and notes, confirms replacement imports, and never auto-shares text. Name lookup uses only the internal same-origin public summary helper: at most ten identities per 4 KiB request and four existing public RPC reads in flight, with cancellation and no private text. A partial lookup must not resolve an unknown type.
-- Public lexical Search defaults to 10 result cards while accepting explicit validated limits through 50. Each facet group renders at most 16 linked values (8 visible + 8 disclosed); further values are counted and require a narrower query instead of being hidden in initial HTML/RSC.
-- Portal queries allow only state codes 100 and 200. Version-aware Search/facets use V2; Hybrid groups by the best exact matching version before paging and retains every recalled matching version. Never replace a match with the latest version or boost a dataset by its number of versions.
-- Natural-language discovery starts bounded same-origin lexical and signed Hybrid POSTs. Early rows remain usable; a late intelligent result is applied only by an explicit user action. Cancelled/stale requests and failed/expired pagination must not clear or silently replace displayed rows. Query text stays out of URLs, telemetry and implicit persistence.
-- Portal #37's RUM and seven-day observation are cancelled. Do not add a browser performance collector or reinstate an observation period; existing privacy-safe server reliability logs remain in scope.
-- Dynamic Search HTML remains private/no-store. Only page-initiated public lexical Search and facet RPC reads may opt into the fixed 30-second Next Data Cache with full request matching and fixed kind-only tags; Hybrid fallback uses the default no-store path, raw queries never enter tags/telemetry, and errors are not cached.
-- The user selected the cacheable performance/SEO CSP profile for EdgeOne: an enforcing policy permits the inline scripts/styles required by Next App Router, forbids `unsafe-eval`, and retains strict object/base/form/frame/source directives. The no-`unsafe-inline` profile remains a non-blocking upstream compatibility probe.
-- Node `24.18.x` is the pinned build toolchain. The selected EdgeOne Production deployment reports Node.js 20.19 for SSR, so server code stays within Node 20-compatible Web APIs and native `fetch`/Web Crypto.
-- Hybrid uses server-only `PORTAL_HYBRID_EDGE_TIMEOUT_MS`, defaulting to and capped at 30 seconds, with a 40-second EdgeOne Cloud Function ceiling. LCIA retains the independent `PORTAL_EDGE_TIMEOUT_MS` 8-second default. Hybrid correctness is the release criterion; elapsed time is observed and optimized but is not a release gate, and neither path may wait without a fixed bound.
-- Production HMAC/Redis is proven on `dppeqhecdjax@82e9edb`; `dpldjwibrtb4` is the fail-closed pre-signer rollback. Restore signer by redeploying exact source with current Production configuration; a forward version rollback is not sufficient.
-- EdgeOne's current `@edgeone/opennextjs-pages` adapter returns `a is not a function` for both named-only and named/default Next 16 `proxy.ts`; its legacy `middleware.ts` path skips locale and probe semantics. Do not ship a Next Proxy/middleware entrypoint. Keep only the query-free root redirect and R0 headers in `edgeone.json`; bounded unlocalized product routes use same-origin 307 Route Handlers with `no-store`, and the generated locale segment is closed with `dynamicParams=false` so invalid values reach the full global 404 document.
-- Raw unknown-first-segment HTML may still be wrapped by EdgeOne in a generic `__next_error__` document. It remains a real upstream defect: preserve the real 404, unchanged URL/query, and `noindex`; do not use a soft redirect, 200 shell, Proxy workaround, or route-tree rewrite to disguise it.
+| Path | Responsibility |
+| --- | --- |
+| `src/app/` | Localized pages, root documents and same-origin Route Handlers. |
+| `src/features/` | Catalog, comparison and local shortlist behavior. |
+| `src/components/` | Shared primitives, shell and brand components. |
+| `src/server/` | Server-only public data adapters, HMAC signing and reliability logs. |
+| `src/config/`, `src/i18n/` | Validated configuration, dictionaries and receipted vocabulary. |
+| `.storybook/`, `tests/` | Isolated component scenarios and product verification. |
+| `contracts/database-engine/portal/` | Generated public contracts; exact source and bytes belong to its manifest. |
+| `scripts/`, `docs/` | Executable tooling and task-specific guidance. |
 
-## Repository and delivery model
+## Standing rules
 
-- Canonical repository: `tiangong-lca/portal`. The repository has a writable `main` and is registered under the workspace `portal` delivery adapter, Docpact catalog, M1 branch policy, and exact-gitlink integration flow.
-- Branch model: M1. `main` is the only long-lived branch; routine branches start from and PR back to `main`.
-- Tracked work follows the workspace controller and `Project -> Issue -> PR -> Integration`.
-- Repository/workspace onboarding proves only that Portal changes can be reviewed and integrated. It does not prove R0, R1, or EdgeOne Production release readiness.
-- Commits are small, coherent, validated checkpoints. Do not mix Database, Edge, or root integration changes into Portal commits.
-- A merged Portal PR is repository-complete only; workspace delivery may still require exact root gitlink integration.
+- Keep end users anonymous. Add no login, account, user JWT or account-session persistence; explicit local shortlist and theme preferences follow the [browser-state rules](docs/design-plan.md#8-url浏览器状态与分享).
+- Keep LCA data read-only and public-only. Database schema/RPC/RLS/index changes belong to `database-engine`; Edge verification/runtime changes belong to `tiangong-lca-edge-functions`. See [ownership](docs/design-plan.md#3-跨项目职责).
+- The browser never calls Supabase directly. Keep database and Edge access in `src/server/` with `server-only`; Portal must not hold a Supabase secret/service-role key, global `SERVICE_API_KEY` or ordinary user credential. Sign only dedicated Portal Edge requests using the [HMAC protocol](docs/design-plan.md#103-hmac-signed-hybrid-search).
+- Preserve exact dataset kinds/versions, authored values and numeric precision. Do not invent missing fields, capabilities or scientific comparability. [Feature and public-data requirements](docs/design-plan.md) own the detailed limits and behavior.
+- UI text belongs to four complete dictionaries (`zh-CN`, `en`, `de`, `fr`). No cross-locale UI fallback; label source-data language fallback. Follow the [UI standards](docs/ui-system.md) for semantic tokens, keyboard/focus behavior and accessibility.
+- Keep query text and private notes out of telemetry and implicit persistence. Sharing private text requires disclosure and confirmation; public identifiers remain the default. Follow the [privacy and sharing rules](docs/design-plan.md#8-url浏览器状态与分享). Do not introduce browser RUM collection or an observation period.
+- Generated database contracts retain their exact bytes. Use the [snapshot checker](scripts/sync-database-contracts.mjs) and [manifest](contracts/database-engine/portal/manifest.json); never format or manually edit the snapshot.
+- Treat local tests, repository delivery, workspace integration and hosted release as distinct evidence. [The compatibility matrix](docs/r0/compatibility-matrix.md) owns hosted results; [the product plan](docs/design-plan.md#17-edgeone-makers-部署) owns runtime/CSP/native-routing and release requirements.
 
-## Documentation routing
+## Start and route work
 
-Before changing files, run the workspace wrapper with this repository as the explicit root:
+Use the checked-in [toolchain and package scripts](package.json). Resolve paths from inside Portal; [setup](docs/development.md#setup-and-repository-roots) also explains standalone checkouts and workspace delivery:
 
 ```bash
-/Users/davidli/projects/workspace/scripts/docpact route \
-  --root /Users/davidli/projects/workspace/tiangong-lca-portal \
-  --paths <paths> \
-  --format json
+portal_root="$(git rev-parse --show-toplevel)"
+portal_workspace="$(git rev-parse --show-superproject-working-tree)"
+portal_docpact="${portal_workspace:-$portal_root}/scripts/docpact"
+"$portal_docpact" route --root "$portal_root" --paths src/components/ui/button.tsx --format json
 ```
 
-`docs/design-plan.md` owns product and technical target state. `AGENTS.md` owns repository boundaries and stable execution facts. `.docpact/config.yaml` owns deterministic documentation routing and coverage.
+Replace the example path with the intended files, then read the returned relevant documents. [.docpact/config.yaml](.docpact/config.yaml) owns routing and coverage; package/configuration files and receipts own executable defaults and versions.
 
-## Validation contract
+For tracked work, load the resolved workspace's root `AGENTS.md`, branch policy and delivery skill. Use its `scripts/workspace-ops` before implementation and for durable GitHub updates, submission and completion; execute the returned next command. Portal's routine branch starts from and targets `main`. Keep Portal commits separate from other repositories and root integration. A merged Portal PR still requires the workspace's exact-commit integration workflow.
 
-Use the scripts declared by the checked-in `package.json`. At minimum, every reviewable change must pass formatting, lint, typecheck, targeted tests, and build when those surfaces exist. UI changes additionally require browser and accessibility verification; server/security changes require contract and negative-path tests.
+## Work by task
 
-Storybook owns isolated component review in `.storybook/`, using production CSS, brand assets and all four dictionaries. Run `pnpm build:storybook` and `pnpm test:storybook` for shared UI/story changes, alongside the product gates. Its generated worker and static output remain outside Portal's public assets and deployment. Stories use synthetic fixtures and mocked same-origin reads; they require no production credentials. Accessibility is strict (`error`) in every story. Storybook is not a screenshot-diff baseline or a replacement for production E2E. Shared controls use 44px comfortable defaults and explicit compact sizes; selection has a persistent visual cue, and disabled controls must not fade informative group descriptions.
+| Task | Read/use |
+| --- | --- |
+| Components, styles, themes, dictionaries or stories | [UI standards](docs/ui-system.md) and [Storybook workflow](docs/development.md#storybook-and-mcp). Read `.agents/skills/storybook-stories/SKILL.md`; restore missing/outdated generated skills through the [project skills procedure](docs/development.md#project-skills). |
+| Search, detail, compare, shortlist or browser state | Relevant [feature and sharing sections](docs/design-plan.md#7-页面与交互), plus UI guidance for visual changes. |
+| Server, public DTOs or data access | [Data access](docs/design-plan.md#10-数据访问设计) and the exact public contract snapshot. |
+| Rendering, CSP, native routing or deployment | [Deployment requirements](docs/design-plan.md#17-edgeone-makers-部署) and [hosted evidence](docs/r0/compatibility-matrix.md). |
+| Tooling, documentation or governance | [Development workflow](docs/development.md#documentation-ownership-and-checks) and the relevant Docpact route. |
 
-Storybook MCP is local development tooling at `http://localhost:6006/mcp`. Use `docs-list` and `docs-show` before component work, discover affected stories with `stories-changed` or `stories-find-by-component`, run `test-run` with accessibility enabled, and publish a curated `review-create` result for visual changes. Existing product/CI gates remain required. Keep `component`/`subcomponents` metadata and `@import` annotations accurate; the static Storybook build checks manifest coverage and representative APIs. Its TypeScript 6 compiler API is isolated to exact docgen packages by `scripts/pnpm-hooks.cjs`; Portal retains TypeScript 7. For component work, restore the official project-local skills with `pnpm skills:install` and use `storybook-stories` in `.agents/skills/`. The pinned Skills CLI and committed `skills-lock.json` reproduce the four Git-ignored `storybook-*` directories with verified upstream hashes and local name adaptations. Generated skills are optional development assets; ordinary dependency installation, builds and CI do not fetch them. Use `pnpm skills:update <full-commit-sha>` for reviewed upstream updates, and commit the resulting lock. README owns connection, restoration, update and provenance instructions.
+## Validate and hand off
 
-Localized routes own their root document under `app/[locale]`: the initial HTML must set `<html lang>` to the exact validated route locale without request APIs that would turn SSG/ISR into dynamic rendering. Non-localized probes and the global 404 use separate root documents and must preserve the same brand bootstrap, CSP, and noindex boundaries.
+Use the [local check matrix](docs/development.md#choose-local-checks) for the changed behavior. Keep required CI and release checks intact; a focused local pass does not waive them. UI work needs rendered interaction/accessibility evidence, and server/security changes need contract and negative-path evidence. Normal tests use fixtures; the explicit live probe is read-only and default-skipped.
 
-R2 natural-language search is a client enhancement over same-origin `POST /internal/hybrid`. The BFF signs the exact raw request for the fixed Edge path, strictly validates advisory/public-only output, and calls the existing R1 lexical façade for every fixed Edge fallback reason. Raw Hybrid queries, embeddings, identifiers, notes, and secrets stay out of URL/query parameters and telemetry. Query or note-bearing fragments require a visible full disclosure preview plus a separate confirmation; ID-only sharing remains the default.
+Record the actual validation, remaining work and merge/integration state in the owning Issue/PR through the controller. Commit validated scoped work, submit it for review, and finish only after the required merge and integration evidence exists.
 
-`contracts/database-engine/portal/**` is a byte-identical generated snapshot of one exact promoted Database commit. `pnpm check:database-contracts` verifies its closed inventory, source commit, byte lengths, and SHA-256 manifest; an explicit `--database-root` check additionally compares every file to the authoritative Database Git object. Prettier must ignore this directory because reformatting would destroy the byte identity. The explicit `PORTAL_LIVE_PROBE=true` Production integration test is read-only and default-skipped; normal local/CI tests never contact Production.
+## Maintain these instructions
 
-Portal's 34-file Database snapshot is pinned to promoted Main `521741a064f402c9b674583ef69a5947d1b5885f` (Database PR #602). The earlier one-time deployment-before-promotion exception is recorded in workspace #963 and no longer needed for this snapshot. Its bytes are unchanged from the already deployed search increment; this repin does not replay production migrations or by itself establish frontend or workspace completion.
-
-Local tests cover both the retained strict CSP probe and the user-approved enforcing performance profile. Only `docs/r0/compatibility-matrix.md` may declare hosted status; public indexing changes only on an exact `portal/main` deployment after four-locale, runtime, cache, HMAC/Redis, brand, private-route noindex, and rollback probes pass.
+Keep standing rules short and link to their owning document. Put procedures in the development guide, UI requirements in UI standards, and feature/runtime requirements in the product plan. Keep delivery chronology and deployment receipts in their evidence records. Preserve existing obligations when relocating detail, update affected links/routes, and retain the Next-managed block below verbatim.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

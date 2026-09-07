@@ -1,0 +1,197 @@
+---
+lastReviewedAt: 2026-09-07
+lastReviewedCommit: 3341a500616f1657a6a1696df87f0c4ba1e7930b
+title: Portal UI and component standards
+docType: contract
+scope: repo
+status: active
+authoritative: true
+owner: tiangong-lca-portal
+language: zh-CN
+lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
+whenToUse:
+  - when changing shared UI, branding, localization, accessibility or Storybook scenarios
+whenToUpdate:
+  - when visual, component, dictionary or isolated-review requirements change
+checkPaths:
+  - docs/ui-system.md
+  - src/components/**
+  - src/config/brand*
+  - src/app/globals.css
+  - src/i18n/**
+  - public/brand/**
+  - .storybook/**
+related:
+  - AGENTS.md
+  - docs/development.md
+  - docs/design-plan.md
+---
+
+# Portal UI 与组件规范
+
+本文拥有共享视觉、组件、无障碍、国际化和隔离场景的要求。[开发指南](development.md#storybook-and-mcp)拥有 Storybook/MCP/skills 的启动、操作与验证步骤；[产品方案](design-plan.md#7-页面与交互)拥有搜索、详情、比较与清单的业务行为。修改组合场景时，按涉及的业务读取对应章节。
+
+## 设计方向
+
+视觉方向是“专业科学数据目录”：信息结构稳定、留白克制、分隔清楚、检索优先，不采用营销 SaaS、政府公文站、聊天产品或开发仪表盘的造型。
+
+可识别的核心元素是连续目录索引：Process、Flow、地区与来源共享一个表面与统一行结构，帮助访问者建立数据空间坐标。首页不把 provenance 状态做成装饰性证据轨；版本、来源、许可、方法、质量和 publication 等信任信息只在目录概览、结果行或记录页的实际使用位置出现。
+
+品牌紫只用于主要行动、链接、焦点和少量导航信号；Source Sans 3 承担正文与标题，IBM Plex Mono 只用于 UUID、版本、日期、计数和确有必要的技术标识。Card、Table、Alert、Empty、Input Group、Button 与 Separator 使用 shadcn/ui 语义 token，浅色与深色分别校准。不得加入渐变英雄区、装饰插画、伪统计、悬浮玻璃卡或与数据任务无关的品牌口号。开发阶段的 `R1/R2`、`LEXICAL/HYBRID`、`POST`、`LIVE · 5 MIN`、`LOCALSTORAGE`、rank、score、reason code、schema、BFF、façade、telemetry 等标签不得出现在公众 UI。
+
+公众文字遵循“用户先于实现”的顺序：先说明能做什么、看到什么、下一步是什么，再在必要位置解释限制。按钮使用可预期动作；错误同时说明状态与恢复方式；空态提供下一步；不把内部安全/缓存/发布结构当作卖点。首页首屏只完成“找到公开 LCA 数据并理解使用背景”这一件事，Search 只显示完成检索所需的字段，完整技术与质量原文进入详情页。
+
+术语冲突按以下顺序收敛：
+
+1. TIDAS/ILCD glossary 拥有 Process、Flow、Exchange、functional unit、reference flow、LCI/LCIA、review/validation/compliance 等领域概念；
+2. `tiangong-lca-next` 当前 locale style guide 拥有四语 UI 语气、按钮、错误和产品术语（例如法语普通产品文案使用 `ÉICV`）；
+3. `tiangong-lca-next-docs` 当前四语内容提供公众任务表达与帮助链接；
+4. Portal 只在匿名只读场景下缩短说明，不改变领域含义；无法本地化的上游数据值显示来源语言，不伪装成本地翻译。
+
+信息架构参考同类公开数据服务的成熟做法：Federal LCA Commons 以仓库与数据集发现为中心；GBIF 在首屏给出直接价值陈述与主搜索；NASA Earthdata 把搜索、主题浏览和工具入口分层；European Platform on LCA / LCDN 在记录语境中强调提供方、版本、方法、质量和文档。Portal 只借鉴这些任务层级与信息边界，不复制其视觉资产、文案或品牌。
+
+常规 Button、Input、Select、InputGroup 和 Toggle 使用 44px 高度（多行按钮为最小高度）；`sm` 为 32px 紧凑尺寸，Button 的 `xs` 24px 仅用于有明确密度需求的内嵌操作，`lg` 为 48px。Button/Select/Toggle 使用 `size`，Input/InputGroup 使用 `controlSize`，保留原生 Input 的 `size` 字符宽度属性。Sheet 关闭按钮使用 44px。`ActionGroup` 在窄屏按两列等宽排列，同一行控件拉齐；长本地化标签完整换行。
+
+Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选择以勾选图标标明状态，保留稳定的可访问名称和 pressed/checked 语义。禁用态只作用于控件，组内仍需阅读的说明保留正常对比度。InputGroup 附加区域将焦点转给相应的可用 Input 或 Textarea，按钮保留自己的操作。
+
+输入输出表主要显示流、方向、类型、原始数量与单位及定量参考意义。数量右对齐并与单位保持同行，禁止转换为浮点数或改变精度。逐行原生展开项保留 Flow/Process 精确版本、功能单位和展示依据，支持键盘；移动端使用相同信息层级。
+
+## 默认主色：与 `tiangong-lca-next` 一致
+
+只对齐 `tiangong-lca-next/config/branding.ts` 当前两套主色，不复制 Ant Design 的完整 token 或算法：
+
+| Theme | Portal `--brand-primary` / `--primary` 默认值 |
+| ----- | --------------------------------------------- |
+| Light | `#5C246A`                                     |
+| Dark  | `#9E3FFD`                                     |
+
+背景、surface、文字、muted、border、popover、sidebar、状态色和图表色使用 Portal 自身的 Radix + shadcn Nova + Tailwind v4 semantic CSS variables，并遵守以下原则：
+
+- 使用 OKLCH 与 `@theme inline`；组件只消费 semantic token；
+- Light/Dark 不做简单反相，各自保证层级、可读性和 Focus Ring；
+- success、warning、danger、info 是独立语义色，不由品牌主色派生；
+- 所有前景/背景组合满足 WCAG 2.2 AA；
+- 不引入 Ant Design 依赖，也不追随其非主色 token 漂移。
+
+默认 Logo 与 Next 同源：浅色 `/brand/logo.svg` 对应 Next `/logo.svg`，深色 `/brand/logo-dark.svg` 对应 Next `/logo_dark.svg`，favicon 对应 `/favicon.ico`。Portal 首次引入时复制 exact reviewed assets，并保存来源 repo、commit 与 SHA-256 receipt；运行时不依赖 sibling repo 路径。
+
+## 可替换主色配置
+
+品牌色是部署级配置，不是用户偏好或数据库数据。支持：
+
+- `PORTAL_LIGHT_PRIMARY`，默认 `#5C246A`；
+- `PORTAL_DARK_PRIMARY`，默认 `#9E3FFD`；
+- `PORTAL_BRAND_VERSION`，用于 cache、视觉证据和回滚标识。
+
+约束：
+
+1. Zod 只接受规范化 `#RRGGBB`；非法配置使 build/boot fail closed；
+2. 以浅/深 seed 在 OKLCH 中生成 50–950 primitive scale，并计算 primary/hover/active/subtle/foreground/ring/sidebar-primary；
+3. success、warning、danger、info 使用 Portal UI 框架的独立语义色，不随主色变化；
+4. `globals.css` 用 Tailwind v4 `@theme inline` 将 `--color-primary` 等映射到运行时 CSS variables；组件只使用 `bg-primary`、`text-primary-foreground`、`ring-ring` 等 semantic utilities；
+5. Root Server Layout 输出已转义、已验证的 light/dark CSS variables；不拼接动态 Tailwind class；
+6. 主题组合必须通过 WCAG 2.2 AA 对比度、focus ring 和 forced-colors 检查，否则部署失败；
+7. 配置变化产生新 deployment，不允许运行中跨请求切品牌，避免 CDN/ISR cache 混色。
+
+## Logo 与 favicon 替换
+
+支持部署变量：
+
+- `PORTAL_LIGHT_LOGO`，默认 `/brand/logo.svg`；
+- `PORTAL_DARK_LOGO`，默认 `/brand/logo-dark.svg`；
+- `PORTAL_LOGO_MARK`，移动端/窄导航可选，默认复用当前主题 Logo；
+- `PORTAL_FAVICON`，默认 `/brand/favicon.ico`；
+- `PORTAL_LOGO_ALT_ZH` / `PORTAL_LOGO_ALT_EN`；
+- `PORTAL_LOGO_WIDTH` / `PORTAL_LOGO_HEIGHT`，默认按源文件 `170.08 × 170.08` 比例。
+
+规则：
+
+- 首选同源 `/brand/**` 资产；允许远端时只接受 HTTPS 和 `PORTAL_BRAND_ASSET_ORIGIN` allowlist；
+- SVG 以 `<img>`/`next/image` 外部资源方式呈现，不把未受信 SVG inline 注入 DOM；
+- 必须声明 width/height 或 aspect ratio，避免 CLS；加载失败回退默认 Logo 与文本品牌名；
+- Light/Dark/System 切换同步选择对应 Logo；在 `<html>` 水合前用带 SRI 的同源外部主题脚本恢复 localStorage 偏好，System 模式使用 `prefers-color-scheme`，避免 Logo 与主题 hydration flash；
+- Header、移动导航、favicon、manifest icons、Open Graph image/brand metadata 使用同一 `BrandConfig`；
+- Alt 文本本地化；旁边已有可见品牌文字时纯图形 mark 使用 `alt=""`；
+- Logo/主色替换不提供匿名上传或管理 API。通过 EdgeOne 环境变量或受审查的 `public/brand/**` 资产修改，重新部署后生效。
+
+## 字体与密度
+
+- 西文/数字：`Source Sans 3`；
+- CJK：`Noto Sans SC` / `PingFang SC` / `Microsoft YaHei` 回退；
+- UUID、版本、数值：`IBM Plex Mono`，启用 tabular numerals；
+- 正文 14px 起，主要结果行触达高度不低于 44px；
+- 8px 布局网格，6px 基础圆角，细边框优先于阴影；
+- 字体从站点自身提供或使用可靠系统回退，不依赖运行时访问 Google Fonts。
+
+## shadcn/ui
+
+目标基线为 Radix primitives + Nova 风格。实现时先用当前 shadcn CLI 获取项目 context，再从官方 `@shadcn` registry 选择组件；不未经选择引入第三方 registry。
+
+优先组合：
+
+- InputGroup、Command、Dialog：统一搜索和命令面板；
+- Sidebar/Sheet、Accordion、Checkbox：分面；
+- Table、Card、Badge、Tooltip、HoverCard：结果与详情；
+- Tabs 只用于局部状态，详情主内容使用路由；
+- Resizable、ScrollArea：三栏桌面布局；
+- Empty、Alert、Skeleton、Spinner、Sonner：空态、错误和反馈；
+- ToggleGroup：密度、主题和比较视图切换。
+
+规则：
+
+- `className` 只做布局，颜色/字体通过 semantic token 与 variant；
+- 不写 raw `dark:` 颜色覆盖；
+- 不用 `space-x/y`，使用 flex/grid + gap；
+- Dialog/Sheet/Drawer 必须有可访问 Title；
+- Select 菜单有可访问名称，展开时背景使用原生 `inert` 隔离焦点，关闭或卸载后恢复既有属性与触发器焦点；
+- Badge、Empty、Alert、Skeleton、Separator 使用官方组件，不手搓同类 markup；
+- 业务组件组合 shadcn primitives，`components/ui` 保持可追踪上游差异。
+
+## 无障碍、国际化与响应式
+
+### 无障碍
+
+基线升级为 WCAG 2.2 AA：
+
+- 状态不只靠颜色；
+- 全站键盘可达、焦点清晰、顺序稳定；
+- 200% zoom 不丢内容或操作；
+- 触控目标满足 WCAG 2.2；
+- 尊重 `prefers-reduced-motion`；
+- 快捷键在 input、textarea、select、contenteditable 和组合控件中禁用；
+- 表格有 caption、行列 header 和可理解的排序状态；
+- 图表提供精确数据表，地图提供等价可筛选列表；
+- Field origin 标记有文字、图标、`aria-label` 和解释。
+- 人工发布验收不设置 VoiceOver/屏幕阅读器走查门；语义 HTML/ARIA、自动 WCAG、纯键盘、焦点、缩放、reduced motion、主题与响应式要求保持不变。
+
+### 国际化
+
+- 正式公开 `zh-CN`、`en`、`de` 与 `fr`，URL 段与 html lang 分别保持这四个规范值；与 Docs/TIDAS 的 `/de`、`/fr` 公共路径一致，不把 Next 内部 `de-DE`/`fr-FR` adapter tag 暴露为 Portal URL；
+- 使用 `next-intl` 的 locale segment 与 Server Component 消息加载；
+- 日期、数字、单位和复数规则本地化；
+- 四份消息字典具有完全相同的闭合 key topology；缺 key、整段英语复制、未翻译开发标签或跨语言 UI fallback 均使构建/测试失败；
+- UI 语言与数据内容语言分离；
+- 数据字段回退到其他语言时明确标记来源，不伪装成本地化原文；
+- 切换语言保留同一对象、版本、查询和分面。
+
+### 响应式
+
+- `>=1280px`：三栏完整工作区；
+- `768–1279px`：分面 Sheet + 收起托盘；
+- `<768px`：单列、以查询和阅读为主；比较保留已选候选，按字段组织卡片与定义列表，候选数量遵守[比较功能要求](design-plan.md#74-比较)；
+- 地图移动端默认表格视图；
+- 高密度表格在窄屏改为定义列表，不横向压缩关键信息。
+
+## Storybook 场景与审阅
+
+[Storybook 配置](../.storybook/main.ts)使用 Next.js Vite framework，CSF stories 与合成 fixture 留在 `.storybook/`。场景直接导入已有基础组件及业务组合，预览复用生产 CSS、生成的品牌 token、字体栈和四套实际字典；工具栏同步 document 的主题、语言和视口。生成的 worker 只在 `.storybook/public/`，不进入 Portal 的公开资产或 EdgeOne 产物。
+
+服务端展示组件在 loader 中执行；Vite alias 仅替代请求级翻译和服务端品牌配置，避免引入 Next 请求运行时。搜索页与场景共用 FacetsPanel。MSW 拦截同源 API，fixture 通过实际请求 schema 校验输入；主题和清单场景初始化并恢复专用存储键，不接触线上数据或生产凭据。
+
+每个变化覆盖相关正常、空、加载、失败、禁用、选中、缺失字段、长文本或窄屏状态。交互使用 `play` 验证用户可观察行为，按请求显式释放响应，不依赖固定延时。保留 Hybrid 早期结果与选择、显式应用更新、旧请求取消、迟到结果、失败/过期续页，以及清单导入预览/确认/取消、备注分享确认和容量限制等回归场景。
+
+无障碍检查统一为 `error`，展开后的 Select 也必须检查。实际浏览器复核焦点恢复、键盘、浅深主题、四语长标签和窄屏；原生锚点、默认键盘行为、页面布局与跨页导航继续由生产 E2E 验证。Storybook 的自动检查不等于视觉设计通过，也不建立截图差异基线。
+
+组件及组合提供准确的 `component` / `subcomponents` 与 `@import` 模块引用。[manifest 检查](../scripts/check-storybook-manifest.mjs)验证覆盖、真实导入与关键 Props。Autodocs 和 Component Meta 的编译器适配由[精确包 hook](../scripts/pnpm-hooks.cjs)管理，版本以脚本和锁文件为准；升级时重新验证实际 API 文档、MCP 协议和场景。
+
+比较先显示需要关注的字段，并保留展开查看所有字段；LCIA 数值和单位保持原样，数据集/方法的精确版本可展开。目录覆盖与通过测试不能替代面向数据使用者的视觉审阅。
