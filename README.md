@@ -17,8 +17,8 @@ checkPaths:
   - docs/design-plan.md
   - package.json
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 6d1202d8dd2af123b376452951c1d65a650c0a15
-lastReviewedNote: "Reviewed for Portal #58: real page compositions and deterministic async stories, responsive detail and LCIA presentation, and accessible shell menus preserve exact values, anonymous reads, four locales, production rendering, CSP and hosted-evidence boundaries."
+lastReviewedCommit: 4c25b464944b13d27c9a9dfa34a5b30f15b60338
+lastReviewedNote: "Reviewed for Portal #61: local Storybook MCP, component manifests, isolated docgen compiler and Git-ignored project skills preserve anonymous public reads, four locales, production bundles, CSP and hosted-evidence boundaries."
 related:
   - AGENTS.md
   - docs/design-plan.md
@@ -58,6 +58,19 @@ pnpm test:storybook        # Chromium 渲染、play 交互和 axe 检查
 配置、stories 和 fixture 均在 `.storybook/`。服务端展示组件在 loader 中直接执行，只有请求级翻译与服务端品牌配置使用 Storybook 专用替代；搜索页和场景共用同一分面组件。清单与主题场景独立初始化并恢复测试 origin 的专用存储键，MSW 拦截同源 API，不需要生产凭据。生成的 worker 仅存在于 `.storybook/public/`；Storybook 不作为 Next 路由或 EdgeOne 发布产物。现有 `pnpm check` 和 `pnpm test:e2e` 继续验证完整产品流程，CI 另外构建和测试 Storybook。`vitest.config.ts` 供 Storybook CLI 和工作台测试面板发现；原有单元/集成配置完整保留于 `vitest.unit.config.ts`，由 `pnpm test` 等脚本显式选择，隔离 Next 配置加载带来的环境注入。
 
 新增或修改共享组件时，补充可复现的正常、空、异常、禁用、长文本或窄屏场景，并对关键行为添加 `play` 断言。无障碍检查统一为 `error`，所有场景执行严格检查。共享控件常规高度为 44px，紧凑控件为 32px；操作组在窄屏按两列排列并允许长标签换行。比较优先显示需要关注的字段，输入输出表通过展开项保留精确标识和展示依据。组合场景覆盖搜索早期结果、显式应用更新、旧请求取消、过期与失败续页，以及清单导入预览、确认、取消、含备注链接和成员上限；请求由 play 显式释放，避免依赖固定延时。下拉菜单展开状态也执行严格无障碍检查，背景不能接收焦点，关闭后恢复原状态。LCIA 数值与单位保持原样，精确数据集及方法版本可逐项展开。场景目录用于发现和讨论现有问题，不代表视觉设计已获认可；目前不包含截图差异基线。
+
+Storybook MCP 由开发依赖 `@storybook/addon-mcp` 提供。`pnpm storybook` 固定监听本机 6006 端口；端口被占用时直接报错，防止 Agent 连接到另一实例。服务启动后，为本机 Codex 添加连接：
+
+```bash
+codex mcp add portal_storybook --url http://localhost:6006/mcp
+codex mcp get portal_storybook
+```
+
+连接写入本机 Codex 配置。新会话加载工具；已有会话可从 Portal 目录运行 `STORYBOOK_FEATURE_AI_CLI=1 pnpm exec storybook ai --help`，按当前 CLI 帮助调用同一组工具。开发流程为 `docs-list` → `docs-show` → 修改组件和 stories → `stories-changed` / `stories-find-by-component` → `test-run`（保留 a11y）→ `review-create`。Story ID 使用工具返回值。服务需要保持运行，静态构建不提供本地开发与测试 MCP 服务。
+
+官方 skills 安装在项目本机目录 `.agents/skills/storybook-{init,setup,stories,upgrade}/`，由 `.gitignore` 排除，不随仓库提交，也不依赖用户级插件。来源为 [Storybook 官方 Codex skills](https://github.com/storybookjs/mcp/tree/cc266eb62129ec00c72d1360ec0cb6a34305a4cf/packages/codex-plugin/plugins/storybook/skills)，每个本地目录保留 LICENSE 和 UPSTREAM.md；仅将技能名称与交叉引用改为 `storybook-` 前缀。更新时重新核对上游。日常使用 `$storybook-stories`；现有工作台无需再次初始化。
+
+组件 manifest 使用 `experimentalReactComponentMeta` 提取完整类型与 `@import` 源码引用，Autodocs 使用 `react-docgen-typescript`。二者仍属于 Storybook 的预览能力。`scripts/pnpm-hooks.cjs` 为指定版本的文档解析器提供独立 TypeScript 6.0.3，因为它们依赖 TypeScript 7 已移除的 JavaScript 编译器 API；产品的 TypeScript 7 工具链保持独立。`pnpm build:storybook` 同时检查全部场景的文档覆盖、导入路径和 Button/Select 的关键 API，升级时必须重新验证。原始文档可在 [manifest 检查页](http://localhost:6006/manifests/components.html) 查看。
 
 ## 非目标（与其他项目的边界）
 

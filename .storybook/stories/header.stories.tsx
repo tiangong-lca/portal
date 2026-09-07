@@ -5,6 +5,7 @@ import { SiteHeader } from "../../src/components/shell/site-header";
 import { dictionaries, mobileGlobals, storyLocale } from "../fixtures";
 
 const meta = {
+  component: SiteHeader,
   title: "Shell/Site header",
   tags: ["!autodocs"],
   parameters: { pageLayout: true },
@@ -37,7 +38,7 @@ const meta = {
   ),
 } satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Desktop: Story = {
   globals: { viewport: { value: "desktop", isRotated: false } },
   play: async ({ canvas, globals }) => {

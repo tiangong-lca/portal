@@ -20,9 +20,28 @@ import {
 import { Button } from "../../src/components/ui/button";
 import { dictionaries, storyLocale, sampleNames } from "../fixtures";
 
-const meta = { title: "Primitives/Surfaces" } satisfies Meta;
+const meta = {
+  component: Card,
+  subcomponents: {
+    Button,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    CardContent,
+    CardFooter,
+    Table,
+    TableCaption,
+    TableHeader,
+    TableHead,
+    TableBody,
+    TableCell,
+    TableRow,
+    Separator,
+  },
+  title: "Primitives/Surfaces",
+} satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 export const CardAndTable: Story = {
   render: (_, { globals }) => {
     const locale = storyLocale(globals);

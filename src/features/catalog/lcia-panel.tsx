@@ -81,6 +81,7 @@ function ResultValue({ row }: { row: LciaValueViewModel }) {
   );
 }
 
+/** @import import { LciaPanel } from "@/features/catalog/lcia-panel"; */
 export function LciaPanel({ labels, locale, result }: LciaPanelProps) {
   if (result.status !== "available") {
     return (

@@ -1,6 +1,7 @@
 .DS_Store
 node_modules/
 .storybook/public/
+.agents/skills/storybook-*/
 storybook-static/
 .next/
 next-env.d.ts

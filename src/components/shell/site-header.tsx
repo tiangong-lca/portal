@@ -16,6 +16,7 @@ type SiteHeaderProps = {
   locale: PortalLocale;
 };
 
+/** @import import { SiteHeader } from "@/components/shell/site-header"; */
 export async function SiteHeader({ locale }: SiteHeaderProps) {
   const t = await getTranslations({ locale, namespace: "Common" });
   const homeHref = localePath(locale);

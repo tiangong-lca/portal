@@ -31,6 +31,7 @@ export function compareSelectionHref(locale: PortalLocale, items: CompareSelecti
   return `${localePath(locale, "compare")}?${query}`;
 }
 
+/** @import import { CompareSelectionProvider } from "@/features/compare/selection"; */
 export function CompareSelectionProvider({
   children,
   locale,
@@ -167,6 +168,7 @@ export function CompareSelectionProvider({
   );
 }
 
+/** @import import { CompareChoice } from "@/features/compare/selection"; */
 export function CompareChoice({
   item,
   label,
@@ -224,6 +226,7 @@ export function CompareChoice({
   );
 }
 
+/** @import import { CompareSelectionSeed } from "@/features/compare/selection"; */
 export function CompareSelectionSeed({ items }: { items: CompareSelectionItem[] }) {
   const replace = useContext(CompareSelectionContext)?.replace;
   const serialized = JSON.stringify(items);

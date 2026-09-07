@@ -17,9 +17,14 @@ import {
   storyLocale,
 } from "../fixtures";
 
-const meta = { title: "Compare/Workbench", tags: ["!autodocs"] } satisfies Meta;
+const meta = {
+  component: CompareWorkbench,
+  subcomponents: { CompareSelectionSeed, CompareChoice, CompareSelectionProvider },
+  title: "Compare/Workbench",
+  tags: ["!autodocs"],
+} satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 
 export const MatchingFields: Story = {
   render: (_, { globals, parameters }) => {

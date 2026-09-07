@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { DatasetDetailViewModel } from "@/features/catalog/view-model";
 import type { PortalLocale } from "@/i18n/routing";
 
+/** @import import { OverviewPanel } from "@/features/catalog/overview-panel"; */
 export async function OverviewPanel({
   locale,
   record,

@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
-/** Native disclosure stays usable without JavaScript; same-page actions open it before scrolling. */
+/** Native disclosure stays usable without JavaScript; same-page actions open it before scrolling.
+ * @import import { HashDisclosure } from "@/components/shell/hash-disclosure";
+ */
 export function HashDisclosure({
   id,
   label,

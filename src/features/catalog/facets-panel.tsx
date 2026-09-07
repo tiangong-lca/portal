@@ -12,6 +12,7 @@ import type { PortalLocale } from "@/i18n/routing";
 import type { PortalSearchUrlInput } from "@/server/contracts/input";
 import type { PublicFacets } from "@/server/contracts/portal";
 
+/** @import import { FacetsPanel } from "@/features/catalog/facets-panel"; */
 export async function FacetsPanel({
   locale,
   parsedSearch,

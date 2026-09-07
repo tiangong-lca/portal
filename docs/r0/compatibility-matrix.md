@@ -21,8 +21,8 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 6d1202d8dd2af123b376452951c1d65a650c0a15
-lastReviewedNote: "Reviewed for Portal #58: real page compositions and deterministic async stories, responsive detail and LCIA presentation, and accessible shell menus preserve exact values, anonymous reads, four locales, production rendering, CSP and hosted-evidence boundaries."
+lastReviewedCommit: 4c25b464944b13d27c9a9dfa34a5b30f15b60338
+lastReviewedNote: "Reviewed for Portal #61: local Storybook MCP, component manifests, isolated docgen compiler and Git-ignored project skills preserve anonymous public reads, four locales, production bundles, CSP and hosted-evidence boundaries."
 related:
   - ../design-plan.md
   - ../../AGENTS.md

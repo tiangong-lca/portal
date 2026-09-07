@@ -13,9 +13,24 @@ import {
 import { Button } from "../../src/components/ui/button";
 import { dictionaries, storyLocale } from "../fixtures";
 
-const meta = { title: "Primitives/Feedback" } satisfies Meta;
+const meta = {
+  component: Badge,
+  subcomponents: {
+    Button,
+    Alert,
+    AlertTitle,
+    AlertDescription,
+    Empty,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+    EmptyDescription,
+    EmptyContent,
+  },
+  title: "Primitives/Feedback",
+} satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Badges: Story = {
   render: (_, { globals }) => (
     <div className="flex flex-wrap gap-3">

@@ -21,8 +21,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-07
-lastReviewedCommit: 6d1202d8dd2af123b376452951c1d65a650c0a15
-lastReviewedNote: "Reviewed for Portal #58: real page compositions and deterministic async stories, responsive detail and LCIA presentation, and accessible shell menus preserve exact values, anonymous reads, four locales, production rendering, CSP and hosted-evidence boundaries."
+lastReviewedCommit: 4c25b464944b13d27c9a9dfa34a5b30f15b60338
+lastReviewedNote: "Reviewed for Portal #61: local Storybook MCP, component manifests, isolated docgen compiler and Git-ignored project skills preserve anonymous public reads, four locales, production bundles, CSP and hosted-evidence boundaries."
 related:
   - AGENTS.md
   - README.md
@@ -1354,6 +1354,10 @@ Storybook 10.6 使用 Next.js Vite framework，所有配置、CSF stories 与合
 场景包含德语/法语长文本、缺失字段、空态、加载、服务失败、无效输入、存储损坏、390px 与浅深主题。Hybrid 请求由 play 明确释放，验证早期结果/选择保留、显式更新与焦点、新查询取消旧请求、迟到结果、续页失败和过期。清单覆盖文件导入预览/确认/取消、含备注链接确认前保留本地状态、分享取消及容量限制。清单 fixture 通过实际请求 schema 校验 MSW 输入；清单和主题场景初始化与恢复自身存储键，不访问线上数据。原生锚点导航和键盘默认行为继续由生产浏览器测试验证。
 
 `pnpm storybook` 启动工作台，`pnpm build:storybook` 输出静态目录，`pnpm test:storybook` 使用与现有 Vitest 4.1.11 匹配的 Chromium provider，运行渲染、交互与 axe 检查。Storybook 10.6 自动装配 preview annotations。Vite 8 采用原生 tsconfig path resolution，依赖图中未使用的 tsconfck 可选 TypeScript 5 peer 被精确移除，Portal 编译器继续固定 TypeScript 7。
+
+`@storybook/addon-mcp` 10.6.0 在固定本机端口提供组件查询、源码到场景映射、严格测试和审阅页面。启用组件 manifest、变更检测、审阅与 React Component Meta 类型提取；真实组件及组合声明 `component` / `subcomponents`，用 `@import` 指向仓库实际模块。Button/Select 的变体、尺寸、状态与回调均可查询。文档解析器仍依赖 JavaScript 编译器 API，pnpm hook 仅为精确版本的文档包提供 TypeScript 6.0.3，产品构建继续使用 TypeScript 7。独立静态构建检查 manifest 覆盖、导入与关键 Props。MCP/manifest 属于上游预览能力，升级需要验证协议与实际文档返回值。
+
+Agent 从组件文档开始，修改后查询受影响场景，通过 MCP 执行交互和无障碍检查，再展示审阅结果。官方四个 skills 以 `storybook-` 前缀安装在本机项目 `.agents/skills/` 并由 Git 忽略，不作为共享仓库或 CI 的依赖。Codex MCP 连接由本机配置管理，地址和操作步骤见 README。该能力只服务本地 UI 开发，不增加公众产品的 MCP/API 路由或远端数据权限。
 
 CI 保留完整生产测试并增加 Storybook 构建与浏览器门。所有场景的无障碍检查均为 `error`。回归场景覆盖输入组焦点转移、禁用说明、选中与悬停区分、清单格式纠正与存储损坏、比较托盘、四个候选和输入输出依据展开。Storybook 场景不是设计认可，也不声称已有截图差异回归；页面布局、跨页导航和托管兼容继续由生产 E2E 与人工检查覆盖。
 

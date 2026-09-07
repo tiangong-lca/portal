@@ -42,6 +42,10 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * Portal action control. Use asChild with a link for navigation; icon-only actions need an accessible name.
+ * @import import { Button } from "@/components/ui/button";
+ */
 function Button({
   className,
   variant = "default",

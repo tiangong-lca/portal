@@ -10,6 +10,8 @@ import { Button } from "../../src/components/ui/button";
 import { dictionaries, mobileGlobals, resultLabels, storyLocale } from "../fixtures";
 
 const meta = {
+  component: SearchModes,
+  subcomponents: { Button, Field, FieldLabel, HybridSearchPanel, Input, KeywordSearchForm },
   title: "Catalog/Search modes",
   tags: ["!autodocs"],
   parameters: {
@@ -54,7 +56,7 @@ const meta = {
   },
 } satisfies Meta;
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Keyword: Story = {};
 export const Description: Story = {
   play: async ({ canvas, userEvent, globals }) => {

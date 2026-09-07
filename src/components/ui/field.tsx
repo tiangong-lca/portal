@@ -5,6 +5,7 @@ import * as React from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
+/** @import import { FieldGroup } from "@/components/ui/field"; */
 function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -15,6 +16,7 @@ function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/** @import import { Field } from "@/components/ui/field"; */
 function Field({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
     <fieldset
@@ -25,10 +27,12 @@ function Field({ className, ...props }: React.ComponentProps<"fieldset">) {
   );
 }
 
+/** @import import { FieldLabel } from "@/components/ui/field"; */
 function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>) {
   return <Label className={cn("w-fit", className)} data-slot="field-label" {...props} />;
 }
 
+/** @import import { FieldDescription } from "@/components/ui/field"; */
 function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
@@ -39,6 +43,7 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
+/** @import import { FieldError } from "@/components/ui/field"; */
 function FieldError({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p

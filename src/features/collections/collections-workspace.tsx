@@ -70,6 +70,7 @@ function mergeDisclosed(current: CollectionStateV2, shared: CollectionStateV2): 
   );
 }
 
+/** @import import { CollectionsWorkspace } from "@/features/collections/collections-workspace"; */
 export function CollectionsWorkspace({
   labels,
   common,
