@@ -30,7 +30,11 @@ const config: StorybookConfig = {
     const { mergeConfig } = await import("vite");
     return mergeConfig(config, {
       optimizeDeps: {
-        include: ["three", "three/addons/loaders/GLTFLoader.js"],
+        include: [
+          "three",
+          "three/addons/loaders/GLTFLoader.js",
+          "three/addons/lights/RectAreaLightUniformsLib.js",
+        ],
       },
       resolve: {
         alias: {

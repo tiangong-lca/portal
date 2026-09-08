@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: 7a727be5cd4cbf85479c77f31081e90e19754e3d
+lastReviewedCommit: 42b1757b08497cd91879c5e08dfa507bde53bad6
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -120,11 +120,15 @@ The authoring file retains individual equipment parts; the GLB merges meshes by 
 
 Energy and factory materials use optical transmission against the study's theme background; keep the renderer background synchronized when changing themes. Thin cylinder geometry gives the network connections a stable physical width on high-density displays, including the connections within each layer. The world-map component owns the decorative placement of the geographic samples inside its isometric plate.
 
+Platforms overlap in projection. Their surfaces, cut edges and outlines are clipped by the upper platform's camera volume so the lower rear corner stays behind it. This clipping follows the actual animated geometry and camera; it does not hide the translucent network or require a screen-space mask image.
+
+Finite area lights shape the product's metallic highlights. Equipment reflections use mirrored cameras and the live models, including animated child transforms. Each visible equipment layer has one reflection target capped at 768 pixels on its longer edge; focused part views render only their own reflection. These passes share the existing animation loop and stop with it. Reflection clones share the mounted scene's geometry and materials, while their render targets are disposed separately before the owning scene is released.
+
 The original light/dark boards are served from `.storybook/public/brand-exploration/`. `artwork.json` owns their dimensions, comparison crop, source paths and SHA-256 receipts. Keep those values and asset notices synchronized when deliberately replacing a selected reference. Model assets load from the Storybook host, and the renderer is a dev dependency; public Portal routes do not import this study.
 
 Review individual parts at full size before reviewing the combined composition in both themes. Also verify independent color modes, desktop/mobile layout, pointer response, keyboard/touch activation, pause/reduced motion and failure recovery. Story loaders prepare an independent model template before mounting. The canvas draws its first real geometry frame synchronously so Storybook’s frozen review thumbnails do not capture a loading placeholder. Canvas resizing also repaints immediately because resizing clears the WebGL buffer while the embedded preview may already have frozen animation callbacks. Short windows keep the whole sculpture within the viewport; `CompactViewport` covers this layout. Standalone mounts retain asynchronous loading and failure recovery. Motion tests observe actual frame progression and wait through the bounded color transition before verifying that drawing stops. Pre-optimizing the imported Three.js modules prevents dependency discovery from reloading a running browser test. Passing checks does not establish user visual acceptance or a production homepage baseline; record fidelity differences and acceptance in the delivery Issue.
 
-Storybook test files run sequentially in `vitest.config.ts`: software WebGL compilation otherwise competes with the other stories' focus and animation assertions. Keep this scheduling rule when adding graphics-heavy scenarios; it does not change per-story assertions or the unit-test runner.
+Storybook test files run sequentially in `vitest.config.ts`: software WebGL compilation otherwise competes with the other stories' focus and animation assertions. Its 30-second test deadline includes cold shader compilation and the complete interaction flow. Keep the existing per-assertion waits and motion checks; the deadline does not replace a rendered performance check or affect the unit-test runner.
 
 ## Project skills
 

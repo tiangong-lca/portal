@@ -9,6 +9,9 @@ import { createLayerJunctions, LAYER_LINKS } from "./components/layer-junctions"
 import { createWorldMap } from "./components/world-map";
 import { prepareModel } from "./components/model-materials";
 import { createContactShadows } from "./components/contact-shadows";
+import { createProductLighting } from "./components/product-lighting";
+import { createModelReflection } from "./components/model-reflection";
+import { createPlatformOcclusion } from "./components/platform-occlusion";
 import type { OpticalWire } from "./components/optical-wire";
 
 export type SculpturePart =
@@ -68,6 +71,7 @@ export function createLifecycleScene(
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
+  renderer.localClippingEnabled = true;
   renderer.domElement.setAttribute("aria-hidden", "true");
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
@@ -75,7 +79,8 @@ export function createLifecycleScene(
   renderer.setClearColor(0x000000, 0);
   const root = new THREE.Group();
   scene.add(root);
-  const camera = new THREE.PerspectiveCamera(22, 1, 0.1, 100);
+  // The camera stays over 50 units away; a tighter depth range preserves fine panel seams.
+  const camera = new THREE.PerspectiveCamera(22, 1, 10, 100);
   camera.position.set(35.36, assembly ? 26 : 35, 35.36);
   camera.lookAt(0, assembly ? 0 : 0.25, 0);
   root.position.y = assembly ? 0.3 : 0;
@@ -96,6 +101,7 @@ export function createLifecycleScene(
   const optics = createOpticalKit();
   const { textures, glow, tints, nodes, highlights, tint, wire, addNode } = optics;
   const layers: THREE.Group[] = [];
+  const plates: ReturnType<typeof createGlassPlate>[] = [];
   const turbines: THREE.Object3D[] = [];
   const contactShadows: THREE.ShaderMaterial[] = [];
 
@@ -105,7 +111,7 @@ export function createLifecycleScene(
     group.visible = assembly || i === focusedLayer;
     root.add(group);
     layers.push(group);
-    if (part !== "product") createGlassPlate(group, i, optics);
+    if (part !== "product") plates.push(createGlassPlate(group, i, optics));
     for (let k = 0; part !== "product" && k < 12; k++) {
       const x = Math.sin(k * 29.4 + i) * 1.72;
       const z = Math.cos(k * 11.8 + i) * 1.72;
@@ -113,6 +119,7 @@ export function createLifecycleScene(
     }
   }
   const network = createNodeNetwork(layers[0]!, optics);
+  const productLighting = createProductLighting(layers[3]!);
   const junctions =
     part === "plate" || part === "product" ? [] : createLayerJunctions(layers, network, optics);
   // Sparse diagonal links continue through the clear plates, keeping their centers legible.
@@ -128,7 +135,13 @@ export function createLifecycleScene(
       });
     }
   }
-  if (part !== "plate") createProductPlatform(layers[3]!, optics);
+  const productPlatform = part !== "plate" ? createProductPlatform(layers[3]!, optics) : undefined;
+  const reflections: ReturnType<typeof createModelReflection>[] = [];
+  const occlusions = assembly
+    ? plates.slice(1).map((plate, i) => createPlatformOcclusion(plate, plates[i]!, camera))
+    : [];
+  if (assembly && productPlatform)
+    occlusions.push(createPlatformOcclusion(productPlatform, plates[2]!, camera));
   createWorldMap(layers[4]!, optics);
   const aura = new THREE.Sprite(
     tint(
@@ -225,6 +238,7 @@ export function createLifecycleScene(
   const finishColor = new THREE.Color();
   function paint(dt: number) {
     const dark = state.theme === "dark";
+    productLighting.update(dark);
     (scene.background as THREE.Color).set(dark ? "#090a0d" : "#fcfcfe");
     const alpha = state.reduced ? 1 : 1 - Math.exp(-dt * 6);
     for (const entry of tints) {
@@ -234,6 +248,7 @@ export function createLifecycleScene(
       if (entry.kind === "model") {
         const role = (entry.role ?? "Shell") as keyof typeof finishes.dark;
         finishColor.set(finishes[state.theme][role] ?? finishes[state.theme].Shell);
+        if (entry.layer === 3 && role === "Shell") finishColor.set(dark ? "#665174" : "#d7d4dd");
         if (!dark && entry.layer !== 3 && (role === "Shell" || role === "Trim"))
           finishColor.set(role === "Shell" ? "#b4afbd" : "#c4bece");
         color.lerp(
@@ -378,6 +393,7 @@ export function createLifecycleScene(
     }
     for (const rotor of turbines) rotor.rotation.z = time * 0.25;
     root.updateMatrixWorld(true);
+    for (const occlusion of occlusions) occlusion.update();
     for (const node of nodes) {
       node.mesh.getWorldPosition(projected).project(camera);
       const age = (now - activatedAt) / 1000;
@@ -413,6 +429,7 @@ export function createLifecycleScene(
       entry.line.material.opacity = entry.opacity + proximity * 0.4;
     }
     paint(dt);
+    for (const reflection of reflections) reflection.render(state.theme === "dark");
     renderer.render(scene, camera);
     host.dataset.frame = String(Number(host.dataset.frame ?? 0) + 1);
     if (moving || now < transitionUntil) requestRender();
@@ -499,7 +516,14 @@ export function createLifecycleScene(
       }
       if (part === "plate") {
         release(model);
-      } else layers[layer]!.add(model);
+      } else {
+        layers[layer]!.add(model);
+        const surface = layer === 3 ? productPlatform : plates[layer];
+        if (surface && (assembly || focusedLayer === layer))
+          reflections.push(
+            createModelReflection(renderer, camera, scene, surface, model, layer === 3 ? 1 : 0.4),
+          );
+      }
     }
     // Imported materials were cloned per layer for independent palette transitions.
     importedMaterials.forEach((material) => material.dispose());
@@ -569,6 +593,7 @@ export function createLifecycleScene(
       resizeObserver.disconnect();
       intersection.disconnect();
       document.removeEventListener("visibilitychange", visibility);
+      reflections.forEach((reflection) => reflection.dispose());
       release(scene);
       textures.forEach((texture) => texture.dispose());
       environmentTarget.dispose();

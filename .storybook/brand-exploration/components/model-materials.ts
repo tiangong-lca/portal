@@ -23,7 +23,7 @@ export function prepareModel(model: THREE.Object3D, layer: number, kit: OpticalK
         ior: optical ? 1.28 : 1.5,
         clearcoat: solid ? 0.9 : 0.4,
         clearcoatRoughness: 0.14,
-        envMapIntensity: optical ? 0.8 : solid ? (glass || cavity ? 0.35 : 0.9) : 0.28,
+        envMapIntensity: optical ? 0.8 : solid ? (glass || cavity ? 0.25 : 0.35) : 0.28,
         transparent: !optical && (!solid || glass),
         opacity: optical ? 1 : solid ? (glass ? 0.68 : 1) : cavity ? 0.7 : 0.42,
         depthWrite: optical || (solid && !glass),

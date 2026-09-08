@@ -9,6 +9,8 @@ export default defineConfig({
     name: "storybook",
     // Software WebGL compilation must not starve other stories' focus/animation assertions.
     fileParallelism: false,
+    // Software WebGL shader compilation shares the deadline with the full interaction flow.
+    testTimeout: 30000,
     browser: {
       enabled: true,
       headless: true,

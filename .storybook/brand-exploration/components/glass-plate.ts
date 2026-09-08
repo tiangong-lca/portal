@@ -9,27 +9,47 @@ export function createGlassPlate(parent: THREE.Group, layer: number, kit: Optica
       transparent: true,
       depthWrite: false,
       side: THREE.DoubleSide,
-      uniforms: { glassColor: { value: color }, strength: { value: 1 }, gain: { value: gain } },
+      clipping: true,
+      uniforms: {
+        glassColor: { value: color },
+        strength: { value: 1 },
+        gain: { value: gain },
+        reflectionMap: { value: null },
+        reflectionProjection: { value: new THREE.Matrix4() },
+        reflectionTexel: { value: new THREE.Vector2() },
+        reflectionStrength: { value: 0 },
+      },
       vertexShader: `
+        #include <clipping_planes_pars_vertex>
+        uniform mat4 reflectionProjection;
+        varying vec4 vReflection;
         varying vec2 vUv;
         varying vec3 vNormal;
         varying vec3 vView;
         void main() {
           vUv = uv;
-          vec4 p = modelViewMatrix * vec4(position, 1.0);
-          vView = -p.xyz;
+          vReflection = reflectionProjection * vec4(position, 1.0);
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          vView = -mvPosition.xyz;
           vNormal = normalize(normalMatrix * normal);
-          gl_Position = projectionMatrix * p;
+          gl_Position = projectionMatrix * mvPosition;
+          #include <clipping_planes_vertex>
         }
       `,
       fragmentShader: `
+        #include <clipping_planes_pars_fragment>
         uniform vec3 glassColor;
         uniform float strength;
         uniform float gain;
+        uniform sampler2D reflectionMap;
+        uniform vec2 reflectionTexel;
+        uniform float reflectionStrength;
+        varying vec4 vReflection;
         varying vec2 vUv;
         varying vec3 vNormal;
         varying vec3 vView;
         void main() {
+          #include <clipping_planes_fragment>
           float facing = abs(dot(normalize(vNormal), normalize(vView)));
           float fresnel = pow(1.0 - facing, 3.0);
           float sheen = exp(-dot(vUv - vec2(0.86, 0.14), vUv - vec2(0.86, 0.14)) * 6.0);
@@ -38,6 +58,25 @@ export function createGlassPlate(parent: THREE.Group, layer: number, kit: Optica
           float a = (0.018 + 0.23 * sheen + 0.04 * fresnel + rim * 0.13) * strength * gain;
           vec3 reflection = mix(glassColor, vec3(0.93, 0.87, 1.0), pow(sheen, 4.0) * 0.38);
           gl_FragColor = vec4(reflection, a);
+          if (reflectionStrength > 0.0 && vReflection.w > 0.0) {
+            vec2 uv = vReflection.xy / vReflection.w;
+            vec2 blur = reflectionTexel * 1.4;
+            vec4 reflected = texture2D(reflectionMap, uv) * 0.32;
+            reflected += texture2D(reflectionMap, uv + vec2(blur.x, 0.0)) * 0.17;
+            reflected += texture2D(reflectionMap, uv - vec2(blur.x, 0.0)) * 0.17;
+            reflected += texture2D(reflectionMap, uv + vec2(0.0, blur.y)) * 0.17;
+            reflected += texture2D(reflectionMap, uv - vec2(0.0, blur.y)) * 0.17;
+            reflected.rgb /= max(reflected.a, 0.001);
+            #ifdef TONE_MAPPING
+              reflected.rgb = toneMapping(reflected.rgb);
+            #endif
+            float coverage = reflected.a * reflectionStrength * (0.55 + 0.45 * fresnel);
+            float combined = coverage + a * (1.0 - coverage);
+            gl_FragColor = vec4(
+              (reflected.rgb * coverage + reflection * a * (1.0 - coverage)) / max(combined, 0.001),
+              combined
+            );
+          }
           #include <colorspace_fragment>
         }
       `,
@@ -83,24 +122,26 @@ export function createGlassPlate(parent: THREE.Group, layer: number, kit: Optica
     wall.rotation.y = angle;
     parent.add(wall);
   }
-  return plate;
+  return Object.assign(plate, {
+    occlusionMaterials: [material, edge.material, bandMaterial] as THREE.Material[],
+  });
 }
 
 export function createProductPlatform(parent: THREE.Group, kit: OpticalKit) {
   const platform = new THREE.Group();
   platform.position.set(0.54, 0.012, 0.84);
   platform.scale.set(2.18 / 4.15, 1, 1.85 / 4.15);
-  createGlassPlate(platform, 3, kit, 1.6);
+  const plate = createGlassPlate(platform, 3, kit, 1.6);
   const lattice: THREE.Vector3[] = [];
   for (let i = -2; i <= 2; i++) {
     lattice.push(new THREE.Vector3(i * 0.7, 0.004, -2), new THREE.Vector3(i * 0.7, 0.004, 2));
     lattice.push(new THREE.Vector3(-2, 0.004, i * 0.7), new THREE.Vector3(2, 0.004, i * 0.7));
   }
+  const latticeMaterial = kit.lineMaterial(3, 0.16);
+  plate.occlusionMaterials.push(latticeMaterial);
   platform.add(
-    new THREE.LineSegments(
-      new THREE.BufferGeometry().setFromPoints(lattice),
-      kit.lineMaterial(3, 0.16),
-    ),
+    new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lattice), latticeMaterial),
   );
   parent.add(platform);
+  return plate;
 }
