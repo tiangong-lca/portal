@@ -231,3 +231,72 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Keep the complete object visible in short windows and embedded review cards. */
+@media (max-height: 500px) {
+  .lifecycle-study {
+    height: 100svh;
+  }
+  .lifecycle-toolbar {
+    padding: 12px 20px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .lifecycle-heading p,
+  .lifecycle-footer {
+    display: none;
+  }
+  .lifecycle-heading h1 {
+    font-size: 14px;
+  }
+  .lifecycle-controls {
+    width: auto;
+  }
+  .lifecycle-stage {
+    min-height: 0;
+  }
+  .lifecycle-object {
+    height: 100%;
+    min-height: 0;
+  }
+  .brand-reference {
+    display: flex;
+    flex-direction: column;
+    height: 100svh;
+    padding: 12px;
+  }
+  .brand-reference header {
+    margin: 0 auto 12px;
+  }
+  .brand-reference h1 {
+    font-size: 16px;
+  }
+  .brand-reference header p {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+  .brand-reference-columns {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .brand-reference figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 0;
+  }
+  .brand-reference figcaption {
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .brand-reference-crop,
+  .brand-reference-live {
+    height: calc(100% - 28px);
+    width: auto;
+    max-width: 100%;
+  }
+}

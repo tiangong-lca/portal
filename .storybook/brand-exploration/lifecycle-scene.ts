@@ -307,9 +307,9 @@ export function createLifecycleScene(
     scene.environmentIntensity = dark ? 0.7 : 1.0;
     renderer.toneMappingExposure = dark ? 1 : 1.28;
   }
-  function render(now: number) {
+  function render(now: number, force = false) {
     frame = 0;
-    if (disposed || !inView || document.hidden) return;
+    if (disposed || (!force && (!inView || document.hidden))) return;
     const dt = Math.max(0, Math.min((now - last) / 1000 || 0.016, 0.05));
     last = now;
     const moving = !state.paused && !state.reduced;
@@ -420,9 +420,13 @@ export function createLifecycleScene(
   function requestRender() {
     if (!disposed && inView && !document.hidden && !frame) frame = requestAnimationFrame(render);
   }
+  let measuredWidth = 0;
+  let measuredHeight = 0;
   function resize() {
     const { width, height } = host.getBoundingClientRect();
-    if (!width || !height) return;
+    if (!width || !height || (width === measuredWidth && height === measuredHeight)) return;
+    measuredWidth = width;
+    measuredHeight = height;
     const span = assembly
       ? Math.max(11.8, (6.4 * height) / width)
       : Math.max(
@@ -433,7 +437,10 @@ export function createLifecycleScene(
     camera.fov = THREE.MathUtils.radToDeg(2 * Math.atan(span / (2 * cameraDistance)));
     camera.updateProjectionMatrix();
     renderer.setSize(width, height, false);
-    requestRender();
+    // Resizing clears WebGL's buffer. Repaint now even if an embedded preview
+    // has already frozen RAF or was mounted outside the visible review area.
+    if (frame) cancelAnimationFrame(frame);
+    render(performance.now(), true);
   }
   const resizeObserver = new ResizeObserver(resize);
   resizeObserver.observe(host);
@@ -503,7 +510,7 @@ export function createLifecycleScene(
     installModels(template.instantiate());
     // The first real 3D frame is part of mounting, before an embedded preview freezes RAF.
     if (frame) cancelAnimationFrame(frame);
-    render(performance.now());
+    render(performance.now(), true);
     ready = Promise.resolve();
   } else {
     ready = fetch(modelUrl, { signal: abort.signal })

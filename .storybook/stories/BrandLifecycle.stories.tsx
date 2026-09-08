@@ -54,6 +54,22 @@ export const MobileLight: Story = {
   args: { initialTheme: "light" },
   globals: { viewport: { value: "mobile", isRotated: false } },
 };
+export const CompactViewport: Story = {
+  parameters: {
+    viewport: {
+      options: { compact: { name: "Compact review", styles: { width: "476px", height: "316px" } } },
+    },
+  },
+  globals: { viewport: { value: "compact", isRotated: false } },
+  play: async ({ canvasElement }) => {
+    await rendered(canvasElement);
+    const bounds = canvasElement.querySelector(".lifecycle-object")!.getBoundingClientRect();
+    const viewport = canvasElement.ownerDocument.defaultView!;
+    await expect(bounds.top).toBeGreaterThanOrEqual(0);
+    await expect(bounds.bottom).toBeLessThanOrEqual(viewport.innerHeight + 1);
+    await expect(bounds.height).toBeGreaterThan(150);
+  },
+};
 export const ReducedMotion: Story = {
   args: { reducedMotion: true },
   globals: { locale: "zh-CN" },

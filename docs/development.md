@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: fd299004cf1f1a6ec064c5393bb33a2d0e1de257
+lastReviewedCommit: 7a727be5cd4cbf85479c77f31081e90e19754e3d
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -122,7 +122,7 @@ Energy and factory materials use optical transmission against the study's theme 
 
 The original light/dark boards are served from `.storybook/public/brand-exploration/`. `artwork.json` owns their dimensions, comparison crop, source paths and SHA-256 receipts. Keep those values and asset notices synchronized when deliberately replacing a selected reference. Model assets load from the Storybook host, and the renderer is a dev dependency; public Portal routes do not import this study.
 
-Review individual parts at full size before reviewing the combined composition in both themes. Also verify independent color modes, desktop/mobile layout, pointer response, keyboard/touch activation, pause/reduced motion and failure recovery. Story loaders prepare an independent model template before mounting. The canvas draws its first real geometry frame synchronously so Storybook’s frozen review thumbnails do not capture a loading placeholder. Standalone mounts retain asynchronous loading and failure recovery. Motion tests observe actual frame progression and wait through the bounded color transition before verifying that drawing stops. Pre-optimizing the imported Three.js modules prevents dependency discovery from reloading a running browser test. Passing checks does not establish user visual acceptance or a production homepage baseline; record fidelity differences and acceptance in the delivery Issue.
+Review individual parts at full size before reviewing the combined composition in both themes. Also verify independent color modes, desktop/mobile layout, pointer response, keyboard/touch activation, pause/reduced motion and failure recovery. Story loaders prepare an independent model template before mounting. The canvas draws its first real geometry frame synchronously so Storybook’s frozen review thumbnails do not capture a loading placeholder. Canvas resizing also repaints immediately because resizing clears the WebGL buffer while the embedded preview may already have frozen animation callbacks. Short windows keep the whole sculpture within the viewport; `CompactViewport` covers this layout. Standalone mounts retain asynchronous loading and failure recovery. Motion tests observe actual frame progression and wait through the bounded color transition before verifying that drawing stops. Pre-optimizing the imported Three.js modules prevents dependency discovery from reloading a running browser test. Passing checks does not establish user visual acceptance or a production homepage baseline; record fidelity differences and acceptance in the delivery Issue.
 
 Storybook test files run sequentially in `vitest.config.ts`: software WebGL compilation otherwise competes with the other stories' focus and animation assertions. Keep this scheduling rule when adding graphics-heavy scenarios; it does not change per-story assertions or the unit-test runner.
 
