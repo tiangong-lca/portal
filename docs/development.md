@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: f2110360d649f154b05171e3a0d273b37b580567
+lastReviewedCommit: 3e06c2dcd067340baa2dcd6958caa737d68f97a4
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -141,6 +141,8 @@ Palette interpolation follows elapsed wall time. Pausing retains the existing co
 Animation frames poll the previous GPU submission with a zero-timeout WebGL fence before submitting more drawing. This bounds software-rendering backlog without blocking JavaScript or reducing model, material or reflection quality. Initial rendering and frozen-preview resizing still draw synchronously, and disposal deletes the outstanding fence.
 
 Storybook test files run sequentially in `vitest.config.ts`: WebGL compilation otherwise competes with the other stories' focus and animation assertions. The Playwright provider uses `channel: "chromium"` for Chromium's current headless mode, which follows the full browser's rendering path. The existing `playwright install chromium` setup installs this browser in local development and CI. Its 30-second test deadline includes cold shader compilation and the complete interaction flow. Keep bounded waits for observable motion and pause checks; the deadline does not replace a rendered performance check or affect the unit-test runner.
+
+`vitest.config.ts` exports shared launch options for the runner and CI's renderer probe. CI explicitly selects [Chromium's SwiftShader OpenGL driver](https://chromium.googlesource.com/chromium/src/+/main/docs/gpu/swiftshader.md) for GPU-less hosts and logs the actual browser/WebGL identity. Reproduce that path locally with `PORTAL_STORYBOOK_SOFTWARE_WEBGL=1 pnpm test:storybook`. The flag affects the component test browser only; local previews keep their normal rendering path.
 
 ## Project skills
 
