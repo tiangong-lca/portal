@@ -988,30 +988,17 @@
 .cr-compare-mobile {
   display: none;
 }
-.cr-compare-identities {
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-.cr-compare-identities summary {
-  min-height: 44px;
-  cursor: pointer;
-  font-size: 14px;
+.cr-compare-version {
   color: var(--muted-foreground);
-}
-.cr-compare-identities dl {
-  display: grid;
-  gap: 20px;
-}
-.cr-compare-identities dt {
-  font-size: 14px;
-}
-.cr-compare-identities code {
-  display: block;
-  margin-top: 6px;
   font-size: 13px;
-  overflow-wrap: anywhere;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+.cr-compare-uuid {
+  font-size: 12px;
+  font-weight: 400;
   color: var(--muted-foreground);
+  overflow-wrap: anywhere;
 }
 @media (max-width: 899px) {
   .cr-compare-desktop {

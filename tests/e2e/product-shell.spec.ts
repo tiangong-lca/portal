@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { createHash } from "node:crypto";
+import en from "../../src/i18n/messages/en.json" with { type: "json" };
 
 const processId = "11111111-1111-1111-1111-111111111111";
 const processRef = `${processId}@01.00.000`;
@@ -135,7 +136,9 @@ test("renders public search, exact details, numeric context, versions, and lates
   await expect(page.getByText("55555555-5555-5555-5555-555555555555@release-2026.1")).toBeVisible();
 
   await page.goto(`/en/process/${processRef}/versions`);
-  await expect(page.getByText(processRef, { exact: true }).first()).toBeVisible();
+  await page.getByRole("button", { name: en.Detail.citation, exact: true }).click();
+  await expect(page.getByRole("dialog").getByText(processRef, { exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
 
   await page.goto(`/en/flow/${flowRef}`);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Carbon dioxide");

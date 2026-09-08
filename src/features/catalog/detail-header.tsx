@@ -1,4 +1,4 @@
-import { BookmarkPlusIcon, QuoteIcon } from "lucide-react";
+import { BookmarkPlusIcon } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
@@ -9,11 +9,10 @@ import { ActionGroup } from "@/components/ui/action-group";
 import type { DatasetDetailViewModel } from "@/features/catalog/view-model";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 
-import { CitationCopy } from "./citation-copy";
+import { CitationDialog } from "./citation-dialog";
 import { NavigationLink } from "@/components/shell/navigation-link";
 import { DatasetVersionTag, PublicContentTag } from "./dataset-tags";
 import styles from "./detail.module.css";
-import { HashDisclosure } from "@/components/shell/hash-disclosure";
 import { CompareChoice } from "@/features/compare/selection";
 import { buildMemberFragment } from "@/features/collections/storage-v2";
 
@@ -108,12 +107,21 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
             {t("collect")}
           </Link>
         </Button>
-        <Button asChild variant="ghost">
-          <a href="#citation">
-            <QuoteIcon data-icon="inline-start" />
-            {t("citation")}
-          </a>
-        </Button>
+        <CitationDialog
+          citation={record?.citation}
+          refValue={refValue}
+          labels={{
+            title: t("citation"),
+            close: common("close"),
+            unavailable: t("citationUnavailable"),
+            exactVersion: common("exactVersion"),
+            copyCitation: t("copyCitation"),
+            citationCopied: t("citationCopied"),
+            copyVersionId: t("copyVersionId"),
+            versionCopied: t("versionCopied"),
+            copyFailed: t("copyFailed"),
+          }}
+        />
       </ActionGroup>
 
       <nav
@@ -128,38 +136,6 @@ export async function DetailHeader({ kind, locale, record, refValue }: DetailHea
           ))}
         </ul>
       </nav>
-
-      <HashDisclosure id="citation" label={t("citation")}>
-        <div className={styles.citation}>
-          {record?.citation ? (
-            <p>{record.citation}</p>
-          ) : (
-            <p className="text-muted-foreground">{t("citationUnavailable")}</p>
-          )}
-          <div className={styles.exactIdentity}>
-            <span>{common("exactVersion")}</span>
-            <code>{refValue}</code>
-          </div>
-          <div className={styles.copyActions}>
-            {record?.citation ? (
-              <CitationCopy
-                citation={record.citation}
-                copiedLabel={t("citationCopied")}
-                failureLabel={t("copyFailed")}
-                copyLabel={t("copyCitation")}
-                showText={false}
-              />
-            ) : null}
-            <CitationCopy
-              citation={refValue}
-              copyLabel={t("copyVersionId")}
-              copiedLabel={t("versionCopied")}
-              failureLabel={t("copyFailed")}
-              showText={false}
-            />
-          </div>
-        </div>
-      </HashDisclosure>
     </header>
   );
 }

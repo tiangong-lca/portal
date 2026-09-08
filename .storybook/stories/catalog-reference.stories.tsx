@@ -368,10 +368,11 @@ export const CompareExactIdentityAndOpen: Story = {
     const body = within(canvasElement.ownerDocument.body);
     const dialog = within(await body.findByRole("dialog", { name: m.CatalogReference.compare }));
     await expect(dialog.getByRole("heading", { name: m.CatalogReference.compare })).toHaveFocus();
-    const summary = dialog.getByText(m.CatalogReference.exactIdentity, { selector: "summary" });
-    await expect(summary.closest("details")).not.toHaveAttribute("open");
-    await userEvent.click(summary);
-    await expect(summary.closest("details")).toHaveTextContent(referenceDatasets(locale)[0]!.ref);
+    await expect(dialog.queryByText(m.CatalogReference.exactIdentity)).not.toBeInTheDocument();
+    const uuid = referenceDatasets(locale)[0]!.ref.split("@")[0]!;
+    await expect(
+      dialog.getAllByText(uuid).some((element) => element.getBoundingClientRect().height > 0),
+    ).toBe(true);
     await userEvent.click(
       dialog.getAllByRole("link", { name: referenceDatasets(locale)[0]!.name })[0]!,
     );

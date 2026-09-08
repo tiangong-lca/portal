@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: 47fa578b07e1b989318e8855515cc714b442c1ee
+lastReviewedCommit: 60d734b6491a0b3621a4fb4ea0fc169387b70aa3
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #67 panel and production-detail changes: existing Storybook review, production browser checks and bundle checks cover the adopted components; setup and release procedures remain unchanged."
+lastReviewedNote: "Reviewed for Portal #67 citation dialog and comparison identity refinement: one header action opens an accessible modal with legacy hash support; comparison uses plain version text and an inline UUID field. Exact values and clipboard recovery remain intact."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

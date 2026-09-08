@@ -187,7 +187,7 @@ test("selection survives detail navigation and comparison names stay visible on 
   await accessible(page);
 });
 
-test("sticky header receives pointer hits and citation anchors are not covered", async ({
+test("sticky header receives pointer hits and citation links open a dismissible dialog", async ({
   page,
 }) => {
   await page.goto("/en/search?q=electricity");
@@ -203,13 +203,19 @@ test("sticky header receives pointer hits and citation anchors are not covered",
   await nav.click();
   await expect(page).toHaveURL(/\/browse\/process$/);
   await page.goto(`/en/process/${processRef}#citation`);
-  const citation = page.locator("details#citation");
-  await expect(citation).toHaveAttribute("open");
+  const citation = page.getByRole("dialog", { name: en.Detail.citation, exact: true });
+  await expect(citation).toBeVisible();
   await expect(citation.getByRole("button", { name: en.Detail.copyCitation })).toBeVisible();
-  const headerBox = await page.getByRole("banner").boundingBox();
-  expect((await citation.boundingBox())!.y).toBeGreaterThanOrEqual(
-    headerBox!.y + headerBox!.height - 1,
-  );
+  await expect(citation.getByText(processRef, { exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(citation).not.toBeVisible();
+  await expect(page).not.toHaveURL(/#citation$/);
+  const trigger = page.getByRole("button", { name: en.Detail.citation, exact: true });
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await expect(citation).toBeVisible();
+  await citation.getByRole("button", { name: en.Common.close }).click();
+  await expect(trigger).toBeFocused();
 });
 
 test("import previews retain the current shortlist until confirmed", async ({ page }) => {
@@ -288,6 +294,13 @@ for (const { locale, width, theme } of [
     await expect(disclosure.locator("..")).toContainText(t.Detail.functionalUnit);
     await expect(disclosure.locator("..")).toContainText(t.Detail.policyVersion);
     await noOverflow(page);
+    // The disclosure click can leave the header action partly behind the sticky site header.
+    // Verify keyboard focus reveals the whole action before measuring its target size.
+    const citationTrigger = page.getByRole("button", { name: t.Detail.citation, exact: true });
+    await citationTrigger.focus();
+    const triggerBox = await citationTrigger.boundingBox();
+    const bannerBox = await page.getByRole("banner").boundingBox();
+    expect(triggerBox!.y).toBeGreaterThanOrEqual(bannerBox!.y + bannerBox!.height);
     await accessible(page);
     await page.screenshot({ path: info.outputPath("exchanges.png"), fullPage: true });
   });

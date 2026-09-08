@@ -98,7 +98,11 @@ export function ReferenceComparison({
   labels: ReferenceLabels;
   onOpen: (ref: string) => void;
 }) {
-  const fields: { label: string; value: (r: ReferenceDataset) => string | undefined }[] = [
+  const fields: {
+    label: string;
+    technical?: boolean;
+    value: (r: ReferenceDataset) => string | undefined;
+  }[] = [
     { label: m.Detail.referenceProduct, value: (r) => r.product },
     { label: m.Detail.functionalUnit, value: (r) => r.unit },
     { label: m.Detail.geography, value: (r) => r.geography },
@@ -109,6 +113,7 @@ export function ReferenceComparison({
       value: (r) =>
         r.open ? m.CatalogReference.availabilityExchanges : m.CatalogReference.availabilityMetadata,
     },
+    { label: "UUID", technical: true, value: (r) => r.ref.split("@")[0] },
   ];
   const title = (r: ReferenceDataset, index: number) => (
     <div className="cr-compare-candidate">
@@ -125,7 +130,9 @@ export function ReferenceComparison({
         >
           {r.name}
         </a>
-        <DatasetVersionTag version={r.ref.split("@")[1]!} label={m.Search.version} />
+        <span className="cr-compare-version">
+          <span className="sr-only">{m.Search.version}: </span>v{r.ref.split("@")[1]}
+        </span>
       </div>
     </div>
   );
@@ -149,7 +156,13 @@ export function ReferenceComparison({
               <TableRow key={field.label}>
                 <TableHead scope="row">{field.label}</TableHead>
                 {records.map((r) => (
-                  <TableCell key={r.ref}>{field.value(r) ?? m.Common.notProvided}</TableCell>
+                  <TableCell key={r.ref}>
+                    {field.technical ? (
+                      <code className="cr-compare-uuid">{field.value(r)}</code>
+                    ) : (
+                      (field.value(r) ?? m.Common.notProvided)
+                    )}
+                  </TableCell>
                 ))}
               </TableRow>
             ))}
@@ -172,26 +185,19 @@ export function ReferenceComparison({
                     <span aria-hidden="true">{i + 1}</span>
                     <span className="sr-only">{r.name}</span>
                   </dt>
-                  <dd>{field.value(r) ?? m.Common.notProvided}</dd>
+                  <dd>
+                    {field.technical ? (
+                      <code className="cr-compare-uuid">{field.value(r)}</code>
+                    ) : (
+                      (field.value(r) ?? m.Common.notProvided)
+                    )}
+                  </dd>
                 </div>
               ))}
             </dl>
           </section>
         ))}
       </div>
-      <details className="cr-compare-identities">
-        <summary>{m.CatalogReference.exactIdentity}</summary>
-        <dl>
-          {records.map((r) => (
-            <div key={r.ref}>
-              <dt>{r.name}</dt>
-              <dd>
-                <code>{r.ref}</code>
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </details>
     </div>
   );
 }
