@@ -263,6 +263,11 @@ export function createLifecycleScene(
         if (entry.layer === 3 && role === "Trim" && dark) finishColor.set("#705487");
         if (!dark && entry.layer !== 3 && (role === "Shell" || role === "Trim"))
           finishColor.set(role === "Shell" ? "#b4afbd" : "#c4bece");
+        if (entry.layer === 2) {
+          if (role === "Glass") finishColor.set(dark ? "#4c365d" : "#3d3b43");
+          if (role === "Shell") finishColor.set(dark ? "#78618e" : "#ecebef");
+          if (role === "Trim") finishColor.set(dark ? "#aa8bc4" : "#f8f7fb");
+        }
         if (entry.layer === 1 && (role === "Shell" || role === "Trim"))
           finishColor.set(
             dark
@@ -290,12 +295,19 @@ export function createLifecycleScene(
         if (!state.colorful && !dark) color.set("#9b8abd");
         color.multiplyScalar(dark ? 1.12 : 1);
         if (entry.role === "cut-edge") entry.material.opacity = dark ? 0.3 : 0.14;
+        if (entry.role === "model-edge") {
+          if (!state.colorful) color.set(dark ? "#c1a4dd" : "#e8e7ed");
+          entry.material.opacity = dark ? 0.42 : 0.55;
+        }
       }
       entry.material.color.lerp(color, alpha);
       if (entry.kind === "model" && entry.material instanceof THREE.MeshPhysicalMaterial) {
         const solid = entry.layer === 3;
         if (solid) entry.material.metalness = dark ? 0.4 : 0.15;
-        else if (entry.material.transmission > 0) {
+        else if (entry.layer === 2 && entry.role === "Glass") {
+          // Alpha glazing keeps overlapping transparent structure visible inside the enclosure.
+          entry.material.opacity = dark ? 0.6 : 0.7;
+        } else if (entry.material.transmission > 0) {
           entry.material.opacity = 1;
           entry.material.transmission = dark ? (entry.layer === 2 ? 0.9 : 0.72) : 0.48;
           entry.material.attenuationColor.set(dark ? "#aa91c8" : "#b8adc5");
@@ -313,11 +325,9 @@ export function createLifecycleScene(
                   ? dark
                     ? 0.14
                     : 0.16
-                  : entry.role === "Glass" && entry.layer === 2
-                    ? 0.78
-                    : dark
-                      ? 0.33
-                      : 0.75;
+                  : dark
+                    ? 0.33
+                    : 0.75;
         }
         entry.material.emissive.copy(entry.material.color);
         entry.material.emissiveIntensity =
@@ -325,7 +335,9 @@ export function createLifecycleScene(
             ? dark
               ? entry.layer === 1
                 ? 0.085
-                : 0.035
+                : entry.layer === 2 && entry.role !== "Glass"
+                  ? 0.14
+                  : 0.035
               : solid
                 ? 0.05
                 : 0

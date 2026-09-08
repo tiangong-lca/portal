@@ -12,10 +12,11 @@ export function prepareModel(model: THREE.Object3D, layer: number, kit: OpticalK
       const solid = layer === 3;
       const cavity = role === "Cavity" || role === "Screen";
       const glass = role === "Glass";
+      const factoryGlazing = layer === 2 && glass;
       const optical = !solid && (role === "Shell" || role === "Trim");
       const material = new THREE.MeshPhysicalMaterial({
         name: role,
-        metalness: optical ? 0 : cavity ? 0.25 : solid ? 0.64 : 0.35,
+        metalness: optical || factoryGlazing ? 0 : cavity ? 0.25 : solid ? 0.64 : 0.35,
         roughness: optical ? 0.16 : role === "Trim" ? 0.28 : glass ? 0.12 : 0.34,
         transmission: optical ? 0.72 : 0,
         thickness: optical ? 0.08 : 0,
@@ -49,6 +50,7 @@ export function prepareModel(model: THREE.Object3D, layer: number, kit: OpticalK
           kit.lineMaterial(
             layer,
             layer === 1 && materials.some((material) => material.name === "Glass") ? 0.38 : 0.24,
+            layer === 2 ? "model-edge" : undefined,
           ),
         ),
       });

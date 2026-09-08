@@ -41,7 +41,7 @@ export function createOpticalKit() {
     tints.push({ material, layer, kind, role });
     return material;
   };
-  const lineMaterial = (layer: number, opacity = 0.3) =>
+  const lineMaterial = (layer: number, opacity = 0.3, role?: string) =>
     tint(
       new THREE.LineBasicMaterial({
         color: 0xb696e8,
@@ -52,6 +52,7 @@ export function createOpticalKit() {
       }),
       layer,
       "line",
+      role,
     );
   const filament = new THREE.CylinderGeometry(0.0065, 0.0065, 1, 6, 1, true);
   const wire = (points: THREE.Vector3[], parent: THREE.Object3D, layer: number, opacity = 0.3) => {

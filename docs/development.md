@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: bc7484a9f63d5f3b8f719e57bcab1be0a86b0e98
+lastReviewedCommit: 7bef9d07059fb97ed27697bb43b830d2c922ae75
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -118,7 +118,7 @@ blender --background --python-exit-code 1 --python .storybook/brand-exploration/
 
 The authoring file retains individual equipment parts; the GLB merges meshes by material within each model group and preserves the animated turbine rotors. Model groups retain their base footprints as metadata for analytic contact shading, which is computed by a shader without a baked shadow image. `components/` owns the shared optical primitives, per-layer junction graph and procedural components. The geographic sampler produces `land-points.json` from Natural Earth's public-domain land polygons; source URL and SHA-256 are retained in the asset `NOTICE.txt`. Format regenerated point data with the repository's Prettier command before committing it.
 
-Energy and factory materials use optical transmission against the study's theme background; keep the renderer background synchronized when changing themes. The darker factory finish has greater transmission, and product clearcoat and area lights preserve the shaded faces instead of flattening them into bright reflections. Thin cylinder geometry gives the network connections a stable physical width on high-density displays, including the connections within each layer. The network has stronger core links and lighter peripheral connections. Node materials add a continuous rim from the surface normal and view direction, while limiting fragmented environment highlights.
+Energy and factory structural materials use optical transmission against the study's theme background; keep the renderer background synchronized when changing themes. Factory enclosure panes use alpha blending to retain visibility of nested translucent frames and services, which the renderer's opaque-only transmission pass would omit. Their four-sided glazing, thin floors and piers, internal service panels and shared equipment decks remain editable geometry. Factory edge and façade finishes are calibrated separately for each theme. Product clearcoat and area lights preserve the shaded faces instead of flattening them into bright reflections. Thin cylinder geometry gives the network connections a stable physical width on high-density displays, including the connections within each layer. The network has stronger core links and lighter peripheral connections. Node materials add a continuous rim from the surface normal and view direction, while limiting fragmented environment highlights.
 
 The world-map component places the geographic samples on a regular four-degree lattice. Its 949 small solid cells share one instanced mesh, so their size and foreshortening follow the same perspective as the platform. Placement is decorative and fits the plate; it is not a geographic projection for measurement. Dispose the instanced mesh as well as its geometry and material so Three.js releases the instance matrix and color buffers.
 

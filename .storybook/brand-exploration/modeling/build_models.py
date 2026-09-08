@@ -68,6 +68,7 @@ def box(name, loc, dim, mat=shell, bevel=0.009):
         "Turbine foundation",
         "Instrumentation plinth",
         "Building plinth",
+        "Manufacturing deck",
         "Process skid base",
         "Peripheral plinth",
         "Appliance housing",
@@ -314,21 +315,23 @@ def build_factory():
     global parent
     # MANUFACTURING: multi-storey buildings, curtain wall glazing, pipes and vessels.
     parent = group("FactoryModels")
+    for x, z, w, d in [(-0.07, 1.02, 0.76, 0.52), (1.09, 0.12, 0.65, 0.53)]:
+        box("Manufacturing deck", (x, 0.03, z), (w, 0.06, d), trim, 0.005)
     for x, z, w, h, d in [
-        (-0.606, 1.139, 0.25, 0.78, 0.29),
-        (-0.131, 0.969, 0.27, 0.49, 0.30),
-        (0.275, 0.951, 0.23, 0.48, 0.27),
-        (1.038, 0.102, 0.31, 0.60, 0.32),
-        (1.699, -0.003, 0.25, 0.49, 0.29),
+        (-0.606, 1.139, 0.20, 0.82, 0.235),
+        (-0.281, 0.899, 0.23, 0.49, 0.255),
+        (0.055, 0.871, 0.185, 0.48, 0.22),
+        (0.918, 0.002, 0.27, 0.60, 0.275),
+        (1.699, -0.003, 0.26, 0.49, 0.295),
     ]:
         box("Building plinth", (x, 0.025, z), (w + 0.11, 0.05, d + 0.10), trim, 0.006)
-        # Open structural frames give the facades actual recessed depth.
-        for dx in [-w / 2 + 0.018, w / 2 - 0.018]:
-            for dz in [-d / 2 + 0.018, d / 2 - 0.018]:
+        # Thin structure sits behind continuous glazing to keep the silhouette light.
+        for dx in [-w / 2 + 0.01, w / 2 - 0.01]:
+            for dz in [-d / 2 + 0.01, d / 2 - 0.01]:
                 box(
                     "Structural pier",
                     (x + dx, 0.05 + h / 2, z + dz),
-                    (0.036, h, 0.036),
+                    (0.02, h, 0.02),
                     shell,
                     0.003,
                 )
@@ -337,7 +340,7 @@ def build_factory():
         box(
             "Recessed service core",
             (x - w * 0.12, 0.055 + h / 2, z - d * 0.12),
-            (w * 0.32, h - 0.04, d * 0.38),
+            (w * 0.18, h - 0.04, d * 0.22),
             shell,
             0.004,
         )
@@ -345,21 +348,21 @@ def build_factory():
             box(
                 "Structural floor",
                 (x, 0.062 + floor * floor_height, z),
-                (w, 0.028, d),
+                (w, 0.016, d),
                 shell,
                 0.003,
             )
         for dx in [-w / 2, w / 2]:
-            box("Roof rim", (x + dx, h + 0.067, z), (0.014, 0.031, d), trim, 0.002)
+            box("Roof rim", (x + dx, h + 0.067, z), (0.009, 0.02, d), trim, 0.002)
         for dz in [-d / 2, d / 2]:
-            box("Roof rim", (x, h + 0.067, z + dz), (w, 0.031, 0.014), trim, 0.002)
-        box("Roof inset", (x, 0.067 + h, z), (w - 0.035, 0.008, d - 0.035), dark, 0.002)
+            box("Roof rim", (x, h + 0.067, z + dz), (w, 0.02, 0.009), trim, 0.002)
+        box("Roof inset", (x, 0.067 + h, z), (w - 0.028, 0.004, d - 0.028), dark, 0.001)
         for floor in range(floor_count):
             y = 0.062 + (floor + 0.5) * floor_height
             box(
                 "Facade spandrel",
-                (x, y - floor_height * 0.38, z + d / 2 - 0.018),
-                (w - 0.035, floor_height * 0.15, 0.022),
+                (x, y - floor_height * 0.43, z + d / 2 - 0.006),
+                (w - 0.02, floor_height * 0.08, 0.009),
                 shell,
                 0.002,
             )
@@ -367,27 +370,62 @@ def build_factory():
                 bx = x - w * 0.25 + bay * w * 0.5
                 box(
                     "Front recessed glazing",
-                    (bx, y, z + d / 2 - 0.021),
-                    (w * 0.32, floor_height * 0.68, 0.008),
+                    (bx, y, z + d / 2 - 0.006),
+                    (w * 0.46, floor_height * 0.86, 0.006),
                     glass,
                     0.001,
                 )
                 box(
                     "Window lintel",
-                    (bx, y + floor_height * 0.36, z + d / 2 - 0.004),
-                    (w * 0.39, 0.012, 0.036),
+                    (bx, y + floor_height * 0.44, z + d / 2 - 0.002),
+                    (w * 0.46, 0.006, 0.012),
                     trim,
                     0.001,
+                )
+                box(
+                    "Glazed service panel",
+                    (bx, y - floor_height * 0.09, z + d / 2 - 0.023),
+                    (w * 0.19, floor_height * 0.31, 0.009),
+                    dark,
+                    0.001,
+                )
+                box(
+                    "Service panel header",
+                    (bx, y + floor_height * 0.07, z + d / 2 - 0.017),
+                    (w * 0.20, 0.005, 0.004),
+                    trim,
+                    0.001,
+                )
+                box(
+                    "Service panel handle",
+                    (bx + w * 0.06, y - floor_height * 0.1, z + d / 2 - 0.017),
+                    (0.003, floor_height * 0.1, 0.004),
+                    trim,
+                    0.0005,
                 )
             for bay in range(2):
                 bz = z - d * 0.25 + bay * d * 0.5
                 box(
                     "Side recessed glazing",
-                    (x + w / 2 - 0.021, y, bz),
-                    (0.008, floor_height * 0.68, d * 0.32),
+                    (x + w / 2 - 0.006, y, bz),
+                    (0.006, floor_height * 0.86, d * 0.46),
                     glass,
                     0.001,
                 )
+            box(
+                "Rear glazing",
+                (x, y, z - d / 2 + 0.006),
+                (w - 0.02, floor_height * 0.86, 0.006),
+                glass,
+                0.001,
+            )
+            box(
+                "Left glazing",
+                (x - w / 2 + 0.006, y, z),
+                (0.006, floor_height * 0.86, d - 0.02),
+                glass,
+                0.001,
+            )
             pipe(
                 "Floor service run",
                 [
@@ -400,37 +438,39 @@ def build_factory():
         for post in [-1, 0, 1]:
             box(
                 "Facade mullion",
-                (x + post * w * 0.44, 0.06 + h / 2, z + d / 2 + 0.009),
-                (0.016, h - 0.045, 0.025),
+                (x + post * w * 0.46, 0.06 + h / 2, z + d / 2 + 0.003),
+                (0.006, h - 0.045, 0.01),
                 trim,
                 0.001,
             )
-        box("Rooftop plant", (x + 0.02, h + 0.10, z), (0.09, 0.06, 0.12), shell, 0.003)
+        box(
+            "Rooftop plant", (x + 0.02, h + 0.081, z), (0.065, 0.028, 0.08), shell, 0.003
+        )
         for fin in range(4):
             box(
                 "Plant grille",
-                (x + 0.02, h + 0.133, z - 0.045 + fin * 0.028),
-                (0.085, 0.004, 0.004),
+                (x + 0.02, h + 0.096, z - 0.028 + fin * 0.018),
+                (0.059, 0.002, 0.003),
                 trim,
                 0.001,
             )
-    for x, z, w, d in [(-0.05, 1.27, 0.30, 0.20), (1.29, 0.30, 0.28, 0.22)]:
+    for x, z, w, d in [(-0.10, 1.16, 0.20, 0.14), (1.21, 0.20, 0.20, 0.16)]:
         box(
             "Process skid base", (x, 0.018, z), (w + 0.04, 0.036, d + 0.04), trim, 0.004
         )
-        box("Process equipment casing", (x, 0.098, z), (w, 0.15, d), shell, 0.006)
+        box("Process equipment casing", (x, 0.078, z), (w, 0.11, d), shell, 0.006)
         for n in range(3):
             box(
                 "Process case vent",
-                (x - w * 0.28 + n * w * 0.28, 0.114, z + d / 2 + 0.002),
-                (w * 0.13, 0.066, 0.004),
+                (x - w * 0.28 + n * w * 0.28, 0.09, z + d / 2 + 0.002),
+                (w * 0.13, 0.045, 0.004),
                 dark,
                 0.001,
             )
-        cylinder("Skid feed valve", (x, 0.188, z), 0.032, 0.035, trim)
+        cylinder("Skid feed valve", (x, 0.15, z), 0.026, 0.032, trim)
         pipe(
             "Skid service outlet",
-            [(x + w * 0.4, 0.15, z), (x + w * 0.7, 0.15, z), (x + w * 0.7, 0.035, z)],
+            [(x + w * 0.4, 0.11, z), (x + w * 0.7, 0.11, z), (x + w * 0.7, 0.035, z)],
             0.008,
         )
     for i in range(2):
@@ -460,7 +500,7 @@ def build_factory():
     for i in range(6):
         box(
             "Access stair",
-            (1.038, 0.025 + i * 0.024, 0.48 - i * 0.035),
+            (0.918, 0.025 + i * 0.024, 0.38 - i * 0.035),
             (0.2, 0.045, 0.04),
             trim,
             0.002,
