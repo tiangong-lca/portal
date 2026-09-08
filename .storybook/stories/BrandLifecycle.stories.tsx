@@ -154,8 +154,10 @@ export const ColorAndThemeInteraction: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "重置" }));
     await expect(surface).toHaveAttribute("data-motion", "running");
     await expect(surface).toHaveAttribute("data-color", "purple");
-    await delay(100);
-    await expect(Number(frameCount(canvasElement))).toBeGreaterThan(Number(pausedFrame));
+    await waitFor(
+      () => expect(Number(frameCount(canvasElement))).toBeGreaterThan(Number(pausedFrame)),
+      { timeout: 3000 },
+    );
   },
 };
 

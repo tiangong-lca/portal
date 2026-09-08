@@ -68,7 +68,8 @@ export function createLifecycleScene(
     antialias: true,
     powerPreference: "low-power",
   });
-  renderer.setPixelRatio(Math.min(Math.max(window.devicePixelRatio, 1.5), 2));
+  // Respect a 1x display; forced supersampling adds substantial software-rendering cost.
+  renderer.setPixelRatio(Math.min(Math.max(window.devicePixelRatio, 1), 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
@@ -212,6 +213,7 @@ export function createLifecycleScene(
 
   let state = initial;
   let disposed = false;
+  let contentReady = false;
   let inView = true;
   let frame = 0;
   let last = 0;
@@ -248,11 +250,11 @@ export function createLifecycleScene(
     },
   };
   const finishColor = new THREE.Color();
-  function paint(dt: number) {
+  function paint(dt: number, settled = false) {
     const dark = state.theme === "dark";
     productLighting.update(dark);
     (scene.background as THREE.Color).set(dark ? "#090a0d" : "#fcfcfe");
-    const alpha = state.reduced ? 1 : 1 - Math.exp(-dt * 6);
+    const alpha = state.reduced || settled ? 1 : 1 - Math.exp(-dt * 6);
     for (const entry of tints) {
       color.set(
         state.colorful ? palettes[state.theme][entry.layer]! : dark ? "#c2a7e6" : "#7341b2",
@@ -373,8 +375,10 @@ export function createLifecycleScene(
   }
   function render(now: number, force = false) {
     frame = 0;
-    if (disposed || (!force && (!inView || document.hidden))) return;
-    const dt = Math.max(0, Math.min((now - last) / 1000 || 0.016, 0.05));
+    // Start with the complete geometry instead of compiling an intermediate empty scene.
+    if (disposed || !contentReady || (!force && (!inView || document.hidden))) return;
+    const elapsed = Math.max(0, (now - last) / 1000 || 0.016);
+    const dt = Math.min(elapsed, 0.05);
     last = now;
     const moving = !state.paused && !state.reduced;
     if (moving) time += dt;
@@ -483,14 +487,16 @@ export function createLifecycleScene(
       entry.line.material.opacity =
         entry.opacity * (state.theme === "light" ? 1.15 : 1) + proximity * 0.4;
     }
-    paint(dt);
+    paint(elapsed, now >= transitionUntil);
     for (const reflection of reflections) reflection.render(state.theme === "dark");
     renderer.render(scene, camera);
     host.dataset.frame = String(Number(host.dataset.frame ?? 0) + 1);
-    if (moving || now < transitionUntil) requestRender();
+    // A slow render may finish after the transition deadline; do not queue a late frame.
+    if (moving || performance.now() < transitionUntil) requestRender();
   }
   function requestRender() {
-    if (!disposed && inView && !document.hidden && !frame) frame = requestAnimationFrame(render);
+    if (!disposed && contentReady && inView && !document.hidden && !frame)
+      frame = requestAnimationFrame(render);
   }
   let measuredWidth = 0;
   let measuredHeight = 0;
@@ -594,6 +600,7 @@ export function createLifecycleScene(
   let ready: Promise<void>;
   if (template) {
     installModels(template.instantiate());
+    contentReady = true;
     // The first real 3D frame is part of mounting, before an embedded preview freezes RAF.
     if (frame) cancelAnimationFrame(frame);
     render(performance.now(), true);
@@ -612,15 +619,20 @@ export function createLifecycleScene(
         }
         installModels(gltf.scene);
         await renderer.compileAsync(scene, camera);
-        if (!disposed) requestRender();
+        if (!disposed) {
+          contentReady = true;
+          requestRender();
+        }
       });
   }
 
   return {
     ready,
     update(next: SceneState) {
+      const appearanceChanged = next.theme !== state.theme || next.colorful !== state.colorful;
       state = next;
-      transitionUntil = performance.now() + (next.reduced ? 0 : 1200);
+      if (next.reduced) transitionUntil = 0;
+      else if (appearanceChanged) transitionUntil = performance.now() + 1200;
       requestRender();
     },
     activate(x = 0, y = 0) {
