@@ -251,6 +251,16 @@ export function createLifecycleScene(
         if (entry.layer === 3 && role === "Shell") finishColor.set(dark ? "#665174" : "#d7d4dd");
         if (!dark && entry.layer !== 3 && (role === "Shell" || role === "Trim"))
           finishColor.set(role === "Shell" ? "#b4afbd" : "#c4bece");
+        if (entry.layer === 1 && (role === "Shell" || role === "Trim"))
+          finishColor.set(
+            dark
+              ? role === "Shell"
+                ? "#978bac"
+                : "#b2a7c5"
+              : role === "Shell"
+                ? "#c8c3d2"
+                : "#dbd7e1",
+          );
         color.lerp(
           finishColor,
           role === "Cavity" || role === "Screen" || role === "Glass"
@@ -288,17 +298,23 @@ export function createLifecycleScene(
                     ? 0.3
                     : 0.22
                   : 0.48
-                : entry.role === "Glass" && entry.layer === 2
-                  ? 0.78
-                  : dark
-                    ? 0.33
-                    : 0.75;
+                : entry.role === "Glass" && entry.layer === 1
+                  ? dark
+                    ? 0.14
+                    : 0.16
+                  : entry.role === "Glass" && entry.layer === 2
+                    ? 0.78
+                    : dark
+                      ? 0.33
+                      : 0.75;
         }
         entry.material.emissive.copy(entry.material.color);
         entry.material.emissiveIntensity =
           entry.role !== "Cavity" && entry.role !== "Screen"
             ? dark
-              ? 0.035
+              ? entry.layer === 1
+                ? 0.085
+                : 0.035
               : solid
                 ? 0.05
                 : 0
@@ -521,7 +537,14 @@ export function createLifecycleScene(
         const surface = layer === 3 ? productPlatform : plates[layer];
         if (surface && (assembly || focusedLayer === layer))
           reflections.push(
-            createModelReflection(renderer, camera, scene, surface, model, layer === 3 ? 1 : 0.4),
+            createModelReflection(
+              renderer,
+              camera,
+              scene,
+              surface,
+              model,
+              layer === 3 ? 1 : layer === 1 ? 0.22 : 0.4,
+            ),
           );
       }
     }

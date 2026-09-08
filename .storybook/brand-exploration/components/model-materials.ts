@@ -37,8 +37,11 @@ export function prepareModel(model: THREE.Object3D, layer: number, kit: OpticalK
       outlines.push({
         mesh: object,
         line: new THREE.LineSegments(
-          new THREE.EdgesGeometry(object.geometry, 38),
-          kit.lineMaterial(layer, 0.24),
+          new THREE.EdgesGeometry(object.geometry, layer === 1 ? 20 : 38),
+          kit.lineMaterial(
+            layer,
+            layer === 1 && materials.some((material) => material.name === "Glass") ? 0.38 : 0.24,
+          ),
         ),
       });
     }

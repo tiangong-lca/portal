@@ -156,8 +156,8 @@ def build_energy():
     global parent
     # ENERGY: flanged process columns, tapered wind towers and an instrument pedestal.
     parent = group("EnergyModels")
-    for i, (x, z, h) in enumerate([(-0.553, 1.504, 0.78), (-0.422, 0.625, 0.86)]):
-        radius = 0.1 if i == 0 else 0.068
+    for i, (x, z, h) in enumerate([(-0.553, 1.504, 0.64), (-0.422, 0.625, 0.72)]):
+        radius = 0.1 if i == 0 else 0.09
         box("Column plinth", (x, 0.032, z), (0.31, 0.065, 0.29), trim, 0.01)
         box("Column footing", (x, 0.076, z), (0.23, 0.035, 0.22), shell, 0.006)
         cylinder("Process column", (x, h / 2 + 0.085, z), radius, h, shell)
@@ -165,21 +165,38 @@ def build_energy():
             sphere(
                 "Dished vessel head", (x, h + 0.082, z), (radius, 0.057, radius), shell
             )
+            # A rounded return pipe sits behind the dished head, with a clean front contour.
+            arch = []
+            for step in range(17):
+                angle = math.pi - step * math.pi / 16
+                offset = 0.045 + math.cos(angle) * 0.10
+                arch.append(
+                    (
+                        x + offset / math.sqrt(2),
+                        h + 0.27 + math.sin(angle) * 0.10,
+                        z - offset / math.sqrt(2),
+                    )
+                )
             pipe(
                 "Top service loop",
                 [
-                    (x, h + 0.12, z),
-                    (x, h + 0.26, z),
-                    (x + 0.13, h + 0.26, z),
-                    (x + 0.13, h + 0.1, z),
+                    (arch[0][0], h + 0.09, arch[0][2]),
+                    *arch,
+                    (arch[-1][0], h + 0.09, arch[-1][2]),
                 ],
-                0.006,
+                0.0035,
             )
         else:
-            cone("Tapered process cap", (x, h + 0.14, z), radius, 0.008, 0.14, shell)
-            cylinder("Cap breather", (x, h + 0.22, z), 0.012, 0.05, trim)
-        for j in range(4):
-            ring("Column flange", (x, 0.12 + j * h / 4, z), radius + 0.008, 0.009)
+            sphere(
+                "Elliptical vessel head",
+                (x, h + 0.085, z),
+                (radius, 0.105, radius),
+                shell,
+            )
+            cylinder("Cap breather", (x, h + 0.2, z), 0.01, 0.025, trim)
+        bands = [0, 0.4, 0.9] if i == 0 else [0, 0.36, 0.7, 0.95]
+        for fraction in bands:
+            ring("Column flange", (x, 0.1 + fraction * h, z), radius + 0.004, 0.0045)
         pipe(
             "Service pipe",
             [
@@ -187,43 +204,56 @@ def build_energy():
                 (x + 0.105, h + 0.02, z + 0.04),
                 (x, h + 0.02, z + 0.04),
             ],
-            0.011,
+            0.006,
         )
         for j in range(3):
             cylinder(
                 "Valve",
-                (x + 0.103, 0.21 + j * 0.18, z + 0.085),
-                0.025,
-                0.025,
+                (x + 0.103, 0.18 + j * h / 4, z + 0.055),
+                0.016,
+                0.017,
                 trim,
                 "z",
                 24,
             )
-        # A tiny ladder makes the columns read as fabricated equipment.
+        # Retain service detail on the rear so it does not dominate the vessel silhouette.
         for dx in [-0.034, 0.034]:
             pipe(
                 "Ladder rail",
-                [(x + dx, 0.08, z + 0.091), (x + dx, h, z + 0.091)],
-                0.004,
+                [(x + dx, 0.08, z - radius - 0.009), (x + dx, h, z - radius - 0.009)],
+                0.0025,
             )
         for j in range(10):
             pipe(
                 "Ladder rung",
                 [
-                    (x - 0.034, 0.12 + j * h / 11, z + 0.091),
-                    (x + 0.034, 0.12 + j * h / 11, z + 0.091),
+                    (x - 0.034, 0.12 + j * h / 11, z - radius - 0.009),
+                    (x + 0.034, 0.12 + j * h / 11, z - radius - 0.009),
                 ],
-                0.003,
+                0.002,
             )
 
-    for i, (x, z, h) in enumerate([(0.382, -0.297, 0.66), (0.877, -0.594, 0.49)]):
-        box("Turbine foundation", (x, 0.025, z), (0.13, 0.05, 0.14), trim)
-        cone("Wind tower", (x, h / 2, z), 0.028, 0.017, h, shell)
+    for i, (x, z, h) in enumerate([(0.472, -0.227, 0.66), (0.877, -0.594, 0.49)]):
+        base_radius = 0.13 if i == 0 else 0.072
+        contact_footprints.setdefault(parent.name, []).append(
+            [x, z, base_radius * 2, base_radius * 2]
+        )
+        cylinder("Turbine foundation", (x, 0.026, z), base_radius, 0.052, trim)
+        cone(
+            "Flared tower footing",
+            (x, 0.088, z),
+            base_radius * 0.75,
+            0.028,
+            0.075,
+            shell,
+        )
+        cone("Wind tower", (x, h / 2 + 0.035, z), 0.024, 0.014, h - 0.07, shell)
         sphere("Nacelle", (x, h, z), (0.052, 0.04, 0.085))
         rotor = group("Rotor" + str(i))
         rotor.parent = parent
         rotor.location = xyz((x, h, z + 0.075))
-        rotor.scale = (0.65, 0.65, 0.65)
+        rotor_scale = 0.36 if i == 0 else 0.30
+        rotor.scale = (rotor_scale, rotor_scale, rotor_scale)
         saved = parent
         parent = rotor
         sphere("Rotor nose", (0, 0, 0.02), (0.027, 0.027, 0.045))
@@ -266,18 +296,18 @@ def build_energy():
         parent = saved
     # Front instrumentation pedestal and compact auxiliary unit.
     box(
-        "Instrumentation plinth", (1.538, 0.022, 1.538), (0.42, 0.044, 0.4), trim, 0.008
+        "Instrumentation plinth", (1.538, 0.022, 1.538), (0.32, 0.044, 0.3), trim, 0.008
     )
-    box("Pedestal inset", (1.538, 0.055, 1.538), (0.29, 0.033, 0.28), shell, 0.006)
-    cone("Instrumentation pedestal", (1.538, 0.21, 1.538), 0.117, 0.025, 0.31, shell)
+    box("Pedestal inset", (1.538, 0.055, 1.538), (0.25, 0.033, 0.24), shell, 0.006)
+    cylinder("Instrumentation mast", (1.538, 0.21, 1.538), 0.008, 0.31, shell)
     for dx, dz in [(-0.11, -0.11), (-0.11, 0.11), (0.11, -0.11), (0.11, 0.11)]:
         pipe(
             "Instrument support",
             [(1.538 + dx, 0.076, 1.538 + dz), (1.538, 0.415, 1.538)],
             0.005,
         )
-    box("Auxiliary cabinet", (1.31, 0.084, -1.02), (0.18, 0.168, 0.18), shell, 0.006)
-    box("Auxiliary top", (1.31, 0.174, -1.02), (0.19, 0.018, 0.19), trim, 0.004)
+    box("Auxiliary cabinet", (1.49, 0.066, -0.965), (0.23, 0.132, 0.23), glass, 0.003)
+    box("Auxiliary top", (1.49, 0.137, -0.965), (0.24, 0.008, 0.24), glass, 0.003)
 
 
 def build_factory():
