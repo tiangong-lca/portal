@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: 489a9e7c86098497126e14911c82aca138d44524
+lastReviewedCommit: 47fa578b07e1b989318e8855515cc714b442c1ee
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #67 pagination and shared catalog tags: domain components are fixture-independent and currently used by the reference; cursor continuation preserves selection and context. Production adoption and remaining panel/detail review stay separate."
+lastReviewedNote: "Reviewed for Portal #67 shortlist/comparison references and production detail presentation: shared tags now serve DetailHeader; context-first Overview and scoped citation actions retain exact values, native navigation and disclosure behavior."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -212,6 +212,14 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 
 ### Catalog 共享业务组件
 
-`src/features/catalog/dataset-tags.tsx` 统一拥有 `DatasetVersionTag` 与 `PublicContentTag`，旁置 CSS 拥有标签尺寸与说明弹层样式。组件只接收精确版本、公开内容状态和本地化文案，不依赖 Storybook fixture、整条记录或页面 CSS。`components/ui` 继续拥有通用 Badge、Button 等基础组件；页面负责标签的位置、分组和换行。`Catalog/Dataset tags` 提供独立的图标、文字、浅深主题、窄屏和键盘说明场景。目前搜索与详情样板使用这些共享组件，正式页面的采用仍需单独评审。
+`src/features/catalog/dataset-tags.tsx` 统一拥有 `DatasetVersionTag` 与 `PublicContentTag`，旁置 CSS 拥有标签尺寸与说明弹层样式。组件只接收精确版本、公开内容状态和本地化文案，不依赖 Storybook fixture、整条记录或页面 CSS。`components/ui` 继续拥有通用 Badge、Button 等基础组件；页面负责标签的位置、分组和换行。`Catalog/Dataset tags` 提供独立的图标、文字、浅深主题、窄屏和键盘说明场景。搜索与详情样板、正式详情的 `DetailHeader` 共用这些标签；其他正式页面仍按各自组合评审。
 
 `ResultsContinuation` 统一拥有游标列表底部的加载更多、加载中、失败重试与末尾展示；调用方传入已本地化的进度说明，不要求服务返回总数。搜索样板使用六条一批的合成分页来展示交互，不改变实际搜索的分页上限或游标契约。追加结果保留已选内容，将焦点交给首条新增记录；进入详情再返回保留已加载结果。新查询、分面或排序重置续页并忽略迟到响应；空结果不显示续页控件。稳定状态场景与重试、返回和请求隔离的交互场景分别保留。
+
+### 详情页与样板面板的布局
+
+正式 `DetailHeader` 使用 28px 桌面标题和 24px 手机标题，长名称自然换行；种类、独立版本和显式公开能力组成紧凑身份行。完整精确标识放在默认折叠的引用区，原生 `#citation` 深链接仍能展开并定位。桌面操作按内容宽度排列，手机触控目标至少 44px；复制失败保留可手动复制的内容。详情子页面继续使用原生链接。
+
+正式 `OverviewPanel` 首先展示使用背景：Process 的参考产品、功能单位、地区和参考年；Flow 的 CAS、类型和参考流属性。说明与技术正文在阅读列，来源、许可和证据在侧栏，窄屏按阅读顺序堆叠。仅展示已提供的原始名称与说明，缺失字段不从其他类型推断。
+
+样板的候选清单保留完整名称、精确版本、地区/时间/单位和独立移除操作；空态提供返回目录入口。核对面板桌面按字段对齐，窄屏先列候选名称与版本，再按字段展示带稳定候选序号的值。完整标识默认折叠，字段对齐不作科学可比性结论。打开面板时焦点位于标题并保持顶部阅读起点。稳定空态、多条记录、浅深主题、长本地化文字及移除/打开详情的交互分别保留场景。

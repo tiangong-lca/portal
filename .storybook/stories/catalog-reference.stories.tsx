@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, fn, spyOn, waitFor, within } from "storybook/test";
+import { ReferenceComparison, ReferenceShortlist } from "../catalog-reference/panels";
 import { CatalogReference } from "../catalog-reference/catalog-reference";
 import { ResultsContinuation } from "../../src/features/catalog/results-continuation";
 import { SearchReference } from "../catalog-reference/search-page";
@@ -18,6 +19,8 @@ const meta = {
     DatasetVersionTag,
     PublicContentTag,
     ResultsContinuation,
+    ReferenceComparison,
+    ReferenceShortlist,
   },
   tags: ["!autodocs"],
   args: { locale: "zh-CN", requestPage: fn<() => Promise<void>>().mockResolvedValue() },
@@ -317,5 +320,64 @@ export const NewQueryCancelsPage: Story = {
     await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.resetSearch }));
     await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
     await expect(canvas.getByRole("button", { name: m.Hybrid.loadMore })).toBeEnabled();
+  },
+};
+
+export const ShortlistEmpty: Story = { args: { initialPanel: "shortlist" } };
+export const ShortlistPopulated: Story = {
+  args: { initialPanel: "shortlist", initialSaved: [0, 1, 7] },
+};
+export const ShortlistMobileGerman: Story = {
+  ...ShortlistPopulated,
+  globals: { ...mobileGlobals, locale: "de" },
+};
+export const ShortlistManyDark: Story = {
+  args: { initialPanel: "shortlist", initialSaved: [0, 1, 2, 3, 4, 5, 6, 7] },
+  globals: { theme: "dark", locale: "fr" },
+};
+export const CompareTwo: Story = { args: { initialPanel: "comparison", initialSelection: [0, 1] } };
+export const CompareFour: Story = {
+  args: { initialPanel: "comparison", initialSelection: [0, 1, 6, 7] },
+};
+export const CompareFourMobile: Story = {
+  ...CompareFour,
+  globals: { ...mobileGlobals, locale: "de" },
+};
+export const CompareFourDark: Story = { ...CompareFour, globals: { theme: "dark", locale: "fr" } };
+export const ShortlistRemoval: Story = {
+  ...ShortlistPopulated,
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)];
+    const body = within(canvasElement.ownerDocument.body);
+    const dialog = within(await body.findByRole("dialog", { name: m.Common.collections }));
+    for (const button of dialog.getAllByRole("button", {
+      name: new RegExp(`^${m.CatalogReference.unsave}:`),
+    }))
+      await userEvent.click(button);
+    await expect(dialog.getByText(m.CatalogReference.shortlistEmpty)).toBeVisible();
+    await userEvent.click(dialog.getByRole("button", { name: m.CatalogReference.back }));
+    await waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
+    await expect(canvas.getByRole("button", { name: `${m.Common.collections} 0` })).toBeVisible();
+  },
+};
+export const CompareExactIdentityAndOpen: Story = {
+  ...CompareTwo,
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
+    const locale = storyLocale(globals);
+    const m = dictionaries[locale];
+    const body = within(canvasElement.ownerDocument.body);
+    const dialog = within(await body.findByRole("dialog", { name: m.CatalogReference.compare }));
+    await expect(dialog.getByRole("heading", { name: m.CatalogReference.compare })).toHaveFocus();
+    const summary = dialog.getByText(m.CatalogReference.exactIdentity, { selector: "summary" });
+    await expect(summary.closest("details")).not.toHaveAttribute("open");
+    await userEvent.click(summary);
+    await expect(summary.closest("details")).toHaveTextContent(referenceDatasets(locale)[0]!.ref);
+    await userEvent.click(
+      dialog.getAllByRole("link", { name: referenceDatasets(locale)[0]!.name })[0]!,
+    );
+    await waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
+    await expect(canvas.getByRole("heading", { level: 1 })).toHaveTextContent(
+      referenceDatasets(locale)[0]!.name,
+    );
   },
 };

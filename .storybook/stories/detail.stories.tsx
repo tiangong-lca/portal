@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { usePathname } from "@storybook/nextjs-vite/navigation.mock";
-import { expect, waitFor } from "storybook/test";
+import { expect, spyOn, waitFor } from "storybook/test";
 import { DetailHeader } from "../../src/features/catalog/detail-header";
+import { CitationCopy } from "../../src/features/catalog/citation-copy";
 import { OverviewPanel } from "../../src/features/catalog/overview-panel";
 import { VersionsPanel } from "../../src/features/catalog/versions-panel";
 import { LciaPanel } from "../../src/features/catalog/lcia-panel";
@@ -11,7 +12,13 @@ import { detailRecord, lciaLabels, lciaResult } from "../composition-fixtures";
 
 const meta = {
   component: DetailHeader,
-  subcomponents: { CompareSelectionProvider, OverviewPanel, VersionsPanel, LciaPanel },
+  subcomponents: {
+    CompareSelectionProvider,
+    OverviewPanel,
+    VersionsPanel,
+    LciaPanel,
+    CitationCopy,
+  },
   title: "Catalog/Dataset detail",
   tags: ["!autodocs"],
   beforeEach({ globals, parameters }) {
@@ -91,7 +98,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Process: Story = {
-  play: async ({ canvas, userEvent, globals }) => {
+  play: async ({ canvas, globals }) => {
     const locale = storyLocale(globals);
     const m = dictionaries[locale].Detail;
     await expect(canvas.getByRole("heading", { level: 1 })).toHaveTextContent(
@@ -107,9 +114,9 @@ export const Process: Story = {
       "href",
       "#citation",
     );
-    await userEvent.click(canvas.getByText(m.citation, { selector: "summary" }));
-    await expect(canvas.getByRole("button", { name: m.copyVersionId })).toBeVisible();
-    await expect(canvas.getByText(detailRecord(locale, "process").citation!)).toBeVisible();
+    await expect(
+      canvas.getByText(m.citation, { selector: "summary" }).closest("details"),
+    ).not.toHaveAttribute("open");
   },
 };
 export const Flow: Story = {
@@ -188,3 +195,39 @@ export const MobileFrenchLciaContext: Story = {
 };
 export const LciaUnavailable: Story = { parameters: { panel: "lcia", unavailable: true } };
 export const LciaFailure: Story = { parameters: { panel: "lcia", failure: true } };
+
+export const CitationExpanded: Story = {
+  play: async ({ canvas, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)].Detail;
+    await userEvent.click(canvas.getByText(m.citation, { selector: "summary" }));
+    await expect(canvas.getByRole("button", { name: m.copyVersionId })).toBeVisible();
+    await expect(
+      canvas.getByText(detailRecord(storyLocale(globals), "process").citation!),
+    ).toBeVisible();
+  },
+};
+export const CitationExpandedMobile: Story = {
+  ...CitationExpanded,
+  globals: { ...mobileGlobals, locale: "de" },
+};
+export const ProcessDark: Story = { ...Process, globals: { locale: "fr", theme: "dark" } };
+export const CitationCopyAndDenial: Story = {
+  play: async ({ canvas, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)].Detail;
+    await userEvent.click(canvas.getByText(m.citation, { selector: "summary" }));
+    const copy = spyOn(navigator.clipboard, "writeText")
+      .mockResolvedValueOnce()
+      .mockRejectedValueOnce(new Error("Clipboard denied"));
+    try {
+      await userEvent.click(canvas.getByRole("button", { name: m.copyVersionId }));
+      await expect(copy).toHaveBeenCalledWith(refs[0]);
+      await userEvent.click(canvas.getByRole("button", { name: m.copyCitation }));
+      await expect(canvas.findByRole("alert")).resolves.toHaveTextContent(m.copyFailed);
+      await expect(
+        canvas.getAllByText(detailRecord(storyLocale(globals), "process").citation!).length,
+      ).toBeGreaterThan(0);
+    } finally {
+      copy.mockRestore();
+    }
+  },
+};

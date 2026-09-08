@@ -32,7 +32,8 @@ import { dictionaries } from "../fixtures";
 import { referenceCitation, referenceDatasets } from "./data";
 import { SearchReference, type ReferenceFilters } from "./search-page";
 import { DetailReference } from "./detail-page";
-import { Metadata, ReferenceFooter } from "./shared";
+import { ReferenceComparison, ReferenceShortlist } from "./panels";
+import { ReferenceFooter } from "./shared";
 import "@fontsource-variable/source-sans-3/wght.css";
 import "@fontsource-variable/noto-sans-sc/wght.css";
 import "./reference.css";
@@ -44,6 +45,8 @@ type CatalogReferenceProps = {
   missingMetadata?: boolean;
   initialQuery?: string;
   initialSelection?: number[];
+  initialSaved?: number[];
+  initialPanel?: "shortlist" | "comparison";
   initialPageState?: "ready" | "loading" | "error" | "complete";
   /** Deterministic fixture request seam; no public API is called. */
   requestPage?: () => Promise<void>;
@@ -66,6 +69,8 @@ export function CatalogReference({
   missingMetadata = false,
   initialQuery,
   initialSelection = [],
+  initialSaved = [],
+  initialPanel,
   initialPageState = "ready",
   requestPage = readyPage,
 }: CatalogReferenceProps) {
@@ -131,12 +136,14 @@ export function CatalogReference({
   const [selected, setSelected] = useState<string[]>(
     initialSelection.slice(0, 4).map((index) => records[index]!.ref),
   );
-  const [saved, setSaved] = useState<string[]>([]);
+  const [saved, setSaved] = useState<string[]>(initialSaved.map((index) => records[index]!.ref));
   const [notice, setNotice] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
-  const [shortlistOpen, setShortlistOpen] = useState(false);
-  const [comparisonOpen, setComparisonOpen] = useState(false);
+  const [shortlistOpen, setShortlistOpen] = useState(initialPanel === "shortlist");
+  const [comparisonOpen, setComparisonOpen] = useState(initialPanel === "comparison");
   const [menuOpen, setMenuOpen] = useState(false);
+  const shortlistTitle = useRef<HTMLHeadingElement>(null);
+  const comparisonTitle = useRef<HTMLHeadingElement>(null);
   const resultScroll = useRef(0);
   const previousRef = useRef<string | null>(null);
   const mainRef = useRef<HTMLElement>(null);
@@ -208,6 +215,7 @@ export function CatalogReference({
     );
     setCurrentRef(ref);
     setShortlistOpen(false);
+    setComparisonOpen(false);
   }
   function backToResults() {
     window.history.pushState(
@@ -334,37 +342,27 @@ export function CatalogReference({
                   <span className="cr-count">{saved.length}</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent className="cr-surface cr-panel" closeLabel={m.Common.close}>
+              <SheetContent
+                onOpenAutoFocus={(event) => {
+                  event.preventDefault();
+                  shortlistTitle.current?.focus({ preventScroll: true });
+                }}
+                className="cr-surface cr-panel cr-shortlist-panel"
+                closeLabel={m.Common.close}
+              >
                 <SheetHeader>
-                  <SheetTitle>{m.Common.collections}</SheetTitle>
+                  <SheetTitle ref={shortlistTitle} tabIndex={-1}>
+                    {m.Common.collections}
+                  </SheetTitle>
                   <SheetDescription>{m.CatalogReference.sessionOnly}</SheetDescription>
                 </SheetHeader>
-                <div className="cr-panel-body">
-                  {saved.length ? (
-                    records
-                      .filter((item) => saved.includes(item.ref))
-                      .map((item) => (
-                        <article key={item.ref} className="cr-saved-item">
-                          <a
-                            href={`${recordHash}${item.ref}`}
-                            onClick={(event) => {
-                              event.preventDefault();
-                              openRecord(item.ref);
-                            }}
-                          >
-                            {item.name}
-                          </a>
-                          <Metadata record={item} labels={m} />
-                          <Button variant="ghost" size="sm" onClick={() => toggleSave(item.ref)}>
-                            <XIcon aria-hidden="true" />
-                            {m.CatalogReference.unsave}
-                          </Button>
-                        </article>
-                      ))
-                  ) : (
-                    <p>{m.CatalogReference.shortlistEmpty}</p>
-                  )}
-                </div>
+                <ReferenceShortlist
+                  records={records.filter((item) => saved.includes(item.ref))}
+                  labels={m}
+                  onOpen={openRecord}
+                  onRemove={toggleSave}
+                  onContinue={() => setShortlistOpen(false)}
+                />
               </SheetContent>
             </Sheet>
             <div className="cr-preferences">{preferenceControls}</div>
@@ -511,21 +509,21 @@ export function CatalogReference({
                   <ArrowUpRightIcon aria-hidden="true" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="cr-surface cr-comparison-panel" closeLabel={m.Common.close}>
+              <SheetContent
+                onOpenAutoFocus={(event) => {
+                  event.preventDefault();
+                  comparisonTitle.current?.focus({ preventScroll: true });
+                }}
+                className="cr-surface cr-comparison-panel"
+                closeLabel={m.Common.close}
+              >
                 <SheetHeader>
-                  <SheetTitle>{m.CatalogReference.compare}</SheetTitle>
+                  <SheetTitle ref={comparisonTitle} tabIndex={-1}>
+                    {m.CatalogReference.compare}
+                  </SheetTitle>
                   <SheetDescription>{m.CatalogReference.comparisonNotice}</SheetDescription>
                 </SheetHeader>
-                <div className="cr-comparison-grid">
-                  {selectedRecords.map((item) => (
-                    <article key={item.ref}>
-                      <h3>{item.name}</h3>
-                      <Metadata record={item} labels={m} expanded />
-                      <p>{item.technology ?? m.Common.notProvided}</p>
-                      <code>{item.ref}</code>
-                    </article>
-                  ))}
-                </div>
+                <ReferenceComparison records={selectedRecords} labels={m} onOpen={openRecord} />
               </SheetContent>
             </Sheet>
           </div>

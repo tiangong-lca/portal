@@ -811,21 +811,63 @@
 .cr-panel {
   overflow-y: auto;
 }
+.cr-shortlist-panel {
+  width: min(480px, 100vw);
+  max-width: none;
+  gap: 0;
+}
+:is(.cr-shortlist-panel, .cr-comparison-panel) [data-slot="sheet-header"] {
+  padding: 24px 64px 20px 24px;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+:is(.cr-shortlist-panel, .cr-comparison-panel) [data-slot="sheet-title"] {
+  font-family: inherit;
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 600;
+}
 .cr-panel-body {
   padding: 0 24px 24px;
 }
+.cr-saved-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 .cr-saved-item {
   border-bottom: 1px solid var(--border);
-  padding: 18px 0;
+  padding: 20px 0;
 }
-.cr-saved-item > a {
-  color: var(--link);
-  font-weight: 600;
+.cr-saved-heading {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.cr-saved-heading h3 {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 550;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.cr-saved-heading a:hover {
+  text-decoration: underline;
+}
+.cr-saved-heading button {
+  flex: 0 0 44px;
+  margin: -8px -10px 0 0;
 }
 .cr-saved-item .cr-row-meta {
-  display: grid;
-  gap: 6px;
-  margin: 14px 0 !important;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 14px 0 0;
+}
+.cr-shortlist-empty {
+  border: 0;
+  padding: 48px 0;
 }
 .cr-notice {
   position: fixed;
@@ -888,49 +930,126 @@
   line-height: 1.5;
 }
 .cr-comparison-panel {
-  width: min(1040px, 96vw);
+  width: min(1120px, 100vw);
   max-width: none;
   overflow-y: auto;
+  gap: 0;
 }
-.cr-comparison-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  padding: 8px 24px 32px;
+.cr-comparison-body {
+  padding: 24px;
 }
-.cr-comparison-grid article {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 20px;
+.cr-comparison-table {
+  table-layout: fixed;
+  width: 100%;
+}
+.cr-comparison-table th,
+.cr-comparison-table td {
+  padding: 16px 12px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.cr-comparison-table th:first-child {
+  width: 140px;
+  padding-left: 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  font-weight: 400;
+}
+.cr-compare-candidate {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+.cr-compare-candidate > div {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
   min-width: 0;
 }
-.cr-comparison-grid h3 {
-  font-size: var(--cr-title);
-  font-weight: 600;
-  line-height: 1.7;
-  margin-bottom: 20px;
+.cr-compare-candidate a {
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 550;
+  overflow-wrap: anywhere;
 }
-.cr-comparison-grid .cr-summary-grid {
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+.cr-compare-candidate a:hover {
+  text-decoration: underline;
 }
-.cr-comparison-grid .cr-summary-grid > div {
-  border: 0;
+.cr-candidate-number,
+.cr-compare-field dt > span:first-child {
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
 }
-.cr-comparison-grid .cr-summary-grid dd {
-  font-size: var(--cr-body);
+.cr-compare-mobile {
+  display: none;
 }
-.cr-comparison-grid p {
-  font-size: var(--cr-body);
-  line-height: 1.8;
-  padding-top: 20px;
+.cr-compare-identities {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
 }
-.cr-comparison-grid code {
-  font-size: var(--cr-caption);
+.cr-compare-identities summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+.cr-compare-identities dl {
+  display: grid;
+  gap: 20px;
+}
+.cr-compare-identities dt {
+  font-size: 14px;
+}
+.cr-compare-identities code {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
   overflow-wrap: anywhere;
   color: var(--muted-foreground);
-  display: block;
-  margin-top: 20px;
+}
+@media (max-width: 899px) {
+  .cr-compare-desktop {
+    display: none;
+  }
+  .cr-compare-mobile {
+    display: block;
+  }
+  .cr-compare-candidates {
+    display: grid;
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0 0 24px;
+  }
+  .cr-compare-field {
+    border-top: 1px solid var(--border);
+    padding: 20px 0;
+  }
+  .cr-compare-field h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .cr-compare-field dl {
+    display: grid;
+    gap: 12px;
+  }
+  .cr-compare-field dl > div {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .cr-compare-field dd {
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    line-height: 1.7;
+  }
 }
 @media (max-width: 1279px) {
   .cr-desktop-filters {
@@ -1203,10 +1322,6 @@
     left: 20px;
     bottom: 108px;
     font-size: var(--cr-body);
-  }
-  .cr-comparison-grid {
-    grid-template-columns: 1fr;
-    padding: 8px 20px 32px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
