@@ -5,8 +5,10 @@ import { createStudioEnvironment } from "./components/studio-environment";
 import { createOpticalKit } from "./components/optical-kit";
 import { createGlassPlate, createProductPlatform } from "./components/glass-plate";
 import { createNodeNetwork } from "./components/node-network";
+import { createLayerJunctions, LAYER_LINKS } from "./components/layer-junctions";
 import { createWorldMap } from "./components/world-map";
 import { prepareModel } from "./components/model-materials";
+import { createContactShadows } from "./components/contact-shadows";
 
 export type SculpturePart =
   "assembly" | "plate" | "network" | "energy" | "factory" | "product" | "map";
@@ -18,13 +20,6 @@ export type SceneState = {
   reduced: boolean;
 };
 const LEVELS = [4.4, 2.2, 0, -2.2, -4.4];
-const ANCHORS = [
-  [0, 0],
-  [-1.45, 0.65],
-  [1.3, 0.8],
-  [-0.9, -1.2],
-  [1.35, -1.12],
-];
 
 function release(root: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>();
@@ -100,6 +95,7 @@ export function createLifecycleScene(
   const { textures, glow, tints, nodes, highlights, tint, wire, addNode } = optics;
   const layers: THREE.Group[] = [];
   const turbines: THREE.Object3D[] = [];
+  const contactShadows: THREE.ShaderMaterial[] = [];
 
   for (let i = 0; i < LEVELS.length; i++) {
     const group = new THREE.Group();
@@ -108,32 +104,26 @@ export function createLifecycleScene(
     root.add(group);
     layers.push(group);
     if (part !== "product") createGlassPlate(group, i, optics);
-    if (part !== "product" && part !== "plate") {
-      for (const [x = 0, z = 0] of ANCHORS) {
-        if (i === 0 && x === 0) continue;
-        addNode(group, i, x, 0.04, z, x === 0 ? 1.5 : 0.8);
-      }
-    }
     for (let k = 0; part !== "product" && k < 12; k++) {
       const x = Math.sin(k * 29.4 + i) * 1.72;
       const z = Math.cos(k * 11.8 + i) * 1.72;
       addNode(group, i, x, 0.018, z, 0.16);
     }
   }
-  createNodeNetwork(layers[0]!, optics);
+  const network = createNodeNetwork(layers[0]!, optics);
+  const junctions =
+    part === "plate" || part === "product" ? [] : createLayerJunctions(layers, network, optics);
   // Sparse diagonal links continue through the clear plates, keeping their centers legible.
   const links: { a: number; b: number; start: number; end: number; line: THREE.Line }[] = [];
   for (let i = 0; assembly && i < 4; i++) {
-    for (let a = 0; a < ANCHORS.length; a++) {
-      for (const b of [a, ...(a > 0 ? [(a % 4) + 1] : [])]) {
-        links.push({
-          a,
-          b,
-          start: i,
-          end: i + 1,
-          line: wire([new THREE.Vector3(), new THREE.Vector3()], root, i, a === b ? 0.18 : 0.09),
-        });
-      }
+    for (const [a = 0, b = 0] of LAYER_LINKS[i]!) {
+      links.push({
+        a,
+        b,
+        start: i,
+        end: i + 1,
+        line: wire([new THREE.Vector3(), new THREE.Vector3()], root, i, a === b ? 0.25 : 0.17),
+      });
     }
   }
   if (part !== "plate") createProductPlatform(layers[3]!, optics);
@@ -143,7 +133,7 @@ export function createLifecycleScene(
       new THREE.SpriteMaterial({
         map: glow,
         color: 0x8b56d0,
-        opacity: 0.34,
+        opacity: 0.28,
         transparent: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
@@ -154,9 +144,9 @@ export function createLifecycleScene(
       "aura",
     ),
   );
-  aura.position.set(0, assembly ? -5.65 : -0.15, 0);
+  aura.position.set(0, assembly ? -6.7 : -0.15, 0);
   aura.visible = assembly || part === "map";
-  aura.scale.set(8.5, 3.9, 1);
+  aura.scale.set(9.5, 4.9, 1);
   aura.renderOrder = -2;
   root.add(aura);
   const shadow = new THREE.Sprite(
@@ -214,14 +204,14 @@ export function createLifecycleScene(
   };
   const finishes = {
     dark: {
-      Shell: "#685478",
-      Trim: "#a996bf",
+      Shell: "#7b698d",
+      Trim: "#88719f",
       Cavity: "#191220",
       Screen: "#0d0b12",
       Glass: "#37283f",
     },
     light: {
-      Shell: "#efedf3",
+      Shell: "#f8f7fb",
       Trim: "#dedbe4",
       Cavity: "#5b5461",
       Screen: "#35303b",
@@ -252,30 +242,40 @@ export function createLifecycleScene(
       if (entry.material instanceof THREE.PointsMaterial && !state.colorful)
         color.set(dark ? "#d6bbee" : "#756b83");
       if (entry.kind === "halo" && !state.colorful)
-        color.set(entry.role === "aura" ? "#8753ce" : "#bb80ff");
+        color.set(entry.role === "aura" ? "#8753ce" : "#9c42ee");
       if (entry.kind === "line") color.multiplyScalar(dark ? 1.12 : 1);
       entry.material.color.lerp(color, alpha);
       if (entry.kind === "model" && entry.material instanceof THREE.MeshPhysicalMaterial) {
         const solid = entry.layer === 3;
-        if (solid) entry.material.metalness = dark ? 0.64 : 0.22;
+        if (solid) entry.material.metalness = dark ? 0.4 : 0.15;
         else {
           entry.material.opacity =
             entry.role === "Cavity" || entry.role === "Screen"
               ? 0.7
               : entry.role === "Shell"
                 ? dark
-                  ? 0.24
+                  ? entry.layer === 2
+                    ? 0.3
+                    : 0.22
                   : 0.48
-                : dark
-                  ? 0.42
-                  : 0.75;
+                : entry.role === "Glass" && entry.layer === 2
+                  ? 0.78
+                  : dark
+                    ? 0.33
+                    : 0.75;
         }
         entry.material.emissive.copy(entry.material.color);
         entry.material.emissiveIntensity =
-          dark && entry.role !== "Cavity" && entry.role !== "Screen" ? 0.035 : 0;
+          entry.role !== "Cavity" && entry.role !== "Screen"
+            ? dark
+              ? 0.035
+              : solid
+                ? 0.05
+                : 0
+            : 0;
       }
       if (entry.kind === "node" && entry.material instanceof THREE.MeshPhysicalMaterial) {
-        entry.material.metalness = dark ? 0.5 : 0.15;
+        entry.material.metalness = dark ? 0.32 : 0.15;
         entry.material.roughness = dark ? 0.16 : 0.25;
       }
       if (entry.kind === "plane" && entry.material instanceof THREE.ShaderMaterial)
@@ -283,12 +283,14 @@ export function createLifecycleScene(
       if (entry.kind === "halo") entry.material.visible = dark;
     }
     shadow.visible = !dark && (assembly || part === "map");
+    for (const material of contactShadows) material.uniforms.opacity!.value = dark ? 0.12 : 0.22;
     key.intensity = dark ? 1.8 : 2.1;
     ambient.intensity = dark ? 0.16 : 0.5;
     rim.intensity = dark ? 0.7 : 1.2;
     rim.color.set(dark ? 0xb793ff : 0xffffff);
     key.color.set(dark ? 0xf3e9ff : 0xffffff);
     scene.environmentIntensity = dark ? 0.7 : 1.0;
+    renderer.toneMappingExposure = dark ? 1 : 1.28;
   }
   function render(now: number) {
     frame = 0;
@@ -324,11 +326,12 @@ export function createLifecycleScene(
         [1, link.end, link.b],
       ]) {
         const group = layers[level!]!;
+        const position = junctions[level!]![anchor!]!;
         attribute.setXYZ(
           index!,
-          ANCHORS[anchor!]![0]! * group.scale.x + group.position.x,
-          group.position.y + 0.04 * group.scale.y,
-          ANCHORS[anchor!]![1]! * group.scale.z + group.position.z,
+          position.x * group.scale.x + group.position.x,
+          group.position.y + position.y * group.scale.y,
+          position.z * group.scale.z + group.position.z,
         );
       }
       attribute.needsUpdate = true;
@@ -341,14 +344,27 @@ export function createLifecycleScene(
       }
       const p = (time * 0.16 + i) % 4;
       const level = Math.floor(p);
-      const a = ANCHORS[i + 1]!;
+      const link = links.find((link) => link.start === level && link.a === (i === 3 ? 0 : i + 1))!;
+      const a = junctions[level]![link.a]!;
+      const b = junctions[level + 1]![link.b]!;
       const start = layers[level]!;
       const end = layers[level + 1]!;
-      const scale = THREE.MathUtils.lerp(start.scale.x, end.scale.x, p - level);
       pulses[i]!.position.set(
-        a[0]! * scale + THREE.MathUtils.lerp(start.position.x, end.position.x, p - level),
-        THREE.MathUtils.lerp(start.position.y, end.position.y, p - level) + 0.04 * scale,
-        a[1]! * scale + THREE.MathUtils.lerp(start.position.z, end.position.z, p - level),
+        THREE.MathUtils.lerp(
+          a.x * start.scale.x + start.position.x,
+          b.x * end.scale.x + end.position.x,
+          p - level,
+        ),
+        THREE.MathUtils.lerp(
+          start.position.y + a.y * start.scale.y,
+          end.position.y + b.y * end.scale.y,
+          p - level,
+        ),
+        THREE.MathUtils.lerp(
+          a.z * start.scale.z + start.position.z,
+          b.z * end.scale.z + end.position.z,
+          p - level,
+        ),
       );
       pulses[i]!.visible = moving && state.theme === "dark";
     }
@@ -369,12 +385,15 @@ export function createLifecycleScene(
       node.mesh.scale.setScalar(node.base * (1 + proximity * 0.25));
       node.mesh.material.emissive.copy(node.mesh.material.color);
       node.mesh.material.emissiveIntensity =
-        (state.theme === "dark" ? 0.06 : 0) + proximity * 0.7 + wave * 1.5 + node.glint * 1.2;
+        (state.theme === "dark" ? 0.06 : 0.12) +
+        proximity * 0.7 +
+        wave * 1.5 +
+        node.glint * (state.theme === "dark" ? 1.2 : 0.06);
       // Only a few bead junctions carry a resting optical glint.
       const glint = node.glint || (node.base > 1.4 ? 0.18 : 0.025);
-      node.halo.material.opacity = glint + proximity * 0.65 + wave * 0.8;
+      node.halo.material.opacity = Math.min(1, glint * 1.3 + proximity * 0.65 + wave * 0.8);
       node.halo.scale.setScalar(
-        (0.3 + proximity * 0.2 + wave * 0.35 + node.glint * 0.6) * node.base,
+        (0.3 + proximity * 0.2 + wave * 0.35 + node.glint * 1.2) * node.base,
       );
     }
     for (const entry of highlights) {
@@ -463,10 +482,10 @@ export function createLifecycleScene(
       const model = modelRoot.getObjectByName(name);
       if (!model) throw new Error(`Lifecycle asset missing ${name}`);
       prepareModel(model, layer, optics);
+      contactShadows.push(...createContactShadows(model));
       model.traverse((object) => {
         if (object.name === "Rotor0" || object.name === "Rotor1") turbines.push(object);
       });
-      if (layer === 2) model.position.set(0.15, 0, 0.15);
       if (layer === 3) {
         model.position.set(0.75, 0.01, 0.83);
         model.scale.setScalar(1.08);

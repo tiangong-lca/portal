@@ -5,6 +5,7 @@ All dimensions below use the web scene's X/right, Y/up, Z/front convention.
 
 import bpy
 import math
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -33,6 +34,7 @@ glass = material("Glass", (0.19, 0.12, 0.29), 0.1, 0.16, 0.38)
 screen = material("Screen", (0.024, 0.018, 0.04), 0.15, 0.2)
 
 parent = None
+contact_footprints = {}
 
 
 def xyz(v):
@@ -61,6 +63,17 @@ def finish(obj, name, mat, bevel=0):
 
 
 def box(name, loc, dim, mat=shell, bevel=0.009):
+    if parent and name in {
+        "Column plinth",
+        "Turbine foundation",
+        "Instrumentation plinth",
+        "Building plinth",
+        "Peripheral plinth",
+        "Appliance housing",
+    }:
+        contact_footprints.setdefault(parent.name, []).append(
+            [loc[0], loc[2], dim[0], dim[2]]
+        )
     bpy.ops.mesh.primitive_cube_add(size=1, location=xyz(loc))
     obj = bpy.context.object
     obj.dimensions = (dim[0], dim[2], dim[1])
@@ -142,12 +155,30 @@ def build_energy():
     global parent
     # ENERGY: flanged process columns, tapered wind towers and an instrument pedestal.
     parent = group("EnergyModels")
-    for i, (x, z, h) in enumerate([(-0.585, 1.48, 0.78), (-0.238, 0.95, 1.10)]):
-        box("Column plinth", (x, 0.032, z), (0.29, 0.065, 0.28), trim, 0.014)
-        cone("Process column", (x, h / 2 + 0.06, z), 0.084, 0.064, h, shell)
-        cylinder("Column cap", (x, h + 0.07, z), 0.07, 0.025, trim)
+    for i, (x, z, h) in enumerate([(-0.553, 1.504, 0.78), (-0.422, 0.625, 0.86)]):
+        radius = 0.1 if i == 0 else 0.068
+        box("Column plinth", (x, 0.032, z), (0.31, 0.065, 0.29), trim, 0.01)
+        box("Column footing", (x, 0.076, z), (0.23, 0.035, 0.22), shell, 0.006)
+        cylinder("Process column", (x, h / 2 + 0.085, z), radius, h, shell)
+        if i == 0:
+            sphere(
+                "Dished vessel head", (x, h + 0.082, z), (radius, 0.057, radius), shell
+            )
+            pipe(
+                "Top service loop",
+                [
+                    (x, h + 0.12, z),
+                    (x, h + 0.26, z),
+                    (x + 0.13, h + 0.26, z),
+                    (x + 0.13, h + 0.1, z),
+                ],
+                0.006,
+            )
+        else:
+            cone("Tapered process cap", (x, h + 0.14, z), radius, 0.008, 0.14, shell)
+            cylinder("Cap breather", (x, h + 0.22, z), 0.012, 0.05, trim)
         for j in range(4):
-            ring("Column flange", (x, 0.11 + j * h / 4, z), 0.086, 0.01)
+            ring("Column flange", (x, 0.12 + j * h / 4, z), radius + 0.008, 0.009)
         pipe(
             "Service pipe",
             [
@@ -233,11 +264,17 @@ def build_energy():
             finish(obj, "Tapered blade", trim, 0.003)
         parent = saved
     # Front instrumentation pedestal and compact auxiliary unit.
-    box("Instrumentation plinth", (0.95, 0.022, 0.95), (0.35, 0.044, 0.35), trim, 0.008)
     box(
-        "Instrumentation housing", (0.95, 0.125, 0.95), (0.17, 0.18, 0.17), shell, 0.012
+        "Instrumentation plinth", (1.538, 0.022, 1.538), (0.42, 0.044, 0.4), trim, 0.008
     )
-    box("Instrument face", (0.95, 0.14, 1.039), (0.11, 0.072, 0.006), glass, 0.004)
+    box("Pedestal inset", (1.538, 0.055, 1.538), (0.29, 0.033, 0.28), shell, 0.006)
+    cone("Instrumentation pedestal", (1.538, 0.21, 1.538), 0.117, 0.025, 0.31, shell)
+    for dx, dz in [(-0.11, -0.11), (-0.11, 0.11), (0.11, -0.11), (0.11, 0.11)]:
+        pipe(
+            "Instrument support",
+            [(1.538 + dx, 0.076, 1.538 + dz), (1.538, 0.415, 1.538)],
+            0.005,
+        )
     box("Auxiliary cabinet", (1.31, 0.084, -1.02), (0.18, 0.168, 0.18), shell, 0.006)
     box("Auxiliary top", (1.31, 0.174, -1.02), (0.19, 0.018, 0.19), trim, 0.004)
 
@@ -246,35 +283,54 @@ def build_factory():
     global parent
     # MANUFACTURING: multi-storey buildings, curtain wall glazing, pipes and vessels.
     parent = group("FactoryModels")
-    for index, (x, z, w, h, d) in enumerate(
-        [
-            (-0.884, 0.813, 0.23, 0.71, 0.29),
-            (-0.424, 0.82, 0.24, 0.42, 0.30),
-            (-0.134, 0.757, 0.21, 0.46, 0.27),
-            (0.389, -0.389, 0.28, 0.5, 0.32),
-            (0.919, -0.354, 0.23, 0.38, 0.28),
-            (1.266, -0.417, 0.24, 0.32, 0.30),
-        ]
-    ):
-        box("Building plinth", (x, 0.025, z), (w + 0.04, 0.05, d + 0.04), trim, 0.006)
-        box("Building frame", (x, 0.05 + h / 2, z), (w, h, d), shell, 0.007)
-        box("Parapet", (x, 0.05 + h, z), (w + 0.015, 0.025, d + 0.015), trim, 0.003)
+    for x, z, w, h, d in [
+        (-0.606, 1.139, 0.25, 0.78, 0.29),
+        (-0.131, 0.969, 0.27, 0.49, 0.30),
+        (0.275, 0.951, 0.23, 0.48, 0.27),
+        (1.038, 0.102, 0.31, 0.60, 0.32),
+        (1.699, -0.003, 0.25, 0.49, 0.29),
+    ]:
+        box("Building plinth", (x, 0.025, z), (w + 0.11, 0.05, d + 0.10), trim, 0.006)
+        # Open structural frames give the facades actual recessed depth.
+        for dx in [-w / 2 + 0.018, w / 2 - 0.018]:
+            for dz in [-d / 2 + 0.018, d / 2 - 0.018]:
+                box(
+                    "Structural pier",
+                    (x + dx, 0.05 + h / 2, z + dz),
+                    (0.036, h, 0.036),
+                    shell,
+                    0.003,
+                )
+        floor_count = max(2, round(h / 0.25))
+        floor_height = h / floor_count
+        for floor in range(floor_count + 1):
+            box(
+                "Structural floor",
+                (x, 0.062 + floor * floor_height, z),
+                (w, 0.028, d),
+                shell,
+                0.003,
+            )
+        for dx in [-w / 2, w / 2]:
+            box("Roof rim", (x + dx, h + 0.067, z), (0.014, 0.031, d), trim, 0.002)
+        for dz in [-d / 2, d / 2]:
+            box("Roof rim", (x, h + 0.067, z + dz), (w, 0.031, 0.014), trim, 0.002)
         box("Roof inset", (x, 0.067 + h, z), (w - 0.035, 0.008, d - 0.035), dark, 0.002)
-        for floor in range(max(2, int(h / 0.105))):
-            y = 0.12 + floor * 0.102
+        for floor in range(floor_count):
+            y = 0.062 + (floor + 0.5) * floor_height
             for bay in range(2):
                 bx = x - w * 0.25 + bay * w * 0.5
                 box(
                     "Front recessed glazing",
-                    (bx, y, z + d / 2 + 0.002),
-                    (w * 0.37, 0.064, 0.008),
+                    (bx, y, z + d / 2 - 0.021),
+                    (w * 0.32, floor_height * 0.68, 0.008),
                     glass,
                     0.001,
                 )
                 box(
                     "Window lintel",
-                    (bx, y + 0.035, z + d / 2 + 0.005),
-                    (w * 0.41, 0.005, 0.012),
+                    (bx, y + floor_height * 0.36, z + d / 2 - 0.004),
+                    (w * 0.39, 0.012, 0.036),
                     trim,
                     0.001,
                 )
@@ -282,8 +338,8 @@ def build_factory():
                 bz = z - d * 0.25 + bay * d * 0.5
                 box(
                     "Side recessed glazing",
-                    (x + w / 2 + 0.002, y, bz),
-                    (0.008, 0.064, d * 0.37),
+                    (x + w / 2 - 0.021, y, bz),
+                    (0.008, floor_height * 0.68, d * 0.32),
                     glass,
                     0.001,
                 )
@@ -291,22 +347,22 @@ def build_factory():
             box(
                 "Facade mullion",
                 (x + post * w * 0.44, 0.06 + h / 2, z + d / 2 + 0.009),
-                (0.008, h - 0.045, 0.012),
+                (0.016, h - 0.045, 0.025),
                 trim,
                 0.001,
             )
-        box("Rooftop plant", (x + 0.02, h + 0.11, z), (0.09, 0.08, 0.12), shell, 0.003)
+        box("Rooftop plant", (x + 0.02, h + 0.10, z), (0.09, 0.06, 0.12), shell, 0.003)
         for fin in range(4):
             box(
                 "Plant grille",
-                (x + 0.02, h + 0.153, z - 0.045 + fin * 0.028),
+                (x + 0.02, h + 0.133, z - 0.045 + fin * 0.028),
                 (0.085, 0.004, 0.004),
                 trim,
                 0.001,
             )
     for i in range(2):
-        x = -0.49 + i * 0.18
-        z = 0.12
+        x = -0.48 + i * 0.18
+        z = 1.26
         cylinder("Storage vessel", (x, 0.125, z), 0.053, 0.18, shell)
         sphere("Tank dome", (x, 0.22, z), (0.053, 0.032, 0.053), trim)
         ring("Tank rim", (x, 0.045, z), 0.056, 0.006)
@@ -318,20 +374,20 @@ def build_factory():
     pipe(
         "Feed main",
         [
-            (-1.35, 0.075, 0.6),
-            (-1.35, 0.15, 0.6),
-            (-1.35, 0.15, -0.2),
-            (0.8, 0.15, -0.2),
-            (0.8, 0.04, -0.2),
+            (-0.606, 0.075, 1.139),
+            (-0.606, 0.15, 1.139),
+            (-0.606, 0.15, 0.68),
+            (0.30, 0.15, 0.68),
+            (0.30, 0.04, 0.68),
         ],
         0.013,
     )
-    for x in [-1.25, -0.5, 0.4]:
-        pipe("Pipe riser", [(x, 0.03, -0.2), (x, 0.15, -0.2)], 0.008)
+    for x in [-0.5, -0.1, 0.3]:
+        pipe("Pipe riser", [(x, 0.03, 0.68), (x, 0.15, 0.68)], 0.008)
     for i in range(6):
         box(
             "Access stair",
-            (0.6, 0.025 + i * 0.024, 0.42 - i * 0.035),
+            (1.038, 0.025 + i * 0.024, 0.48 - i * 0.035),
             (0.2, 0.045, 0.04),
             trim,
             0.002,
@@ -346,9 +402,9 @@ def build_product():
     # Boolean cut gives an actual opening, not a circle pasted on a cube.
     bpy.ops.mesh.primitive_cylinder_add(
         vertices=64,
-        radius=0.253,
+        radius=0.213,
         depth=0.2,
-        location=xyz((0, 0.455, 0.335)),
+        location=xyz((0, 0.505, 0.335)),
         rotation=(math.pi / 2, 0, 0),
     )
     cutter = bpy.context.object
@@ -359,7 +415,7 @@ def build_product():
     bpy.ops.object.modifier_apply(modifier=mod.name)
     bpy.data.objects.remove(cutter, do_unlink=True)
     box("Top lid", (0, 0.913, -0.004), (0.838, 0.035, 0.765), trim, 0.014)
-    box("Front control fascia", (0, 0.801, 0.381), (0.763, 0.129, 0.027), trim, 0.006)
+    box("Front control fascia", (0, 0.801, 0.381), (0.763, 0.129, 0.027), shell, 0.006)
     box("Detergent drawer", (-0.208, 0.802, 0.4), (0.272, 0.085, 0.013), shell, 0.004)
     box("Drawer handle", (-0.208, 0.829, 0.409), (0.22, 0.009, 0.015), trim, 0.002)
     box("Display", (0.154, 0.806, 0.402), (0.21, 0.065, 0.015), screen, 0.004)
@@ -372,23 +428,23 @@ def build_product():
             0.001,
         )
     cylinder("Control dial", (0.307, 0.805, 0.416), 0.031, 0.025, trim, "z")
-    ring("Door chrome outer", (0, 0.455, 0.382), 0.266, 0.021, trim, "z")
-    ring("Door gasket", (0, 0.455, 0.357), 0.242, 0.023, dark, "z")
-    cylinder("Drum back", (0, 0.455, 0.23), 0.226, 0.01, trim, "z")
+    ring("Door chrome outer", (0, 0.505, 0.382), 0.225, 0.018, trim, "z")
+    ring("Door gasket", (0, 0.505, 0.357), 0.203, 0.02, dark, "z")
+    cylinder("Drum back", (0, 0.505, 0.23), 0.19, 0.01, dark, "z")
     for n in range(32):
         a = n * math.tau / 32
         cylinder(
             "Drum perforation",
-            (math.cos(a) * 0.193, 0.455 + math.sin(a) * 0.193, 0.24),
+            (math.cos(a) * 0.163, 0.505 + math.sin(a) * 0.163, 0.24),
             0.008,
             0.002,
             dark,
             "z",
             12,
         )
-    ring("Door glass edge", (0, 0.455, 0.384), 0.224, 0.01, glass, "z")
-    cylinder("Door smoked glass", (0, 0.455, 0.389), 0.217, 0.008, glass, "z")
-    box("Door latch", (0.238, 0.457, 0.419), (0.033, 0.102, 0.032), trim, 0.007)
+    ring("Door glass edge", (0, 0.505, 0.384), 0.188, 0.008, glass, "z")
+    cylinder("Door smoked glass", (0, 0.505, 0.389), 0.182, 0.008, glass, "z")
+    box("Door latch", (0.205, 0.505, 0.419), (0.028, 0.085, 0.029), trim, 0.007)
     box("Lower kick panel", (0, 0.081, 0.381), (0.72, 0.06, 0.016), trim, 0.004)
     for x in [-0.32, 0.32]:
         for z in [-0.29, 0.29]:
@@ -404,7 +460,7 @@ def build_product():
             dark,
             0.001,
         )
-    for x, z in [(-1.22, 0.28), (1.16, -0.48)]:
+    for x, z in [(-1.323, 0.167), (0.269, -1.387)]:
         box("Peripheral plinth", (x, 0.02, z), (0.22, 0.04, 0.2), trim, 0.005)
         box("Peripheral cabinet", (x, 0.102, z), (0.15, 0.145, 0.15), shell, 0.006)
         box("Peripheral lid", (x, 0.18, z), (0.16, 0.015, 0.16), trim, 0.003)
@@ -421,6 +477,9 @@ def build_product():
 build_energy()
 build_factory()
 build_product()
+
+for name, footprints in contact_footprints.items():
+    bpy.data.objects[name]["contactFootprints"] = json.dumps(footprints)
 
 # Keep the editable source, then consolidate the export by parent/material.
 bpy.context.preferences.filepaths.save_version = 0

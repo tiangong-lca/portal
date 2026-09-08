@@ -30,10 +30,10 @@ def inside(x, y, ring):
 
 
 points = []
-for row, lat in enumerate(range(-54, 82, 4)):
-    for lon in range(-178, 182, 4):
+for row, lat in enumerate(range(-54, 82, 3)):
+    for lon in range(-178, 182, 3):
         # A staggered sampling lattice keeps the projected dots separated.
-        x = lon + (2 if row % 2 else 0)
+        x = lon + (1.5 if row % 2 else 0)
         if any(
             inside(x, lat, polygon[0])
             and not any(inside(x, lat, hole) for hole in polygon[1:])
