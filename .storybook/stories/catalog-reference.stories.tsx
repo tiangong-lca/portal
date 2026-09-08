@@ -19,7 +19,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Interactive search and dataset-detail design proposal. Records, match snippets, counts and licenses are synthetic fixtures; source names are not supplied. The search header contains the query and submit action, and example citations use only the supplied record name, year and exact identity. Standalone versions share a noninteractive badge with the body typeface and tabular digits across results and detail; full technical identities retain monospace. Search/filter/order, exact-version selection, in-preview shortlist, record navigation and citation interactions work locally. No public route imports this proposal; no API, ranking model or persistence is exercised. Visual acceptance is pending human design review.",
+          "Interactive search and dataset-detail design proposal. Records, match snippets, counts and licenses are synthetic fixtures; source names are not supplied. The search header contains the query and submit action, and example citations use only the supplied record name, year and exact identity. In results, the version badge and public-content icon tag follow the title as one wrapping group, above applicability metadata and the match snippet. Standalone versions share the body typeface and tabular digits across results and detail; full technical identities retain monospace. Search/filter/order, exact-version selection, in-preview shortlist, record navigation and citation interactions work locally. No public route imports this proposal; no API, ranking model or persistence is exercised. Visual acceptance is pending human design review.",
       },
     },
   },
@@ -147,9 +147,15 @@ export const PublicContentHelp: Story = {
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
     await userEvent.hover(canvas.getByRole("textbox", { name: m.Search.label }));
-    available.focus();
+    const firstRecord = referenceDatasets(storyLocale(globals))[0]!;
+    canvas.getByRole("link", { name: firstRecord.name }).focus();
+    await userEvent.tab();
+    await expect(available).toHaveFocus();
     await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.exchangesHelp);
     await userEvent.tab();
+    await expect(
+      canvas.getByRole("button", { name: `${m.Detail.collect}: ${firstRecord.name}` }),
+    ).toHaveFocus();
     await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
     await userEvent.click(metadata);
     await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.metadataHelp);

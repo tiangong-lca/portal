@@ -309,7 +309,7 @@ export function SearchReference(props: SearchReferenceProps) {
                   </label>
                   <article>
                     <div className="cr-record-top">
-                      <div>
+                      <div className="cr-record-identity">
                         <h3>
                           <a
                             href={`#catalog-record-${record.ref}`}
@@ -322,6 +322,13 @@ export function SearchReference(props: SearchReferenceProps) {
                             {record.name}
                           </a>
                         </h3>
+                        <span className="cr-record-tags">
+                          <Badge variant="outline" className="cr-version">
+                            <span className="sr-only">{m.Search.version}: </span>v
+                            {record.ref.split("@")[1]}
+                          </Badge>
+                          <Availability record={record} labels={m} compact />
+                        </span>
                       </div>
                       <Button
                         variant="ghost"
@@ -341,15 +348,6 @@ export function SearchReference(props: SearchReferenceProps) {
                     <p className="cr-match">
                       <MatchText text={record.description} query={query} />
                     </p>
-                    <div className="cr-record-source">
-                      <span className="cr-source-version">
-                        <Badge variant="outline" className="cr-version">
-                          <span className="sr-only">{m.Search.version}: </span>v
-                          {record.ref.split("@")[1]}
-                        </Badge>
-                        <Availability record={record} labels={m} compact />
-                      </span>
-                    </div>
                   </article>
                 </li>
               ))}

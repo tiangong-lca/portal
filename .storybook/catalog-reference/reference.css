@@ -378,16 +378,24 @@
 .cr-result article {
   min-width: 0;
   flex: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 296px;
-  column-gap: 24px;
   padding-right: 40px;
 }
 .cr-record-top {
   min-width: 0;
 }
-.cr-record-top > div {
+.cr-record-identity {
   min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.cr-record-tags {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 .cr-record-top > button {
   position: absolute;
@@ -420,12 +428,28 @@
   height: 13px;
 }
 .catalog-reference .cr-availability-icon {
-  color: var(--muted-foreground);
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+}
+.cr-content-tag {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  flex-shrink: 0;
+}
+.catalog-reference .cr-content-tag svg {
+  width: 14px;
+  height: 14px;
 }
 .catalog-reference
-  .cr-availability-icon:is(:hover, [data-state="instant-open"], [data-state="delayed-open"]) {
+  .cr-availability-icon:is(:hover, [data-state="instant-open"], [data-state="delayed-open"])
+  .cr-content-tag {
   color: var(--foreground);
-  background: var(--muted);
+  border-color: var(--muted-foreground);
 }
 .cr-availability-tip {
   z-index: 60;
@@ -445,35 +469,22 @@
 .cr-availability-tip p {
   margin: 4px 0 0;
 }
-.cr-row-meta {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr 1fr;
-  gap: 16px;
-  align-content: start;
-  font-variant-numeric: tabular-nums;
-}
 .cr-result .cr-row-meta {
-  grid-column: 2;
-  grid-row: 1 / span 3;
-  grid-template-rows: auto auto;
-  row-gap: 6px;
-  padding-top: 3px;
-}
-.cr-result .cr-row-meta > div {
-  display: grid;
-  grid-template-rows: subgrid;
-  grid-row: span 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
 }
 .cr-row-meta > div {
   min-width: 0;
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
 }
 .cr-row-meta dt {
   font-size: var(--cr-caption);
   color: var(--muted-foreground);
-  margin-bottom: 6px;
-}
-.cr-result .cr-row-meta dt {
-  margin-bottom: 0;
   overflow-wrap: anywhere;
 }
 .cr-row-meta dd {
@@ -484,7 +495,6 @@
   color: var(--muted-foreground);
 }
 .cr-match {
-  grid-column: 1;
   font-size: var(--cr-body);
   color: var(--muted-foreground);
   line-height: 24px;
@@ -496,29 +506,16 @@
   border-radius: 2px;
   padding: 1px 2px;
 }
-.cr-record-source {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 12px;
-  margin-top: 12px;
-  font-size: var(--cr-caption);
-  color: var(--muted-foreground);
-}
-.cr-source-version {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-.cr-version {
+.cr-version,
+.cr-content-tag {
   height: 24px;
-  padding: 0 7px;
+  border: 1px solid var(--border);
   border-radius: 4px;
-  border-color: var(--border);
   background: var(--muted);
   color: var(--muted-foreground);
+}
+.cr-version {
+  padding: 0 7px;
   font-family: var(--font-sans);
   font-size: var(--cr-caption);
   font-weight: 500;
@@ -1062,24 +1059,6 @@
     grid-template-columns: 160px minmax(0, 1fr);
     column-gap: 24px;
   }
-  .cr-result article {
-    display: block;
-  }
-  .cr-result .cr-row-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 24px;
-    padding: 0;
-    margin-top: 8px;
-  }
-  .cr-result .cr-row-meta > div {
-    display: flex;
-    gap: 6px;
-    align-items: baseline;
-  }
-  .cr-result .cr-row-meta dt {
-    margin: 0;
-  }
   .cr-detail-layout {
     grid-template-columns: 1fr;
     gap: 0;
@@ -1186,7 +1165,7 @@
     padding-right: 0;
   }
   .cr-record-top {
-    padding-right: 36px;
+    padding-right: 48px;
   }
   .cr-record-top h3 {
     font-size: 17px;
@@ -1205,12 +1184,14 @@
   .cr-match {
     margin-top: 10px !important;
   }
-  .cr-record-source {
-    gap: 0 10px;
+  .cr-record-identity {
+    row-gap: 12px;
   }
   .cr-availability-icon {
     min-width: 44px;
     min-height: 44px;
+    /* Keep the 24px tag aligned while expanding its actual touch target. */
+    margin: -10px;
   }
   .cr-filter-option {
     min-height: 44px;

@@ -51,7 +51,7 @@ export function Availability({
           <Tooltip.Trigger asChild>
             <Button
               variant="ghost"
-              size="icon-sm"
+              size="icon-xs"
               className="cr-availability-icon"
               aria-label={`${m.publicContent}: ${label}`}
               onFocus={(event) => {
@@ -68,7 +68,9 @@ export function Availability({
                 showAfterFocusScroll();
               }}
             >
-              <Icon aria-hidden="true" />
+              <span className="cr-content-tag" aria-hidden="true">
+                <Icon />
+              </span>
             </Button>
           </Tooltip.Trigger>
           <Tooltip.Portal>
