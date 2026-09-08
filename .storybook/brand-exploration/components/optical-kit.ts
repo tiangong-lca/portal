@@ -27,7 +27,7 @@ export function createOpticalKit() {
   const tints: Tint[] = [];
   const highlights: { line: OpticalWire; opacity: number }[] = [];
   const nodes: {
-    mesh: THREE.Mesh<THREE.SphereGeometry, THREE.MeshPhysicalMaterial>;
+    mesh: THREE.Mesh<THREE.BufferGeometry, THREE.MeshPhysicalMaterial>;
     halo: THREE.Sprite;
     base: number;
     glint: number;
@@ -84,6 +84,7 @@ export function createOpticalKit() {
     z: number,
     base = 1,
     glint = 0,
+    form: "bead" | "ring" = "bead",
   ) => {
     const material = tint(
       new THREE.MeshPhysicalMaterial({
@@ -111,7 +112,9 @@ export function createOpticalKit() {
       );
     };
     material.customProgramCacheKey = () => "lifecycle-optical-node-rim-v1";
-    const mesh = new THREE.Mesh(sphere, material);
+    const geometry = form === "ring" ? new THREE.TorusGeometry(0.052, 0.008, 12, 48) : sphere;
+    const mesh = new THREE.Mesh(geometry, material);
+    if (form === "ring") mesh.rotation.x = -Math.PI / 2;
     mesh.position.set(x, y, z);
     mesh.scale.setScalar(base);
     parent.add(mesh);

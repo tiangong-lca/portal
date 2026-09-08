@@ -54,11 +54,11 @@ export function createGlassPlate(parent: THREE.Group, layer: number, kit: Optica
           #include <clipping_planes_fragment>
           float facing = abs(dot(normalize(vNormal), normalize(vView)));
           float fresnel = pow(1.0 - facing, 3.0);
-          float sheen = exp(-dot(vUv - vec2(0.86, 0.14), vUv - vec2(0.86, 0.14)) * 6.0);
+          float sheen = exp(-dot(vUv - vec2(1.02, -0.02), vUv - vec2(1.02, -0.02)) * 6.0);
           float edge = min(min(vUv.x, 1.0-vUv.x), min(vUv.y, 1.0-vUv.y));
           float rim = exp(-edge * 170.0);
           float a = min(0.9, (0.012 + 0.13 * sheen + 0.04 * fresnel + rim * 0.13) * strength * gain);
-          vec3 reflection = mix(glassColor, vec3(0.93, 0.87, 1.0), pow(sheen, 4.0) * 0.38);
+          vec3 reflection = mix(glassColor, vec3(0.93, 0.87, 1.0), pow(sheen, 4.0) * 0.24);
           gl_FragColor = vec4(reflection, a);
           if (reflectionStrength > 0.0 && vReflection.w > 0.0) {
             vec2 uv = vReflection.xy / vReflection.w;

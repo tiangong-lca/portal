@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: 7bef9d07059fb97ed27697bb43b830d2c922ae75
+lastReviewedCommit: 1777a4520cd358861c6852fbeabb9b91ca6c2efd
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -122,7 +122,11 @@ Energy and factory structural materials use optical transmission against the stu
 
 The world-map component places the geographic samples on a regular four-degree lattice. Its 949 small solid cells share one instanced mesh, so their size and foreshortening follow the same perspective as the platform. Placement is decorative and fits the plate; it is not a geographic projection for measurement. Dispose the instanced mesh as well as its geometry and material so Three.js releases the instance matrix and color buffers.
 
+`components/layer-junctions.ts` owns the per-layer node positions, sizes and weighted connections. Suspended junctions continue through the product layer's side columns, while the central connection passes behind the appliance before meeting its display grid. The map's central terminal is a horizontal ring with actual torus geometry. Moving light traces choose from each layer's authored connections instead of assuming matching node indexes. These shapes share the ordinary hover, palette, motion and disposal lifecycle.
+
 The assembly camera uses a shallow perspective calibrated against the visible platform edges in the reference. Keep the camera distance, elevation and layer spacing together: changing elevation alone can match one layer while changing the depth of the other four. Focused part cameras remain independent. Platforms overlap in projection. Their surfaces, cut edges and outlines are clipped by the upper platform's camera volume so the lower rear corner stays behind it. This clipping follows the actual animated geometry and camera; it does not hide the translucent network or require a screen-space mask image.
+
+Glass sheen rises toward the front corner, with per-layer dark gains and a separate display-plinth finish. The dark ground glow and light ground shadow use independent color, opacity and placement. Calibrate these across the complete assembly as well as the focused glass story; a brighter isolated surface alone does not establish the correct overlap or ground depth.
 
 Finite area lights shape the product's metallic highlights. Equipment and network reflections use mirrored cameras and live geometry, including animated child transforms. Each visible reflected layer has one target capped at 768 pixels on its longer edge; the assembly uses four targets and focused part views render only their own reflection. Network reflections use a narrower blur than equipment reflections, and exclude view-facing glow sprites. The product's display plinth meets the outer platform's front corner, with its own light/dark sheen and small grid junctions. These passes share the existing animation loop and stop with it. Reflection clones share the mounted scene's geometry and materials, while their render targets are disposed separately before the owning scene is released.
 

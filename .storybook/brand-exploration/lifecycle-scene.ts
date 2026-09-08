@@ -129,19 +129,20 @@ export function createLifecycleScene(
   const productLighting = createProductLighting(layers[3]!);
   const junctions =
     part === "plate" || part === "product" ? [] : createLayerJunctions(layers, network, optics);
-  // Sparse diagonal links continue through the clear plates, keeping their centers legible.
+  // Connections follow authored junctions, including the suspended product-layer columns.
   const links: { a: number; b: number; start: number; end: number; line: OpticalWire }[] = [];
   for (let i = 0; assembly && i < 4; i++) {
-    for (const [a = 0, b = 0] of LAYER_LINKS[i]!) {
+    for (const [a, b, opacity] of LAYER_LINKS[i]!) {
       links.push({
         a,
         b,
         start: i,
         end: i + 1,
-        line: wire([new THREE.Vector3(), new THREE.Vector3()], root, i, a === b ? 0.25 : 0.17),
+        line: wire([new THREE.Vector3(), new THREE.Vector3()], root, i, opacity),
       });
     }
   }
+  const pulseRoutes = LEVELS.slice(0, -1).map((_, i) => links.filter((link) => link.start === i));
   const productPlatform = part !== "plate" ? createProductPlatform(layers[3]!, optics) : undefined;
   const reflections: ReturnType<typeof createModelReflection>[] = [];
   if (assembly || part === "network")
@@ -158,8 +159,8 @@ export function createLifecycleScene(
     tint(
       new THREE.SpriteMaterial({
         map: glow,
-        color: 0x8b56d0,
-        opacity: 0.28,
+        color: 0x6b5de8,
+        opacity: 0.34,
         transparent: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
@@ -172,21 +173,21 @@ export function createLifecycleScene(
   );
   aura.position.set(0, assembly ? -6.7 : -0.15, 0);
   aura.visible = assembly || part === "map";
-  aura.scale.set(9.5, 4.9, 1);
+  aura.scale.set(14.5, 4.9, 1);
   aura.renderOrder = -2;
   root.add(aura);
   const shadow = new THREE.Sprite(
     new THREE.SpriteMaterial({
       map: glow,
       color: 0x292237,
-      opacity: 0.42,
+      opacity: 0.2,
       transparent: true,
       depthWrite: false,
       depthTest: false,
     }),
   );
-  shadow.position.set(0, assembly ? -6.25 : -0.15, 0);
-  shadow.scale.set(7.5, 3.3, 1);
+  shadow.position.set(0, assembly ? -5.6 : -0.15, 0);
+  shadow.scale.set(8.4, 3.3, 1);
   shadow.renderOrder = -3;
   root.add(shadow);
   const pulses = Array.from({ length: 4 }, (_, i) => {
@@ -288,9 +289,10 @@ export function createLifecycleScene(
         );
       }
       if (entry.kind === "node" && !state.colorful) color.set(dark ? "#b48bdc" : "#8050c8");
+      if (entry.kind === "plane" && !state.colorful && dark) color.set("#9b78ff");
       if (entry.role === "map" && !state.colorful) color.set(dark ? "#d6bbee" : "#756b83");
       if (entry.kind === "halo" && !state.colorful)
-        color.set(entry.role === "aura" ? "#8753ce" : "#9c42ee");
+        color.set(entry.role === "aura" ? "#6b5de8" : "#9c42ee");
       if (entry.kind === "line") {
         if (!state.colorful && !dark) color.set("#9b8abd");
         color.multiplyScalar(dark ? 1.12 : 1);
@@ -349,7 +351,11 @@ export function createLifecycleScene(
       }
       if (entry.kind === "plane" && entry.material instanceof THREE.ShaderMaterial)
         entry.material.uniforms.strength!.value = dark
-          ? 1
+          ? entry.layer < 3
+            ? 2.85
+            : entry.layer === 4
+              ? 1.25
+              : 1
           : entry.role === "display-plinth"
             ? 0.2
             : 0.55;
@@ -410,7 +416,12 @@ export function createLifecycleScene(
       }
       const p = (time * 0.16 + i) % 4;
       const level = Math.floor(p);
-      const link = links.find((link) => link.start === level && link.a === (i === 3 ? 0 : i + 1))!;
+      const routes = pulseRoutes[level]!;
+      const link = routes[i % routes.length];
+      if (!link) {
+        pulses[i]!.visible = false;
+        continue;
+      }
       const a = junctions[level]![link.a]!;
       const b = junctions[level + 1]![link.b]!;
       const start = layers[level]!;
