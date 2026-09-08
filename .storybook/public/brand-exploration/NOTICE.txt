@@ -1,0 +1,27 @@
+Tiangong LCA lifecycle sculpture, Portal Storybook exploration
+
+lifecycle-models.glb
+Authored geometry for this Portal exploration; no downloaded model or texture.
+Editable Blender source and reproducible authoring functions are retained in
+.storybook/brand-exploration/modeling/. The live sculpture uses this geometry,
+procedural plates, nodes, lines and geographic points with runtime materials.
+
+reference-dark.png / reference-light.png
+User-selected visual references generated with OpenAI ImageGen during the
+Portal brand exploration. Original boards are retained unchanged. Only explicit
+comparison stories display the sculpture area with a CSS crop. These images
+are never sampled by the live scene. Any people, records or counters elsewhere
+on the boards are illustrative placeholders.
+Source dimensions, crop and SHA-256 receipts are in
+.storybook/brand-exploration/artwork.json.
+
+Natural Earth land polygons
+Public domain: https://www.naturalearthdata.com/about/terms-of-use/
+Source: https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_land.geojson
+Source SHA-256: 9e0729ee253ca7d7a5c4ae9395fb1902264c5377c52e224d13dd85010e2835d9
+The committed land-points.json was sampled by modeling/sample_land.py.
+The map is a decorative geographic motif, not a dataset coverage claim.
+
+Three.js
+MIT license. The full license is included in THREE-LICENSE.txt.
+The package and type versions are pinned in the package and pnpm lock files.

@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: 60d734b6491a0b3621a4fb4ea0fc169387b70aa3
+lastReviewedCommit: 0535bb390d88fb76ed6337fe7284b76276ca5a20
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #67 citation dialog and comparison identity refinement: one header action opens an accessible modal with legacy hash support; comparison uses plain version text and an inline UUID field. Exact values and clipboard recovery remain intact."
+lastReviewedNote: "Reviewed for Portal #69: isolated real-geometry lifecycle sculpture, reproducible Blender assets, individual part review, reference-only PNG boundaries, light/dark interactions and renderer lifecycle validation. Public catalog rules and routes remain unchanged."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -33,7 +33,7 @@ related:
 
 ## 设计方向
 
-视觉方向是“专业科学数据目录”：信息结构稳定、留白克制、分隔清楚、检索优先，不采用营销 SaaS、政府公文站、聊天产品或开发仪表盘的造型。
+已上线目录的视觉方向是“专业科学数据目录”：信息结构稳定、留白克制、分隔清楚、检索优先，不采用营销 SaaS、政府公文站、聊天产品或开发仪表盘的造型。Tiangong LCA 品牌入口的视觉探索在下述独立 Storybook 场景中评审，采纳前不改变目录的设计规则。
 
 可识别的核心元素是连续目录索引：Process、Flow、地区与来源共享一个表面与统一行结构，帮助访问者建立数据空间坐标。首页不把 provenance 状态做成装饰性证据轨；版本、来源、许可、方法、质量和 publication 等信任信息只在目录概览、结果行或记录页的实际使用位置出现。
 
@@ -195,6 +195,14 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 组件及组合提供准确的 `component` / `subcomponents` 与 `@import` 模块引用。[manifest 检查](../scripts/check-storybook-manifest.mjs)验证覆盖、真实导入与关键 Props。Autodocs 和 Component Meta 的编译器适配由[精确包 hook](../scripts/pnpm-hooks.cjs)管理，版本以脚本和锁文件为准；升级时重新验证实际 API 文档、MCP 协议和场景。
 
 比较先显示需要关注的字段，并保留展开查看所有字段；LCIA 数值和单位保持原样，数据集/方法的精确版本可展开。目录覆盖与通过测试不能替代面向数据使用者的视觉审阅。
+
+### 品牌组件探索
+
+`.storybook/brand-exploration/` 拥有 `Brand Explorations/Lifecycle Sculpture` 独立场景，面向 Tiangong LCA 品牌入口的精密科技视觉。组件使用可编辑的真实三维模型、程序化几何与实时材质，独立场景分别校准各个部件；五层透明结构分别呈现节点网络、能源、制造、产品与点阵地图；这些是视觉隐喻，不是数据覆盖、计算结果或科学证据。图形两侧不附文字标签。
+
+亮暗模式分别校准材质、边缘光、对比度与底部阴影；品牌紫与多彩模式是独立于主题的展示状态。鼠标带来小幅视差和局部节点/连线高亮，点击、触屏轻点或 Enter/Space 切换色彩。拖动滚动不触发变色；暂停保留当前姿态，减少动态效果时保持静态但仍可切换主题和颜色。控件复用正式 Button，并提供四语名称、焦点、加载与失败恢复。离屏、隐藏页面或静止状态不持续绘制，卸载释放 GPU 和异步加载资源。
+
+视觉验收对照用户选定的亮暗参考图核对构图、层距、模型细节、透明材质、点阵密度和动效，不以自动测试替代。图形的局部色彩与材质值由探索场景拥有；字体和控件保持 Portal 语义。生产路由不导入这些样式、Three.js 或原稿资产。原稿仅出现在明确标注的对照区域，不作为组件底图或纹理。模型、透明板、节点和连线需要分别可修改，反光、悬停高亮与视差由前端实时计算。原稿、裁取参数与校验信息见[开发指南](development.md#brand-sculpture-assets)。
 
 ### 完整页面设计样板
 

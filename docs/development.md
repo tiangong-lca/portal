@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: 60d734b6491a0b3621a4fb4ea0fc169387b70aa3
+lastReviewedCommit: 0535bb390d88fb76ed6337fe7284b76276ca5a20
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #67 citation dialog and comparison identity refinement: one header action opens an accessible modal with legacy hash support; comparison uses plain version text and an inline UUID field. Exact values and clipboard recovery remain intact."
+lastReviewedNote: "Reviewed for Portal #69: isolated real-geometry lifecycle sculpture, reproducible Blender assets, individual part review, reference-only PNG boundaries, light/dark interactions and renderer lifecycle validation. Public catalog rules and routes remain unchanged."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -105,6 +105,24 @@ Use existing pnpm scripts and `pnpm exec` for installed binaries when an upstrea
 If MCP is unavailable, use the CLI. If that interface is also unavailable, continue applicable checks through repository scripts and inspect the rendered Storybook or product UI in the browser; report the unavailable review interface. A passing build alone does not prove visual quality or replace interaction/accessibility checks.
 
 The isolated catalog references import locked Fontsource variable-font dev dependencies. Vite serves their Unicode-range assets locally; public Portal routes do not import them. The matching upstream OFL notices are retained in `.storybook/public/fonts/` and copied into static Storybook output. When updating these fonts, refresh their notices from the reviewed packages and verify the dependency license check, emitted assets and rendered Chinese/Latin metrics.
+
+### Brand sculpture assets
+
+`Brand Explorations/Lifecycle Sculpture` is an isolated Three.js study in `.storybook/brand-exploration/`. The assembly and focused part stories share the actual glass, node network, energy, factory, product and geographic point geometry. Optical materials, studio lighting, hover response and color transitions are computed at runtime. Reference PNGs are only used by `ReferenceComparison`; never use them as scene textures or an image underlay.
+
+`modeling/build_models.py` owns the energy, factory and product authoring functions. Regenerate the editable `.blend` source and the optimized, texture-free GLB with Blender 5.1:
+
+```bash
+blender --background --python-exit-code 1 --python .storybook/brand-exploration/modeling/build_models.py
+```
+
+The authoring file retains individual equipment parts; the GLB merges meshes by material within each model group and preserves the animated turbine rotors. `components/` owns the shared optical primitives and procedural components. The geographic sampler produces `land-points.json` from Natural Earth's public-domain land polygons; source URL and SHA-256 are retained in the asset `NOTICE.txt`.
+
+The original light/dark boards are served from `.storybook/public/brand-exploration/`. `artwork.json` owns their dimensions, comparison crop, source paths and SHA-256 receipts. Keep those values and asset notices synchronized when deliberately replacing a selected reference. Model assets load from the Storybook host, and the renderer is a dev dependency; public Portal routes do not import this study.
+
+Review individual parts at full size before reviewing the combined composition in both themes. Also verify independent color modes, desktop/mobile layout, pointer response, keyboard/touch activation, pause/reduced motion and failure recovery. Static stories wait for model loading and shader compilation. Motion tests observe actual frame progression and wait through the bounded color transition before verifying that drawing stops. Pre-optimizing the imported Three.js modules prevents dependency discovery from reloading a running browser test. Passing checks does not establish user visual acceptance or a production homepage baseline; record fidelity differences and acceptance in the delivery Issue.
+
+Storybook test files run sequentially in `vitest.config.ts`: software WebGL compilation otherwise competes with the other stories' focus and animation assertions. Keep this scheduling rule when adding graphics-heavy scenarios; it does not change per-story assertions or the unit-test runner.
 
 ## Project skills
 

@@ -1,0 +1,21 @@
+{
+  "source": "User-selected ImageGen concept boards from the Portal brand exploration",
+  "width": 946,
+  "height": 1663,
+  "crop": {
+    "left": 435,
+    "top": 130,
+    "width": 450,
+    "height": 825
+  },
+  "references": {
+    "dark": {
+      "url": "./brand-exploration/reference-dark.png",
+      "sha256": "b91de50a5599398f1868c982e667f31583254c65cbc8e193a7bffc6878b4d750"
+    },
+    "light": {
+      "url": "./brand-exploration/reference-light.png",
+      "sha256": "98a64d498f55254be6dc21e279c0e042e70d48e82fdc255a2c5c3dfc2e3d9b75"
+    }
+  }
+}

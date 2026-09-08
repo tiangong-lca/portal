@@ -29,6 +29,9 @@ const config: StorybookConfig = {
   async viteFinal(config) {
     const { mergeConfig } = await import("vite");
     return mergeConfig(config, {
+      optimizeDeps: {
+        include: ["three", "three/addons/loaders/GLTFLoader.js"],
+      },
       resolve: {
         alias: {
           "next-intl/server": fileURLToPath(new URL("./intl-server.mock.ts", import.meta.url)),

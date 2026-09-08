@@ -7,6 +7,8 @@ export default defineConfig({
   plugins: [storybookTest({ configDir: fileURLToPath(new URL("./.storybook", import.meta.url)) })],
   test: {
     name: "storybook",
+    // Software WebGL compilation must not starve other stories' focus/animation assertions.
+    fileParallelism: false,
     browser: {
       enabled: true,
       headless: true,
