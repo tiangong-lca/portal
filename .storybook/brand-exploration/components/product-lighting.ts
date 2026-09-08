@@ -26,7 +26,7 @@ export function createProductLighting(parent: THREE.Group) {
       top.color.set(dark ? 0xf6eaff : 0xffffff);
       front.intensity = 2;
       edge.intensity = dark ? 2 : 1;
-      top.intensity = dark ? 6 : 3;
+      top.intensity = dark ? 2.2 : 3;
     },
   };
 }

@@ -14,7 +14,8 @@ export default defineConfig({
     browser: {
       enabled: true,
       headless: true,
-      provider: playwright(),
+      // Use Chromium's current headless renderer for the same WebGL path as the browser.
+      provider: playwright({ launchOptions: { channel: "chromium" } }),
       instances: [{ browser: "chromium" }],
     },
   },

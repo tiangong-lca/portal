@@ -23,15 +23,6 @@ export function createOpticalKit() {
   context.fillRect(0, 0, 64, 64);
   const glow = new THREE.CanvasTexture(glowCanvas);
   textures.push(glow);
-  const pointCanvas = document.createElement("canvas");
-  pointCanvas.width = pointCanvas.height = 16;
-  const pointContext = pointCanvas.getContext("2d")!;
-  pointContext.fillStyle = "white";
-  pointContext.beginPath();
-  pointContext.arc(8, 8, 6.5, 0, Math.PI * 2);
-  pointContext.fill();
-  const dot = new THREE.CanvasTexture(pointCanvas);
-  textures.push(dot);
 
   const tints: Tint[] = [];
   const highlights: { line: OpticalWire; opacity: number }[] = [];
@@ -143,6 +134,6 @@ export function createOpticalKit() {
     nodes.push({ mesh, halo, base, glint });
   };
 
-  return { textures, glow, dot, tints, nodes, highlights, tint, lineMaterial, wire, addNode };
+  return { textures, glow, tints, nodes, highlights, tint, lineMaterial, wire, addNode };
 }
 export type OpticalKit = ReturnType<typeof createOpticalKit>;

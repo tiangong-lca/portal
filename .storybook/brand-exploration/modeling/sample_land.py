@@ -30,16 +30,15 @@ def inside(x, y, ring):
 
 
 points = []
-for row, lat in enumerate(range(-54, 82, 3)):
-    for lon in range(-178, 182, 3):
-        # A staggered sampling lattice keeps the projected dots separated.
-        x = lon + (1.5 if row % 2 else 0)
+for lat in range(-54, 82, 4):
+    for lon in range(-178, 182, 4):
+        # A regular lattice leaves room for the projected three-dimensional cells.
         if any(
-            inside(x, lat, polygon[0])
-            and not any(inside(x, lat, hole) for hole in polygon[1:])
+            inside(lon, lat, polygon[0])
+            and not any(inside(lon, lat, hole) for hole in polygon[1:])
             for polygon in polygons
         ):
-            points.append([round(x / 180 * 1.8, 5), round(-lat / 90 * 1.25, 5)])
+            points.append([round(lon / 180 * 1.8, 5), round(-lat / 90 * 1.25, 5)])
 output = Path(__file__).resolve().parents[1] / "land-points.json"
 output.write_text(json.dumps(points, separators=(",", ":")) + "\n")
 print(f"Wrote {len(points)} land samples to {output.name}")

@@ -23,12 +23,13 @@ export type SceneState = {
   paused: boolean;
   reduced: boolean;
 };
-const LEVELS = [4.4, 2.2, 0, -2.2, -4.4];
+const LEVELS = [4.36, 2.18, 0, -2.18, -4.36];
 
 function release(root: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>();
   const materials = new Set<THREE.Material>();
   root.traverse((object) => {
+    if (object instanceof THREE.InstancedMesh) object.dispose();
     if (
       object instanceof THREE.Mesh ||
       object instanceof THREE.Line ||
@@ -79,10 +80,15 @@ export function createLifecycleScene(
   renderer.setClearColor(0x000000, 0);
   const root = new THREE.Group();
   scene.add(root);
-  // The camera stays over 50 units away; a tighter depth range preserves fine panel seams.
+  // A tight depth range preserves fine panel seams at the calibrated camera distance.
   const camera = new THREE.PerspectiveCamera(22, 1, 10, 100);
+  // A closer, lower assembly view matches the changing plate depth from top to bottom.
   // The isolated network keeps the top layer's low viewing angle above its glass sheet.
-  camera.position.set(35.36, assembly ? 26 : part === "network" ? 22 : 35, 35.36);
+  camera.position.set(
+    assembly ? 30.5 : 35.36,
+    assembly ? 21.3 : part === "network" ? 22 : 35,
+    assembly ? 30.5 : 35.36,
+  );
   camera.lookAt(0, assembly ? 0 : 0.25, 0);
   root.position.y = assembly ? 0.3 : 0;
   const cameraDistance = camera.position.length();
@@ -253,7 +259,8 @@ export function createLifecycleScene(
       if (entry.kind === "model") {
         const role = (entry.role ?? "Shell") as keyof typeof finishes.dark;
         finishColor.set(finishes[state.theme][role] ?? finishes[state.theme].Shell);
-        if (entry.layer === 3 && role === "Shell") finishColor.set(dark ? "#665174" : "#d7d4dd");
+        if (entry.layer === 3 && role === "Shell") finishColor.set(dark ? "#4f3a65" : "#d7d4dd");
+        if (entry.layer === 3 && role === "Trim" && dark) finishColor.set("#705487");
         if (!dark && entry.layer !== 3 && (role === "Shell" || role === "Trim"))
           finishColor.set(role === "Shell" ? "#b4afbd" : "#c4bece");
         if (entry.layer === 1 && (role === "Shell" || role === "Trim"))
@@ -276,8 +283,7 @@ export function createLifecycleScene(
         );
       }
       if (entry.kind === "node" && !state.colorful) color.set(dark ? "#b48bdc" : "#8050c8");
-      if (entry.material instanceof THREE.PointsMaterial && !state.colorful)
-        color.set(dark ? "#d6bbee" : "#756b83");
+      if (entry.role === "map" && !state.colorful) color.set(dark ? "#d6bbee" : "#756b83");
       if (entry.kind === "halo" && !state.colorful)
         color.set(entry.role === "aura" ? "#8753ce" : "#9c42ee");
       if (entry.kind === "line") {
@@ -291,7 +297,7 @@ export function createLifecycleScene(
         if (solid) entry.material.metalness = dark ? 0.4 : 0.15;
         else if (entry.material.transmission > 0) {
           entry.material.opacity = 1;
-          entry.material.transmission = dark ? 0.72 : 0.48;
+          entry.material.transmission = dark ? (entry.layer === 2 ? 0.9 : 0.72) : 0.48;
           entry.material.attenuationColor.set(dark ? "#aa91c8" : "#b8adc5");
         } else {
           entry.material.opacity =
