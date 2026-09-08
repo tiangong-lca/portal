@@ -62,7 +62,7 @@ export function createOpticalKit() {
       layer,
       "line",
     );
-  const filament = new THREE.CylinderGeometry(0.0055, 0.0055, 1, 6, 1, true);
+  const filament = new THREE.CylinderGeometry(0.0065, 0.0065, 1, 6, 1, true);
   const wire = (points: THREE.Vector3[], parent: THREE.Object3D, layer: number, opacity = 0.3) => {
     const line = new OpticalWire(
       filament,
@@ -83,7 +83,7 @@ export function createOpticalKit() {
     highlights.push({ line, opacity });
     return line;
   };
-  const sphere = new THREE.SphereGeometry(0.058, 28, 20);
+  const sphere = new THREE.SphereGeometry(0.058, 32, 24);
   const addNode = (
     parent: THREE.Object3D,
     layer: number,
@@ -98,13 +98,27 @@ export function createOpticalKit() {
         color: 0xc3a7e7,
         metalness: 0.5,
         roughness: 0.16,
-        clearcoat: 1,
+        clearcoat: 0.55,
+        clearcoatRoughness: 0.24,
+        envMapIntensity: 0.14,
         emissive: 0xb98eea,
         emissiveIntensity: 0.07,
       }),
       layer,
       "node",
     );
+    // A continuous optical rim follows the curved surface and camera, including in reflections.
+    material.onBeforeCompile = (shader) => {
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <opaque_fragment>",
+        `
+          float opticalRim = pow(1.0 - saturate(dot(normal, geometryViewDir)), 3.0);
+          outgoingLight += mix(diffuse, vec3(1.0), 0.6) * opticalRim * 0.48;
+          #include <opaque_fragment>
+        `,
+      );
+    };
+    material.customProgramCacheKey = () => "lifecycle-optical-node-rim-v1";
     const mesh = new THREE.Mesh(sphere, material);
     mesh.position.set(x, y, z);
     mesh.scale.setScalar(base);

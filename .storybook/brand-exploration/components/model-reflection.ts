@@ -8,6 +8,7 @@ export function createModelReflection(
   plate: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>,
   model: THREE.Object3D,
   strength = 1,
+  blur = 1.4,
 ) {
   const scene = new THREE.Scene();
   const reflectedModel = model.clone(true);
@@ -22,11 +23,13 @@ export function createModelReflection(
     return { source: object, reflected };
   });
   // Geometry and materials are shared with this mounted scene and disposed by its owner.
-  const contactShades: THREE.Object3D[] = [];
+  const overlays: THREE.Object3D[] = [];
   reflectedModel.traverse((object) => {
-    if (object.name === "Model footprint contact shade") contactShades.push(object);
+    if (object.name === "Model footprint contact shade" || object instanceof THREE.Sprite)
+      overlays.push(object);
   });
-  contactShades.forEach((object) => object.removeFromParent());
+  // View-facing glow sprites and contact shading are overlays, not reflected solid geometry.
+  overlays.forEach((object) => object.removeFromParent());
   scene.add(reflectedModel);
   const lights: { source: THREE.Light; reflected: THREE.Light }[] = [];
   source.traverseVisible((object) => {
@@ -49,6 +52,7 @@ export function createModelReflection(
   const projection = plate.material.uniforms.reflectionProjection!.value as THREE.Matrix4;
   const texel = plate.material.uniforms.reflectionTexel!.value as THREE.Vector2;
   plate.material.uniforms.reflectionMap!.value = target.texture;
+  plate.material.uniforms.reflectionBlur!.value = blur;
 
   return {
     render(dark: boolean) {

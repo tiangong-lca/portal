@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: 93784fa2f0932002e62cad9156451ae4327d1c72
+lastReviewedCommit: a7f0eabe92b4d12a599bb1ce131525bdff9dd4ea
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -118,11 +118,11 @@ blender --background --python-exit-code 1 --python .storybook/brand-exploration/
 
 The authoring file retains individual equipment parts; the GLB merges meshes by material within each model group and preserves the animated turbine rotors. Model groups retain their base footprints as metadata for analytic contact shading, which is computed by a shader without a baked shadow image. `components/` owns the shared optical primitives, per-layer junction graph and procedural components. The geographic sampler produces `land-points.json` from Natural Earth's public-domain land polygons; source URL and SHA-256 are retained in the asset `NOTICE.txt`. Format regenerated point data with the repository's Prettier command before committing it.
 
-Energy and factory materials use optical transmission against the study's theme background; keep the renderer background synchronized when changing themes. Thin cylinder geometry gives the network connections a stable physical width on high-density displays, including the connections within each layer. The world-map component owns the decorative placement of the geographic samples inside its isometric plate.
+Energy and factory materials use optical transmission against the study's theme background; keep the renderer background synchronized when changing themes. Thin cylinder geometry gives the network connections a stable physical width on high-density displays, including the connections within each layer. The network has stronger core links and lighter peripheral connections. Node materials add a continuous rim from the surface normal and view direction, while limiting fragmented environment highlights. The world-map component owns the decorative placement of the geographic samples inside its isometric plate.
 
 Platforms overlap in projection. Their surfaces, cut edges and outlines are clipped by the upper platform's camera volume so the lower rear corner stays behind it. This clipping follows the actual animated geometry and camera; it does not hide the translucent network or require a screen-space mask image.
 
-Finite area lights shape the product's metallic highlights. Equipment reflections use mirrored cameras and the live models, including animated child transforms. Each visible equipment layer has one reflection target capped at 768 pixels on its longer edge; focused part views render only their own reflection. These passes share the existing animation loop and stop with it. Reflection clones share the mounted scene's geometry and materials, while their render targets are disposed separately before the owning scene is released.
+Finite area lights shape the product's metallic highlights. Equipment and network reflections use mirrored cameras and live geometry, including animated child transforms. Each visible reflected layer has one target capped at 768 pixels on its longer edge; the assembly uses four targets and focused part views render only their own reflection. Network reflections use a narrower blur than equipment reflections, and exclude view-facing glow sprites. The product's display plinth meets the outer platform's front corner, with its own light/dark sheen and small grid junctions. These passes share the existing animation loop and stop with it. Reflection clones share the mounted scene's geometry and materials, while their render targets are disposed separately before the owning scene is released.
 
 The original light/dark boards are served from `.storybook/public/brand-exploration/`. `artwork.json` owns their dimensions, comparison crop, source paths and SHA-256 receipts. Keep those values and asset notices synchronized when deliberately replacing a selected reference. Model assets load from the Storybook host, and the renderer is a dev dependency; public Portal routes do not import this study.
 

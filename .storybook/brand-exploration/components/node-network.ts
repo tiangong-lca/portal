@@ -1,8 +1,11 @@
 import * as THREE from "three";
 import type { OpticalKit } from "./optical-kit";
 
-/** A restrained, symmetric spatial graph with distinct apex, shoulder and base nodes. */
+/** An authored spatial graph with a dense core and lighter peripheral connections. */
 export function createNodeNetwork(parent: THREE.Group, kit: OpticalKit) {
+  const group = new THREE.Group();
+  group.name = "Spatial node network";
+  parent.add(group);
   // Screen-horizontal and depth axes of the reference's isometric view.
   const point = (horizontal: number, height: number, depth: number) =>
     new THREE.Vector3((horizontal + depth) / Math.SQRT2, height, (depth - horizontal) / Math.SQRT2);
@@ -16,13 +19,13 @@ export function createNodeNetwork(parent: THREE.Group, kit: OpticalKit) {
     point(0, 0.44, 0.72),
     point(-1.0, 0.08, 1),
     point(1.03, 0.09, 1),
-    point(0, 0.06, 2.02),
-    point(-1.43, 0.04, 0.82),
+    point(0, 0.105, 2.02),
+    point(-1.43, 0.04, 1.2),
     point(1.51, 0.06, 1.56),
     point(0.71, 0.2, 0.76),
     point(2.18, 0.04, 0.92),
   ];
-  const edges = [
+  const edges: [number, number][] = [
     [0, 1],
     [0, 2],
     [0, 3],
@@ -59,10 +62,22 @@ export function createNodeNetwork(parent: THREE.Group, kit: OpticalKit) {
     [8, 12],
     [11, 13],
     [3, 13],
+    [2, 4],
+    [2, 5],
+    [2, 7],
+    [2, 8],
+    [1, 6],
+    [3, 6],
+    [1, 12],
+    [7, 12],
+    [12, 11],
+    [1, 5],
+    [3, 4],
+    [2, 12],
   ];
   vertices.forEach((v, i) =>
     kit.addNode(
-      parent,
+      group,
       0,
       v.x,
       v.y,
@@ -71,6 +86,18 @@ export function createNodeNetwork(parent: THREE.Group, kit: OpticalKit) {
       i === 11 || i === 12 ? 0.9 : i === 13 ? 0.65 : 0,
     ),
   );
-  for (const [a, b] of edges) kit.wire([vertices[a!]!, vertices[b!]!], parent, 0, 0.36);
-  return vertices;
+  for (const [a, b] of edges)
+    kit.wire(
+      [vertices[a!]!, vertices[b!]!],
+      group,
+      0,
+      (a === 1 && b === 5) || (a === 3 && b === 4)
+        ? 0.2
+        : a === 2 || b === 6 || b === 9
+          ? 0.42
+          : a >= 10 || b === 13
+            ? 0.24
+            : 0.33,
+    );
+  return { vertices, group };
 }

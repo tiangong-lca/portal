@@ -81,7 +81,8 @@ export function createLifecycleScene(
   scene.add(root);
   // The camera stays over 50 units away; a tighter depth range preserves fine panel seams.
   const camera = new THREE.PerspectiveCamera(22, 1, 10, 100);
-  camera.position.set(35.36, assembly ? 26 : 35, 35.36);
+  // The isolated network keeps the top layer's low viewing angle above its glass sheet.
+  camera.position.set(35.36, assembly ? 26 : part === "network" ? 22 : 35, 35.36);
   camera.lookAt(0, assembly ? 0 : 0.25, 0);
   root.position.y = assembly ? 0.3 : 0;
   const cameraDistance = camera.position.length();
@@ -118,7 +119,7 @@ export function createLifecycleScene(
       addNode(group, i, x, 0.018, z, 0.16);
     }
   }
-  const network = createNodeNetwork(layers[0]!, optics);
+  const { vertices: network, group: networkModel } = createNodeNetwork(layers[0]!, optics);
   const productLighting = createProductLighting(layers[3]!);
   const junctions =
     part === "plate" || part === "product" ? [] : createLayerJunctions(layers, network, optics);
@@ -137,6 +138,10 @@ export function createLifecycleScene(
   }
   const productPlatform = part !== "plate" ? createProductPlatform(layers[3]!, optics) : undefined;
   const reflections: ReturnType<typeof createModelReflection>[] = [];
+  if (assembly || part === "network")
+    reflections.push(
+      createModelReflection(renderer, camera, scene, plates[0]!, networkModel, 0.7, 0.35),
+    );
   const occlusions = assembly
     ? plates.slice(1).map((plate, i) => createPlatformOcclusion(plate, plates[i]!, camera))
     : [];
@@ -270,13 +275,13 @@ export function createLifecycleScene(
               : 0.8,
         );
       }
-      if (entry.kind === "node" && !state.colorful && !dark) color.set("#9b68c2");
+      if (entry.kind === "node" && !state.colorful) color.set(dark ? "#b48bdc" : "#8050c8");
       if (entry.material instanceof THREE.PointsMaterial && !state.colorful)
         color.set(dark ? "#d6bbee" : "#756b83");
       if (entry.kind === "halo" && !state.colorful)
         color.set(entry.role === "aura" ? "#8753ce" : "#9c42ee");
       if (entry.kind === "line") {
-        if (!state.colorful && !dark) color.set("#9a86b5");
+        if (!state.colorful && !dark) color.set("#9b8abd");
         color.multiplyScalar(dark ? 1.12 : 1);
         if (entry.role === "cut-edge") entry.material.opacity = dark ? 0.3 : 0.14;
       }
@@ -321,11 +326,15 @@ export function createLifecycleScene(
             : 0;
       }
       if (entry.kind === "node" && entry.material instanceof THREE.MeshPhysicalMaterial) {
-        entry.material.metalness = dark ? 0.32 : 0.15;
-        entry.material.roughness = dark ? 0.16 : 0.25;
+        entry.material.metalness = 0.12;
+        entry.material.roughness = dark ? 0.25 : 0.3;
       }
       if (entry.kind === "plane" && entry.material instanceof THREE.ShaderMaterial)
-        entry.material.uniforms.strength!.value = dark ? 1 : 0.55;
+        entry.material.uniforms.strength!.value = dark
+          ? 1
+          : entry.role === "display-plinth"
+            ? 0.2
+            : 0.55;
       if (entry.kind === "halo") entry.material.visible = dark;
     }
     shadow.visible = !dark && (assembly || part === "map");
@@ -428,12 +437,12 @@ export function createLifecycleScene(
         (state.theme === "dark" ? 0.06 : 0.12) +
         proximity * 0.7 +
         wave * 1.5 +
-        node.glint * (state.theme === "dark" ? 1.2 : 0.06);
+        node.glint * (state.theme === "dark" ? 0.45 : 0.06);
       // Only a few bead junctions carry a resting optical glint.
       const glint = node.glint || (node.base > 1.4 ? 0.18 : 0.025);
       node.halo.material.opacity = Math.min(1, glint * 1.3 + proximity * 0.65 + wave * 0.8);
       node.halo.scale.setScalar(
-        (0.3 + proximity * 0.2 + wave * 0.35 + node.glint * 1.2) * node.base,
+        (0.3 + proximity * 0.2 + wave * 0.35 + node.glint * 0.8) * node.base,
       );
     }
     for (const entry of highlights) {
@@ -442,7 +451,8 @@ export function createLifecycleScene(
         pointerInside && moving
           ? Math.max(0, 1 - Math.hypot(projected.x - pointer.x, projected.y - pointer.y) / 0.28)
           : 0;
-      entry.line.material.opacity = entry.opacity + proximity * 0.4;
+      entry.line.material.opacity =
+        entry.opacity * (state.theme === "light" ? 1.15 : 1) + proximity * 0.4;
     }
     paint(dt);
     for (const reflection of reflections) reflection.render(state.theme === "dark");
