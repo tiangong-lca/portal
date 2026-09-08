@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: a9dbdfed09894bbcc8a173146e2fb26fe307d7b3
+lastReviewedCommit: 489a9e7c86098497126e14911c82aca138d44524
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #67 title tags: version and content tags form one wrapping group after the title, followed by applicability metadata and the match snippet. Mobile touch targets and exact values remain intact; visual acceptance is pending."
+lastReviewedNote: "Reviewed for Portal #67 pagination and shared catalog tags: domain components are fixture-independent and currently used by the reference; cursor continuation preserves selection and context. Production adoption and remaining panel/detail review stay separate."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -209,3 +209,9 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 搜索样板在分面侧栏收起时，将筛选入口与排序放在同一结果工具栏；手机上这组操作排到结果数量下方，触控高度至少 44px。搜索结果与详情中的独立版本号统一使用 24px 高、13px 字号、4px 圆角的中性标签，采用正文字体与等宽数字，保留 `v` 前缀和原始版本字符串；标签是文本，不提供操作。完整 UUID@version 与精确数量仍保留技术字体。结果中的版本标签与公开内容图标采用一致的 24px 浅底、细边框和小圆角，整体跟随标题，空间不足时一起换行，不再在摘要下固定占一行。图标的可视尺寸与手机 44px 实际触控区域分开处理，并与相邻标题和收藏操作保持分离。公开内容状态使用图标，悬停、键盘聚焦和点击均可查看说明，支持 Escape、移出焦点和点击外部关闭；手机图标触控区域至少 44px。筛选选项与详情仍显示“含输入输出”或“仅数据说明”的四语文字，不用勾号暗示审核、质量或许可结论。
 
 样板搜索框下不再重复展示搜索模式或隐私提示；这不改变真实搜索与分享流程的隐私要求。合成数据说明在页面底部统一展示。样板未提供逐条来源名称，列表和标题区不补造统一来源，详情来源显示“未提供”，示例引用只组合已有的名称、年份和精确版本标识。
+
+### Catalog 共享业务组件
+
+`src/features/catalog/dataset-tags.tsx` 统一拥有 `DatasetVersionTag` 与 `PublicContentTag`，旁置 CSS 拥有标签尺寸与说明弹层样式。组件只接收精确版本、公开内容状态和本地化文案，不依赖 Storybook fixture、整条记录或页面 CSS。`components/ui` 继续拥有通用 Badge、Button 等基础组件；页面负责标签的位置、分组和换行。`Catalog/Dataset tags` 提供独立的图标、文字、浅深主题、窄屏和键盘说明场景。目前搜索与详情样板使用这些共享组件，正式页面的采用仍需单独评审。
+
+`ResultsContinuation` 统一拥有游标列表底部的加载更多、加载中、失败重试与末尾展示；调用方传入已本地化的进度说明，不要求服务返回总数。搜索样板使用六条一批的合成分页来展示交互，不改变实际搜索的分页上限或游标契约。追加结果保留已选内容，将焦点交给首条新增记录；进入详情再返回保留已加载结果。新查询、分面或排序重置续页并忽略迟到响应；空结果不显示续页控件。稳定状态场景与重试、返回和请求隔离的交互场景分别保留。

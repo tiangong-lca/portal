@@ -16,13 +16,15 @@
 }
 /* Keep the existing 44/32px control families; tune their weight and shape together. */
 :is(.catalog-reference, .cr-surface)
-  :is([data-slot="button"], [data-slot="input-group"], [data-slot="select-trigger"]) {
+  :is([data-slot="button"], [data-slot="input-group"], [data-slot="select-trigger"]):not(
+    .dataset-content-trigger
+  ) {
   border-radius: var(--cr-radius);
   font-family: inherit;
   font-size: var(--cr-body);
   font-weight: 500;
 }
-:is(.catalog-reference, .cr-surface) [data-slot="button"] svg {
+:is(.catalog-reference, .cr-surface) [data-slot="button"]:not(.dataset-content-trigger) svg {
   width: 16px;
   height: 16px;
 }
@@ -413,62 +415,6 @@
   text-decoration: underline;
   text-underline-offset: 4px;
 }
-.cr-availability {
-  font-size: var(--cr-caption);
-  line-height: 20px;
-  gap: 4px;
-  white-space: normal;
-  border: 0;
-  border-radius: 4px;
-  font-weight: 400;
-  padding: 1px 6px;
-}
-.cr-availability svg {
-  width: 13px;
-  height: 13px;
-}
-.catalog-reference .cr-availability-icon {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 0;
-  border-radius: 4px;
-  background: transparent;
-}
-.cr-content-tag {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  flex-shrink: 0;
-}
-.catalog-reference .cr-content-tag svg {
-  width: 14px;
-  height: 14px;
-}
-.catalog-reference
-  .cr-availability-icon:is(:hover, [data-state="instant-open"], [data-state="delayed-open"])
-  .cr-content-tag {
-  color: var(--foreground);
-  border-color: var(--muted-foreground);
-}
-.cr-availability-tip {
-  z-index: 60;
-  max-width: min(280px, calc(100vw - 32px));
-  padding: 12px 14px;
-  color: var(--popover-foreground);
-  background: var(--popover);
-  border: 1px solid var(--border);
-  border-radius: var(--cr-radius);
-  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
-  overflow-wrap: anywhere;
-}
-.cr-availability-tip strong {
-  display: block;
-  font-weight: 600;
-}
-.cr-availability-tip p {
-  margin: 4px 0 0;
-}
 .cr-result .cr-row-meta {
   display: flex;
   flex-wrap: wrap;
@@ -506,33 +452,9 @@
   border-radius: 2px;
   padding: 1px 2px;
 }
-.cr-version,
-.cr-content-tag {
-  height: 24px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--muted);
-  color: var(--muted-foreground);
-}
-.cr-version {
-  padding: 0 7px;
-  font-family: var(--font-sans);
-  font-size: var(--cr-caption);
-  font-weight: 500;
-  font-variant-numeric: lining-nums tabular-nums;
-  line-height: 20px;
-  letter-spacing: 0;
-}
 .cr-mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-}
-.cr-results-end {
-  display: block;
-  padding: 24px 0;
-  color: var(--muted-foreground);
-  text-align: center;
-  font-size: var(--cr-caption);
 }
 .cr-footer {
   border-top: 1px solid var(--border);
@@ -1187,12 +1109,6 @@
   .cr-record-identity {
     row-gap: 12px;
   }
-  .cr-availability-icon {
-    min-width: 44px;
-    min-height: 44px;
-    /* Keep the 24px tag aligned while expanding its actual touch target. */
-    margin: -10px;
-  }
   .cr-filter-option {
     min-height: 44px;
   }
@@ -1207,7 +1123,7 @@
     margin-top: 12px;
     gap: 8px 12px;
   }
-  .cr-detail-eyebrow .cr-availability {
+  .cr-detail-eyebrow .dataset-content-label {
     margin-right: auto;
   }
   .cr-detail-title h1 {

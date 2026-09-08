@@ -8,11 +8,11 @@ import {
   GitCompareArrowsIcon,
   InfoIcon,
 } from "lucide-react";
-import { Badge } from "../../src/components/ui/badge";
+import { DatasetVersionTag, PublicContentTag } from "../../src/features/catalog/dataset-tags";
 import { Button } from "../../src/components/ui/button";
 import { Alert, AlertDescription } from "../../src/components/ui/alert";
 import { referenceCitation, type ReferenceDataset } from "./data";
-import { Availability, Metadata, type ReferenceLabels } from "./shared";
+import { Metadata, type ReferenceLabels } from "./shared";
 import type { PortalLocale } from "../../src/i18n/routing";
 
 export type DetailReferenceProps = {
@@ -64,7 +64,10 @@ export function DetailReference({
         </Button>
         <div className="cr-detail-eyebrow">
           <span>{d.processTitle}</span>
-          <Availability record={record} labels={m} />
+          <PublicContentTag
+            content={record.open ? "exchanges" : "metadata"}
+            labels={m.CatalogReference}
+          />
         </div>
         <div className="cr-detail-title">
           <h1>{record.name}</h1>
@@ -255,9 +258,7 @@ export function DetailReference({
               <div>
                 <dt>{m.Search.version}</dt>
                 <dd>
-                  <Badge variant="outline" className="cr-version">
-                    v{record.ref.split("@")[1]}
-                  </Badge>
+                  <DatasetVersionTag version={record.ref.split("@")[1]!} label={m.Search.version} />
                 </dd>
               </div>
               <div>

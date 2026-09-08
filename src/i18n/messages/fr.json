@@ -459,6 +459,7 @@
     "sampleLicense": "Licence d’exemple ; aucun droit accordé sur des données réelles",
     "applyFilters": "Afficher les résultats filtrés",
     "recordsShown": "Les {count} versions correspondantes sont affichées",
+    "recordsProgress": "{shown} versions correspondantes affichées sur {total}",
     "resetSearch": "Réinitialiser la recherche",
     "menu": "Navigation et affichage",
     "menuDescription": "Parcourir le catalogue, choisir la langue et le thème.",

@@ -1,0 +1,26 @@
+.catalog-continuation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+.catalog-continuation > button {
+  color: var(--foreground);
+  min-width: 200px;
+  max-width: 100%;
+  min-height: 44px;
+}
+.catalog-continuation .catalog-continuation-error {
+  max-width: 480px;
+  color: var(--foreground);
+}
+@media (max-width: 767px) {
+  .catalog-continuation > button {
+    width: 100%;
+  }
+}

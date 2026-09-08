@@ -459,6 +459,7 @@
     "sampleLicense": "Beispiellizenz; gewährt keine Rechte an echten Daten",
     "applyFilters": "Gefilterte Ergebnisse anzeigen",
     "recordsShown": "Alle {count} passenden Versionen angezeigt",
+    "recordsProgress": "{shown} von {total} passenden Versionen angezeigt",
     "resetSearch": "Suche zurücksetzen",
     "menu": "Navigation und Anzeige",
     "menuDescription": "Datenkatalog öffnen, Sprache und Darstellung auswählen.",

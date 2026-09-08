@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: a9dbdfed09894bbcc8a173146e2fb26fe307d7b3
+lastReviewedCommit: 489a9e7c86098497126e14911c82aca138d44524
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #67 title tags: the isolated search layout and content indicator reuse existing primitives and preserve keyboard/touch explanations. Setup, dependencies, Storybook validation and hosted-release procedures remain unchanged."
+lastReviewedNote: "Reviewed for Portal #67 pagination and shared tags: the added component stories and controlled fixture request seam use the existing Storybook workflow. Setup, dependencies and hosted-release procedures remain unchanged."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

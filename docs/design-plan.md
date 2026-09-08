@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-09-07
-lastReviewedCommit: 3341a500616f1657a6a1696df87f0c4ba1e7930b
-lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
+lastReviewedAt: 2026-09-08
+lastReviewedCommit: 489a9e7c86098497126e14911c82aca138d44524
+lastReviewedNote: "Reviewed for Portal #67 shared catalog tags and continuation: components preserve exact versions and explicit public-content labels, use no fixture or server dependency, and do not alter production cursor limits, ranking, persistence or scientific contracts."
 related:
   - docs/ui-system.md
   - docs/development.md

@@ -6,7 +6,7 @@ import {
   SlidersHorizontalIcon,
   XIcon,
 } from "lucide-react";
-import { Badge } from "../../src/components/ui/badge";
+import { DatasetVersionTag, PublicContentTag } from "../../src/features/catalog/dataset-tags";
 import { Button } from "../../src/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../../src/components/ui/input-group";
 import {
@@ -18,8 +18,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../../src/components/ui/sheet";
+import { ResultsContinuation } from "../../src/features/catalog/results-continuation";
 import type { ReferenceDataset } from "./data";
-import { Availability, Metadata, NoResults, type ReferenceLabels } from "./shared";
+import { Metadata, NoResults, type ReferenceLabels } from "./shared";
 
 function MatchText({ text, query }: { text: string; query: string }) {
   const token = query.trim().split(/\s+/)[0];
@@ -40,6 +41,9 @@ export type SearchReferenceProps = {
   labels: ReferenceLabels;
   records: ReferenceDataset[];
   matches: ReferenceDataset[];
+  visibleCount: number;
+  pageState: "ready" | "loading" | "error";
+  onLoadMore: () => void;
   query: string;
   draft: string;
   filters: ReferenceFilters;
@@ -291,7 +295,7 @@ export function SearchReference(props: SearchReferenceProps) {
           )}
           {matches.length ? (
             <ol className="cr-result-list">
-              {matches.map((record) => (
+              {matches.slice(0, props.visibleCount).map((record) => (
                 <li
                   key={record.ref}
                   className="cr-result"
@@ -323,11 +327,15 @@ export function SearchReference(props: SearchReferenceProps) {
                           </a>
                         </h3>
                         <span className="cr-record-tags">
-                          <Badge variant="outline" className="cr-version">
-                            <span className="sr-only">{m.Search.version}: </span>v
-                            {record.ref.split("@")[1]}
-                          </Badge>
-                          <Availability record={record} labels={m} compact />
+                          <DatasetVersionTag
+                            version={record.ref.split("@")[1]!}
+                            label={m.Search.version}
+                          />
+                          <PublicContentTag
+                            content={record.open ? "exchanges" : "metadata"}
+                            labels={m.CatalogReference}
+                            compact
+                          />
                         </span>
                       </div>
                       <Button
@@ -355,9 +363,20 @@ export function SearchReference(props: SearchReferenceProps) {
           ) : (
             <NoResults labels={m} onReset={props.onReset} />
           )}
-          <output className="cr-results-end">
-            {m.CatalogReference.recordsShown.replace("{count}", String(matches.length))}
-          </output>
+          {matches.length > 0 && (
+            <ResultsContinuation
+              state={props.visibleCount >= matches.length ? "complete" : props.pageState}
+              summary={
+                props.visibleCount >= matches.length
+                  ? m.CatalogReference.recordsShown.replace("{count}", String(matches.length))
+                  : m.CatalogReference.recordsProgress
+                      .replace("{shown}", String(props.visibleCount))
+                      .replace("{total}", String(matches.length))
+              }
+              labels={{ ...m.Hybrid, retry: m.Common.retry }}
+              onLoadMore={props.onLoadMore}
+            />
+          )}
         </section>
       </div>
     </>

@@ -459,6 +459,7 @@
     "sampleLicense": "Example license; grants no rights to real data",
     "applyFilters": "Show filtered results",
     "recordsShown": "All {count} matching versions shown",
+    "recordsProgress": "Showing {shown} of {total} matching versions",
     "resetSearch": "Reset search",
     "menu": "Navigation and display",
     "menuDescription": "Browse the catalog and choose a language and theme.",

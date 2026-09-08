@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, spyOn, waitFor, within } from "storybook/test";
+import { expect, fn, spyOn, waitFor, within } from "storybook/test";
 import { CatalogReference } from "../catalog-reference/catalog-reference";
+import { ResultsContinuation } from "../../src/features/catalog/results-continuation";
 import { SearchReference } from "../catalog-reference/search-page";
 import { DetailReference } from "../catalog-reference/detail-page";
-import { Availability } from "../catalog-reference/shared";
+import { DatasetVersionTag, PublicContentTag } from "../../src/features/catalog/dataset-tags";
 import { referenceCitation, referenceDatasets } from "../catalog-reference/data";
 import { dictionaries, mobileGlobals, storyLocale } from "../fixtures";
 import { localeNames } from "../../src/i18n/routing";
@@ -11,9 +12,15 @@ import { localeNames } from "../../src/i18n/routing";
 const meta = {
   title: "Design references/Catalog pages",
   component: CatalogReference,
-  subcomponents: { SearchReference, DetailReference, Availability },
+  subcomponents: {
+    SearchReference,
+    DetailReference,
+    DatasetVersionTag,
+    PublicContentTag,
+    ResultsContinuation,
+  },
   tags: ["!autodocs"],
-  args: { locale: "zh-CN" },
+  args: { locale: "zh-CN", requestPage: fn<() => Promise<void>>().mockResolvedValue() },
   parameters: {
     pageLayout: true,
     docs: {
@@ -89,7 +96,7 @@ export const FiltersAndEmptyRecovery: Story = {
     await userEvent.click(canvas.getByRole("button", { name: m.Common.search }));
     await expect(canvas.getByText(m.Search.emptyTitle)).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.resetSearch }));
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(8);
+    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
   },
 };
 export const MobileFilterKeyboard: Story = {
@@ -242,5 +249,73 @@ export const CitationPermissionDenied: Story = {
     } finally {
       clipboard.mockRestore();
     }
+  },
+};
+
+export const PaginationLoading: Story = { args: { initialPageState: "loading" } };
+export const PaginationError: Story = { args: { initialPageState: "error" } };
+export const PaginationComplete: Story = { args: { initialPageState: "complete" } };
+export const PaginationMobileError: Story = {
+  ...PaginationError,
+  globals: { ...mobileGlobals, locale: "de" },
+};
+export const PaginationDark: Story = {
+  ...PaginationError,
+  globals: { theme: "dark", locale: "fr" },
+};
+export const LoadMoreAndReturn: Story = {
+  play: async ({ args, canvas, userEvent, globals }) => {
+    const locale = storyLocale(globals);
+    const m = dictionaries[locale];
+    const records = referenceDatasets(locale);
+    const page = Promise.withResolvers<void>();
+    args.requestPage!.mockImplementationOnce(() => page.promise);
+    await userEvent.click(canvas.getAllByRole("checkbox")[0]!);
+    await userEvent.click(canvas.getByRole("button", { name: m.Hybrid.loadMore }));
+    await expect(canvas.getByRole("button", { name: m.Hybrid.loadingMore })).toBeDisabled();
+    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
+    page.resolve();
+    await waitFor(() => expect(canvas.getAllByRole("checkbox")).toHaveLength(8));
+    await expect(canvas.getAllByRole("checkbox")[0]).toBeChecked();
+    const next = canvas.getByRole("link", { name: records[6]!.name });
+    await expect(next).toHaveFocus();
+    await userEvent.click(next);
+    await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.back }));
+    await expect(canvas.getAllByRole("checkbox")).toHaveLength(8);
+    await expect(canvas.getByRole("link", { name: records[6]!.name })).toHaveFocus();
+    await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.sort }));
+    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
+    await expect(
+      canvas.getByRole("checkbox", { name: `${m.CatalogReference.select}: ${records[0]!.name}` }),
+    ).toBeChecked();
+  },
+};
+export const PaginationRetry: Story = {
+  play: async ({ args, canvas, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)];
+    args.requestPage!.mockRejectedValueOnce(new Error("Fixture page unavailable"));
+    await userEvent.click(canvas.getByRole("button", { name: m.Hybrid.loadMore }));
+    await expect(canvas.findByRole("alert")).resolves.toHaveTextContent(m.Hybrid.pageError);
+    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
+    await userEvent.click(canvas.getByRole("button", { name: m.Common.retry }));
+    await waitFor(() => expect(canvas.getAllByRole("checkbox")).toHaveLength(8));
+    await expect(canvas.queryByRole("alert")).not.toBeInTheDocument();
+  },
+};
+export const NewQueryCancelsPage: Story = {
+  play: async ({ args, canvas, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)];
+    const page = Promise.withResolvers<void>();
+    args.requestPage!.mockImplementationOnce(() => page.promise);
+    await userEvent.click(canvas.getByRole("button", { name: m.Hybrid.loadMore }));
+    const input = canvas.getByRole("textbox", { name: m.Search.label });
+    await userEvent.clear(input);
+    await userEvent.type(input, "no-such-synthetic-dataset");
+    await userEvent.click(canvas.getByRole("button", { name: m.Common.search }));
+    page.resolve();
+    await expect(canvas.queryAllByRole("checkbox")).toHaveLength(0);
+    await userEvent.click(canvas.getByRole("button", { name: m.CatalogReference.resetSearch }));
+    await expect(canvas.getAllByRole("checkbox")).toHaveLength(6);
+    await expect(canvas.getByRole("button", { name: m.Hybrid.loadMore })).toBeEnabled();
   },
 };

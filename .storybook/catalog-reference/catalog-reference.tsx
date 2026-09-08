@@ -44,7 +44,13 @@ type CatalogReferenceProps = {
   missingMetadata?: boolean;
   initialQuery?: string;
   initialSelection?: number[];
+  initialPageState?: "ready" | "loading" | "error" | "complete";
+  /** Deterministic fixture request seam; no public API is called. */
+  requestPage?: () => Promise<void>;
 };
+
+const pageSize = 6;
+const readyPage = () => Promise.resolve();
 
 const clearFilters: ReferenceFilters = { region: "", year: "", access: "" };
 const recordHash = "#catalog-record-";
@@ -60,6 +66,8 @@ export function CatalogReference({
   missingMetadata = false,
   initialQuery,
   initialSelection = [],
+  initialPageState = "ready",
+  requestPage = readyPage,
 }: CatalogReferenceProps) {
   const [locale, setLocale] = useState(initialLocale);
   const [dark, setDark] = useState(theme === "dark");
@@ -69,6 +77,54 @@ export function CatalogReference({
   const [query, setQuery] = useState(draft);
   const [filters, setFilters] = useState<ReferenceFilters>(clearFilters);
   const [newest, setNewest] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(
+    initialPageState === "complete" ? records.length : pageSize,
+  );
+  const [pageState, setPageState] = useState<"ready" | "loading" | "error">(
+    initialPageState === "complete" ? "ready" : initialPageState,
+  );
+  const pageRequest = useRef(0);
+  const pagePending = useRef(false);
+  const nextResultFocus = useRef<string | null>(null);
+  useEffect(
+    () => () => {
+      pageRequest.current += 1;
+    },
+    [],
+  );
+  useEffect(() => {
+    const ref = nextResultFocus.current;
+    if (!ref) return;
+    nextResultFocus.current = null;
+    const link = [
+      ...(mainRef.current?.querySelectorAll<HTMLAnchorElement>("[data-record-ref]") ?? []),
+    ].find((item) => item.dataset.recordRef === ref);
+    link?.focus({ preventScroll: true });
+  }, [visibleCount]);
+  function resetPagination() {
+    pageRequest.current += 1;
+    pagePending.current = false;
+    nextResultFocus.current = null;
+    setVisibleCount(pageSize);
+    setPageState("ready");
+  }
+  async function loadMore() {
+    if (pagePending.current || visibleCount >= matches.length) return;
+    pagePending.current = true;
+    const request = ++pageRequest.current;
+    setPageState("loading");
+    try {
+      await requestPage();
+      if (request !== pageRequest.current) return;
+      nextResultFocus.current = currentRef ? null : (matches[visibleCount]?.ref ?? null);
+      setVisibleCount((count) => count + pageSize);
+      setPageState("ready");
+    } catch {
+      if (request === pageRequest.current) setPageState("error");
+    } finally {
+      if (request === pageRequest.current) pagePending.current = false;
+    }
+  }
   const [currentRef, setCurrentRef] = useState<string | null>(
     initialView === "detail" ? records[missingMetadata ? 7 : 0]!.ref : null,
   );
@@ -177,6 +233,7 @@ export function CatalogReference({
     setNotice(exists ? m.CatalogReference.removed : m.CatalogReference.saved);
   }
   function resetSearch() {
+    resetPagination();
     setFilters(clearFilters);
     setDraft(m.CatalogReference.queryExample);
     setQuery(m.CatalogReference.queryExample);
@@ -375,6 +432,9 @@ export function CatalogReference({
             labels={m}
             records={queryMatches}
             matches={matches}
+            visibleCount={visibleCount}
+            pageState={pageState}
+            onLoadMore={() => void loadMore()}
             draft={draft}
             query={query}
             filters={filters}
@@ -383,12 +443,19 @@ export function CatalogReference({
             newest={newest}
             onDraft={setDraft}
             onSearch={() => {
+              resetPagination();
               setQuery(draft);
               setNotice("");
             }}
-            onFilter={(key, value) => setFilters((previous) => ({ ...previous, [key]: value }))}
+            onFilter={(key, value) => {
+              resetPagination();
+              setFilters((previous) => ({ ...previous, [key]: value }));
+            }}
             onReset={resetSearch}
-            onSort={() => setNewest(!newest)}
+            onSort={() => {
+              resetPagination();
+              setNewest(!newest);
+            }}
             onSelect={toggleSelection}
             onSave={toggleSave}
             onOpen={openRecord}

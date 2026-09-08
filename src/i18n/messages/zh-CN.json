@@ -459,6 +459,7 @@
     "sampleLicense": "示例许可；不授予真实数据的使用权",
     "applyFilters": "查看筛选结果",
     "recordsShown": "已显示全部 {count} 个匹配版本",
+    "recordsProgress": "已显示 {shown} / {total} 个过程版本",
     "resetSearch": "重置搜索",
     "menu": "导航与显示",
     "menuDescription": "浏览数据目录，选择语言和显示主题。",
