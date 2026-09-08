@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: fc9198bd98b8f7e7a0dae12b3faa335b11651965
+lastReviewedCommit: f2110360d649f154b05171e3a0d273b37b580567
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -137,6 +137,8 @@ The original light/dark boards are served from `.storybook/public/brand-explorat
 Review individual parts at full size before reviewing the combined composition in both themes. Also verify independent color modes, desktop/mobile layout, pointer response, keyboard/touch activation, pause/reduced motion and failure recovery. Story loaders prepare an independent model template before mounting. Rendering starts when the complete geometry is ready, avoiding the cost of compiling an intermediate scene during loading. A prepared template still draws its first real geometry frame synchronously so Storybook’s frozen review thumbnails do not capture a loading placeholder. Canvas resizing also repaints immediately because resizing clears the WebGL buffer while the embedded preview may already have frozen animation callbacks. Pixel ratio follows the display between 1x and 2x; 1x displays do not incur forced supersampling. Short windows keep the whole sculpture within the viewport; `CompactViewport` covers this layout. Standalone mounts retain asynchronous loading and failure recovery. Motion tests observe actual frame progression and wait through the bounded color transition before verifying that drawing stops. Resuming motion uses a bounded wait for a new rendered frame, including under software WebGL. Pre-optimizing the imported Three.js modules prevents dependency discovery from reloading a running browser test. Passing checks does not establish user visual acceptance or a production homepage baseline; record fidelity differences and acceptance in the delivery Issue.
 
 Palette interpolation follows elapsed wall time. Pausing retains the existing color-transition deadline, and the renderer checks that deadline after drawing before scheduling another frame. This keeps slow software-rendered frames from extending the paused animation queue.
+
+Animation frames poll the previous GPU submission with a zero-timeout WebGL fence before submitting more drawing. This bounds software-rendering backlog without blocking JavaScript or reducing model, material or reflection quality. Initial rendering and frozen-preview resizing still draw synchronously, and disposal deletes the outstanding fence.
 
 Storybook test files run sequentially in `vitest.config.ts`: WebGL compilation otherwise competes with the other stories' focus and animation assertions. The Playwright provider uses `channel: "chromium"` for Chromium's current headless mode, which follows the full browser's rendering path. The existing `playwright install chromium` setup installs this browser in local development and CI. Its 30-second test deadline includes cold shader compilation and the complete interaction flow. Keep bounded waits for observable motion and pause checks; the deadline does not replace a rendered performance check or affect the unit-test runner.
 

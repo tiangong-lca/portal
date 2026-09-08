@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: fc9198bd98b8f7e7a0dae12b3faa335b11651965
+lastReviewedCommit: f2110360d649f154b05171e3a0d273b37b580567
 title: Portal UI and component standards
 docType: contract
 scope: repo

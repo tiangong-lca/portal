@@ -216,6 +216,9 @@ export function createLifecycleScene(
   let contentReady = false;
   let inView = true;
   let frame = 0;
+  // The pinned Three.js renderer requires WebGL 2; its type still includes legacy contexts.
+  const gl = renderer.getContext() as WebGL2RenderingContext;
+  let pendingDraw: WebGLSync | null = null;
   let last = 0;
   let time = 0;
   let transitionUntil = 0;
@@ -377,6 +380,13 @@ export function createLifecycleScene(
     frame = 0;
     // Start with the complete geometry instead of compiling an intermediate empty scene.
     if (disposed || !contentReady || (!force && (!inView || document.hidden))) return;
+    // Poll without blocking: software WebGL must finish its last frame before we submit more.
+    if (pendingDraw && !force && gl.clientWaitSync(pendingDraw, 0, 0) === gl.TIMEOUT_EXPIRED) {
+      requestRender();
+      return;
+    }
+    if (pendingDraw) gl.deleteSync(pendingDraw);
+    pendingDraw = null;
     const elapsed = Math.max(0, (now - last) / 1000 || 0.016);
     const dt = Math.min(elapsed, 0.05);
     last = now;
@@ -490,6 +500,8 @@ export function createLifecycleScene(
     paint(elapsed, now >= transitionUntil);
     for (const reflection of reflections) reflection.render(state.theme === "dark");
     renderer.render(scene, camera);
+    pendingDraw = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+    gl.flush();
     host.dataset.frame = String(Number(host.dataset.frame ?? 0) + 1);
     // A slow render may finish after the transition deadline; do not queue a late frame.
     if (moving || performance.now() < transitionUntil) requestRender();
@@ -664,6 +676,8 @@ export function createLifecycleScene(
       disposed = true;
       abort.abort();
       if (frame) cancelAnimationFrame(frame);
+      if (pendingDraw) gl.deleteSync(pendingDraw);
+      pendingDraw = null;
       resizeObserver.disconnect();
       intersection.disconnect();
       document.removeEventListener("visibilitychange", visibility);
