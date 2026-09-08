@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: 1777a4520cd358861c6852fbeabb9b91ca6c2efd
+lastReviewedCommit: 736512348541515bb92c51160a42a7d1f9a23a42
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -108,7 +108,7 @@ The isolated catalog references import locked Fontsource variable-font dev depen
 
 ### Brand sculpture assets
 
-`Brand Explorations/Lifecycle Sculpture` is an isolated Three.js study in `.storybook/brand-exploration/`. The assembly and focused part stories share the actual glass, node network, energy, factory, product and geographic point geometry. Optical materials, studio lighting, hover response and color transitions are computed at runtime. Reference PNGs are only used by `ReferenceComparison`; never use them as scene textures or an image underlay.
+`Brand Explorations/Lifecycle Sculpture` is an isolated Three.js study in `.storybook/brand-exploration/`. The assembly and focused part stories share the actual glass, node network, energy, factory, product and map-cell geometry. Optical materials, studio lighting, hover response and color transitions are computed at runtime. Reference PNGs are only used by `ReferenceComparison`; never use them as scene textures or an image underlay.
 
 `modeling/build_models.py` owns the energy, factory and product authoring functions. Regenerate the editable `.blend` source and the optimized, texture-free GLB with Blender 5.1:
 
@@ -116,13 +116,15 @@ The isolated catalog references import locked Fontsource variable-font dev depen
 blender --background --python-exit-code 1 --python .storybook/brand-exploration/modeling/build_models.py
 ```
 
-The authoring file retains individual equipment parts; the GLB merges meshes by material within each model group and preserves the animated turbine rotors. Model groups retain their base footprints as metadata for analytic contact shading, which is computed by a shader without a baked shadow image. `components/` owns the shared optical primitives, per-layer junction graph and procedural components. The geographic sampler produces `land-points.json` from Natural Earth's public-domain land polygons; source URL and SHA-256 are retained in the asset `NOTICE.txt`. Format regenerated point data with the repository's Prettier command before committing it.
+The authoring file retains individual equipment parts; the GLB merges meshes by material within each model group and preserves the animated turbine rotors. Model groups retain their base footprints as metadata for analytic contact shading, which is computed by a shader without a baked shadow image. `components/` owns the shared optical primitives, per-layer junction graph and procedural components. Asset provenance is retained in the asset `NOTICE.txt`.
 
 Energy and factory structural materials use optical transmission against the study's theme background; keep the renderer background synchronized when changing themes. Factory enclosure panes use alpha blending to retain visibility of nested translucent frames and services, which the renderer's opaque-only transmission pass would omit. Their four-sided glazing, thin floors and piers, internal service panels and shared equipment decks remain editable geometry. Factory edge and façade finishes are calibrated separately for each theme. Product clearcoat and area lights preserve the shaded faces instead of flattening them into bright reflections. Thin cylinder geometry gives the network connections a stable physical width on high-density displays, including the connections within each layer. The network has stronger core links and lighter peripheral connections. Node materials add a continuous rim from the surface normal and view direction, while limiting fragmented environment highlights.
 
-The world-map component places the geographic samples on a regular four-degree lattice. Its 949 small solid cells share one instanced mesh, so their size and foreshortening follow the same perspective as the platform. Placement is decorative and fits the plate; it is not a geographic projection for measurement. Dispose the instanced mesh as well as its geometry and material so Three.js releases the instance matrix and color buffers.
+The world-map component uses 810 authored solid cells in `map-points.json`. Their positions follow the selected board's decorative motif, rather than a cartographic lattice. `modeling/trace_map.py` locates cell centers inside authored regions of the light reference, validates the source checksum, and projects the centers onto the real lower platform. The offline authoring script requires Python 3 and Pillow; regenerate with `python3 .storybook/brand-exploration/modeling/trace_map.py`, then format the JSON with the repository's Prettier command. Its calibration follows the assembly camera, layer compensation and comparison crop; refit these together if the composition changes. Marks that would overhang the plate are excluded.
 
-`components/layer-junctions.ts` owns the per-layer node positions, sizes and weighted connections. Suspended junctions continue through the product layer's side columns, while the central connection passes behind the appliance before meeting its display grid. The map's central terminal is a horizontal ring with actual torus geometry. Moving light traces choose from each layer's authored connections instead of assuming matching node indexes. These shapes share the ordinary hover, palette, motion and disposal lifecycle.
+Only model-space positions and cell sizes enter the runtime. All cells share one instanced mesh, so their solid faces and foreshortening follow the platform under pointer movement and in the focused map view. This artistic motif is not a dataset coverage claim or a geographic projection for measurement. Dispose the instanced mesh as well as its geometry and material so Three.js releases the instance matrix and color buffers.
+
+`components/layer-junctions.ts` owns the per-layer node positions, sizes and weighted connections. Suspended junctions continue through the product layer's side columns, while the central connection passes behind the appliance before meeting its display grid. The map's central terminal is a horizontal torus on a raised stem, with a small anchor on the map plane. Moving light traces choose from each layer's authored connections instead of assuming matching node indexes. These shapes share the ordinary hover, palette, motion and disposal lifecycle.
 
 The assembly camera uses a shallow perspective calibrated against the visible platform edges in the reference. Keep the camera distance, elevation and layer spacing together: changing elevation alone can match one layer while changing the depth of the other four. Focused part cameras remain independent. Platforms overlap in projection. Their surfaces, cut edges and outlines are clipped by the upper platform's camera volume so the lower rear corner stays behind it. This clipping follows the actual animated geometry and camera; it does not hide the translucent network or require a screen-space mask image.
 

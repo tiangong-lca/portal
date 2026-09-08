@@ -38,9 +38,10 @@ const JUNCTIONS = [
     [0.65, 0.025, 0.65],
   ],
   [
-    [0.382, 0.04, 0.362],
+    [0.767, 0.36, 0.746],
     [-0.38, 0.02, 1.332],
     [1.46, 0.02, -0.301],
+    [0.767, 0.018, 0.746],
   ],
 ];
 
@@ -93,7 +94,7 @@ const NODE_SIZES = [
   [1.65, 1, 1, 1, 1, 1],
   [1.4, 1, 1, 1, 1, 1, 0.65, 0.38, 0.35],
   [0.24, 0.8, 0.5, 0.32, 0.32, 0.7, 0.8, 0.18],
-  [1.4, 0.18, 0.18],
+  [1.4, 0.18, 0.18, 0.34],
 ];
 
 /** A small spatial graph between the five authored layers. */
@@ -116,12 +117,16 @@ export function createLayerJunctions(
         point.y,
         point.z,
         NODE_SIZES[i]![j]!,
-        i === 1 && j === 3 ? 0.5 : 0,
+        i === 1 && j === 3 ? 0.5 : i === 4 && j === 3 ? 0.45 : 0,
         i === 4 && j === 0 ? "ring" : "bead",
       );
     }
     for (const [a, b, opacity] of SURFACE_LINKS[i]!) {
       kit.wire([points[i]![a]!, points[i]![b]!], layers[i]!, i, opacity);
+    }
+    if (i === 4) {
+      const stem = kit.wire([points[i]![0]!, points[i]![3]!], layers[i]!, i, 0.36);
+      stem.scale.x = stem.scale.z = 2;
     }
   }
   return points;

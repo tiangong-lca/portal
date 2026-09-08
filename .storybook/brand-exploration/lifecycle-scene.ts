@@ -354,7 +354,7 @@ export function createLifecycleScene(
           ? entry.layer < 3
             ? 2.85
             : entry.layer === 4
-              ? 1.25
+              ? 1.7
               : 1
           : entry.role === "display-plinth"
             ? 0.2

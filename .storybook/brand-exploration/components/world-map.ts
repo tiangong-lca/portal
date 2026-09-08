@@ -1,10 +1,10 @@
 import * as THREE from "three";
-import landPoints from "../land-points.json";
+import mapPoints from "../map-points.json";
 import type { OpticalKit } from "./optical-kit";
 
-/** Geographic cells share real geometry, so their size and foreshortening follow the plate. */
+/** Authored cells share real geometry, so their size and foreshortening follow the plate. */
 export function createWorldMap(parent: THREE.Group, kit: OpticalKit) {
-  const geometry = new THREE.BoxGeometry(0.022, 0.01, 0.022);
+  const geometry = new THREE.BoxGeometry(0.027, 0.012, 0.027);
   const normals = geometry.getAttribute("normal");
   const faceColors: number[] = [];
   for (let i = 0; i < normals.count; i++) {
@@ -20,23 +20,12 @@ export function createWorldMap(parent: THREE.Group, kit: OpticalKit) {
       "node",
       "map",
     ),
-    landPoints.length,
+    mapPoints.length,
   );
   const transform = new THREE.Matrix4();
   const tint = new THREE.Color();
-  landPoints.forEach(([x = 0, z = 0], i) => {
-    const horizontal = x * 1.18 + z * 0.7 + 0.38;
-    const depth = z * 1.75 + horizontal * 0.2 + 1.08;
-    // Skew along the plate's diagonal and compress outer corners smoothly.
-    // A positive radial derivative keeps islands distinct near the cut edge.
-    const reach = Math.abs(horizontal) + Math.abs(depth);
-    const extent = reach > 2.25 ? 2.25 + 0.55 * (1 - Math.exp(-(reach - 2.25) / 0.55)) : reach;
-    const fit = reach > 0 ? extent / reach : 1;
-    transform.makeTranslation(
-      ((horizontal + depth) * fit) / Math.SQRT2,
-      0.009,
-      ((depth - horizontal) * fit) / Math.SQRT2,
-    );
+  mapPoints.forEach(([x = 0, z = 0, size = 1], i) => {
+    transform.makeScale(size, size, size).setPosition(x, 0.009, z);
     map.setMatrixAt(i, transform);
     const brightness = 0.82 + Math.abs(Math.sin(i * 19.7)) * 0.28;
     map.setColorAt(i, tint.setRGB(brightness, brightness, brightness));
@@ -45,7 +34,7 @@ export function createWorldMap(parent: THREE.Group, kit: OpticalKit) {
   map.instanceColor!.needsUpdate = true;
   map.computeBoundingBox();
   map.computeBoundingSphere();
-  map.name = "Geographic point cloud";
+  map.name = "Authored world-map cells";
   parent.add(map);
   return map;
 }
