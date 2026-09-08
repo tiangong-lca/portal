@@ -35,7 +35,7 @@ export function createGlassPlate(parent: THREE.Group, layer: number, kit: Optica
           float sheen = exp(-dot(vUv - vec2(0.86, 0.14), vUv - vec2(0.86, 0.14)) * 6.0);
           float edge = min(min(vUv.x, 1.0-vUv.x), min(vUv.y, 1.0-vUv.y));
           float rim = exp(-edge * 170.0);
-          float a = (0.018 + 0.15 * sheen + 0.04 * fresnel + rim * 0.18) * strength * gain;
+          float a = (0.018 + 0.23 * sheen + 0.04 * fresnel + rim * 0.13) * strength * gain;
           vec3 reflection = mix(glassColor, vec3(0.93, 0.87, 1.0), pow(sheen, 4.0) * 0.38);
           gl_FragColor = vec4(reflection, a);
           #include <colorspace_fragment>
@@ -61,6 +61,28 @@ export function createGlassPlate(parent: THREE.Group, layer: number, kit: Optica
     kit.lineMaterial(layer, 0.4),
   );
   parent.add(edge);
+  // A real cut edge gives the optical sheet thickness when the view moves.
+  const band = new THREE.PlaneGeometry(4.15, 0.024);
+  const bandMaterial = kit.tint(
+    new THREE.MeshBasicMaterial({
+      color: 0xbca2db,
+      transparent: true,
+      opacity: 0.32,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      toneMapped: false,
+    }),
+    layer,
+    "line",
+    "cut-edge",
+  );
+  for (let side = 0; side < 4; side++) {
+    const wall = new THREE.Mesh(band, bandMaterial);
+    const angle = (side * Math.PI) / 2;
+    wall.position.set(Math.sin(angle) * 2.075, -0.012, Math.cos(angle) * 2.075);
+    wall.rotation.y = angle;
+    parent.add(wall);
+  }
   return plate;
 }
 

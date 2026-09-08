@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { OpticalWire } from "./optical-wire";
 
 type ColorMaterial = THREE.Material & { color: THREE.Color };
 export type Tint = {
@@ -33,7 +34,7 @@ export function createOpticalKit() {
   textures.push(dot);
 
   const tints: Tint[] = [];
-  const highlights: { line: THREE.Line; midpoint: THREE.Vector3; opacity: number }[] = [];
+  const highlights: { line: OpticalWire; opacity: number }[] = [];
   const nodes: {
     mesh: THREE.Mesh<THREE.SphereGeometry, THREE.MeshPhysicalMaterial>;
     halo: THREE.Sprite;
@@ -61,17 +62,25 @@ export function createOpticalKit() {
       layer,
       "line",
     );
+  const filament = new THREE.CylinderGeometry(0.0055, 0.0055, 1, 6, 1, true);
   const wire = (points: THREE.Vector3[], parent: THREE.Object3D, layer: number, opacity = 0.3) => {
-    const line = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(points),
-      lineMaterial(layer, opacity),
+    const line = new OpticalWire(
+      filament,
+      tint(
+        new THREE.MeshBasicMaterial({
+          color: 0xb696e8,
+          transparent: true,
+          opacity,
+          depthWrite: false,
+          toneMapped: false,
+        }),
+        layer,
+        "line",
+      ),
     );
+    line.setEndpoints(points[0]!, points[1]!);
     parent.add(line);
-    highlights.push({
-      line,
-      midpoint: points[0]!.clone().lerp(points[points.length - 1]!, 0.5),
-      opacity,
-    });
+    highlights.push({ line, opacity });
     return line;
   };
   const sphere = new THREE.SphereGeometry(0.058, 28, 20);

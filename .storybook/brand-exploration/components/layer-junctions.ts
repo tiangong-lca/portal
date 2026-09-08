@@ -35,6 +35,44 @@ const JUNCTIONS = [
   ],
 ];
 
+const SURFACE_LINKS = [
+  [],
+  [
+    [0, 1],
+    [0, 2],
+    [0, 3],
+    [0, 4],
+    [0, 5],
+    [1, 5],
+    [5, 3],
+    [1, 2],
+    [2, 4],
+  ],
+  [
+    [0, 1],
+    [0, 2],
+    [0, 3],
+    [0, 4],
+    [0, 5],
+    [1, 3],
+    [3, 5],
+    [5, 4],
+    [4, 2],
+  ],
+  [
+    [0, 1],
+    [0, 2],
+    [1, 2],
+    [1, 3],
+    [2, 4],
+    [3, 4],
+  ],
+  [
+    [0, 1],
+    [0, 2],
+  ],
+];
+
 /** A small spatial graph between the five authored layers. */
 export function createLayerJunctions(
   layers: THREE.Group[],
@@ -57,6 +95,9 @@ export function createLayerJunctions(
         j === 0 ? (i === 1 ? 1.65 : i === 3 ? 0.6 : 1.4) : i === 3 ? 0.8 : 1,
         i === 1 && j === 3 ? 0.5 : 0,
       );
+    }
+    for (const [a = 0, b = 0] of SURFACE_LINKS[i]!) {
+      kit.wire([points[i]![a]!, points[i]![b]!], layers[i]!, i, i === 4 ? 0.12 : 0.21);
     }
   }
   return points;

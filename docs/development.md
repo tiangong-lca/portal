@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-08
-lastReviewedCommit: 23a09bd8c2be82f6ee2eaf39f3004a983d69aaba
+lastReviewedCommit: fd299004cf1f1a6ec064c5393bb33a2d0e1de257
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -117,6 +117,8 @@ blender --background --python-exit-code 1 --python .storybook/brand-exploration/
 ```
 
 The authoring file retains individual equipment parts; the GLB merges meshes by material within each model group and preserves the animated turbine rotors. Model groups retain their base footprints as metadata for analytic contact shading, which is computed by a shader without a baked shadow image. `components/` owns the shared optical primitives, per-layer junction graph and procedural components. The geographic sampler produces `land-points.json` from Natural Earth's public-domain land polygons; source URL and SHA-256 are retained in the asset `NOTICE.txt`. Format regenerated point data with the repository's Prettier command before committing it.
+
+Energy and factory materials use optical transmission against the study's theme background; keep the renderer background synchronized when changing themes. Thin cylinder geometry gives the network connections a stable physical width on high-density displays, including the connections within each layer. The world-map component owns the decorative placement of the geographic samples inside its isometric plate.
 
 The original light/dark boards are served from `.storybook/public/brand-exploration/`. `artwork.json` owns their dimensions, comparison crop, source paths and SHA-256 receipts. Keep those values and asset notices synchronized when deliberately replacing a selected reference. Model assets load from the Storybook host, and the renderer is a dev dependency; public Portal routes do not import this study.
 

@@ -12,16 +12,21 @@ export function prepareModel(model: THREE.Object3D, layer: number, kit: OpticalK
       const solid = layer === 3;
       const cavity = role === "Cavity" || role === "Screen";
       const glass = role === "Glass";
+      const optical = !solid && (role === "Shell" || role === "Trim");
       const material = new THREE.MeshPhysicalMaterial({
         name: role,
-        metalness: cavity ? 0.25 : solid ? 0.64 : 0.35,
-        roughness: role === "Trim" ? (solid ? 0.28 : 0.18) : glass ? 0.12 : 0.34,
+        metalness: optical ? 0 : cavity ? 0.25 : solid ? 0.64 : 0.35,
+        roughness: optical ? 0.16 : role === "Trim" ? 0.28 : glass ? 0.12 : 0.34,
+        transmission: optical ? 0.72 : 0,
+        thickness: optical ? 0.08 : 0,
+        attenuationDistance: 0.1,
+        ior: optical ? 1.28 : 1.5,
         clearcoat: solid ? 0.9 : 0.4,
         clearcoatRoughness: 0.14,
-        envMapIntensity: solid ? (glass || cavity ? 0.35 : 0.9) : 0.28,
-        transparent: !solid || glass,
-        opacity: solid ? (glass ? 0.68 : 1) : cavity ? 0.7 : role === "Shell" ? 0.24 : 0.42,
-        depthWrite: solid && !glass,
+        envMapIntensity: optical ? 0.8 : solid ? (glass || cavity ? 0.35 : 0.9) : 0.28,
+        transparent: !optical && (!solid || glass),
+        opacity: optical ? 1 : solid ? (glass ? 0.68 : 1) : cavity ? 0.7 : 0.42,
+        depthWrite: optical || (solid && !glass),
       });
       kit.tint(material, layer, "model", role);
       return material;
@@ -33,7 +38,7 @@ export function prepareModel(model: THREE.Object3D, layer: number, kit: OpticalK
         mesh: object,
         line: new THREE.LineSegments(
           new THREE.EdgesGeometry(object.geometry, 38),
-          kit.lineMaterial(layer, 0.32),
+          kit.lineMaterial(layer, 0.24),
         ),
       });
     }

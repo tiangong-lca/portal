@@ -9,6 +9,7 @@ import { createLayerJunctions, LAYER_LINKS } from "./components/layer-junctions"
 import { createWorldMap } from "./components/world-map";
 import { prepareModel } from "./components/model-materials";
 import { createContactShadows } from "./components/contact-shadows";
+import type { OpticalWire } from "./components/optical-wire";
 
 export type SculpturePart =
   "assembly" | "plate" | "network" | "energy" | "factory" | "product" | "map";
@@ -63,13 +64,14 @@ export function createLifecycleScene(
     antialias: true,
     powerPreference: "low-power",
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+  renderer.setPixelRatio(Math.min(Math.max(window.devicePixelRatio, 1.5), 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
   renderer.domElement.setAttribute("aria-hidden", "true");
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
+  scene.background = new THREE.Color();
   renderer.setClearColor(0x000000, 0);
   const root = new THREE.Group();
   scene.add(root);
@@ -114,7 +116,7 @@ export function createLifecycleScene(
   const junctions =
     part === "plate" || part === "product" ? [] : createLayerJunctions(layers, network, optics);
   // Sparse diagonal links continue through the clear plates, keeping their centers legible.
-  const links: { a: number; b: number; start: number; end: number; line: THREE.Line }[] = [];
+  const links: { a: number; b: number; start: number; end: number; line: OpticalWire }[] = [];
   for (let i = 0; assembly && i < 4; i++) {
     for (const [a = 0, b = 0] of LAYER_LINKS[i]!) {
       links.push({
@@ -153,14 +155,14 @@ export function createLifecycleScene(
     new THREE.SpriteMaterial({
       map: glow,
       color: 0x292237,
-      opacity: 0.2,
+      opacity: 0.42,
       transparent: true,
       depthWrite: false,
       depthTest: false,
     }),
   );
-  shadow.position.set(0, assembly ? -4.88 : -0.15, 0);
-  shadow.scale.set(6.7, 2.1, 1);
+  shadow.position.set(0, assembly ? -6.25 : -0.15, 0);
+  shadow.scale.set(7.5, 3.3, 1);
   shadow.renderOrder = -3;
   root.add(shadow);
   const pulses = Array.from({ length: 4 }, (_, i) => {
@@ -197,6 +199,8 @@ export function createLifecycleScene(
   const cursor = new THREE.Vector2();
   const zero = new THREE.Vector2();
   const projected = new THREE.Vector3();
+  const linkStart = new THREE.Vector3();
+  const linkEnd = new THREE.Vector3();
   const color = new THREE.Color();
   const palettes = {
     dark: ["#9aafff", "#73c9ee", "#7ed9bb", "#edb582", "#d895e6"],
@@ -221,6 +225,7 @@ export function createLifecycleScene(
   const finishColor = new THREE.Color();
   function paint(dt: number) {
     const dark = state.theme === "dark";
+    (scene.background as THREE.Color).set(dark ? "#090a0d" : "#fcfcfe");
     const alpha = state.reduced ? 1 : 1 - Math.exp(-dt * 6);
     for (const entry of tints) {
       color.set(
@@ -229,6 +234,8 @@ export function createLifecycleScene(
       if (entry.kind === "model") {
         const role = (entry.role ?? "Shell") as keyof typeof finishes.dark;
         finishColor.set(finishes[state.theme][role] ?? finishes[state.theme].Shell);
+        if (!dark && entry.layer !== 3 && (role === "Shell" || role === "Trim"))
+          finishColor.set(role === "Shell" ? "#b4afbd" : "#c4bece");
         color.lerp(
           finishColor,
           role === "Cavity" || role === "Screen" || role === "Glass"
@@ -243,12 +250,20 @@ export function createLifecycleScene(
         color.set(dark ? "#d6bbee" : "#756b83");
       if (entry.kind === "halo" && !state.colorful)
         color.set(entry.role === "aura" ? "#8753ce" : "#9c42ee");
-      if (entry.kind === "line") color.multiplyScalar(dark ? 1.12 : 1);
+      if (entry.kind === "line") {
+        if (!state.colorful && !dark) color.set("#9a86b5");
+        color.multiplyScalar(dark ? 1.12 : 1);
+        if (entry.role === "cut-edge") entry.material.opacity = dark ? 0.3 : 0.14;
+      }
       entry.material.color.lerp(color, alpha);
       if (entry.kind === "model" && entry.material instanceof THREE.MeshPhysicalMaterial) {
         const solid = entry.layer === 3;
         if (solid) entry.material.metalness = dark ? 0.4 : 0.15;
-        else {
+        else if (entry.material.transmission > 0) {
+          entry.material.opacity = 1;
+          entry.material.transmission = dark ? 0.72 : 0.48;
+          entry.material.attenuationColor.set(dark ? "#aa91c8" : "#b8adc5");
+        } else {
           entry.material.opacity =
             entry.role === "Cavity" || entry.role === "Screen"
               ? 0.7
@@ -320,22 +335,15 @@ export function createLifecycleScene(
       }
     }
     for (const link of links) {
-      const attribute = link.line.geometry.getAttribute("position") as THREE.BufferAttribute;
-      for (const [index, level, anchor] of [
-        [0, link.start, link.a],
-        [1, link.end, link.b],
-      ]) {
-        const group = layers[level!]!;
-        const position = junctions[level!]![anchor!]!;
-        attribute.setXYZ(
-          index!,
-          position.x * group.scale.x + group.position.x,
-          group.position.y + position.y * group.scale.y,
-          position.z * group.scale.z + group.position.z,
-        );
-      }
-      attribute.needsUpdate = true;
-      link.line.geometry.computeBoundingSphere();
+      linkStart
+        .copy(junctions[link.start]![link.a]!)
+        .multiply(layers[link.start]!.scale)
+        .add(layers[link.start]!.position);
+      linkEnd
+        .copy(junctions[link.end]![link.b]!)
+        .multiply(layers[link.end]!.scale)
+        .add(layers[link.end]!.position);
+      link.line.setEndpoints(linkStart, linkEnd);
     }
     for (let i = 0; i < pulses.length; i++) {
       if (!assembly) {
@@ -397,20 +405,12 @@ export function createLifecycleScene(
       );
     }
     for (const entry of highlights) {
-      if (entry.line.parent === root) {
-        const a = entry.line.geometry.getAttribute("position");
-        entry.midpoint.set(
-          (a.getX(0) + a.getX(1)) / 2,
-          (a.getY(0) + a.getY(1)) / 2,
-          (a.getZ(0) + a.getZ(1)) / 2,
-        );
-      }
-      projected.copy(entry.midpoint).applyMatrix4(entry.line.matrixWorld).project(camera);
+      entry.line.getWorldPosition(projected).project(camera);
       const proximity =
         pointerInside && moving
           ? Math.max(0, 1 - Math.hypot(projected.x - pointer.x, projected.y - pointer.y) / 0.28)
           : 0;
-      (entry.line.material as THREE.LineBasicMaterial).opacity = entry.opacity + proximity * 0.4;
+      entry.line.material.opacity = entry.opacity + proximity * 0.4;
     }
     paint(dt);
     renderer.render(scene, camera);

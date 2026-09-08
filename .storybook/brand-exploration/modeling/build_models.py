@@ -68,6 +68,7 @@ def box(name, loc, dim, mat=shell, bevel=0.009):
         "Turbine foundation",
         "Instrumentation plinth",
         "Building plinth",
+        "Process skid base",
         "Peripheral plinth",
         "Appliance housing",
     }:
@@ -303,6 +304,13 @@ def build_factory():
                 )
         floor_count = max(2, round(h / 0.25))
         floor_height = h / floor_count
+        box(
+            "Recessed service core",
+            (x - w * 0.12, 0.055 + h / 2, z - d * 0.12),
+            (w * 0.32, h - 0.04, d * 0.38),
+            shell,
+            0.004,
+        )
         for floor in range(floor_count + 1):
             box(
                 "Structural floor",
@@ -318,6 +326,13 @@ def build_factory():
         box("Roof inset", (x, 0.067 + h, z), (w - 0.035, 0.008, d - 0.035), dark, 0.002)
         for floor in range(floor_count):
             y = 0.062 + (floor + 0.5) * floor_height
+            box(
+                "Facade spandrel",
+                (x, y - floor_height * 0.38, z + d / 2 - 0.018),
+                (w - 0.035, floor_height * 0.15, 0.022),
+                shell,
+                0.002,
+            )
             for bay in range(2):
                 bx = x - w * 0.25 + bay * w * 0.5
                 box(
@@ -343,6 +358,15 @@ def build_factory():
                     glass,
                     0.001,
                 )
+            pipe(
+                "Floor service run",
+                [
+                    (x + w * 0.15, y, z + d * 0.15),
+                    (x + w * 0.15, y + floor_height * 0.24, z + d * 0.15),
+                    (x + w / 2, y + floor_height * 0.24, z + d * 0.15),
+                ],
+                0.005,
+            )
         for post in [-1, 0, 1]:
             box(
                 "Facade mullion",
@@ -360,6 +384,25 @@ def build_factory():
                 trim,
                 0.001,
             )
+    for x, z, w, d in [(-0.05, 1.27, 0.30, 0.20), (1.29, 0.30, 0.28, 0.22)]:
+        box(
+            "Process skid base", (x, 0.018, z), (w + 0.04, 0.036, d + 0.04), trim, 0.004
+        )
+        box("Process equipment casing", (x, 0.098, z), (w, 0.15, d), shell, 0.006)
+        for n in range(3):
+            box(
+                "Process case vent",
+                (x - w * 0.28 + n * w * 0.28, 0.114, z + d / 2 + 0.002),
+                (w * 0.13, 0.066, 0.004),
+                dark,
+                0.001,
+            )
+        cylinder("Skid feed valve", (x, 0.188, z), 0.032, 0.035, trim)
+        pipe(
+            "Skid service outlet",
+            [(x + w * 0.4, 0.15, z), (x + w * 0.7, 0.15, z), (x + w * 0.7, 0.035, z)],
+            0.008,
+        )
     for i in range(2):
         x = -0.48 + i * 0.18
         z = 1.26

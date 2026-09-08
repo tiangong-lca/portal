@@ -67,10 +67,10 @@ export function createNodeNetwork(parent: THREE.Group, kit: OpticalKit) {
       v.x,
       v.y,
       v.z,
-      i === 9 ? 1.55 : i === 4 || i === 5 ? 0.78 : i >= 10 ? 0.95 : 1.35,
+      i === 9 ? 1.55 : i === 4 || i === 5 ? 0.78 : i === 10 || i === 13 ? 0.95 : 1.35,
       i === 11 || i === 12 ? 0.9 : i === 13 ? 0.65 : 0,
     ),
   );
-  for (const [a, b] of edges) kit.wire([vertices[a!]!, vertices[b!]!], parent, 0, 0.26);
+  for (const [a, b] of edges) kit.wire([vertices[a!]!, vertices[b!]!], parent, 0, 0.36);
   return vertices;
 }
