@@ -1,10 +1,19 @@
-import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { Moon, Sun, Pause, Play, RotateCcw, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createLifecycleScene, type SculptureTheme, type SculpturePart } from "./lifecycle-scene";
 import "@fontsource-variable/noto-sans-sc";
 import "@fontsource-variable/source-sans-3";
 import "./lifecycle-sculpture.css";
+import { ModelTemplateContext } from "./model-template";
 
 const motionQuery = "(prefers-reduced-motion: reduce)";
 const subscribeMotion = (callback: () => void) => {
@@ -151,6 +160,7 @@ export function LifecycleSculpture({
   locale = "zh-CN",
 }: LifecycleSculptureProps) {
   const text = copy[locale];
+  const template = useContext(ModelTemplateContext);
   const [theme, setTheme] = useState(initialTheme);
   const [colorful, setColorful] = useState(initialColorful);
   const [paused, setPaused] = useState(false);
@@ -163,7 +173,7 @@ export function LifecycleSculpture({
   const hintId = useId();
   const reduced = reducedMotion || systemReduced;
   const current = useRef({ theme, colorful, paused, reduced });
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = host.current;
     if (!element) return;
     const lost = (event: Event) => {
@@ -175,15 +185,16 @@ export function LifecycleSculpture({
     };
     let canvas: HTMLCanvasElement | null = null;
     let mounted = true;
-    const frame = requestAnimationFrame(() => {
+    const initialize = () => {
       setStatus("loading");
       if (unavailable) {
         setStatus("unavailable");
         return;
       }
       try {
-        const instance = createLifecycleScene(element, current.current, assetUrl, part);
+        const instance = createLifecycleScene(element, current.current, assetUrl, part, template);
         scene.current = instance;
+        if (template) setStatus("ready");
         canvas = element.querySelector("canvas");
         canvas?.addEventListener("webglcontextlost", lost);
         instance.ready
@@ -200,15 +211,15 @@ export function LifecycleSculpture({
       } catch {
         setStatus("unavailable");
       }
-    });
+    };
+    initialize();
     return () => {
       mounted = false;
-      cancelAnimationFrame(frame);
       canvas?.removeEventListener("webglcontextlost", lost);
       scene.current?.dispose();
       scene.current = null;
     };
-  }, [unavailable, assetUrl, attempt, part]);
+  }, [unavailable, assetUrl, attempt, part, template]);
   useEffect(() => {
     current.current = { theme, colorful, paused, reduced };
     scene.current?.update(current.current);

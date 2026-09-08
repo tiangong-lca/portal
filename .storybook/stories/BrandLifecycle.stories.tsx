@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, waitFor } from "storybook/test";
 import { LifecycleSculpture } from "../brand-exploration/LifecycleSculpture";
 import { ReferenceComparison } from "../brand-exploration/ReferenceComparison";
+import { loadModelTemplate } from "../brand-exploration/model-template";
+import { ModelTemplateProvider } from "../brand-exploration/ModelTemplateProvider";
 import { storyLocale } from "../fixtures";
 
 const nextPaint = () =>
@@ -23,11 +25,21 @@ const frameCount = (element: HTMLElement) =>
 const meta = {
   title: "Brand Explorations/Lifecycle Sculpture",
   component: LifecycleSculpture,
-  subcomponents: { ReferenceComparison },
+  subcomponents: { ReferenceComparison, ModelTemplateProvider },
   parameters: { pageLayout: true },
   args: { initialTheme: "dark", initialColorful: false },
-  render: (args, { globals }) => (
-    <LifecycleSculpture key={JSON.stringify(args)} {...args} locale={storyLocale(globals)} />
+  loaders: [
+    async ({ args }) => ({
+      modelTemplate:
+        !args.unavailable && !args.assetUrl
+          ? await loadModelTemplate().catch(() => undefined)
+          : undefined,
+    }),
+  ],
+  render: (args, { globals, loaded }) => (
+    <ModelTemplateProvider template={loaded.modelTemplate}>
+      <LifecycleSculpture key={JSON.stringify(args)} {...args} locale={storyLocale(globals)} />
+    </ModelTemplateProvider>
   ),
   play: async ({ canvasElement }) => rendered(canvasElement),
 } satisfies Meta<typeof LifecycleSculpture>;
@@ -132,11 +144,19 @@ export const ColorAndThemeInteraction: Story = {
 };
 
 export const ReferenceDark: Story = {
-  render: (args, { globals }) => <ReferenceComparison {...args} locale={storyLocale(globals)} />,
+  render: (args, { globals, loaded }) => (
+    <ModelTemplateProvider template={loaded.modelTemplate}>
+      <ReferenceComparison {...args} locale={storyLocale(globals)} />
+    </ModelTemplateProvider>
+  ),
 };
 export const ReferenceLight: Story = {
   args: { initialTheme: "light" },
-  render: (args, { globals }) => <ReferenceComparison {...args} locale={storyLocale(globals)} />,
+  render: (args, { globals, loaded }) => (
+    <ModelTemplateProvider template={loaded.modelTemplate}>
+      <ReferenceComparison {...args} locale={storyLocale(globals)} />
+    </ModelTemplateProvider>
+  ),
 };
 
 // Each part uses the same renderer, material rig and geometry as the assembly.

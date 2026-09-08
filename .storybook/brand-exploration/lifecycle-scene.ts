@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import type { ModelTemplate } from "./model-template";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { createStudioEnvironment } from "./components/studio-environment";
 import { createOpticalKit } from "./components/optical-kit";
@@ -50,6 +51,7 @@ export function createLifecycleScene(
   initial: SceneState,
   modelUrl = "./brand-exploration/lifecycle-models.glb",
   part: SculpturePart = "assembly",
+  template?: ModelTemplate,
 ) {
   const focusedLayer = {
     assembly: -1,
@@ -439,54 +441,68 @@ export function createLifecycleScene(
   paint(1);
 
   const abort = new AbortController();
-  const ready = fetch(modelUrl, { signal: abort.signal })
-    .then((response) => {
-      if (!response.ok) throw new Error("Lifecycle model could not be loaded");
-      return response.arrayBuffer();
-    })
-    .then((buffer) => new GLTFLoader().parseAsync(buffer, ""))
-    .then(async (gltf) => {
-      if (disposed) {
-        release(gltf.scene);
-        return;
+  function installModels(modelRoot: THREE.Group) {
+    for (const name of ["EnergyModels", "FactoryModels", "ProductModels"]) {
+      if (!modelRoot.getObjectByName(name)) {
+        release(modelRoot);
+        throw new Error(`Lifecycle asset missing ${name}`);
       }
-      const importedMaterials = new Set<THREE.Material>();
-      gltf.scene.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-          for (const material of Array.isArray(object.material)
-            ? object.material
-            : [object.material])
-            importedMaterials.add(material);
-        }
-      });
-      for (const [name, layer] of [
-        ["EnergyModels", 1],
-        ["FactoryModels", 2],
-        ["ProductModels", 3],
-      ] as const) {
-        const model = gltf.scene.getObjectByName(name);
-        if (!model) throw new Error(`Lifecycle asset missing ${name}`);
-        prepareModel(model, layer, optics);
-        model.traverse((object) => {
-          if (object.name === "Rotor0" || object.name === "Rotor1") turbines.push(object);
-        });
-        if (layer === 2) model.position.set(0.15, 0, 0.15);
-        if (layer === 3) {
-          model.position.set(0.75, 0.01, 0.83);
-          model.scale.setScalar(1.08);
-        }
-        if (part === "plate") {
-          release(model);
-        } else layers[layer]!.add(model);
-      }
-      // Imported materials were cloned per layer for independent palette transitions.
-      importedMaterials.forEach((material) => material.dispose());
-      paint(1);
-      await renderer.compileAsync(scene, camera);
-      if (!disposed) {
-        requestRender();
+    }
+    const importedMaterials = new Set<THREE.Material>();
+    modelRoot.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        for (const material of Array.isArray(object.material) ? object.material : [object.material])
+          importedMaterials.add(material);
       }
     });
+    for (const [name, layer] of [
+      ["EnergyModels", 1],
+      ["FactoryModels", 2],
+      ["ProductModels", 3],
+    ] as const) {
+      const model = modelRoot.getObjectByName(name);
+      if (!model) throw new Error(`Lifecycle asset missing ${name}`);
+      prepareModel(model, layer, optics);
+      model.traverse((object) => {
+        if (object.name === "Rotor0" || object.name === "Rotor1") turbines.push(object);
+      });
+      if (layer === 2) model.position.set(0.15, 0, 0.15);
+      if (layer === 3) {
+        model.position.set(0.75, 0.01, 0.83);
+        model.scale.setScalar(1.08);
+      }
+      if (part === "plate") {
+        release(model);
+      } else layers[layer]!.add(model);
+    }
+    // Imported materials were cloned per layer for independent palette transitions.
+    importedMaterials.forEach((material) => material.dispose());
+    paint(1);
+  }
+  let ready: Promise<void>;
+  if (template) {
+    installModels(template.instantiate());
+    // The first real 3D frame is part of mounting, before an embedded preview freezes RAF.
+    if (frame) cancelAnimationFrame(frame);
+    render(performance.now());
+    ready = Promise.resolve();
+  } else {
+    ready = fetch(modelUrl, { signal: abort.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error("Lifecycle model could not be loaded");
+        return response.arrayBuffer();
+      })
+      .then((buffer) => new GLTFLoader().parseAsync(buffer, ""))
+      .then(async (gltf) => {
+        if (disposed) {
+          release(gltf.scene);
+          return;
+        }
+        installModels(gltf.scene);
+        await renderer.compileAsync(scene, camera);
+        if (!disposed) requestRender();
+      });
+  }
 
   return {
     ready,
