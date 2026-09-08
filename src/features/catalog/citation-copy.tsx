@@ -13,6 +13,7 @@ type CitationCopyProps = {
   showText?: boolean;
 };
 
+/** @import import { CitationCopy } from "@/features/catalog/citation-copy"; */
 export function CitationCopy({
   citation,
   copiedLabel,

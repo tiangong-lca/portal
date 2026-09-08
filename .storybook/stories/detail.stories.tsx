@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { usePathname } from "@storybook/nextjs-vite/navigation.mock";
-import { expect, waitFor } from "storybook/test";
+import { expect, spyOn, waitFor, within } from "storybook/test";
 import { DetailHeader } from "../../src/features/catalog/detail-header";
+import { CitationDialog } from "../../src/features/catalog/citation-dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "../../src/components/ui/dialog";
+import { CitationCopy } from "../../src/features/catalog/citation-copy";
 import { OverviewPanel } from "../../src/features/catalog/overview-panel";
 import { VersionsPanel } from "../../src/features/catalog/versions-panel";
 import { LciaPanel } from "../../src/features/catalog/lcia-panel";
@@ -11,7 +14,18 @@ import { detailRecord, lciaLabels, lciaResult } from "../composition-fixtures";
 
 const meta = {
   component: DetailHeader,
-  subcomponents: { CompareSelectionProvider, OverviewPanel, VersionsPanel, LciaPanel },
+  subcomponents: {
+    CompareSelectionProvider,
+    OverviewPanel,
+    VersionsPanel,
+    LciaPanel,
+    CitationCopy,
+    CitationDialog,
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogTitle,
+  },
   title: "Catalog/Dataset detail",
   tags: ["!autodocs"],
   beforeEach({ globals, parameters }) {
@@ -27,6 +41,7 @@ const meta = {
       const locale = storyLocale(globals);
       const kind = parameters.flow ? "flow" : "process";
       const record = parameters.missing ? undefined : detailRecord(locale, kind);
+      if (record && parameters.noCitation) record.citation = undefined;
       return {
         header: await DetailHeader({
           locale,
@@ -91,7 +106,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Process: Story = {
-  play: async ({ canvas, userEvent, globals }) => {
+  play: async ({ canvas, globals }) => {
     const locale = storyLocale(globals);
     const m = dictionaries[locale].Detail;
     await expect(canvas.getByRole("heading", { level: 1 })).toHaveTextContent(
@@ -103,13 +118,8 @@ export const Process: Story = {
       "aria-current",
       "page",
     );
-    await expect(canvas.getByRole("link", { name: m.citation })).toHaveAttribute(
-      "href",
-      "#citation",
-    );
-    await userEvent.click(canvas.getByText(m.citation, { selector: "summary" }));
-    await expect(canvas.getByRole("button", { name: m.copyVersionId })).toBeVisible();
-    await expect(canvas.getByText(detailRecord(locale, "process").citation!)).toBeVisible();
+    await expect(canvas.getAllByRole("button", { name: m.citation })).toHaveLength(1);
+    await expect(canvas.queryByText(m.citation, { selector: "summary" })).not.toBeInTheDocument();
   },
 };
 export const Flow: Story = {
@@ -188,3 +198,93 @@ export const MobileFrenchLciaContext: Story = {
 };
 export const LciaUnavailable: Story = { parameters: { panel: "lcia", unavailable: true } };
 export const LciaFailure: Story = { parameters: { panel: "lcia", failure: true } };
+
+export const CitationExpanded: Story = {
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)].Detail;
+    await userEvent.click(canvas.getByRole("button", { name: m.citation }));
+    const dialog = within(
+      await within(canvasElement.ownerDocument.body).findByRole("dialog", { name: m.citation }),
+    );
+    await waitFor(() =>
+      expect(dialog.getByRole("button", { name: m.copyVersionId })).toBeVisible(),
+    );
+    await expect(
+      dialog.getByText(detailRecord(storyLocale(globals), "process").citation!),
+    ).toBeVisible();
+  },
+};
+export const CitationExpandedMobile: Story = {
+  ...CitationExpanded,
+  globals: { ...mobileGlobals, locale: "de" },
+};
+export const ProcessDark: Story = { ...Process, globals: { locale: "fr", theme: "dark" } };
+export const CitationCopyAndDenial: Story = {
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)].Detail;
+    await userEvent.click(canvas.getByRole("button", { name: m.citation }));
+    const dialog = within(
+      await within(canvasElement.ownerDocument.body).findByRole("dialog", { name: m.citation }),
+    );
+    const copy = spyOn(navigator.clipboard, "writeText")
+      .mockResolvedValueOnce()
+      .mockRejectedValueOnce(new Error("Clipboard denied"));
+    try {
+      await userEvent.click(dialog.getByRole("button", { name: m.copyVersionId }));
+      await expect(copy).toHaveBeenCalledWith(refs[0]);
+      await userEvent.click(dialog.getByRole("button", { name: m.copyCitation }));
+      await expect(dialog.findByRole("alert")).resolves.toHaveTextContent(m.copyFailed);
+      await expect(
+        dialog.getAllByText(detailRecord(storyLocale(globals), "process").citation!).length,
+      ).toBeGreaterThan(0);
+    } finally {
+      copy.mockRestore();
+    }
+  },
+};
+
+export const CitationKeyboard: Story = {
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)];
+    const body = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole("button", { name: m.Detail.citation });
+    trigger.focus();
+    await userEvent.keyboard("{Enter}");
+    const dialog = within(await body.findByRole("dialog", { name: m.Detail.citation }));
+    await expect(dialog.getByRole("heading", { name: m.Detail.citation })).toHaveFocus();
+    await userEvent.tab();
+    await expect(dialog.getByRole("button", { name: m.Detail.copyCitation })).toHaveFocus();
+    await userEvent.tab({ shift: true });
+    await expect(dialog.getByRole("button", { name: m.Common.close })).toHaveFocus();
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
+    await expect(trigger).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.click(
+      within(await body.findByRole("dialog")).getByRole("button", { name: m.Common.close }),
+    );
+    await waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
+    await expect(trigger).toHaveFocus();
+  },
+};
+export const CitationMissingText: Story = {
+  parameters: { noCitation: true },
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)].Detail;
+    await userEvent.click(canvas.getByRole("button", { name: m.citation }));
+    const dialog = within(await within(canvasElement.ownerDocument.body).findByRole("dialog"));
+    await waitFor(() => expect(dialog.getByText(m.citationUnavailable)).toBeVisible());
+    await expect(dialog.queryByRole("button", { name: m.copyCitation })).not.toBeInTheDocument();
+    const copy = spyOn(navigator.clipboard, "writeText").mockResolvedValue();
+    try {
+      await userEvent.click(dialog.getByRole("button", { name: m.copyVersionId }));
+      await expect(copy).toHaveBeenCalledWith(refs[0]);
+    } finally {
+      copy.mockRestore();
+    }
+  },
+};
+export const CitationDark: Story = {
+  ...CitationExpanded,
+  globals: { locale: "fr", theme: "dark" },
+};

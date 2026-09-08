@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-09-07
-lastReviewedCommit: 3341a500616f1657a6a1696df87f0c4ba1e7930b
+lastReviewedAt: 2026-09-08
+lastReviewedCommit: 60d734b6491a0b3621a4fb4ea0fc169387b70aa3
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
+lastReviewedNote: "Reviewed for Portal #67 citation dialog and comparison identity refinement: one header action opens an accessible modal with legacy hash support; comparison uses plain version text and an inline UUID field. Exact values and clipboard recovery remain intact."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -195,3 +195,31 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 组件及组合提供准确的 `component` / `subcomponents` 与 `@import` 模块引用。[manifest 检查](../scripts/check-storybook-manifest.mjs)验证覆盖、真实导入与关键 Props。Autodocs 和 Component Meta 的编译器适配由[精确包 hook](../scripts/pnpm-hooks.cjs)管理，版本以脚本和锁文件为准；升级时重新验证实际 API 文档、MCP 协议和场景。
 
 比较先显示需要关注的字段，并保留展开查看所有字段；LCIA 数值和单位保持原样，数据集/方法的精确版本可展开。目录覆盖与通过测试不能替代面向数据使用者的视觉审阅。
+
+### 完整页面设计样板
+
+尚未采纳的页面设计可放在 `.storybook/catalog-reference/`，由 `Design references/Catalog pages` 的完整场景独立审阅。样板复用正式基础组件、品牌、语义 token 与四语字典；页面布局和样板状态只存在于 Storybook，公开路由不得导入这些模块或样式。通过设计审阅后，再以独立交付将选定的组合模式接入实际页面和服务端数据契约。
+
+样板使用明确标注的合成身份、记录、匹配说明和计数。交互覆盖查找、筛选、选择、打开详情、返回、候选清单与引用，状态只保留在当前预览中。示例数值保持精度，缺失信息保持缺失，字段对齐不提供科学可比性结论。该样板不验证真实排名、动态分面、线上许可或公开能力。
+
+搜索样板以连续记录、对齐的地区/时间/单位和可读的匹配片段为核心；详情样板先展示参考产品、单位、地区和时间，再展开范围、输入输出、证据与精确版本。设计验收需要完整页面的桌面、窄屏、浅深主题与长文本审阅；自动测试通过不代表该提案已经成为正式设计基线。
+
+样板通过开发依赖随站点提供 Source Sans 3 与 Noto Sans SC 可变字体，仅在样板及其弹层作用域内使用。辅助说明、正文、长文阅读、记录标题和页面标题采用明确的字号角色；中文标题保留自然字距，西文标题只做轻微收紧。搜索结果按标题与身份标签、地区/时间/单位、匹配摘要连续排列；详情阅读列与侧栏共同决定列宽，不再在宽列中另加脱离网格的正文宽度限制。主要搜索保留 44px 控件，详情和行内操作使用 32px 紧凑尺寸，手机的详情操作与逐行收藏恢复至少 44px。字体大小、字重、圆角与密度的这些调整属于待审样板，不能据此覆盖全站正式组件。
+
+搜索样板在分面侧栏收起时，将筛选入口与排序放在同一结果工具栏；手机上这组操作排到结果数量下方，触控高度至少 44px。搜索结果与详情中的独立版本号统一使用 24px 高、13px 字号、4px 圆角的中性标签，采用正文字体与等宽数字，保留 `v` 前缀和原始版本字符串；标签是文本，不提供操作。完整 UUID@version 与精确数量仍保留技术字体。结果中的版本标签与公开内容图标采用一致的 24px 浅底、细边框和小圆角，整体跟随标题，空间不足时一起换行，不再在摘要下固定占一行。图标的可视尺寸与手机 44px 实际触控区域分开处理，并与相邻标题和收藏操作保持分离。公开内容状态使用图标，悬停、键盘聚焦和点击均可查看说明，支持 Escape、移出焦点和点击外部关闭；手机图标触控区域至少 44px。筛选选项与详情仍显示“含输入输出”或“仅数据说明”的四语文字，不用勾号暗示审核、质量或许可结论。
+
+样板搜索框下不再重复展示搜索模式或隐私提示；这不改变真实搜索与分享流程的隐私要求。合成数据说明在页面底部统一展示。样板未提供逐条来源名称，列表和标题区不补造统一来源，详情来源显示“未提供”，示例引用只组合已有的名称、年份和精确版本标识。
+
+### Catalog 共享业务组件
+
+`src/features/catalog/dataset-tags.tsx` 统一拥有 `DatasetVersionTag` 与 `PublicContentTag`，旁置 CSS 拥有标签尺寸与说明弹层样式。组件只接收精确版本、公开内容状态和本地化文案，不依赖 Storybook fixture、整条记录或页面 CSS。`components/ui` 继续拥有通用 Badge、Button 等基础组件；页面负责标签的位置、分组和换行。`Catalog/Dataset tags` 提供独立的图标、文字、浅深主题、窄屏和键盘说明场景。搜索与详情样板、正式详情的 `DetailHeader` 共用这些标签；其他正式页面仍按各自组合评审。
+
+`ResultsContinuation` 统一拥有游标列表底部的加载更多、加载中、失败重试与末尾展示；调用方传入已本地化的进度说明，不要求服务返回总数。搜索样板使用六条一批的合成分页来展示交互，不改变实际搜索的分页上限或游标契约。追加结果保留已选内容，将焦点交给首条新增记录；进入详情再返回保留已加载结果。新查询、分面或排序重置续页并忽略迟到响应；空结果不显示续页控件。稳定状态场景与重试、返回和请求隔离的交互场景分别保留。
+
+### 详情页与样板面板的布局
+
+正式 `DetailHeader` 使用 28px 桌面标题和 24px 手机标题，长名称自然换行；种类、独立版本和显式公开能力组成紧凑身份行。顶部只保留一个引用按钮，点击打开居中弹窗，正文中不再重复引用折叠入口。弹窗包含引用正文、精确标识及复制操作，支持 Escape 和关闭按钮，关闭后焦点返回顶部入口；既有 `#citation` 链接在客户端就绪后打开同一弹窗，关闭时清除该 hash。桌面操作按内容宽度排列，手机触控目标至少 44px；复制失败保留可手动复制的内容。详情子页面继续使用原生链接。
+
+正式 `OverviewPanel` 首先展示使用背景：Process 的参考产品、功能单位、地区和参考年；Flow 的 CAS、类型和参考流属性。说明与技术正文在阅读列，来源、许可和证据在侧栏，窄屏按阅读顺序堆叠。仅展示已提供的原始名称与说明，缺失字段不从其他类型推断。
+
+样板的候选清单保留完整名称、精确版本、地区/时间/单位和独立移除操作；空态提供返回目录入口。核对面板桌面按字段对齐，窄屏先列候选名称与版本，再按字段展示带稳定候选序号的值。核对中的版本使用中性辅助文字，保留 `v` 前缀和原始字符串；UUID 作为独立字段与其他值对齐展示，不再增加单独的标识折叠区。字段对齐不作科学可比性结论。打开面板时焦点位于标题并保持顶部阅读起点。稳定空态、多条记录、浅深主题、长本地化文字及移除/打开详情的交互分别保留场景。

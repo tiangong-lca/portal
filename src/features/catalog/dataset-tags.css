@@ -1,0 +1,85 @@
+.dataset-content-label {
+  font-size: 13px;
+  line-height: 20px;
+  gap: 4px;
+  white-space: normal;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 400;
+  padding: 1px 6px;
+}
+.dataset-content-label svg {
+  width: 13px;
+  height: 13px;
+}
+.dataset-content-trigger {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+}
+.dataset-content-face {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  flex-shrink: 0;
+}
+.dataset-content-face svg {
+  width: 14px;
+  height: 14px;
+}
+.dataset-content-trigger:is(:hover, [data-state="instant-open"], [data-state="delayed-open"])
+  .dataset-content-face {
+  color: var(--foreground);
+  border-color: var(--muted-foreground);
+}
+.dataset-content-tip {
+  z-index: 60;
+  max-width: min(280px, calc(100vw - 32px));
+  padding: 12px 14px;
+  color: var(--popover-foreground);
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
+  overflow-wrap: anywhere;
+}
+.dataset-content-tip strong {
+  display: block;
+  font-weight: 600;
+}
+.dataset-content-tip p {
+  margin: 4px 0 0;
+}
+.dataset-tag {
+  height: 24px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+.dataset-version {
+  padding: 0 7px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: lining-nums tabular-nums;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+
+.dataset-content-tip {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+}
+@media (max-width: 767px) {
+  .dataset-content-trigger {
+    min-width: 44px;
+    min-height: 44px;
+    /* Keep the 24px tag aligned while expanding its actual touch target. */
+    margin: -10px;
+  }
+}

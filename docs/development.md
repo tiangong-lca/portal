@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-09-07
-lastReviewedCommit: 3341a500616f1657a6a1696df87f0c4ba1e7930b
+lastReviewedAt: 2026-09-08
+lastReviewedCommit: 60d734b6491a0b3621a4fb4ea0fc169387b70aa3
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
+lastReviewedNote: "Reviewed for Portal #67 citation dialog and comparison identity refinement: one header action opens an accessible modal with legacy hash support; comparison uses plain version text and an inline UUID field. Exact values and clipboard recovery remain intact."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -103,6 +103,8 @@ Read the current top-level and selected command help before forming payloads. Di
 Use existing pnpm scripts and `pnpm exec` for installed binaries when an upstream skill shows generic `npm` or `npx` examples. Do not initialize an existing Storybook or upgrade dependencies as a side effect of ordinary UI work. Permission requests follow the active environment and existing user authorization; a generic skill's sandbox guidance does not override them.
 
 If MCP is unavailable, use the CLI. If that interface is also unavailable, continue applicable checks through repository scripts and inspect the rendered Storybook or product UI in the browser; report the unavailable review interface. A passing build alone does not prove visual quality or replace interaction/accessibility checks.
+
+The isolated catalog references import locked Fontsource variable-font dev dependencies. Vite serves their Unicode-range assets locally; public Portal routes do not import them. The matching upstream OFL notices are retained in `.storybook/public/fonts/` and copied into static Storybook output. When updating these fonts, refresh their notices from the reviewed packages and verify the dependency license check, emitted assets and rendered Chinese/Latin metrics.
 
 ## Project skills
 

@@ -17,7 +17,11 @@ const allowedLicenses = new Set([
   "Python-2.0",
 ]);
 
-const packageScopedLicenses = new Map([["LGPL-3.0-or-later", [/^@img\/sharp-libvips-/]]]);
+const packageScopedLicenses = new Map([
+  ["LGPL-3.0-or-later", [/^@img\/sharp-libvips-/]],
+  // Unmodified reference fonts; their notices ship in Storybook's static directory.
+  ["OFL-1.1", [/^@fontsource-variable\/(?:source-sans-3|noto-sans-sc)$/]],
+]);
 
 const pnpmArguments = ["licenses", "list", "--json", "--long"];
 const isWindows = process.platform === "win32";

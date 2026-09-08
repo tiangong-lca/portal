@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-09-07
-lastReviewedCommit: 3341a500616f1657a6a1696df87f0c4ba1e7930b
-lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
+lastReviewedAt: 2026-09-08
+lastReviewedCommit: 60d734b6491a0b3621a4fb4ea0fc169387b70aa3
+lastReviewedNote: "Reviewed for Portal #67 citation dialog and comparison identity refinement: one header action opens an accessible modal with legacy hash support; comparison uses plain version text and an inline UUID field. Exact values and clipboard recovery remain intact."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -398,7 +398,7 @@ Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时�
 
 ### 7.3 Process 详情
 
-固定头部显示数据源名称、`uuid@version`、按显式能力区分的元数据/输入输出/环境影响结果标记、版本切换和操作条。公开能力不等同于任意复用许可。Process 的参考产品和功能单位与 Flow 的 CAS、流类型和参考流属性分开呈现；缺少字段不补写，Flow 不套用过程的时间、功能单位或供给范围标签。
+头部显示已提供的数据源名称、独立精确版本标签、按显式能力区分的元数据/输入输出/环境影响结果标记、版本入口和操作条。顶部引用按钮打开含正文、完整 `uuid@version` 和复制操作的弹窗，不在正文中再显示重复折叠入口。既有 `#citation` 链接在客户端就绪后打开同一弹窗，关闭后清除该 hash 并恢复按钮焦点；没有引用正文时仍可复制精确标识。公开能力不等同于任意复用许可。Process 的参考产品和功能单位与 Flow 的 CAS、流类型和参考流属性分开呈现；缺少字段不补写，Flow 不套用过程的时间、功能单位或供给范围标签。
 
 操作条仅包含：
 
