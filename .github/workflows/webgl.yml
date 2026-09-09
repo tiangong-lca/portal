@@ -1,0 +1,38 @@
+name: WebGL manual verification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  webgl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PORTAL_WEBGL_TESTS: "1"
+      PORTAL_STORYBOOK_SOFTWARE_WEBGL: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Enable exact pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.24.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - name: WebGL component interactions
+        run: pnpm test:storybook
+      - name: Homepage WebGL performance
+        run: pnpm test:e2e -- --grep 'home stays inside the local Core Web Vitals guard'

@@ -280,6 +280,7 @@ export const MemberLimit: Story = {
   parameters: { atLimit: true },
   play: async ({ canvas, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)].Collections;
+    await userEvent.click(canvas.getByText(m.add, { selector: "summary" }));
     await userEvent.type(canvas.getByRole("textbox", { name: m.memberRef }), refs[4]);
     await userEvent.click(canvas.getByRole("button", { name: m.add }));
     await expect(await canvas.findByText(m.memberLimit)).toBeVisible();

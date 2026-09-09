@@ -21,7 +21,7 @@ checkPaths:
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: 2db23f64bd42ce7f423d91b031c13eb0a63f3cb9
+lastReviewedCommit: 49e50d0344574798411f3584534488eb3fcbd03e
 lastReviewedNote: "Reviewed for Portal #71: the production homepage adds same-origin model and renderer-worker assets under the existing performance CSP. The ISR/Flight contract and strict-profile disposition are unchanged; historical hosted receipts do not qualify this new homepage, which requires exact-deployment validation before release."
 related:
   - compatibility-matrix.md

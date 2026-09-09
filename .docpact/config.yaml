@@ -334,6 +334,8 @@ rules:
         kind: development-tool
       - path: .github/workflows/ci.yml
         kind: product-ci
+      - path: .github/workflows/webgl.yml
+        kind: product-ci
       - path: tests/mocks/**
         kind: test-support
     requiredDocs:

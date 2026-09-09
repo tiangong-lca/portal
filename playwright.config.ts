@@ -28,6 +28,10 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: portalE2eUrl,
+    launchOptions:
+      process.env.PORTAL_WEBGL_TESTS === "1" && process.env.CI
+        ? { args: ["--use-gl=angle", "--use-angle=swiftshader"] }
+        : undefined,
     trace: "on-first-retry",
   },
   projects: [

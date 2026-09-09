@@ -35,6 +35,7 @@ const settledFrame = async (element: HTMLElement) => {
 };
 
 const meta = {
+  tags: ["webgl"],
   title: "Brand Explorations/Lifecycle Sculpture",
   component: LifecycleSculpture,
   subcomponents: { ReferenceComparison, ModelTemplateProvider },

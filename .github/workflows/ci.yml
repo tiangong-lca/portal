@@ -95,29 +95,7 @@ jobs:
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
       - name: Run component interaction and accessibility gates
-        run: |
-          pnpm exec node --input-type=module <<'JS'
-          import { chromium } from '@playwright/test';
-          import { storybookBrowserLaunchOptions } from './vitest.config.ts';
-          const browser = await chromium.launch(storybookBrowserLaunchOptions);
-          try {
-            const page = await browser.newPage();
-            const webgl = await page.evaluate(() => {
-              const gl = document.createElement('canvas').getContext('webgl2');
-              if (!gl) return { available: false };
-              const debug = gl.getExtension('WEBGL_debug_renderer_info');
-              return {
-                available: true,
-                version: gl.getParameter(gl.VERSION),
-                renderer: gl.getParameter(debug ? debug.UNMASKED_RENDERER_WEBGL : gl.RENDERER),
-              };
-            });
-            console.log(JSON.stringify({ browser: browser.version(), launch: storybookBrowserLaunchOptions, webgl }));
-          } finally {
-            await browser.close();
-          }
-          JS
-          pnpm test:storybook
+        run: pnpm test:storybook
 
   validate:
     if: ${{ always() }}

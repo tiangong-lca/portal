@@ -26,7 +26,7 @@ const meta = {
     SiteFooter,
     ModelTemplateProvider,
   },
-  tags: ["!autodocs"],
+  tags: ["!autodocs", "webgl"],
   parameters: {
     pageLayout: true,
     viewport: {

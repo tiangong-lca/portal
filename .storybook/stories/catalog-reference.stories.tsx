@@ -87,13 +87,16 @@ export const SearchToDetailAndBack: Story = {
 };
 export const FiltersAndEmptyRecovery: Story = {
   globals: { viewport: { value: "desktop", isRotated: false } },
-  play: async ({ canvas, userEvent, globals }) => {
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)];
+    await userEvent.click(canvas.getByRole("button", { name: m.Search.facets }));
+    const body = within(canvasElement.ownerDocument.body);
     await userEvent.click(
-      canvas.getByRole("radio", { name: new RegExp(m.CatalogReference.availabilityMetadata) }),
+      body.getByRole("radio", { name: new RegExp(m.CatalogReference.availabilityMetadata) }),
     );
-    await expect(canvas.getAllByRole("checkbox")).toHaveLength(3);
-    const input = canvas.getByRole("searchbox", { name: m.Search.label });
+    await userEvent.keyboard("{Escape}");
+    await expect(canvas.getAllByRole("checkbox")).toHaveLength(2);
+    const input = await canvas.findByRole("searchbox", { name: m.Search.label });
     await userEvent.clear(input);
     await userEvent.type(input, "no-such-synthetic-dataset");
     await userEvent.click(canvas.getByRole("button", { name: m.Common.search }));
@@ -163,9 +166,7 @@ export const PublicContentHelp: Story = {
     await expect(available).toHaveFocus();
     await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.exchangesHelp);
     await userEvent.tab();
-    await expect(
-      canvas.getByRole("button", { name: `${m.Detail.collect}: ${firstRecord.name}` }),
-    ).toHaveFocus();
+    await expect(canvas.getAllByRole("button", { name: m.Detail.copyVersionId })[0]!).toHaveFocus();
     await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
     await userEvent.click(metadata);
     await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.metadataHelp);

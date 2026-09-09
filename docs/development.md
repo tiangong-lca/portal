@@ -208,3 +208,7 @@ For routing changes, also run `list-rules`, `doctor`, `coverage` and `route` wit
 ## CI validation boundaries
 
 The static, production browser and Storybook jobs run independently; the required `validate` job succeeds only when all three succeed. New commits cancel superseded runs. Production Playwright uses two workers and one retry in CI. Storybook owns the full component theme, locale and viewport matrix; production UI smoke covers one desktop light and one mobile dark layout while retaining routing, SSR/no-JavaScript, BFF, private sharing, CSP, numeric identity and performance checks. Browser failures must be fixed, not bypassed by reducing assertions or removing security gates.
+
+### Optional WebGL verification
+
+Ordinary CI skips the `webgl`-tagged lifecycle/brand-home stories and the homepage WebGL CWV sampler; the skipped tests must not be reported as WebGL acceptance. Other Storybook tests, real-page homepage navigation/accessibility/no-JavaScript smoke, and non-WebGL performance checks remain required. Rendering readiness, color/mouse interactions and GPU-dependent performance belong to the manually dispatched `WebGL manual verification` workflow. Locally, set `PORTAL_WEBGL_TESTS=1` and run `pnpm test:storybook` for only tagged stories, or `pnpm test:e2e -- --grep "home stays inside the local Core Web Vitals guard"` for homepage performance. Run these when reviewing sculpture/renderer changes; a manual run can fail without changing ordinary PR status.
