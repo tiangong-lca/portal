@@ -11,7 +11,8 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/search?v=1");
-  await page.getByRole("radio", { name: "Describe your need" }).click();
+  await page.getByRole("combobox", { name: /Search mode/ }).click();
+  await page.getByRole("option", { name: "Describe your need" }).click();
   const bffResponsePromise = page.waitForResponse(
     (response) =>
       response.url().endsWith("/internal/hybrid") && response.request().method() === "POST",
@@ -39,7 +40,7 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
   await expect(page.getByRole("heading", { name: "Matching datasets" })).toBeVisible();
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
   await expect(
-    page.getByText("Description matches your need", { exact: false }).first(),
+    page.getByText("Synthetic electricity supply example", { exact: false }).first(),
   ).toBeVisible();
   expect(page.url()).not.toContain(encodeURIComponent(query));
 
@@ -68,14 +69,15 @@ test("runs private-by-default Hybrid discovery and keeps evidence comparable", a
   await expect(candidates).toHaveCount(2);
   await candidates.nth(0).check();
   await candidates.nth(1).check();
-  await page.getByRole("button", { name: "Compare selected Process datasets" }).click();
+  await page.getByRole("link", { name: "Compare selected versions", exact: true }).click();
   await expect(page).toHaveURL(/\/en\/compare\?/u);
   await expect(page.getByRole("heading", { name: "Compare Process datasets" })).toBeVisible();
 });
 
 test("automatically returns lexical cards for a fixed Hybrid guard rejection", async ({ page }) => {
   await page.goto("/en/search?v=1");
-  await page.getByRole("radio", { name: "Describe your need" }).click();
+  await page.getByRole("combobox", { name: /Search mode/ }).click();
+  await page.getByRole("option", { name: "Describe your need" }).click();
   const query = "fixture:guard_unavailable";
   await page.getByLabel("Data need").fill(query);
   await page.getByRole("button", { name: "Find matching datasets" }).click();
@@ -103,7 +105,8 @@ test("keeps early selections stable until a late update is accepted and exposes 
     await route.fulfill({ response });
   });
   await page.goto("/en/search?v=1");
-  await page.getByRole("radio", { name: "Describe your need" }).click();
+  await page.getByRole("combobox", { name: /Search mode/ }).click();
+  await page.getByRole("option", { name: "Describe your need" }).click();
   await page.getByLabel("Data need").fill("electricity for an industrial site");
   await page.getByRole("button", { name: "Find matching datasets" }).click();
   const firstSelection = page.getByRole("checkbox", { name: /^Select for comparison /u }).first();
@@ -144,8 +147,10 @@ test("shares collection notes only after preview and second confirmation", async
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/collections");
+  await page.locator(".collection-add-shell > summary").click();
   await page.getByLabel("Add by version ID").fill(processRef);
   await page.getByRole("button", { name: "Add to shortlist" }).click();
+  await page.locator(".collection-details > summary").click();
   await page.getByLabel("Shortlist name").fill("Private research name");
   await page.getByLabel("Purpose or research question").fill("Private purpose");
   await page.getByLabel("Notes or selection rationale").fill("Private local note");

@@ -9,13 +9,16 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: portal-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  validate:
+  static:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -35,19 +38,62 @@ jobs:
 
       - name: Run static and unit gates
         run: pnpm check
-
-      - name: Audit high-impact dependency vulnerabilities
+      - name: Audit vulnerabilities
         run: pnpm check:vulnerabilities
 
-      - name: Build component workspace
-        run: pnpm build:storybook
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Enable exact pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.24.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
-
-      - name: Run production browser gates
+      - name: Production integration gates
         run: pnpm test:e2e
 
+  components:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PORTAL_EDGE_HMAC_SECRET: portal_bundle_secret_sentinel_v1
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Enable exact pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.24.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build component workspace
+        run: pnpm build:storybook
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
       - name: Run component interaction and accessibility gates
         run: |
           pnpm exec node --input-type=module <<'JS'
@@ -72,3 +118,18 @@ jobs:
           }
           JS
           pnpm test:storybook
+
+  validate:
+    if: ${{ always() }}
+    needs: [static, browser, components]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all gates
+        env:
+          STATIC_RESULT: ${{ needs.static.result }}
+          BROWSER_RESULT: ${{ needs.browser.result }}
+          COMPONENTS_RESULT: ${{ needs.components.result }}
+        run: |
+          test "$STATIC_RESULT" = success
+          test "$BROWSER_RESULT" = success
+          test "$COMPONENTS_RESULT" = success

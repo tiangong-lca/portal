@@ -204,3 +204,7 @@ After editing, choose one explicit lint input (`--files`, `--staged`, `--worktre
 ```
 
 For routing changes, also run `list-rules`, `doctor`, `coverage` and `route` with the same explicit root. Use the smallest relevant documents; a component-only change should not require hosted compatibility evidence. Inspect any uncovered path or diagnostic before changing rules. Use `review mark` only after the associated review is complete, then repeat lint with the same input. [The pre-push gate](../scripts/docpact-gate.sh) validates committed changes against `origin/main`; [the manual documentation workflow](../.github/workflows/ai-doc-lint.yml) runs the same gate in GitHub.
+
+## CI validation boundaries
+
+The static, production browser and Storybook jobs run independently; the required `validate` job succeeds only when all three succeed. New commits cancel superseded runs. Production Playwright uses two workers and one retry in CI. Storybook owns the full component theme, locale and viewport matrix; production UI smoke covers one desktop light and one mobile dark layout while retaining routing, SSR/no-JavaScript, BFF, private sharing, CSP, numeric identity and performance checks. Browser failures must be fixed, not bypassed by reducing assertions or removing security gates.

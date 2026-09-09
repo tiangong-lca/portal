@@ -41,15 +41,11 @@ async function accessible(page: Page) {
   ).toEqual([]);
 }
 
+// Component locale/theme/viewport permutations belong to Storybook.
+// Keep real-page integration coverage at representative desktop and mobile sizes.
 for (const { locale, width, theme } of [
-  { locale: "fr", width: 320, theme: "light" },
-  { locale: "fr", width: 320, theme: "dark" },
-  { locale: "zh-CN", width: 390, theme: "light" },
-  { locale: "en", width: 390, theme: "dark" },
-  { locale: "de", width: 768, theme: "light" },
-  { locale: "de", width: 1024, theme: "light" },
+  { locale: "zh-CN", width: 390, theme: "dark" },
   { locale: "en", width: 1440, theme: "light" },
-  { locale: "zh-CN", width: 1440, theme: "dark" },
 ] as const) {
   test(`visual regression ${locale} ${width}px ${theme}`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 });

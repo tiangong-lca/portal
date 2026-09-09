@@ -8,7 +8,9 @@ test("renders the anonymous Portal bootstrap shell", async ({ page }) => {
   await expect(
     page.getByRole("contentinfo").getByText("连接公开数据、专业工具与生命周期评价实践。"),
   ).toBeVisible();
-  await expect(page.getByRole("searchbox", { name: "搜索数据目录" })).toBeEnabled();
+  await page.locator(".catalog-search-teaser").click();
+  await expect(page.getByRole("searchbox")).toBeEnabled();
+  await page.goto("/zh-CN");
   await expect(page.locator("[data-brand-light-logo]").first()).toBeVisible();
 
   await expect
@@ -61,5 +63,5 @@ test("falls back to a text mark when configured and default logos fail", async (
 
   await expect.poll(() => failedLogoRequests).toBeGreaterThan(0);
   await expect(page.locator("[data-brand-logo] img").first()).toHaveJSProperty("naturalWidth", 0);
-  await expect(page.locator("[data-brand-logo-fallback-layer]")).toHaveText("TG");
+  await expect(page.locator("[data-brand-logo-fallback-layer]").first()).toHaveText("TG");
 });

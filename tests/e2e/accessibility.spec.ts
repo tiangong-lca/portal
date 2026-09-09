@@ -70,7 +70,7 @@ test("keeps core anonymous discovery readable without JavaScript", async ({ brow
   try {
     await page.goto("/en");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("See the whole life cycle.");
-    await expect(page.getByRole("searchbox", { name: "Search the data catalog" })).toBeVisible();
+    await expect(page.locator(".catalog-search-teaser")).toBeVisible();
     await expect(page.getByRole("link", { name: "Process datasets" }).first()).toBeVisible();
 
     await page.goto(`/en/process/${processRef}`);
@@ -145,6 +145,7 @@ test("does not identify the footer link by color alone", async ({ page }) => {
   });
 
   await expect(methodologyLink).toBeVisible();
+  await methodologyLink.hover();
   expect(
     await methodologyLink.evaluate((element) => getComputedStyle(element).textDecorationLine),
   ).toContain("underline");

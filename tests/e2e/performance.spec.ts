@@ -60,7 +60,9 @@ async function installVitalsObserver(page: Page) {
 }
 
 async function collectVitals(page: Page, route: string): Promise<Vitals> {
-  await page.goto(route, { waitUntil: "networkidle" });
+  await page.goto(route);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
   if (route === "/en") {
     // Measure input responsiveness with the complete runtime artwork rendering.
     await expect(page.locator(".lifecycle-study")).toHaveAttribute("data-renderer", "ready", {
