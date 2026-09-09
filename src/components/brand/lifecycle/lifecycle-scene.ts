@@ -22,6 +22,9 @@ export function createLifecycleScene(
       onFrame() {
         host.dataset.frame = String(Number(host.dataset.frame ?? 0) + 1);
       },
+      onRenderPending(pending) {
+        host.dataset.renderPending = String(pending);
+      },
     },
     initial,
     modelUrl,

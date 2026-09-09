@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: f5aff49b89666212fadf59d6be4ed80f9322859b
+lastReviewedCommit: b1261f884c39f51a507a8d31b474f526e9785fde
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #71: production brand homepage and catalog styling boundaries, complete four-language copy, shared sculpture, progressive loading and responsive interaction requirements."
+lastReviewedNote: "Reviewed for Portal #73: render-queue settlement repairs pause/reduced-motion verification without changing accepted appearance, controls, accessibility, geometry or animation behavior."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
