@@ -1,0 +1,229 @@
+.lifecycle-study {
+  --study-bg: #fcfcfe;
+  --study-ink: #282433;
+  --study-muted: #64606e;
+  --study-rule: #dedce5;
+  --study-focus: #7040a0;
+  color-scheme: light;
+  color: var(--study-ink);
+  background: var(--study-bg);
+  font-family: "Source Sans 3 Variable", "Noto Sans SC Variable", sans-serif;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+.lifecycle-study[data-theme="dark"] {
+  --study-bg: #090a0d;
+  --study-ink: #ece9f1;
+  --study-muted: #a09ba9;
+  --study-rule: #29262f;
+  --study-focus: #c99cf5;
+  color-scheme: dark;
+}
+.lifecycle-toolbar {
+  padding: 24px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--study-rule);
+}
+.lifecycle-heading p {
+  margin: 0 0 6px;
+  color: var(--study-muted);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+.lifecycle-heading h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.lifecycle-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.lifecycle-controls button {
+  color: var(--study-ink);
+  background: transparent;
+  border-color: var(--study-rule);
+}
+.lifecycle-controls button[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--study-focus) 12%, transparent);
+  border-color: var(--study-focus);
+}
+.lifecycle-controls button:hover {
+  background: color-mix(in srgb, var(--study-focus) 16%, transparent);
+}
+.lifecycle-controls svg {
+  width: 16px;
+  height: 16px;
+}
+.lifecycle-study[data-theme="dark"] .lifecycle-dark-icon,
+.lifecycle-study[data-theme="light"] .lifecycle-light-icon {
+  display: none;
+}
+.lifecycle-stage {
+  width: 100%;
+  position: relative;
+  flex: 1;
+  min-height: 480px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.lifecycle-object {
+  display: block;
+  position: relative;
+  width: min(100%, 1000px);
+  height: clamp(520px, calc(100svh - 190px), 900px);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.lifecycle-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.lifecycle-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.lifecycle-object:focus-visible {
+  outline: 2px solid var(--study-focus);
+  outline-offset: -6px;
+  border-radius: 12px;
+}
+.lifecycle-object:disabled {
+  cursor: default;
+}
+.lifecycle-fallback {
+  position: absolute;
+  top: 45%;
+  max-width: 420px;
+  margin: 24px;
+  line-height: 1.8;
+  text-align: center;
+  color: var(--study-muted);
+  pointer-events: none;
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+}
+.lifecycle-fallback button {
+  pointer-events: auto;
+}
+.lifecycle-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 32px;
+  padding: 16px 24px 24px;
+  color: var(--study-muted);
+  font-size: 13px;
+}
+.lifecycle-footer p {
+  margin: 0;
+}
+.lifecycle-footer span {
+  font-size: 12px;
+}
+@media (max-width: 600px) {
+  .lifecycle-toolbar {
+    padding: 20px;
+    align-items: start;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .lifecycle-controls {
+    width: 100%;
+  }
+  .lifecycle-controls button:nth-child(2) {
+    flex: 1;
+  }
+  .lifecycle-object {
+    height: 560px;
+  }
+  .lifecycle-stage {
+    min-height: 400px;
+  }
+  .lifecycle-footer {
+    text-align: center;
+    gap: 8px;
+  }
+}
+
+/* Keep the complete object visible in short windows and embedded review cards. */
+@media (max-height: 500px) {
+  .lifecycle-study {
+    height: 100svh;
+  }
+  .lifecycle-toolbar {
+    padding: 12px 20px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .lifecycle-heading p,
+  .lifecycle-footer {
+    display: none;
+  }
+  .lifecycle-heading h1 {
+    font-size: 14px;
+  }
+  .lifecycle-controls {
+    width: auto;
+  }
+  .lifecycle-stage {
+    min-height: 0;
+  }
+  .lifecycle-object {
+    height: 100%;
+    min-height: 0;
+  }
+}
+
+.lifecycle-study[data-presentation="hero"] {
+  height: 100%;
+  min-height: 0;
+  background: transparent;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-stage {
+  min-height: 0;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-object {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-footer {
+  min-height: 48px;
+  flex-wrap: nowrap;
+  padding: 0 8px;
+  gap: 16px;
+  justify-content: flex-end;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-footer p {
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: left;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-controls {
+  width: auto;
+  flex-shrink: 0;
+  gap: 4px;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-controls button {
+  border-radius: 50%;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-controls button:nth-child(2) {
+  flex: initial;
+}

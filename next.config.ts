@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { readdir, rm } from "node:fs/promises";
+import { resolve } from "node:path";
 
 import { readBrandConfig } from "./src/config/brand";
 import {
@@ -26,6 +28,19 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   env: {
     PORTAL_BUILD_SHA: deploymentSha,
+  },
+  compiler: {
+    async runAfterProductionCompile({ projectDir, distDir }) {
+      // Turbopack's worker entrypoint emits an empty map despite browser maps being off.
+      // Enforce the existing no-public-source-maps policy without changing private server maps.
+      const publicOutput = resolve(projectDir, distDir, "static");
+      const assets = await readdir(publicOutput, { recursive: true });
+      await Promise.all(
+        assets
+          .filter((asset) => asset.endsWith(".map"))
+          .map((asset) => rm(resolve(publicOutput, asset))),
+      );
+    },
   },
   experimental: {
     globalNotFound: true,

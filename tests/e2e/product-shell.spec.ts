@@ -15,7 +15,7 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.goto("/");
   await expect(page).toHaveURL(/\/zh-CN$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("查找生命周期评价数据");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("看见完整的生命周期。");
   await expect(page.getByRole("link", { name: "天工 LCA 平台" }).first()).toHaveAttribute(
     "href",
     "https://lca.tiangong.earth",
@@ -53,9 +53,7 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.getByRole("option", { name: "English" }).click();
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Find data for life cycle assessment",
-  );
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("See the whole life cycle.");
   const englishHtml = await (await page.request.get("/en")).text();
   expect(englishHtml).toMatch(/<html[^>]*\slang="en"/u);
   await expect(page.getByText("Catalog overview", { exact: true })).toBeVisible();
@@ -68,15 +66,15 @@ test("serves localized anonymous discovery with persistent theme and SEO alterna
   await page.getByRole("option", { name: "Deutsch" }).click();
   await expect(page).toHaveURL(/\/de$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Daten für Ökobilanzen finden");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Den ganzen Lebenszyklus sehen.",
+  );
 
   await page.getByRole("combobox", { name: "Sprache" }).click();
   await page.getByRole("option", { name: "Français" }).click();
   await expect(page).toHaveURL(/\/fr$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Trouver des données pour l’analyse du cycle de vie",
-  );
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Voir tout le cycle de vie.");
   await expect(page.getByRole("contentinfo")).not.toContainText(
     /lecture seule|aucun compte requis/i,
   );

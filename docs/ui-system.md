@@ -1,6 +1,6 @@
 ---
-lastReviewedAt: 2026-09-08
-lastReviewedCommit: 60d734b6491a0b3621a4fb4ea0fc169387b70aa3
+lastReviewedAt: 2026-09-09
+lastReviewedCommit: f5aff49b89666212fadf59d6be4ed80f9322859b
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #67 citation dialog and comparison identity refinement: one header action opens an accessible modal with legacy hash support; comparison uses plain version text and an inline UUID field. Exact values and clipboard recovery remain intact."
+lastReviewedNote: "Reviewed for Portal #71: production brand homepage and catalog styling boundaries, complete four-language copy, shared sculpture, progressive loading and responsive interaction requirements."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -33,13 +33,13 @@ related:
 
 ## 设计方向
 
-视觉方向是“专业科学数据目录”：信息结构稳定、留白克制、分隔清楚、检索优先，不采用营销 SaaS、政府公文站、聊天产品或开发仪表盘的造型。
+公开首页采用“精密科技”品牌方向：以已确认的生命周期雕塑建立 Tiangong LCA 识别，用明确标题、连续分区和可执行入口连接数据与产品平台。搜索、详情、浏览与清单继续采用“专业科学数据目录”：信息结构稳定、留白克制、分隔清楚、检索优先。品牌首页不覆盖这些数据任务页面的布局。
 
 可识别的核心元素是连续目录索引：Process、Flow、地区与来源共享一个表面与统一行结构，帮助访问者建立数据空间坐标。首页不把 provenance 状态做成装饰性证据轨；版本、来源、许可、方法、质量和 publication 等信任信息只在目录概览、结果行或记录页的实际使用位置出现。
 
-品牌紫只用于主要行动、链接、焦点和少量导航信号；Source Sans 3 承担正文与标题，IBM Plex Mono 只用于 UUID、版本、日期、计数和确有必要的技术标识。Card、Table、Alert、Empty、Input Group、Button 与 Separator 使用 shadcn/ui 语义 token，浅色与深色分别校准。不得加入渐变英雄区、装饰插画、伪统计、悬浮玻璃卡或与数据任务无关的品牌口号。开发阶段的 `R1/R2`、`LEXICAL/HYBRID`、`POST`、`LIVE · 5 MIN`、`LOCALSTORAGE`、rank、score、reason code、schema、BFF、façade、telemetry 等标签不得出现在公众 UI。
+品牌紫只用于主要行动、链接、焦点和少量导航信号；Source Sans 3 承担正文与标题，IBM Plex Mono 只用于 UUID、版本、日期、计数和确有必要的技术标识。Card、Table、Alert、Empty、Input Group、Button 与 Separator 使用 shadcn/ui 语义 token，浅色与深色分别校准。目录任务页面不加入渐变英雄区、装饰插画、伪统计、悬浮玻璃卡或与数据任务无关的品牌口号。品牌首页的几何与专属材质按下述已采纳组件要求实现；任何页面都不编造统计或产品能力。开发阶段的 `R1/R2`、`LEXICAL/HYBRID`、`POST`、`LIVE · 5 MIN`、`LOCALSTORAGE`、rank、score、reason code、schema、BFF、façade、telemetry 等标签不得出现在公众 UI。
 
-公众文字遵循“用户先于实现”的顺序：先说明能做什么、看到什么、下一步是什么，再在必要位置解释限制。按钮使用可预期动作；错误同时说明状态与恢复方式；空态提供下一步；不把内部安全/缓存/发布结构当作卖点。首页首屏只完成“找到公开 LCA 数据并理解使用背景”这一件事，Search 只显示完成检索所需的字段，完整技术与质量原文进入详情页。
+公众文字遵循“用户先于实现”的顺序：先说明能做什么、看到什么、下一步是什么，再在必要位置解释限制。按钮使用可预期动作；错误同时说明状态与恢复方式；空态提供下一步；不把内部安全/缓存/发布结构当作卖点。首页首屏建立 Tiangong LCA 品牌识别并提供数据和平台入口；Search 只显示完成检索所需的字段，完整技术与质量原文进入详情页。
 
 术语冲突按以下顺序收敛：
 
@@ -184,7 +184,7 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 
 ## Storybook 场景与审阅
 
-[Storybook 配置](../.storybook/main.ts)使用 Next.js Vite framework，CSF stories 与合成 fixture 留在 `.storybook/`。场景直接导入已有基础组件及业务组合，预览复用生产 CSS、生成的品牌 token、字体栈和四套实际字典；工具栏同步 document 的主题、语言和视口。生成的 worker 只在 `.storybook/public/`，不进入 Portal 的公开资产或 EdgeOne 产物。
+[Storybook 配置](../.storybook/main.ts)使用 Next.js Vite framework，CSF stories 与合成 fixture 留在 `.storybook/`。场景直接导入已有基础组件及业务组合，预览复用生产 CSS、生成的品牌 token、字体栈和四套实际字典；工具栏同步 document 的主题、语言和视口。MSW 的 `mockServiceWorker.js` 只生成到 `.storybook/public/`，不进入 Portal 的公开资产或 EdgeOne 产物。
 
 服务端展示组件在 loader 中执行；Vite alias 仅替代请求级翻译和服务端品牌配置，避免引入 Next 请求运行时。搜索页与场景共用 FacetsPanel。MSW 拦截同源 API，fixture 通过实际请求 schema 校验输入；主题和清单场景初始化并恢复专用存储键，不接触线上数据或生产凭据。
 
@@ -195,6 +195,22 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 组件及组合提供准确的 `component` / `subcomponents` 与 `@import` 模块引用。[manifest 检查](../scripts/check-storybook-manifest.mjs)验证覆盖、真实导入与关键 Props。Autodocs 和 Component Meta 的编译器适配由[精确包 hook](../scripts/pnpm-hooks.cjs)管理，版本以脚本和锁文件为准；升级时重新验证实际 API 文档、MCP 协议和场景。
 
 比较先显示需要关注的字段，并保留展开查看所有字段；LCIA 数值和单位保持原样，数据集/方法的精确版本可展开。目录覆盖与通过测试不能替代面向数据使用者的视觉审阅。
+
+### 品牌首页与生命周期组件
+
+`src/components/brand/` 拥有实际首页、轻量加载岛和 `lifecycle/` 中的共享渲染组件。`Brand/Homepage` 场景复用生产页面与四语字典；`Brand Explorations/Lifecycle Sculpture` 保留独立部件、姿态与参考对照审阅。组件使用可编辑的真实三维模型、程序化几何与实时材质，独立场景分别校准各个部件；五层透明结构分别呈现节点网络、能源、制造、产品与点阵地图；这些是视觉隐喻，不是数据覆盖、计算结果或科学证据。图形两侧不附文字标签。
+
+亮暗模式分别校准材质、边缘光、对比度与底部阴影；品牌紫与多彩模式是独立于主题的展示状态。鼠标带来小幅视差和局部节点/连线高亮，点击、触屏轻点或 Enter/Space 切换色彩。拖动滚动不触发变色；暂停保留当前姿态，减少动态效果时保持静态但仍可切换主题和颜色。控件复用正式 Button，名称属于实际四语字典 `Sculpture`，提供焦点、加载与失败恢复。首页只保留色彩和暂停操作，主题跟随全站设置；独立研究场景保留主题和重置工具栏。离屏、隐藏页面或静止状态不持续绘制，卸载释放 GPU 和异步加载资源。
+
+跨层连线通过实际空间位置与模型形成遮挡，节点尺寸与形状分别校准。调整连接后验证完整的流动光点循环，避免只检查静止画面或首帧。
+
+视觉验收对照用户选定的亮暗参考图核对整体俯角、各层透视缩短、上下平台遮挡、构图与层距，再核对模型细节、透明材质、点阵密度和动效，不以自动测试替代。图形的局部色彩与材质值由共享渲染组件拥有；字体和控件保持 Portal 语义。生产首页按需加载 Three.js 和同源无纹理模型；其他目录路由不预加载 renderer 或模型。原稿仅出现在明确标注的对照区域，不作为组件底图或纹理。模型、透明板、节点和连线需要分别可修改，反光、悬停高亮与视差由前端实时计算。原稿、裁取参数与校验信息见[开发指南](development.md#brand-sculpture-assets)。
+
+首页使用 Source Sans 3 Variable 与 Noto Sans SC Variable 的同源字体资产，标题、说明、正文和辅助文字分别设定角色。主标题与图形并列，窄屏按文字、入口、图形顺序堆叠；分区沿同一内容宽度对齐，搜索区域用独立中性表面区分。亮暗背景分别与渲染场景匹配，紫色用于品牌强调与主要操作。图形两侧不附设备标签；底部只保留简短交互说明与必要控制。加载失败以可编辑 SVG 轮廓退化，不以原稿图片替代。所有搜索与产品入口在等待模型时保持可用。
+
+首页的 `BrandHome` 复用实际公共目录摘要，不将合成 fixture 引入生产；Storybook 场景必须明确其摘要是合成输入。示例计数仅在目录概览区域出现。`BrandSculpture` 延迟加载场景，避免将 Three.js 纳入首页基础脚本预算；模型与动态脚本另行记录实际传输体积，不能将基础脚本预算误报成页面全部下载量。
+
+支持 OffscreenCanvas 时，首页在独立 Worker 中执行完整渲染，将输入与导航留在页面主线程。Worker 与组件审阅使用相同的渲染核心和画质；主题、色彩、暂停、离屏与卸载状态必须同步。验证首页响应速度时需要等待真实图形就绪，不能以占位图或加载失败状态作为性能通过的证据。
 
 ### 完整页面设计样板
 

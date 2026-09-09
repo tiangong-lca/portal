@@ -29,7 +29,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
   ] as const;
 
   return (
-    <header className="bg-background sticky top-0 z-40 border-b" data-portal-header>
+    <header className="site-header bg-background sticky top-0 z-40 border-b" data-portal-header>
       <HeaderOffset />
       <a
         className="bg-primary text-primary-foreground focus-visible:ring-ring sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-4 focus:z-50 focus:flex focus:min-h-11 focus:items-center focus:rounded-b-lg focus:px-3 focus:py-2 focus-visible:ring-3"
@@ -40,13 +40,8 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
       <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:px-8 xl:grid-cols-[auto_minmax(0,1fr)_auto]">
         <Link className="flex min-h-11 items-center gap-3" href={homeHref} prefetch={false}>
           <BrandLogo locale={locale} priority />
-          <span className="flex min-w-0 flex-col">
-            <span className="text-muted-foreground hidden text-xs leading-none sm:block">
-              {t("productFamily")}
-            </span>
-            <span className="font-heading text-sm leading-tight font-semibold sm:text-base">
-              {t("productName")}
-            </span>
+          <span className="font-heading text-lg leading-tight font-semibold tracking-tight sm:text-xl">
+            {t("productFamily")}
           </span>
         </Link>
 

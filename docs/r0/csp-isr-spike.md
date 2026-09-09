@@ -20,9 +20,9 @@ checkPaths:
   - edgeone.json
   - src/app/r0-compat/**
   - tests/e2e/r0-compat.spec.ts
-lastReviewedAt: 2026-09-07
-lastReviewedCommit: 216e70971900b811fff5342e04a1e0a7a1a4dc47
-lastReviewedNote: "Reviewed for Portal #63: pnpm-managed project skills, immutable source locks, verified restoration and explicit updates remain local development tooling; anonymous runtime, hosted evidence, CSP and release gates are unchanged."
+lastReviewedAt: 2026-09-09
+lastReviewedCommit: 6457125715755850db333010f3bec5d17463024f
+lastReviewedNote: "Reviewed for Portal #71: the production homepage adds same-origin model and renderer-worker assets under the existing performance CSP. The ISR/Flight contract and strict-profile disposition are unchanged; historical hosted receipts do not qualify this new homepage, which requires exact-deployment validation before release."
 related:
   - compatibility-matrix.md
   - ../design-plan.md

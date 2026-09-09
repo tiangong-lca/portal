@@ -1,0 +1,5 @@
+Tiangong LCA lifecycle sculpture.
+Authored in this repository with Blender and procedural Three.js geometry.
+The GLB contains no image textures. Authoring source: .storybook/brand-exploration/modeling/.
+The decorative map motif is not a statement of geographic or dataset coverage.
+Three.js license: THREE-LICENSE.txt. Reference boards are development-only assets.

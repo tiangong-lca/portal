@@ -6,6 +6,18 @@ const flowRef = "22222222-2222-2222-2222-222222222222@01.00.000";
 const wcagTags = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 async function expectNoHighImpactViolations(page: Page, route: string) {
+  if (route.endsWith("/collections"))
+    await expect(page.locator("fieldset:disabled")).toHaveCount(0);
+  // Hydration restores local controls; measure their settled appearance, not a disabled fade.
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => undefined)),
+    );
+  });
   const results = await new AxeBuilder({ page }).withTags(wcagTags).analyze();
   const violations = results.violations
     .filter(({ impact }) => impact === "critical" || impact === "serious")
@@ -14,7 +26,7 @@ async function expectNoHighImpactViolations(page: Page, route: string) {
       helpUrl,
       id,
       impact,
-      targets: nodes.map(({ target }) => target),
+      targets: nodes.map(({ target, failureSummary }) => ({ target, failureSummary })),
     }));
 
   expect(violations, `${route} WCAG 2.2 AA high-impact violations`).toEqual([]);
@@ -57,9 +69,7 @@ test("keeps core anonymous discovery readable without JavaScript", async ({ brow
 
   try {
     await page.goto("/en");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Find data for life cycle assessment",
-    );
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("See the whole life cycle.");
     await expect(page.getByRole("searchbox", { name: "Search the data catalog" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Process datasets" }).first()).toBeVisible();
 
@@ -74,7 +84,7 @@ test("keeps core anonymous discovery readable without JavaScript", async ({ brow
     await page.goto("/de");
     await expect(page.locator("html")).toHaveAttribute("lang", "de");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Daten für Ökobilanzen finden",
+      "Den ganzen Lebenszyklus sehen.",
     );
     await page.goto("/fr/methodology");
     await expect(page.locator("html")).toHaveAttribute("lang", "fr");

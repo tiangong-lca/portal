@@ -1,6 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const processRef = "11111111-1111-1111-1111-111111111111@01.00.000";
+const sampleCount = 4;
+const artworkReadyTimeout = 15_000;
 
 type Vitals = {
   cls: number;
@@ -59,6 +61,12 @@ async function installVitalsObserver(page: Page) {
 
 async function collectVitals(page: Page, route: string): Promise<Vitals> {
   await page.goto(route, { waitUntil: "networkidle" });
+  if (route === "/en") {
+    // Measure input responsiveness with the complete runtime artwork rendering.
+    await expect(page.locator(".lifecycle-study")).toHaveAttribute("data-renderer", "ready", {
+      timeout: artworkReadyTimeout,
+    });
+  }
   await expect(page.locator("html")).not.toHaveClass(/dark/);
   const darkTheme = page.getByRole("radio", { name: "Dark" });
   await darkTheme.click();
@@ -100,9 +108,17 @@ for (const { label, route, ttfbBudget } of [
   { label: "cached Process detail", route: `/en/process/${processRef}`, ttfbBudget: 800 },
 ]) {
   test(`${label} stays inside the local Core Web Vitals guard`, async ({ page }) => {
+    // Each navigation creates a new GPU context. Allow all four bounded samples
+    // to finish on software WebGL; the per-load wait and CWV limits stay fixed.
+    if (route === "/en") test.setTimeout(sampleCount * (artworkReadyTimeout + 5000));
     await installVitalsObserver(page);
     const samples: Vitals[] = [];
-    for (let sample = 0; sample < 4; sample += 1) samples.push(await collectVitals(page, route));
+    for (let sample = 0; sample < sampleCount; sample += 1) {
+      console.info(`${label} local CWV sample ${sample + 1}/${sampleCount}`);
+      const started = Date.now();
+      samples.push(await collectVitals(page, route));
+      console.info(`${label} sample completed in ${Date.now() - started} ms`);
+    }
 
     const evidence = {
       clsP75: percentile(

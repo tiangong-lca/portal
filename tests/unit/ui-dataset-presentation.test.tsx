@@ -10,9 +10,10 @@ vi.mock("next-intl/server", () => ({
   getTranslations:
     async ({ namespace }: { namespace: string }) =>
     (key: string) => {
-      const table = (messages as Record<string, Record<string, string>>)[namespace];
-      if (!table?.[key]) throw new Error(`Missing test translation: ${namespace}.${key}`);
-      return table[key];
+      const value = (messages as Record<string, Record<string, unknown>>)[namespace]?.[key];
+      if (typeof value !== "string")
+        throw new Error(`Missing test translation: ${namespace}.${key}`);
+      return value;
     },
 }));
 

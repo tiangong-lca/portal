@@ -1,0 +1,28 @@
+Tiangong LCA lifecycle sculpture, Portal Storybook exploration
+
+public/brand/lifecycle/lifecycle-models.glb
+Authored geometry for this Portal exploration; no downloaded model or texture.
+Editable Blender source and reproducible authoring functions are retained in
+.storybook/brand-exploration/modeling/. The live sculpture uses this geometry,
+procedural plates, nodes, lines and authored map cells with runtime materials.
+
+reference-dark.png / reference-light.png
+User-selected visual references generated with OpenAI ImageGen during the
+Portal brand exploration. Original boards are retained unchanged. Only explicit
+comparison stories display the sculpture area with a CSS crop. These images
+are never sampled by the live scene. Any people, records or counters elsewhere
+on the boards are illustrative placeholders.
+Source dimensions, crop and SHA-256 receipts are in
+.storybook/brand-exploration/artwork.json.
+
+src/components/brand/lifecycle/map-points.json
+Authored from the selected ImageGen light board with modeling/trace_map.py.
+Offline tracing retains 810 cell centers and sizes, projected onto the actual
+lower platform. The runtime loads only these model-space values and renders
+one instanced mesh with shared box geometry. No reference pixels, image mask
+or geographic service is used by the renderer. The map is a decorative artistic
+motif, not a cartographic reference or dataset coverage claim.
+
+Three.js
+MIT license. The full license is included in THREE-LICENSE.txt.
+The package and type versions are pinned in the package and pnpm lock files.
