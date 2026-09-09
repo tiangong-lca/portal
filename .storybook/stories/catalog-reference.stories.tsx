@@ -79,7 +79,7 @@ export const SearchToDetailAndBack: Story = {
     await expect(
       canvas.getByRole("checkbox", { name: `${m.CatalogReference.select}: ${item.name}` }),
     ).toBeChecked();
-    await expect(canvas.getByRole("textbox", { name: m.Search.label })).toHaveValue(
+    await expect(canvas.getByRole("searchbox", { name: m.Search.label })).toHaveValue(
       m.CatalogReference.queryExample,
     );
     await expect(canvas.getByRole("link", { name: item.name })).toHaveFocus();
@@ -93,7 +93,7 @@ export const FiltersAndEmptyRecovery: Story = {
       canvas.getByRole("radio", { name: new RegExp(m.CatalogReference.availabilityMetadata) }),
     );
     await expect(canvas.getAllByRole("checkbox")).toHaveLength(3);
-    const input = canvas.getByRole("textbox", { name: m.Search.label });
+    const input = canvas.getByRole("searchbox", { name: m.Search.label });
     await userEvent.clear(input);
     await userEvent.type(input, "no-such-synthetic-dataset");
     await userEvent.click(canvas.getByRole("button", { name: m.Common.search }));
@@ -133,7 +133,7 @@ export const MobileFilterKeyboard: Story = {
     );
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(menu).toHaveFocus());
-    await expect(canvas.getByRole("textbox", { name: dictionaries.fr.Search.label })).toHaveValue(
+    await expect(canvas.getByRole("searchbox", { name: dictionaries.fr.Search.label })).toHaveValue(
       m.CatalogReference.queryExample,
     );
   },
@@ -156,7 +156,7 @@ export const PublicContentHelp: Story = {
     await expect(tooltip).toBeVisible();
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
-    await userEvent.hover(canvas.getByRole("textbox", { name: m.Search.label }));
+    await userEvent.hover(canvas.getByRole("searchbox", { name: m.Search.label }));
     const firstRecord = referenceDatasets(storyLocale(globals))[0]!;
     canvas.getByRole("link", { name: firstRecord.name }).focus();
     await userEvent.tab();
@@ -174,7 +174,7 @@ export const PublicContentHelp: Story = {
     await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
     await userEvent.keyboard("{Enter}");
     await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.metadataHelp);
-    await userEvent.click(canvas.getByRole("textbox", { name: m.Search.label }));
+    await userEvent.click(canvas.getByRole("searchbox", { name: m.Search.label }));
     await waitFor(() => expect(body.queryByRole("tooltip")).not.toBeInTheDocument());
     await userEvent.click(available);
     await expect(body.findByRole("tooltip")).resolves.toHaveTextContent(r.exchangesHelp);
@@ -311,7 +311,7 @@ export const NewQueryCancelsPage: Story = {
     const page = Promise.withResolvers<void>();
     args.requestPage!.mockImplementationOnce(() => page.promise);
     await userEvent.click(canvas.getByRole("button", { name: m.Hybrid.loadMore }));
-    const input = canvas.getByRole("textbox", { name: m.Search.label });
+    const input = canvas.getByRole("searchbox", { name: m.Search.label });
     await userEvent.clear(input);
     await userEvent.type(input, "no-such-synthetic-dataset");
     await userEvent.click(canvas.getByRole("button", { name: m.Common.search }));

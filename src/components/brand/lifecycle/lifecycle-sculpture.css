@@ -204,3 +204,17 @@
   height: 100%;
   min-height: 0;
 }
+
+/* Reveal the complete hero only after the renderer has delivered its first frame. */
+.lifecycle-study[data-presentation="hero"] .lifecycle-canvas {
+  opacity: 0;
+  transition: opacity 240ms ease-out;
+}
+.lifecycle-study[data-presentation="hero"][data-renderer="ready"] .lifecycle-canvas {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lifecycle-study[data-presentation="hero"] .lifecycle-canvas {
+    transition: none;
+  }
+}

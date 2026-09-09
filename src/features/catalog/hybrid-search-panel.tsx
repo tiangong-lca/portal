@@ -1,4 +1,8 @@
 "use client";
+import { ResponsiveFacets } from "./responsive-facets";
+import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
+import { CatalogPagination } from "@/features/catalog/catalog-pagination";
 
 import {
   LinkIcon,
@@ -8,6 +12,7 @@ import {
   SparklesIcon,
   XIcon,
 } from "lucide-react";
+import { SearchModeControl } from "./search-modes";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -21,9 +26,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { CatalogKindSwitch } from "./catalog-kind-switch";
+import { CatalogResultsToolbar } from "./catalog-results-toolbar";
 import { mapProgressiveSearchPage } from "@/features/catalog/map-public-data";
 import { useProgressiveSearch } from "@/features/catalog/use-progressive-search";
 import { SearchResults, type SearchResultLabels } from "@/features/catalog/search-results";
@@ -131,6 +137,8 @@ export function HybridSearchPanel({
   resultLabels: SearchResultLabels;
   siteOrigin: string;
 }) {
+  const catalog = useTranslations("Search");
+  const common = useTranslations("Common");
   const [requestState, setRequestState] = useState<RequestState>({
     filters: initialFilters,
     kind: initialKind,
@@ -218,7 +226,7 @@ export function HybridSearchPanel({
     }));
 
   return (
-    <Card>
+    <Card className="catalog-description-workspace">
       <CardHeader>
         <CardTitle>
           <h2>{labels.title}</h2>
@@ -260,68 +268,129 @@ export function HybridSearchPanel({
               </Button>
             </section>
           ) : null}
-          <Field>
-            <FieldLabel>{labels.kind}</FieldLabel>
-            <ToggleGroup
-              aria-label={labels.kind}
-              onValueChange={(kind) => {
-                if (kind === "process" || kind === "flow") {
-                  setRequestState((current) => ({ ...current, kind }));
+          <div className="catalog-description-query">
+            <Field className="catalog-description-input">
+              <FieldLabel className="sr-only" htmlFor="hybrid-query">
+                {labels.queryLabel}
+              </FieldLabel>
+              <Textarea
+                id="hybrid-query"
+                maxLength={512}
+                onChange={(event) =>
+                  setRequestState((current) => ({ ...current, query: event.target.value }))
                 }
-              }}
-              type="single"
-              value={requestState.kind}
-              variant="outline"
-            >
-              <ToggleGroupItem className="min-h-11" value="process">
-                {labels.process}
-              </ToggleGroupItem>
-              <ToggleGroupItem className="min-h-11" value="flow">
-                {labels.flow}
-              </ToggleGroupItem>
-            </ToggleGroup>
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="hybrid-query">{labels.queryLabel}</FieldLabel>
-            <Textarea
-              id="hybrid-query"
-              maxLength={512}
-              onChange={(event) =>
-                setRequestState((current) => ({ ...current, query: event.target.value }))
-              }
-              placeholder={
-                requestState.kind === "flow" ? labels.flowPlaceholder : labels.queryPlaceholder
-              }
-              rows={3}
-              value={requestState.query}
-            />
-            <FieldDescription>{labels.privacy}</FieldDescription>
-          </Field>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              aria-busy={running}
-              className="h-auto min-h-11 whitespace-normal"
-              disabled={!parsedRequest}
-              type="submit"
-            >
-              {running ? (
-                <LoaderCircleIcon className="motion-safe:animate-spin" data-icon="inline-start" />
-              ) : (
-                <ScanSearchIcon data-icon="inline-start" />
-              )}
-              {labels.submit}
-            </Button>
-            <Button
-              disabled={!parsedRequest}
-              onClick={() => setSharePreview(true)}
-              type="button"
-              variant="outline"
-            >
-              <LinkIcon data-icon="inline-start" />
-              {labels.shareQuery}
-            </Button>
+                placeholder={
+                  requestState.kind === "flow" ? labels.flowPlaceholder : labels.queryPlaceholder
+                }
+                rows={3}
+                value={requestState.query}
+              />
+            </Field>
+            <div className="catalog-description-submit flex flex-wrap gap-2">
+              <SearchModeControl />
+              <Button
+                aria-busy={running}
+                className="h-auto min-h-11 whitespace-normal"
+                disabled={!parsedRequest}
+                type="submit"
+              >
+                {running ? (
+                  <LoaderCircleIcon className="motion-safe:animate-spin" data-icon="inline-start" />
+                ) : (
+                  <ScanSearchIcon data-icon="inline-start" />
+                )}
+                {labels.submit}
+              </Button>
+              <Button
+                disabled={!parsedRequest}
+                onClick={() => setSharePreview(true)}
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={labels.shareQuery}
+                title={labels.shareQuery}
+              >
+                <LinkIcon data-icon="inline-start" />
+              </Button>
+            </div>
           </div>
         </form>
+        <CatalogResultsToolbar
+          headingRef={resultHeading}
+          titleId="description-results-heading"
+          title={response ? labels.resultsTitle : ""}
+          scope={
+            <CatalogKindSwitch
+              value={requestState.kind}
+              label={labels.kind}
+              labels={{ process: labels.process, flow: labels.flow }}
+              onChange={(kind) =>
+                setRequestState((current) => ({
+                  ...current,
+                  kind,
+                  filters:
+                    kind === "flow"
+                      ? Object.fromEntries(
+                          Object.entries(current.filters).filter(
+                            ([key]) => key !== "processSubtype",
+                          ),
+                        )
+                      : current.filters,
+                }))
+              }
+            />
+          }
+          actions={
+            <ResponsiveFacets
+              drawer
+              labels={{
+                title: catalog("facets"),
+                description: catalog("filtersDescription"),
+                close: common("close"),
+              }}
+            >
+              <div className="flex flex-col gap-4">
+                {(
+                  [
+                    ["geography", labels.filterGeography],
+                    ["source", labels.filterSource],
+                    ["classification", labels.filterClassification],
+                  ] as const
+                ).map(([key, label]) => (
+                  <Field key={key}>
+                    <FieldLabel htmlFor={`description-filter-${key}`}>{label}</FieldLabel>
+                    <Input
+                      id={`description-filter-${key}`}
+                      value={String(requestState.filters[key] ?? "")}
+                      onChange={(event) =>
+                        setRequestState((current) => {
+                          const filters = { ...current.filters };
+                          if (event.target.value.trim()) filters[key] = event.target.value.trim();
+                          else delete filters[key];
+                          return { ...current, filters };
+                        })
+                      }
+                    />
+                  </Field>
+                ))}
+                <Button
+                  disabled={!parsedRequest}
+                  onClick={() => {
+                    if (parsedRequest) start(parsedRequest);
+                  }}
+                >
+                  {labels.submit}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setRequestState((current) => ({ ...current, filters: {} }))}
+                >
+                  {labels.clearFilters}
+                </Button>
+              </div>
+            </ResponsiveFacets>
+          }
+        />
 
         {sharePreview && parsedRequest ? (
           <Card size="sm">
@@ -499,26 +568,27 @@ export function HybridSearchPanel({
             )
           ) : (
             <section aria-label={labels.resultsTitle} className="flex flex-col gap-4">
-              <h3 className="font-heading text-xl font-semibold" ref={resultHeading} tabIndex={-1}>
-                {labels.resultsTitle}
-              </h3>
               <CompareSelectionForm action={localePath(locale, "compare")}>
                 <input name="v" type="hidden" value="1" />
                 <SearchResults
+                  query={search.request?.query}
                   items={results}
                   labels={resultLabels}
                   locale={locale}
                   selectable
                   siteOrigin={siteOrigin}
                 />
-                {results.some((item) => item.kind === "process") ? (
-                  <Button
-                    className="h-auto min-h-11 max-w-full self-start whitespace-normal"
-                    type="submit"
-                  >
-                    {labels.compareSelected}
-                  </Button>
-                ) : null}
+                <noscript>
+                  {" "}
+                  {results.some((item) => item.kind === "process") ? (
+                    <Button
+                      className="h-auto min-h-11 max-w-full self-start whitespace-normal"
+                      type="submit"
+                    >
+                      {labels.compareSelected}
+                    </Button>
+                  ) : null}
+                </noscript>
               </CompareSelectionForm>
               {search.pageError ? (
                 <Alert>
@@ -540,23 +610,25 @@ export function HybridSearchPanel({
                 </Alert>
               ) : null}
               {response.nextCursor && search.pageError !== "cursor_expired" ? (
-                <Button
-                  className="self-start"
-                  disabled={search.pageLoading}
-                  onClick={() => {
-                    void loadMore();
-                  }}
-                  type="button"
-                  variant="outline"
-                >
-                  {search.pageLoading ? (
-                    <LoaderCircleIcon
-                      aria-hidden="true"
-                      className="size-4 motion-safe:animate-spin"
-                    />
-                  ) : null}
-                  {search.pageLoading ? labels.loadingMore : labels.loadMore}
-                </Button>
+                <CatalogPagination label={labels.loadMore}>
+                  <Button
+                    className="self-start"
+                    disabled={search.pageLoading}
+                    onClick={() => {
+                      void loadMore();
+                    }}
+                    type="button"
+                    variant="outline"
+                  >
+                    {search.pageLoading ? (
+                      <LoaderCircleIcon
+                        aria-hidden="true"
+                        className="size-4 motion-safe:animate-spin"
+                      />
+                    ) : null}
+                    {search.pageLoading ? labels.loadingMore : labels.loadMore}
+                  </Button>
+                </CatalogPagination>
               ) : null}
             </section>
           )

@@ -16,14 +16,16 @@ import {
 export function ResponsiveFacets({
   children,
   labels,
+  drawer = false,
 }: {
+  drawer?: boolean;
   children: ReactNode;
   labels: { title: string; description: string; close: string };
 }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <div className="portal-facets-trigger xl:hidden">
+      <div className={drawer ? "portal-facets-trigger" : "portal-facets-trigger xl:hidden"}>
         <Sheet onOpenChange={setOpen} open={open}>
           <SheetTrigger asChild>
             <Button className="min-h-11" variant="outline">
@@ -50,9 +52,11 @@ export function ResponsiveFacets({
           </SheetContent>
         </Sheet>
       </div>
-      <aside aria-label={labels.title} className="portal-facets-content hidden xl:block">
-        {children}
-      </aside>
+      {!drawer && (
+        <aside aria-label={labels.title} className="portal-facets-content hidden xl:block">
+          {children}
+        </aside>
+      )}
       <noscript>
         <style>{".portal-facets-content{display:block}.portal-facets-trigger{display:none}"}</style>
       </noscript>

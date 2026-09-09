@@ -96,21 +96,28 @@ export function CompareSelectionProvider({
             aria-label={labels.compare}
             className="bg-background fixed inset-x-0 bottom-0 z-30 border-t shadow-lg"
           >
-            <div className="mx-auto flex max-h-[45vh] max-w-7xl flex-col gap-2 overflow-y-auto px-4 py-3 sm:px-6 lg:px-8">
+            <div className="mx-auto flex max-h-[45vh] max-w-[1440px] flex-col gap-2 overflow-y-auto px-4 py-3 sm:px-6 lg:px-8">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <output className="font-semibold">
                   {labels.count.replace("{count}", String(members.length))}
                 </output>
-                {members.length >= 2 ? (
-                  <Button asChild>
-                    <Link href={compareSelectionHref(locale, members)} prefetch={false}>
-                      <GitCompareArrowsIcon data-icon="inline-start" />
-                      {labels.compare}
-                    </Link>
+                <div className="flex items-center gap-2">
+                  <Button onClick={() => replace([])} type="button" variant="ghost">
+                    {labels.clear}
                   </Button>
-                ) : (
-                  <p className="text-muted-foreground text-sm">{labels.hint}</p>
-                )}
+                  {members.length >= 2 ? (
+                    <Button asChild>
+                      <Link href={compareSelectionHref(locale, members)} prefetch={false}>
+                        <GitCompareArrowsIcon data-icon="inline-start" />
+                        {labels.compare}
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button disabled title={labels.hint}>
+                      {labels.compare}
+                    </Button>
+                  )}
+                </div>
               </div>
               <details className="group/selection">
                 <summary className="text-link focus-visible:outline-ring flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">

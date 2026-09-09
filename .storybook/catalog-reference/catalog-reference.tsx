@@ -427,6 +427,7 @@ export function CatalogReference({
           />
         ) : (
           <SearchReference
+            locale={locale}
             labels={m}
             records={queryMatches}
             matches={matches}

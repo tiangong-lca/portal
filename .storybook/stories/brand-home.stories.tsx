@@ -66,9 +66,7 @@ const meta = {
           : await loadModelTemplate();
       const sculpture =
         parameters.artwork === "loading" ? (
-          <div className="brand-sculpture">
-            <SculptureOutline />
-          </div>
+          <div className="brand-sculpture" />
         ) : parameters.artwork === "lazy" ? (
           <BrandSculpture locale={locale} />
         ) : (

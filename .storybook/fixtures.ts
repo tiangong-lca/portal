@@ -62,12 +62,22 @@ export function catalogItems(locale: PortalLocale): CatalogResultViewModel[] {
     geography: "CN",
     referenceYear: "2022",
     source: "Storybook fixture",
+    description:
+      index === 0
+        ? {
+            "zh-CN": "用于组件审阅的合成电力数据，展示发电与输配电过程的描述摘要。",
+            en: "Synthetic electricity data for component review, describing generation, transmission and distribution.",
+            de: "Synthetische Stromdaten zur Komponentenprüfung mit einer Beschreibung von Erzeugung, Übertragung und Verteilung.",
+            fr: "Données électriques fictives pour examiner les composants, décrivant la production, le transport et la distribution.",
+          }[locale]
+        : undefined,
   }));
 }
 
 export function resultLabels(locale: PortalLocale): SearchResultLabels {
   const { Common: c, Search: s, Detail: d } = dictionaries[locale];
   return {
+    publicContentLabels: dictionaries[locale].CatalogReference,
     collect: d.collect,
     compare: d.compare,
     copied: d.citationCopied,

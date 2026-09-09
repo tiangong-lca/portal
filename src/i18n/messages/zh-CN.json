@@ -45,7 +45,9 @@
     "searchCompact": "搜索",
     "browseCompact": "浏览",
     "methodologyCompact": "说明",
-    "collectionsCompact": "清单"
+    "collectionsCompact": "清单",
+    "catalog": "数据目录",
+    "catalogCompact": "目录"
   },
   "Home": {
     "eyebrow": "天工 LCA 数据门户",
@@ -84,7 +86,9 @@
     "scaleUnavailable": "目录统计暂时不可用，搜索和浏览仍可继续。",
     "useTitle": "如何使用这些数据",
     "useDescription": "使用前，请核对数据的适用范围和许可；比较或引用时请使用具体版本。",
-    "useLink": "阅读数据说明"
+    "useLink": "阅读数据说明",
+    "exploreCatalog": "探索目录",
+    "collapseExplore": "收起探索"
   },
   "Search": {
     "title": "搜索数据目录",
@@ -116,7 +120,10 @@
     "unavailableDescription": "暂时无法加载搜索结果，请稍后重试。",
     "resultsFor": "“{query}”的搜索结果",
     "searchMode": "搜索方式",
-    "keywordMode": "关键词或标识",
+    "sortRelevance": "默认顺序",
+    "sortModified": "最近更新",
+    "sortName": "名称顺序",
+    "keywordMode": "关键词搜索",
     "descriptionMode": "描述需求",
     "filtersDescription": "按地区、时间和来源缩小结果范围。",
     "appliedFilters": "已选筛选条件",
@@ -507,6 +514,10 @@
     "platformAction": "进入 LCA 平台",
     "heroIndex": "从数据出发，理解环境影响",
     "catalogKicker": "开放数据",
+    "searchEntryAction": "开始探索",
+    "searchExample1": "中国电力",
+    "searchExample2": "聚乙烯",
+    "searchExample3": "铝生产",
     "catalogTitle": "找到分析的起点。",
     "catalogDescription": "从过程与流数据中发现所需信息。按名称或标识搜索，也可以沿地区与来源浏览。",
     "understandingKicker": "从发现到理解",

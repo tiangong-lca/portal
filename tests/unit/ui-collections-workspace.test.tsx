@@ -1,4 +1,13 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
+import type { ReactNode } from "react";
+import {
+  cleanup,
+  fireEvent,
+  render as renderBase,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CollectionsWorkspace } from "@/features/collections/collections-workspace";
@@ -255,3 +264,11 @@ describe("collection persistence", () => {
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
   });
 });
+
+function render(node: ReactNode) {
+  return renderBase(
+    <NextIntlClientProvider locale="en" messages={en}>
+      {node}
+    </NextIntlClientProvider>,
+  );
+}

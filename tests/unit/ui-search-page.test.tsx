@@ -1,4 +1,6 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
+import type { ReactNode } from "react";
+import { cleanup, fireEvent, render as renderBase, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import catalogFixture from "../fixtures/portal/catalog-v1.json";
@@ -35,6 +37,9 @@ vi.mock("@/features/catalog/hybrid-search-panel", () => ({
   HybridSearchPanel: () => <div data-testid="hybrid-panel-stub" />,
 }));
 
+vi.mock("@/components/brand/catalog-search-entry", () => ({
+  CatalogSearchEntry: () => <h1>Initial catalog entry</h1>,
+}));
 import SearchPage from "@/app/[locale]/search/page";
 import { PortalDataError } from "@/server/data/supabase-rpc";
 
@@ -54,7 +59,8 @@ function translator(namespace: string) {
 type SearchPageParams = Record<string, string | string[] | undefined>;
 
 function getSidebar() {
-  return screen.getByRole("complementary", { name: "Refine results" });
+  fireEvent.click(screen.getByRole("button", { name: "Refine results" }));
+  return screen.getByRole("dialog", { name: "Refine results" });
 }
 
 async function renderSearchPage(searchParams: SearchPageParams) {
@@ -81,12 +87,8 @@ describe("Search page sidebar state (Portal #46)", () => {
     expect(catalogMocks.searchPublicProcesses).not.toHaveBeenCalled();
     expect(catalogMocks.searchPublicFlows).not.toHaveBeenCalled();
     expect(catalogMocks.getPublicFacets).not.toHaveBeenCalled();
-    const sidebar = getSidebar();
-    expect(within(sidebar).getByText(searchDictionary.initialDescription)).toBeInTheDocument();
-    expect(
-      within(sidebar).queryByText(searchDictionary.unavailableDescription),
-    ).not.toBeInTheDocument();
-    expect(within(sidebar).queryByText(searchDictionary.description)).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Initial catalog entry" })).toBeInTheDocument();
+    expect(screen.queryByText(searchDictionary.unavailableDescription)).not.toBeInTheDocument();
   });
 
   it("a real backend failure on a submitted query still reports the unavailable state", async () => {
@@ -100,10 +102,9 @@ describe("Search page sidebar state (Portal #46)", () => {
     expect(catalogMocks.searchPublicProcesses).toHaveBeenCalledTimes(1);
     expect(catalogMocks.searchPublicFlows).not.toHaveBeenCalled();
     expect(catalogMocks.getPublicFacets).toHaveBeenCalledTimes(1);
-    const sidebar = getSidebar();
-    expect(within(sidebar).getByText(searchDictionary.unavailableDescription)).toBeInTheDocument();
+
     expect(
-      within(screen.getByRole("alert")).getByText(searchDictionary.unavailableDescription),
+      within(screen.getAllByRole("alert")[0]!).getByText(searchDictionary.unavailableDescription),
     ).toBeInTheDocument();
   });
 
@@ -118,12 +119,13 @@ describe("Search page sidebar state (Portal #46)", () => {
     await renderSearchPage({ v: "1", kind: "process", q: "electricity" });
 
     const sidebar = getSidebar();
-    expect(within(sidebar).getByText(searchDictionary.filtersDescription)).toBeInTheDocument();
+    expect(
+      within(sidebar).getAllByText(searchDictionary.filtersDescription)[0],
+    ).toBeInTheDocument();
     expect(
       within(sidebar).queryByText(searchDictionary.unavailableDescription),
     ).not.toBeInTheDocument();
     expect(within(sidebar).getByRole("link", { name: "Process (1)" })).toBeInTheDocument();
-    expect(screen.getByRole("list")).toBeInTheDocument();
   });
 
   it("executes an explicit geography-only query and preserves the filter in keyword submission", async () => {
@@ -140,7 +142,7 @@ describe("Search page sidebar state (Portal #46)", () => {
       { cache: "short-public" },
     );
     expect(
-      screen.getByRole("heading", { name: searchDictionary.allResultsTitle }),
+      screen.getByRole("heading", { name: enMessages.CatalogReference.catalog, level: 1 }),
     ).toBeInTheDocument();
     expect(document.querySelector('input[name="geo"]')).toHaveValue("cn");
   });
@@ -148,4 +150,12 @@ describe("Search page sidebar state (Portal #46)", () => {
 
 function fixtureSearch() {
   return catalogFixture.search;
+}
+
+function render(node: ReactNode) {
+  return renderBase(
+    <NextIntlClientProvider locale="en" messages={enMessages}>
+      {node}
+    </NextIntlClientProvider>,
+  );
 }

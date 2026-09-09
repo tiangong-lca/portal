@@ -1,5 +1,11 @@
+import { CatalogCopyIdentity } from "../../src/features/catalog/catalog-copy-identity";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect } from "storybook/test";
+import {
+  CatalogResultList,
+  CatalogResultRow,
+  CatalogResultSummary,
+} from "../../src/features/catalog/catalog-result-row";
 import { SearchResults } from "../../src/features/catalog/search-results";
 import { CompareSelectionProvider } from "../../src/features/compare/selection";
 import {
@@ -14,7 +20,13 @@ import {
 const meta = {
   title: "Catalog/Search results",
   component: SearchResults,
-  subcomponents: { CompareSelectionProvider },
+  subcomponents: {
+    CompareSelectionProvider,
+    CatalogCopyIdentity,
+    CatalogResultList,
+    CatalogResultRow,
+    CatalogResultSummary,
+  },
   tags: ["!autodocs"],
   argTypes: { items: { control: false }, labels: { control: false }, locale: { control: false } },
   args: {
@@ -28,7 +40,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Actual SearchResults cards use shared comfortable action sizes and a two-column action group on narrow screens. Long labels wrap without truncating the action.",
+          "Live results and design references share the list, result row, and authored summary. Data adapters supply supported actions and pagination.",
       },
     },
   },
@@ -55,21 +67,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 export const ProcessAndFlow: Story = {
   play: async ({ canvasElement }) => {
-    const group = canvasElement.querySelector('[data-slot="action-group"]')!;
-    const controls = [...group.querySelectorAll<HTMLElement>('[data-slot="button"]')];
-    const bounds = group.getBoundingClientRect();
-    for (const control of controls) {
-      const box = control.getBoundingClientRect();
-      await expect(box.height).toBeGreaterThanOrEqual(44);
-      await expect(box.right).toBeLessThanOrEqual(bounds.right + 1);
-      const sameRow = controls.filter(
-        (other) => Math.abs(other.getBoundingClientRect().top - box.top) < 1,
-      );
-      for (const other of sameRow)
-        await expect(
-          Math.abs(other.getBoundingClientRect().height - box.height),
-        ).toBeLessThanOrEqual(1);
-    }
+    const controls = canvasElement.querySelectorAll<HTMLElement>(
+      ".catalog-result-actions button, .catalog-result-actions a",
+    );
+    for (const control of controls)
+      await expect(control.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+    await expect(canvasElement.querySelector(".catalog-result-extra")).toBeNull();
   },
 };
 export const Empty: Story = { parameters: { empty: true } };

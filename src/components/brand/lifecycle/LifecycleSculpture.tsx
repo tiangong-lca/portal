@@ -222,7 +222,7 @@ export function LifecycleSculpture({
         </header>
       )}
       <div className="lifecycle-stage">
-        {hero && status !== "ready" && <SculptureOutline />}
+        {hero && (status === "failed" || status === "unavailable") && <SculptureOutline />}
         <button
           type="button"
           className="lifecycle-object"

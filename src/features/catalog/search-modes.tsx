@@ -1,7 +1,39 @@
 "use client";
 
-import { useState, useSyncExternalStore, type ReactNode } from "react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import "./search-workspace.css";
+
+import { createContext, useContext, useState, useSyncExternalStore, type ReactNode } from "react";
+import { ScanSearch, TextSearch } from "lucide-react";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+const ModeContext = createContext<{
+  mode: string;
+  change: (value: string) => void;
+  labels: { mode: string; keyword: string; description: string };
+} | null>(null);
+
+/** @import import { SearchModeControl } from "@/features/catalog/search-modes"; */
+export function SearchModeControl() {
+  const context = useContext(ModeContext);
+  if (!context) return null;
+  const { mode, change, labels } = context;
+  const label = mode === "keyword" ? labels.keyword : labels.description;
+  const Icon = mode === "keyword" ? TextSearch : ScanSearch;
+  return (
+    <Select value={mode} onValueChange={change}>
+      <SelectTrigger
+        className="catalog-mode-trigger"
+        aria-label={`${labels.mode}: ${label}`}
+        title={`${labels.mode}: ${label}`}
+      >
+        <Icon aria-hidden="true" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="keyword">{labels.keyword}</SelectItem>
+        <SelectItem value="description">{labels.description}</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}
 import { cn } from "@/lib/utils";
 
 function subscribe(callback: () => void) {
@@ -26,32 +58,26 @@ export function SearchModes({
   const sharedDescription = useSyncExternalStore(subscribe, isSharedDescription, () => false);
   const mode = choice ?? (sharedDescription ? "description" : "keyword");
   return (
-    <div className="flex flex-col gap-6">
-      <ToggleGroup
-        aria-label={labels.mode}
-        onValueChange={(value) => {
+    <ModeContext.Provider
+      value={{
+        mode,
+        labels,
+        change: (value) => {
           if (value === "keyword" || value === "description") setChoice(value);
-        }}
-        type="single"
-        value={mode}
-        variant="outline"
-      >
-        <ToggleGroupItem className="h-auto min-h-11 whitespace-normal" value="keyword">
-          {labels.keyword}
-        </ToggleGroupItem>
-        <ToggleGroupItem className="h-auto min-h-11 whitespace-normal" value="description">
-          {labels.description}
-        </ToggleGroupItem>
-      </ToggleGroup>
-      <div
-        hidden={mode !== "keyword"}
-        className={cn("flex flex-col gap-6", mode !== "keyword" && "hidden")}
-      >
-        {keyword}
+        },
+      }}
+    >
+      <div className="catalog-search-modes flex flex-col gap-6">
+        <div
+          hidden={mode !== "keyword"}
+          className={cn("flex flex-col gap-6", mode !== "keyword" && "hidden")}
+        >
+          {keyword}
+        </div>
+        <div hidden={mode !== "description"} className={cn(mode !== "description" && "hidden")}>
+          {description}
+        </div>
       </div>
-      <div hidden={mode !== "description"} className={cn(mode !== "description" && "hidden")}>
-        {description}
-      </div>
-    </div>
+    </ModeContext.Provider>
   );
 }

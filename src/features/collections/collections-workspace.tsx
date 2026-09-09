@@ -1,7 +1,12 @@
 "use client";
+import "./collections-workspace.css";
+import { CatalogResultRow, CatalogResultList } from "@/features/catalog/catalog-result-row";
+import { DatasetVersionTag } from "@/features/catalog/dataset-tags";
+import { CatalogCopyIdentity } from "@/features/catalog/catalog-copy-identity";
 
 import { DownloadIcon, EyeIcon, LinkIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -80,6 +85,7 @@ export function CollectionsWorkspace({
   common: CommonLabels;
   locale: PortalLocale;
 }) {
+  const versionLabel = useTranslations("Search")("version");
   const [state, setState] = useState<CollectionStateV2>(emptyCollectionStateV2);
   const [newRef, setNewRef] = useState("");
   const [newKind, setNewKind] = useState<DatasetIdentity["kind"]>(null);
@@ -261,7 +267,7 @@ export function CollectionsWorkspace({
   );
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="collections-workspace">
       {readFailed || saveFailed || corrupt ? (
         <Alert variant="destructive">
           <AlertTitle>
@@ -322,272 +328,39 @@ export function CollectionsWorkspace({
       ) : null}
 
       <fieldset className="flex min-w-0 flex-col gap-6" disabled={!hydrated || Boolean(corrupt)}>
-        <Card>
-          <CardHeader>
-            <CardTitle>{labels.detailsTitle}</CardTitle>
-            <CardDescription>{labels.detailsDescription}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="collection-name">{labels.researchName}</FieldLabel>
-                <Input
-                  id="collection-name"
-                  maxLength={128}
-                  onChange={(event) => setState({ ...state, researchName: event.target.value })}
-                  value={state.researchName}
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="collection-purpose">{labels.purpose}</FieldLabel>
-                <Textarea
-                  id="collection-purpose"
-                  maxLength={512}
-                  onChange={(event) => setState({ ...state, purpose: event.target.value })}
-                  value={state.purpose}
-                />
-              </Field>
-            </FieldGroup>
-          </CardContent>
-        </Card>
-
-        <form
-          className="flex flex-col gap-2"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const ref = newRef.trim();
-            if (!isExactDatasetRef(ref)) {
-              setFormError("invalidRef");
-              return;
-            }
-            try {
-              setState(mergeCollectionMembers(state, [{ kind: newKind, ref }]));
-              setNewRef("");
-              setFormError(null);
-              setPage(0);
-            } catch {
-              setFormError("memberLimit");
-            }
-          }}
-        >
-          <FieldLabel htmlFor="collection-member">{labels.memberRef}</FieldLabel>
-          <div className="grid gap-2 sm:grid-cols-[max-content_minmax(0,1fr)_auto] sm:items-center">
-            <select
-              aria-label={labels.kind}
-              className="border-input bg-background h-11 min-w-0 rounded-lg border px-3 text-sm"
-              onChange={(event) =>
-                setNewKind(
-                  event.target.value === "process" || event.target.value === "flow"
-                    ? event.target.value
-                    : null,
-                )
-              }
-              value={newKind ?? "unknown"}
-            >
-              <option value="unknown">{labels.kind}</option>
-              <option value="process">{common.process}</option>
-              <option value="flow">{common.flow}</option>
-            </select>
-            <Input
-              aria-describedby="collection-member-help"
-              aria-invalid={Boolean(formError)}
-              className="min-w-0"
-              id="collection-member"
-              maxLength={46}
-              onBlur={() => {
-                if (formError === "invalidRef" && isExactDatasetRef(newRef.trim())) {
-                  setFormError(null);
-                }
-              }}
-              onChange={(event) => setNewRef(event.target.value)}
-              placeholder={labels.memberPlaceholder}
-              value={newRef}
-            />
-            <Button type="submit">
-              <PlusIcon data-icon="inline-start" />
-              {labels.add}
-            </Button>
-          </div>
-          {formError ? (
-            <FieldError id="collection-member-help">{labels[formError]}</FieldError>
-          ) : (
-            <FieldDescription id="collection-member-help">{labels.memberHelp}</FieldDescription>
-          )}
-        </form>
-
-        {state.members.length === 0 && (!hydrated || corrupt || readFailed) ? null : state.members
-            .length === 0 ? (
-          <Alert>
-            <AlertDescription>
-              <p>{labels.empty}</p>
-              <Link
-                className="text-link inline-flex min-h-11 items-center"
-                href={localePath(locale, "search")}
-              >
-                {common.search}
-              </Link>
-            </AlertDescription>
-          </Alert>
-        ) : (
-          <section className="flex flex-col gap-3">
-            <p className="text-muted-foreground text-sm">
-              {fill(labels.visibleRange, {
-                from: pageIndex * 10 + 1,
-                to: Math.min(pageIndex * 10 + 10, state.members.length),
-                count: state.members.length,
-              })}
-            </p>
-            <ul className="flex flex-col gap-4">
-              {visibleMembers.map((member) => {
-                const key = collectionMemberKey(member);
-                const summary = summaries[key];
-                const match = summary?.status === "resolved" ? summary.matches[0] : undefined;
-                const knownKind = member.kind ?? match?.kind;
-                const href = knownKind
-                  ? localePath(locale, `${knownKind}/${encodeURIComponent(member.ref)}`)
-                  : undefined;
-                return (
-                  <li key={key}>
-                    <Card size="sm">
-                      <CardHeader>
-                        <div>
-                          <Badge variant="outline">
-                            {member.kind ? common[member.kind] : labels.unknownKind}
-                          </Badge>
-                        </div>
-                        <CardTitle className="break-words">
-                          {match && href ? (
-                            <Link href={href} prefetch={false}>
-                              {match.name}
-                            </Link>
-                          ) : (
-                            <span className="text-base">
-                              {summary?.status === "ambiguous"
-                                ? labels.ambiguous
-                                : summary?.status === "unavailable"
-                                  ? labels.noPublicVersion
-                                  : summary?.status === "temporarily_unavailable"
-                                    ? labels.summaryFailure
-                                    : labels.summaryLoading}
-                            </span>
-                          )}
-                        </CardTitle>
-                        <CardDescription className="font-mono text-xs break-all">
-                          {member.ref}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex flex-col gap-4">
-                        {!member.kind && summary?.matches.length ? (
-                          <div className="flex flex-wrap gap-2">
-                            {summary.matches.map((option) => (
-                              <Button
-                                key={option.kind}
-                                onClick={() => updateMember(key, { kind: option.kind })}
-                                type="button"
-                                variant="outline"
-                              >
-                                {labels.confirmKind}: {common[option.kind]}
-                              </Button>
-                            ))}
-                          </div>
-                        ) : null}
-                        {summary?.status === "temporarily_unavailable" ? (
-                          <Button
-                            className="min-h-11 self-start"
-                            onClick={retry}
-                            type="button"
-                            variant="outline"
-                          >
-                            {common.retry}
-                          </Button>
-                        ) : null}
-                        <Field>
-                          <FieldLabel htmlFor={`status-${key}`}>{labels.status}</FieldLabel>
-                          <select
-                            className="border-input bg-background h-11 w-full rounded-lg border px-3 text-sm sm:max-w-xs"
-                            id={`status-${key}`}
-                            onChange={(event) => {
-                              const status = event.target.value;
-                              if (
-                                status === "candidate" ||
-                                status === "selected" ||
-                                status === "excluded"
-                              )
-                                updateMember(key, { status });
-                            }}
-                            value={member.status}
-                          >
-                            {(["candidate", "selected", "excluded"] as const).map((status) => (
-                              <option key={status} value={status}>
-                                {labels[status]}
-                              </option>
-                            ))}
-                          </select>
-                        </Field>
-                        <Field>
-                          <FieldLabel htmlFor={`note-${key}`}>{labels.note}</FieldLabel>
-                          <Textarea
-                            id={`note-${key}`}
-                            maxLength={512}
-                            onChange={(event) => updateMember(key, { note: event.target.value })}
-                            value={member.note}
-                          />
-                        </Field>
-                        <div className="flex flex-wrap gap-2">
-                          {href ? (
-                            <Button asChild variant="outline">
-                              <Link href={href} prefetch={false}>
-                                {common.details}
-                              </Link>
-                            </Button>
-                          ) : null}
-                          <Button
-                            onClick={() =>
-                              setState({
-                                ...state,
-                                members: state.members.filter(
-                                  (entry) => collectionMemberKey(entry) !== key,
-                                ),
-                              })
-                            }
-                            type="button"
-                            variant="destructive"
-                          >
-                            <Trash2Icon data-icon="inline-start" />
-                            {labels.remove}
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </li>
-                );
-              })}
-            </ul>
-            {state.members.length > 10 ? (
-              <nav aria-label={labels.title} className="flex justify-between gap-3">
-                <Button
-                  disabled={pageIndex === 0}
-                  onClick={() => setPage(pageIndex - 1)}
-                  type="button"
-                  variant="outline"
-                >
-                  {common.previous}
-                </Button>
-                <Button
-                  disabled={(pageIndex + 1) * 10 >= state.members.length}
-                  onClick={() => setPage(pageIndex + 1)}
-                  type="button"
-                  variant="outline"
-                >
-                  {common.next}
-                </Button>
-              </nav>
-            ) : null}
-          </section>
-        )}
+        <details className="collection-details">
+          <summary>{state.researchName || labels.detailsTitle}</summary>
+          <Card>
+            <CardHeader>
+              <CardTitle>{labels.detailsTitle}</CardTitle>
+              <CardDescription>{labels.detailsDescription}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="collection-name">{labels.researchName}</FieldLabel>
+                  <Input
+                    id="collection-name"
+                    maxLength={128}
+                    onChange={(event) => setState({ ...state, researchName: event.target.value })}
+                    value={state.researchName}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="collection-purpose">{labels.purpose}</FieldLabel>
+                  <Textarea
+                    id="collection-purpose"
+                    maxLength={512}
+                    onChange={(event) => setState({ ...state, purpose: event.target.value })}
+                    value={state.purpose}
+                  />
+                </Field>
+              </FieldGroup>
+            </CardContent>
+          </Card>
+        </details>
       </fieldset>
-
-      <Card>
+      <Card className="collection-tools collection-backup">
         <CardHeader>
           <CardTitle>{labels.backupTitle}</CardTitle>
           <CardDescription>{labels.backupDescription}</CardDescription>
@@ -692,7 +465,7 @@ export function CollectionsWorkspace({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="collection-tools collection-share">
         <CardHeader>
           <CardTitle>{labels.shareTitle}</CardTitle>
           <CardDescription>{labels.shareDescription}</CardDescription>
@@ -748,6 +521,245 @@ export function CollectionsWorkspace({
           ) : null}
         </CardContent>
       </Card>
+      <fieldset className="flex min-w-0 flex-col gap-6" disabled={!hydrated || Boolean(corrupt)}>
+        <details className="collection-add-shell">
+          <summary>
+            <PlusIcon aria-hidden="true" />
+            {labels.add}
+          </summary>
+          <form
+            className="collection-add flex flex-col gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const ref = newRef.trim();
+              if (!isExactDatasetRef(ref)) {
+                setFormError("invalidRef");
+                return;
+              }
+              try {
+                setState(mergeCollectionMembers(state, [{ kind: newKind, ref }]));
+                setNewRef("");
+                setFormError(null);
+                setPage(0);
+              } catch {
+                setFormError("memberLimit");
+              }
+            }}
+          >
+            <FieldLabel htmlFor="collection-member">{labels.memberRef}</FieldLabel>
+            <div className="grid gap-2 sm:grid-cols-[max-content_minmax(0,1fr)_auto] sm:items-center">
+              <select
+                aria-label={labels.kind}
+                className="border-input bg-background h-11 min-w-0 rounded-lg border px-3 text-sm"
+                onChange={(event) =>
+                  setNewKind(
+                    event.target.value === "process" || event.target.value === "flow"
+                      ? event.target.value
+                      : null,
+                  )
+                }
+                value={newKind ?? "unknown"}
+              >
+                <option value="unknown">{labels.kind}</option>
+                <option value="process">{common.process}</option>
+                <option value="flow">{common.flow}</option>
+              </select>
+              <Input
+                aria-describedby="collection-member-help"
+                aria-invalid={Boolean(formError)}
+                className="min-w-0"
+                id="collection-member"
+                maxLength={46}
+                onBlur={() => {
+                  if (formError === "invalidRef" && isExactDatasetRef(newRef.trim())) {
+                    setFormError(null);
+                  }
+                }}
+                onChange={(event) => setNewRef(event.target.value)}
+                placeholder={labels.memberPlaceholder}
+                value={newRef}
+              />
+              <Button type="submit">
+                <PlusIcon data-icon="inline-start" />
+                {labels.add}
+              </Button>
+            </div>
+            {formError ? (
+              <FieldError id="collection-member-help">{labels[formError]}</FieldError>
+            ) : (
+              <FieldDescription id="collection-member-help">{labels.memberHelp}</FieldDescription>
+            )}
+          </form>
+        </details>
+
+        {state.members.length === 0 && (!hydrated || corrupt || readFailed) ? null : state.members
+            .length === 0 ? (
+          <Alert className="collection-empty">
+            <AlertDescription>
+              <p>{labels.empty}</p>
+              <Link className="collection-empty-action" href={localePath(locale, "search")}>
+                {common.search}
+              </Link>
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <section className="collection-members flex flex-col gap-3">
+            <h2 className="sr-only">{labels.title}</h2>
+            <p className="text-muted-foreground text-sm">
+              {fill(labels.visibleRange, {
+                from: pageIndex * 10 + 1,
+                to: Math.min(pageIndex * 10 + 10, state.members.length),
+                count: state.members.length,
+              })}
+            </p>
+            <CatalogResultList>
+              {visibleMembers.map((member) => {
+                const key = collectionMemberKey(member);
+                const summary = summaries[key];
+                const match = summary?.status === "resolved" ? summary.matches[0] : undefined;
+                const knownKind = member.kind ?? match?.kind;
+                const href = knownKind
+                  ? localePath(locale, `${knownKind}/${encodeURIComponent(member.ref)}`)
+                  : undefined;
+                return (
+                  <CatalogResultRow
+                    key={key}
+                    title={
+                      match && href ? (
+                        <Link href={href} prefetch={false}>
+                          {match.name}
+                        </Link>
+                      ) : (
+                        <span className="text-base">
+                          {summary?.status === "ambiguous"
+                            ? labels.ambiguous
+                            : summary?.status === "unavailable"
+                              ? labels.noPublicVersion
+                              : summary?.status === "temporarily_unavailable"
+                                ? labels.summaryFailure
+                                : labels.summaryLoading}
+                        </span>
+                      )
+                    }
+                    tags={
+                      <>
+                        <DatasetVersionTag
+                          version={member.ref.split("@")[1] ?? ""}
+                          label={versionLabel}
+                        />
+                        <Badge variant="outline">
+                          {knownKind ? common[knownKind] : labels.unknownKind}
+                        </Badge>
+                      </>
+                    }
+                    action={
+                      <div className="catalog-result-actions">
+                        <CatalogCopyIdentity reference={member.ref} />
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          aria-label={labels.remove}
+                          title={labels.remove}
+                          onClick={() =>
+                            setState({
+                              ...state,
+                              members: state.members.filter(
+                                (entry) => collectionMemberKey(entry) !== key,
+                              ),
+                            })
+                          }
+                        >
+                          <Trash2Icon aria-hidden="true" />
+                        </Button>
+                      </div>
+                    }
+                  >
+                    <div className="collection-record-editors">
+                      {!member.kind && summary?.matches.length ? (
+                        <div className="collection-record-resolution flex flex-wrap gap-2">
+                          {summary.matches.map((option) => (
+                            <Button
+                              key={option.kind}
+                              onClick={() => updateMember(key, { kind: option.kind })}
+                              type="button"
+                              variant="outline"
+                            >
+                              {labels.confirmKind}: {common[option.kind]}
+                            </Button>
+                          ))}
+                        </div>
+                      ) : null}
+                      {summary?.status === "temporarily_unavailable" ? (
+                        <Button
+                          className="collection-record-resolution min-h-11 self-start"
+                          onClick={retry}
+                          type="button"
+                          variant="outline"
+                        >
+                          {common.retry}
+                        </Button>
+                      ) : null}
+                      <Field>
+                        <FieldLabel htmlFor={`status-${key}`}>{labels.status}</FieldLabel>
+                        <select
+                          className="border-input bg-background h-11 w-full rounded-lg border px-3 text-sm sm:max-w-xs"
+                          id={`status-${key}`}
+                          onChange={(event) => {
+                            const status = event.target.value;
+                            if (
+                              status === "candidate" ||
+                              status === "selected" ||
+                              status === "excluded"
+                            )
+                              updateMember(key, { status });
+                          }}
+                          value={member.status}
+                        >
+                          {(["candidate", "selected", "excluded"] as const).map((status) => (
+                            <option key={status} value={status}>
+                              {labels[status]}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor={`note-${key}`}>{labels.note}</FieldLabel>
+                        <Textarea
+                          id={`note-${key}`}
+                          maxLength={512}
+                          onChange={(event) => updateMember(key, { note: event.target.value })}
+                          value={member.note}
+                        />
+                      </Field>
+                    </div>
+                  </CatalogResultRow>
+                );
+              })}
+            </CatalogResultList>
+            {state.members.length > 10 ? (
+              <nav aria-label={labels.title} className="flex justify-between gap-3">
+                <Button
+                  disabled={pageIndex === 0}
+                  onClick={() => setPage(pageIndex - 1)}
+                  type="button"
+                  variant="outline"
+                >
+                  {common.previous}
+                </Button>
+                <Button
+                  disabled={(pageIndex + 1) * 10 >= state.members.length}
+                  onClick={() => setPage(pageIndex + 1)}
+                  type="button"
+                  variant="outline"
+                >
+                  {common.next}
+                </Button>
+              </nav>
+            ) : null}
+          </section>
+        )}
+      </fieldset>
+
       {actionError ? (
         <Alert variant="destructive">
           <AlertDescription>{actionError}</AlertDescription>

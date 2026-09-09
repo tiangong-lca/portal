@@ -45,7 +45,9 @@
     "searchCompact": "Suche",
     "browseCompact": "Katalog",
     "methodologyCompact": "Dateninfo",
-    "collectionsCompact": "Liste"
+    "collectionsCompact": "Liste",
+    "catalog": "Datenkatalog",
+    "catalogCompact": "Katalog"
   },
   "Home": {
     "eyebrow": "TianGong LCA Datenportal",
@@ -84,7 +86,9 @@
     "scaleUnavailable": "Katalogzahlen sind vorübergehend nicht verfügbar. Suche und Katalog bleiben nutzbar.",
     "useTitle": "Den Katalog verwenden",
     "useDescription": "Prüfen Sie vor der Nutzung Geltungsbereich und Lizenz. Vergleichen oder zitieren Sie immer eine bestimmte Version.",
-    "useLink": "Über die Daten"
+    "useLink": "Über die Daten",
+    "exploreCatalog": "Katalog erkunden",
+    "collapseExplore": "Erkundung schließen"
   },
   "Search": {
     "title": "Datenkatalog durchsuchen",
@@ -116,7 +120,10 @@
     "unavailableDescription": "Suchergebnisse konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
     "resultsFor": "Ergebnisse für „{query}“",
     "searchMode": "Suchmodus",
-    "keywordMode": "Stichwort oder Kennung",
+    "sortRelevance": "Standardreihenfolge",
+    "sortModified": "Zuletzt aktualisiert",
+    "sortName": "Nach Name",
+    "keywordMode": "Stichwortsuche",
     "descriptionMode": "Bedarf beschreiben",
     "filtersDescription": "Grenzen Sie Ergebnisse nach Region, Zeitraum und Quelle ein.",
     "appliedFilters": "Aktive Filter",
@@ -507,6 +514,10 @@
     "platformAction": "LCA-Plattform öffnen",
     "heroIndex": "Mit Daten Umweltwirkungen verstehen",
     "catalogKicker": "Offene Daten",
+    "searchEntryAction": "Jetzt entdecken",
+    "searchExample1": "Strom in China",
+    "searchExample2": "Polyethylen",
+    "searchExample3": "Aluminiumproduktion",
     "catalogTitle": "Der Ausgangspunkt Ihrer Analyse.",
     "catalogDescription": "Prozess- und Flussdaten finden: nach Namen oder Kennung suchen oder den Katalog nach Region und Quelle erkunden.",
     "understandingKicker": "Vom Finden zum Verstehen",

@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, CopyIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, FingerprintIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ type CitationCopyProps = {
   copiedLabel: string;
   failureLabel: string;
   showText?: boolean;
+  iconOnly?: boolean;
+  identity?: boolean;
 };
 
 /** @import import { CitationCopy } from "@/features/catalog/citation-copy"; */
@@ -20,6 +22,8 @@ export function CitationCopy({
   copyLabel,
   failureLabel,
   showText = true,
+  iconOnly = false,
+  identity = false,
 }: CitationCopyProps) {
   const [copied, setCopied] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -36,7 +40,10 @@ export function CitationCopy({
       ) : null}
       <div className="flex flex-1 flex-wrap items-stretch gap-3">
         <Button
-          className={showText ? undefined : "flex-1"}
+          className={iconOnly || showText ? undefined : "flex-1"}
+          size={iconOnly ? "icon" : "default"}
+          aria-label={copied ? copiedLabel : copyLabel}
+          title={copied ? copiedLabel : copyLabel}
           onClick={async () => {
             try {
               await navigator.clipboard.writeText(citation);
@@ -48,10 +55,16 @@ export function CitationCopy({
             }
           }}
           type="button"
-          variant="outline"
+          variant={iconOnly ? "ghost" : "outline"}
         >
-          {copied ? <CheckIcon data-icon="inline-start" /> : <CopyIcon data-icon="inline-start" />}
-          {copied ? copiedLabel : copyLabel}
+          {copied ? (
+            <CheckIcon data-icon="inline-start" />
+          ) : identity ? (
+            <FingerprintIcon data-icon="inline-start" />
+          ) : (
+            <CopyIcon data-icon="inline-start" />
+          )}
+          {!iconOnly && (copied ? copiedLabel : copyLabel)}
         </Button>
         <span aria-live="polite" className="sr-only">
           {copied ? copiedLabel : ""}

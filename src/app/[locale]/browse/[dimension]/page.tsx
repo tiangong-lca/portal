@@ -1,3 +1,4 @@
+import SearchPage from "../../search/page";
 import { Rows3Icon } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -14,12 +15,11 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { localizedText, mapSearchItem } from "@/features/catalog/map-public-data";
-import { SearchResults } from "@/features/catalog/search-results";
+import { localizedText } from "@/features/catalog/map-public-data";
 import { isPortalLocale, localePath } from "@/i18n/routing";
 import { formatGeographyCode } from "@/i18n/geography";
 import { localizedMetadata } from "@/lib/seo";
-import { getPublicFacets, searchPublicFlows, searchPublicProcesses } from "@/server/data/catalog";
+import { getPublicFacets } from "@/server/data/catalog";
 import { PortalDataError } from "@/server/data/supabase-rpc";
 
 const dimensions = ["process", "flow", "region", "source"] as const;
@@ -69,43 +69,39 @@ export default async function BrowsePage({
   const { dimension, locale } = await params;
   if (!isPortalLocale(locale) || !isDimension(dimension)) notFound();
   setRequestLocale(locale);
-  const cursor = safeCursor((await searchParams).cursor);
-  const [t, searchT, detail, common] = await Promise.all([
+  if (["process", "flow"].includes(dimension)) {
+    return (
+      <SearchPage
+        params={Promise.resolve({ locale })}
+        browseKind={dimension as "process" | "flow"}
+        searchParams={Promise.resolve({ ...(await searchParams), v: "1", kind: dimension })}
+      />
+    );
+  }
+
+  const [t, searchT, common] = await Promise.all([
     getTranslations({ locale, namespace: "Browse" }),
     getTranslations({ locale, namespace: "Search" }),
-    getTranslations({ locale, namespace: "Detail" }),
     getTranslations({ locale, namespace: "Common" }),
   ]);
   let dataUnavailable = false;
-  let nextCursor: string | null = null;
-  let results: ReturnType<typeof mapSearchItem>[] = [];
   let facetValues: Array<{ count: number; label: string; value: string }> = [];
 
   try {
-    if (dimension === "process" || dimension === "flow") {
-      const input = { cursor, filters: {}, limit: 50, query: "", sort: "name_asc" as const };
-      const page =
-        dimension === "process"
-          ? await searchPublicProcesses(input)
-          : await searchPublicFlows(input);
-      results = page.items.map((item) => mapSearchItem(item, locale));
-      nextCursor = page.nextCursor;
-    } else {
-      const facets = await getPublicFacets({ filters: {}, kind: "all", query: "" });
-      const expectedIds = dimension === "region" ? ["region", "geography"] : ["source", "database"];
-      const group = facets.groups.find((candidate) =>
-        expectedIds.some((id) => candidate.id.toLowerCase().includes(id)),
-      );
-      facetValues =
-        group?.values.map((value) => ({
-          count: value.count,
-          label:
-            dimension === "region"
-              ? (formatGeographyCode(value.value, locale) ?? value.value)
-              : (localizedText(value.label, locale) ?? value.value),
-          value: value.value,
-        })) ?? [];
-    }
+    const facets = await getPublicFacets({ filters: {}, kind: "all", query: "" });
+    const expectedIds = dimension === "region" ? ["region", "geography"] : ["source", "database"];
+    const group = facets.groups.find((candidate) =>
+      expectedIds.some((id) => candidate.id.toLowerCase().includes(id)),
+    );
+    facetValues =
+      group?.values.map((value) => ({
+        count: value.count,
+        label:
+          dimension === "region"
+            ? (formatGeographyCode(value.value, locale) ?? value.value)
+            : (localizedText(value.label, locale) ?? value.value),
+        value: value.value,
+      })) ?? [];
   } catch (error) {
     if (!(error instanceof PortalDataError)) throw error;
     dataUnavailable = true;
@@ -149,40 +145,6 @@ export default async function BrowsePage({
         <Alert>
           <AlertDescription>{searchT("unavailableDescription")}</AlertDescription>
         </Alert>
-      ) : dimension === "process" || dimension === "flow" ? (
-        <SearchResults
-          items={results}
-          labels={{
-            exchangesAvailable: common("exchangesAvailable"),
-            lciaAvailable: common("lciaAvailable"),
-            referenceFlowProperty: detail("referenceFlowProperty"),
-            collect: detail("collect"),
-            compare: detail("compare"),
-            copied: detail("citationCopied"),
-            copyCitation: detail("copyCitation"),
-            copyFailure: detail("copyFailed"),
-            details: common("details"),
-            emptyDescription: t("emptyDescription"),
-            emptyTitle: t("emptyTitle"),
-            flow: common("flow"),
-            functionalUnit: detail("functionalUnit"),
-            geography: detail("geography"),
-            match: searchT("matchEvidence"),
-            metadataOnly: common("metadataOnly"),
-            process: common("process"),
-            public: common("public"),
-            quality: detail("quality"),
-            reference: detail("referenceProduct"),
-            referenceYear: detail("referenceYear"),
-            selectForCompare: searchT("selectForCompare"),
-            matchingVersions: searchT("matchingVersions"),
-            version: searchT("version"),
-            source: detail("sourceDatabase"),
-            technology: detail("technology"),
-          }}
-          locale={locale}
-          siteOrigin={process.env.SITE_URL ?? "http://localhost:3000"}
-        />
       ) : facetValues.length > 0 ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {facetValues.map((value) => {
@@ -219,18 +181,6 @@ export default async function BrowsePage({
           </EmptyHeader>
         </Empty>
       )}
-
-      {nextCursor ? (
-        <nav aria-label={common("next")} className="flex justify-end">
-          <Button asChild variant="outline">
-            <Link
-              href={`${localePath(locale, `browse/${dimension}`)}?cursor=${encodeURIComponent(nextCursor)}`}
-            >
-              {common("next")}
-            </Link>
-          </Button>
-        </nav>
-      ) : null}
     </main>
   );
 }

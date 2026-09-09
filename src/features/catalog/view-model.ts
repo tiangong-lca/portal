@@ -15,6 +15,7 @@ export type CatalogResultViewModel = {
   kind: CatalogKind;
   name: string;
   originalName?: string;
+  description?: string;
   referenceProduct?: string;
   referenceFlowProperty?: string;
   capabilities?: DisplayCapabilities;
@@ -35,7 +36,6 @@ export type DatasetDetailViewModel = CatalogResultViewModel & {
   classifications?: string;
   flowType?: string;
   synonyms?: string;
-  description?: string;
   geographyDescription?: string;
   referenceFlowPropertyRef?: string;
   license?: string;

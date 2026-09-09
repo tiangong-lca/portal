@@ -1,3 +1,5 @@
+import { NavigationRail } from "./navigation-rail";
+import "./site-shell.css";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
@@ -22,8 +24,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
   const homeHref = localePath(locale);
 
   const links = [
-    [localePath(locale, "search?v=1"), t("search"), t("searchCompact")],
-    [localePath(locale, "browse/process"), t("browse"), t("browseCompact")],
+    [localePath(locale, "search?v=1"), t("catalog"), t("catalogCompact")],
     [localePath(locale, "methodology"), t("methodology"), t("methodologyCompact")],
     [localePath(locale, "collections"), t("collections"), t("collectionsCompact")],
   ] as const;
@@ -37,7 +38,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
       >
         {t("skipToContent")}
       </a>
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:px-8 xl:grid-cols-[auto_minmax(0,1fr)_auto]">
+      <div className="site-shell-container mx-auto grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 xl:grid-cols-[auto_minmax(0,1fr)_auto]">
         <Link className="flex min-h-11 items-center gap-3" href={homeHref} prefetch={false}>
           <BrandLogo locale={locale} priority />
           <span className="font-heading text-lg leading-tight font-semibold tracking-tight sm:text-xl">
@@ -49,7 +50,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
           aria-label={t("brandName")}
           className="order-3 col-span-2 min-w-0 overflow-x-auto xl:order-none xl:col-span-1"
         >
-          <ul className="grid grid-cols-4 gap-1 sm:flex sm:min-w-max sm:items-center">
+          <NavigationRail>
             {links.map(([href, label, compactLabel]) => (
               <li key={href}>
                 <NavigationLink
@@ -76,7 +77,7 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
                 </a>
               </Button>
             </li>
-          </ul>
+          </NavigationRail>
         </nav>
 
         <div className="order-2 ml-auto flex min-w-0 items-center gap-2 xl:order-none">
