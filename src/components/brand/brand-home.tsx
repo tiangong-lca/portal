@@ -81,7 +81,6 @@ export async function BrandHome({ locale, summary, sculpture }: BrandHomeProps) 
               </a>
             </Button>
           </div>
-          <p className="brand-hero-note">{t("platformDestination")}</p>
         </div>
         <div className="brand-hero-art">{sculpture ?? <BrandSculpture locale={locale} />}</div>
         <div className="brand-hero-index" aria-hidden="true">
@@ -276,7 +275,6 @@ export async function BrandHome({ locale, summary, sculpture }: BrandHomeProps) 
                   <ArrowUpRight data-icon="inline-end" />
                 </a>
               </Button>
-              <p className="brand-platform-note">{t("platformDestination")}</p>
             </div>
           </div>
         </div>

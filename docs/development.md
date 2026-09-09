@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: b1261f884c39f51a507a8d31b474f526e9785fde
+lastReviewedCommit: 921e2e8d061f37fe6a1d6c3dd280c013f708ac99
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #73: renderer queue diagnostics and motion-test settlement preserve existing geometry, scheduling, software-WebGL coverage, CI gates and hosted-evidence boundaries."
+lastReviewedNote: "Reviewed for Portal #75: wide and ultrawide homepage scenarios and input-driven motion use the existing Storybook and production verification workflow; no build, deployment or fixture boundary changes."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance

@@ -66,7 +66,8 @@ export function LifecycleSculpture({
   const siteTheme = useSiteTheme();
   const theme = controlledTheme ?? (hero ? siteTheme : localTheme);
   const [colorful, setColorful] = useState(initialColorful);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(hero);
+  const motionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const systemReduced = useSyncExternalStore(subscribeMotion, getMotion, serverMotion);
   const [status, setStatus] = useState<"loading" | "ready" | "unavailable" | "failed">("loading");
   const [attempt, setAttempt] = useState(0);
@@ -134,6 +135,23 @@ export function LifecycleSculpture({
     current.current = { theme, colorful, paused, reduced };
     scene.current?.update(current.current);
   }, [theme, colorful, paused, reduced]);
+  useEffect(
+    () => () => {
+      if (motionTimer.current !== null) clearTimeout(motionTimer.current);
+    },
+    [],
+  );
+  // The public hero has no playback toolbar: motion follows input, then settles.
+  const animateHeroInteraction = () => {
+    if (!hero || reduced) return;
+    setPaused(false);
+    if (motionTimer.current !== null) clearTimeout(motionTimer.current);
+    motionTimer.current = setTimeout(() => setPaused(true), 1500);
+  };
+  const leaveArtwork = () => {
+    scene.current?.leave();
+    animateHeroInteraction();
+  };
   const toggle = () => {
     scene.current?.activate();
     setColorful((value) => !value);
@@ -217,19 +235,21 @@ export function LifecycleSculpture({
           }}
           onPointerMove={(event) => {
             if (event.pointerType === "touch") return;
+            animateHeroInteraction();
             const rect = event.currentTarget.getBoundingClientRect();
             scene.current?.pointer(
               ((event.clientX - rect.left) / rect.width) * 2 - 1,
               -(((event.clientY - rect.top) / rect.height) * 2 - 1),
             );
           }}
-          onPointerLeave={() => scene.current?.leave()}
-          onBlur={() => scene.current?.leave()}
+          onPointerLeave={leaveArtwork}
+          onBlur={leaveArtwork}
           onClick={(event) => {
             if (
               event.detail === 0 ||
               Math.hypot(event.clientX - down.current.x, event.clientY - down.current.y) < 12
             ) {
+              animateHeroInteraction();
               const rect = event.currentTarget.getBoundingClientRect();
               if (event.detail === 0) scene.current?.activate();
               else
@@ -260,47 +280,16 @@ export function LifecycleSculpture({
           </div>
         )}
       </div>
-      <footer className="lifecycle-footer">
-        <p id={hintId}>
-          {hero && status !== "ready"
-            ? status === "loading"
-              ? t("loading")
-              : t("static")
-            : reduced
-              ? t("reduced")
-              : t("hint")}
+      {hero ? (
+        <p id={hintId} className="sr-only">
+          {reduced ? t("reduced") : t("hint")}
         </p>
-        {!hero && <span>{t("concept")}</span>}
-        {hero && (
-          <div className="lifecycle-controls">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={t("color")}
-              aria-pressed={colorful}
-              onClick={toggle}
-              disabled={status !== "ready"}
-            >
-              <Palette aria-hidden />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={t("pause")}
-              aria-pressed={paused || reduced}
-              disabled={reduced || status !== "ready"}
-              onClick={() => setPaused((value) => !value)}
-            >
-              {paused || reduced ? <Play aria-hidden /> : <Pause aria-hidden />}
-            </Button>
-            {(status === "failed" || status === "unavailable") && (
-              <Button variant="ghost" onClick={() => setAttempt((value) => value + 1)}>
-                {t("retry")}
-              </Button>
-            )}
-          </div>
-        )}
-      </footer>
+      ) : (
+        <footer className="lifecycle-footer">
+          <p id={hintId}>{reduced ? t("reduced") : t("hint")}</p>
+          <span>{t("concept")}</span>
+        </footer>
+      )}
     </section>
   );
 }

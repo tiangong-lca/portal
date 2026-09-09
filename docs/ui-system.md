@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: b1261f884c39f51a507a8d31b474f526e9785fde
+lastReviewedCommit: 921e2e8d061f37fe6a1d6c3dd280c013f708ac99
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #73: render-queue settlement repairs pause/reduced-motion verification without changing accepted appearance, controls, accessibility, geometry or animation behavior."
+lastReviewedNote: "Reviewed for Portal #75: wider homepage composition, removal of redundant platform and artwork instructions, and bounded input-driven hero motion without a visible playback toolbar; standalone study controls remain available."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -200,13 +200,13 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 
 `src/components/brand/` 拥有实际首页、轻量加载岛和 `lifecycle/` 中的共享渲染组件。`Brand/Homepage` 场景复用生产页面与四语字典；`Brand Explorations/Lifecycle Sculpture` 保留独立部件、姿态与参考对照审阅。组件使用可编辑的真实三维模型、程序化几何与实时材质，独立场景分别校准各个部件；五层透明结构分别呈现节点网络、能源、制造、产品与点阵地图；这些是视觉隐喻，不是数据覆盖、计算结果或科学证据。图形两侧不附文字标签。
 
-亮暗模式分别校准材质、边缘光、对比度与底部阴影；品牌紫与多彩模式是独立于主题的展示状态。鼠标带来小幅视差和局部节点/连线高亮，点击、触屏轻点或 Enter/Space 切换色彩。拖动滚动不触发变色；暂停保留当前姿态，减少动态效果时保持静态但仍可切换主题和颜色。控件复用正式 Button，名称属于实际四语字典 `Sculpture`，提供焦点、加载与失败恢复。首页只保留色彩和暂停操作，主题跟随全站设置；独立研究场景保留主题和重置工具栏。离屏、隐藏页面或静止状态不持续绘制，卸载释放 GPU 和异步加载资源。
+亮暗模式分别校准材质、边缘光、对比度与底部阴影；品牌紫与多彩模式是独立于主题的展示状态。鼠标带来小幅视差和局部节点/连线高亮，点击、触屏轻点或 Enter/Space 切换色彩。拖动滚动不触发变色；暂停保留当前姿态，减少动态效果时保持静态但仍可切换主题和颜色。控件复用正式 Button，名称属于实际四语字典 `Sculpture`，提供焦点、加载与失败恢复。首页图形直接响应鼠标、点击和键盘，不显示色彩或暂停工具栏，主题跟随全站设置；空闲时静止，最后一次输入后 1.5 秒停止运动，减少动态效果时不启动交互运动。独立研究场景保留色彩、暂停、主题和重置工具栏。离屏、隐藏页面或静止状态不持续绘制，卸载释放 GPU 和异步加载资源。
 
 跨层连线通过实际空间位置与模型形成遮挡，节点尺寸与形状分别校准。调整连接后验证完整的流动光点循环，避免只检查静止画面或首帧。
 
 视觉验收对照用户选定的亮暗参考图核对整体俯角、各层透视缩短、上下平台遮挡、构图与层距，再核对模型细节、透明材质、点阵密度和动效，不以自动测试替代。图形的局部色彩与材质值由共享渲染组件拥有；字体和控件保持 Portal 语义。生产首页按需加载 Three.js 和同源无纹理模型；其他目录路由不预加载 renderer 或模型。原稿仅出现在明确标注的对照区域，不作为组件底图或纹理。模型、透明板、节点和连线需要分别可修改，反光、悬停高亮与视差由前端实时计算。原稿、裁取参数与校验信息见[开发指南](development.md#brand-sculpture-assets)。
 
-首页使用 Source Sans 3 Variable 与 Noto Sans SC Variable 的同源字体资产，标题、说明、正文和辅助文字分别设定角色。主标题与图形并列，窄屏按文字、入口、图形顺序堆叠；分区沿同一内容宽度对齐，搜索区域用独立中性表面区分。亮暗背景分别与渲染场景匹配，紫色用于品牌强调与主要操作。图形两侧不附设备标签；底部只保留简短交互说明与必要控制。加载失败以可编辑 SVG 轮廓退化，不以原稿图片替代。所有搜索与产品入口在等待模型时保持可用。
+首页使用 Source Sans 3 Variable 与 Noto Sans SC Variable 的同源字体资产，标题、说明、正文和辅助文字分别设定角色。主标题与图形并列，窄屏按文字、入口、图形顺序堆叠；分区沿同一内容宽度对齐，搜索区域用独立中性表面区分。亮暗背景分别与渲染场景匹配，紫色用于品牌强调与主要操作。宽屏内容区域上限为 1680px，标题与图形按可用宽度放大；图形两侧不附设备标签，底部不显示交互说明与演示控件。平台入口保留明确名称与外链图标，不重复显示域名及登录说明。图形的操作说明仍通过可访问描述提供。加载失败以可编辑 SVG 轮廓退化，不以原稿图片替代。所有搜索与产品入口在等待模型时保持可用。
 
 首页的 `BrandHome` 复用实际公共目录摘要，不将合成 fixture 引入生产；Storybook 场景必须明确其摘要是合成输入。示例计数仅在目录概览区域出现。`BrandSculpture` 延迟加载场景，避免将 Three.js 纳入首页基础脚本预算；模型与动态脚本另行记录实际传输体积，不能将基础脚本预算误报成页面全部下载量。
 

@@ -204,26 +204,3 @@
   height: 100%;
   min-height: 0;
 }
-.lifecycle-study[data-presentation="hero"] .lifecycle-footer {
-  min-height: 48px;
-  flex-wrap: nowrap;
-  padding: 0 8px;
-  gap: 16px;
-  justify-content: flex-end;
-}
-.lifecycle-study[data-presentation="hero"] .lifecycle-footer p {
-  font-size: 11px;
-  line-height: 1.6;
-  text-align: left;
-}
-.lifecycle-study[data-presentation="hero"] .lifecycle-controls {
-  width: auto;
-  flex-shrink: 0;
-  gap: 4px;
-}
-.lifecycle-study[data-presentation="hero"] .lifecycle-controls button {
-  border-radius: 50%;
-}
-.lifecycle-study[data-presentation="hero"] .lifecycle-controls button:nth-child(2) {
-  flex: initial;
-}

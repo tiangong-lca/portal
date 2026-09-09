@@ -29,6 +29,12 @@ const meta = {
   tags: ["!autodocs"],
   parameters: {
     pageLayout: true,
+    viewport: {
+      options: {
+        wide: { name: "Wide · 1920", styles: { width: "1920px", height: "1080px" } },
+        ultrawide: { name: "Ultrawide · 2560", styles: { width: "2560px", height: "1440px" } },
+      },
+    },
     docs: {
       description: {
         component:
@@ -116,6 +122,11 @@ type Story = StoryObj<Omit<typeof meta, "component">>;
 
 export const Light: Story = {};
 export const Dark: Story = { globals: { theme: "dark" } };
+export const WideLight: Story = { globals: { viewport: { value: "wide", isRotated: false } } };
+export const WideDark: Story = {
+  globals: { theme: "dark", viewport: { value: "wide", isRotated: false } },
+};
+export const Ultrawide: Story = { globals: { viewport: { value: "ultrawide", isRotated: false } } };
 export const English: Story = { globals: { locale: "en" } };
 export const FrenchDark: Story = { globals: { locale: "fr", theme: "dark" } };
 export const Mobile: Story = { globals: mobileGlobals };
@@ -147,10 +158,34 @@ export const ColorAndSiteTheme: Story = {
       expect(canvasElement.querySelector(".lifecycle-study")).toHaveAttribute("data-theme", "dark"),
     );
     await expect(object).toHaveAttribute("aria-pressed", "true");
-    await userEvent.click(canvas.getByRole("button", { name: dictionaries.en.Sculpture.pause }));
+    await expect(
+      canvas.queryByRole("button", { name: dictionaries.en.Sculpture.pause }),
+    ).not.toBeInTheDocument();
+    await expect(
+      canvas.queryByRole("button", { name: dictionaries.en.Sculpture.color }),
+    ).not.toBeInTheDocument();
+    await waitFor(
+      () =>
+        expect(canvasElement.querySelector(".lifecycle-study")).toHaveAttribute(
+          "data-motion",
+          "paused",
+        ),
+      { timeout: 5000 },
+    );
+    object.focus();
+    await userEvent.keyboard(" ");
+    await expect(object).toHaveAttribute("aria-pressed", "false");
     await expect(canvasElement.querySelector(".lifecycle-study")).toHaveAttribute(
       "data-motion",
-      "paused",
+      "running",
+    );
+    await waitFor(
+      () =>
+        expect(canvasElement.querySelector(".lifecycle-study")).toHaveAttribute(
+          "data-motion",
+          "paused",
+        ),
+      { timeout: 5000 },
     );
   },
 };
