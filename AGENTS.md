@@ -16,8 +16,8 @@ checkPaths:
   - docs/development.md
   - docs/ui-system.md
   - .docpact/config.yaml
-lastReviewedAt: 2026-09-07
-lastReviewedCommit: 3341a500616f1657a6a1696df87f0c4ba1e7930b
+lastReviewedAt: 2026-09-09
+lastReviewedCommit: 16433f96e8c910f99392500f5f3ff2d70bc2a7ce
 lastReviewedNote: "Reviewed for Portal #65: portable task entrypoints, focused UI/development owners and scoped local checks preserve product/security obligations, required CI, hosted evidence and the Next-managed block."
 related:
   - docs/development.md
