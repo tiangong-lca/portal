@@ -11,9 +11,13 @@ export type Tint = {
 
 export function createOpticalKit() {
   const textures: THREE.Texture[] = [];
-  const glowCanvas = document.createElement("canvas");
+  const glowCanvas =
+    typeof document === "undefined"
+      ? new OffscreenCanvas(64, 64)
+      : document.createElement("canvas");
   glowCanvas.width = glowCanvas.height = 64;
-  const context = glowCanvas.getContext("2d")!;
+  const context = glowCanvas.getContext("2d") as
+    CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
   const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
   gradient.addColorStop(0, "rgba(255,255,255,1)");
   gradient.addColorStop(0.12, "rgba(255,255,255,.55)");

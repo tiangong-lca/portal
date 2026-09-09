@@ -7,7 +7,7 @@ export const ModelTemplateContext = createContext<ModelTemplate | undefined>(und
 
 /** Story loaders finish I/O before Storybook freezes its embedded review thumbnails. */
 export async function loadModelTemplate(): Promise<ModelTemplate> {
-  const response = await fetch("./brand-exploration/lifecycle-models.glb");
+  const response = await fetch("/brand/lifecycle/lifecycle-models.glb");
   if (!response.ok) throw new Error("Lifecycle model could not be loaded");
   const gltf = await new GLTFLoader().parseAsync(await response.arrayBuffer(), "");
   return {

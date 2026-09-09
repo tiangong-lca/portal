@@ -1,8 +1,10 @@
+import "@fontsource-variable/noto-sans-sc";
+import "@fontsource-variable/source-sans-3";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, waitFor } from "storybook/test";
-import { LifecycleSculpture } from "../brand-exploration/LifecycleSculpture";
+import { LifecycleSculpture } from "@/components/brand/lifecycle/LifecycleSculpture";
 import { ReferenceComparison } from "../brand-exploration/ReferenceComparison";
-import { loadModelTemplate } from "../brand-exploration/model-template";
+import { loadModelTemplate } from "@/components/brand/lifecycle/model-template";
 import { ModelTemplateProvider } from "../brand-exploration/ModelTemplateProvider";
 import { storyLocale } from "../fixtures";
 

@@ -59,6 +59,12 @@ async function installVitalsObserver(page: Page) {
 
 async function collectVitals(page: Page, route: string): Promise<Vitals> {
   await page.goto(route, { waitUntil: "networkidle" });
+  if (route === "/en") {
+    // Measure input responsiveness with the complete runtime artwork rendering.
+    await expect(page.locator(".lifecycle-study")).toHaveAttribute("data-renderer", "ready", {
+      timeout: 15000,
+    });
+  }
   await expect(page.locator("html")).not.toHaveClass(/dark/);
   const darkTheme = page.getByRole("radio", { name: "Dark" });
   await darkTheme.click();

@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "public" / "brand-exploration"
+OUT = ROOT.parent / "public" / "brand" / "lifecycle"
 OUT.mkdir(parents=True, exist_ok=True)
 bpy.ops.object.select_all(action="SELECT")
 bpy.ops.object.delete(use_global=False)

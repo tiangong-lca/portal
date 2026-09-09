@@ -42,8 +42,8 @@ const searchDictionary = enMessages.Search;
 
 function translator(namespace: string) {
   return (key: string, values?: Record<string, string | number>) => {
-    const table = (enMessages as Record<string, Record<string, string>>)[namespace] ?? {};
-    const template = table[key] ?? key;
+    const value = (enMessages as Record<string, Record<string, unknown>>)[namespace]?.[key];
+    const template = typeof value === "string" ? value : key;
     if (!values) return template;
     return template.replace(/\{(\w+)\}/gu, (_match, name: string) =>
       String(values[name] ?? `{${name}}`),

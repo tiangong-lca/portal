@@ -101,6 +101,6 @@ def project_to_plate(cells):
 
 if __name__ == "__main__":
     points = project_to_plate(trace_cells())
-    output = ROOT / "map-points.json"
+    output = ROOT.parent.parent / "src/components/brand/lifecycle/map-points.json"
     output.write_text(json.dumps(points, separators=(",", ":")) + "\n")
     print(f"Wrote {len(points)} authored cells to {output.name}")

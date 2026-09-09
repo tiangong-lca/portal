@@ -1,6 +1,6 @@
 Tiangong LCA lifecycle sculpture, Portal Storybook exploration
 
-lifecycle-models.glb
+public/brand/lifecycle/lifecycle-models.glb
 Authored geometry for this Portal exploration; no downloaded model or texture.
 Editable Blender source and reproducible authoring functions are retained in
 .storybook/brand-exploration/modeling/. The live sculpture uses this geometry,
@@ -15,7 +15,7 @@ on the boards are illustrative placeholders.
 Source dimensions, crop and SHA-256 receipts are in
 .storybook/brand-exploration/artwork.json.
 
-map-points.json
+src/components/brand/lifecycle/map-points.json
 Authored from the selected ImageGen light board with modeling/trace_map.py.
 Offline tracing retains 810 cell centers and sizes, projected onto the actual
 lower platform. The runtime loads only these model-space values and renders

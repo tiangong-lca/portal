@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-09-08
-lastReviewedCommit: 60d734b6491a0b3621a4fb4ea0fc169387b70aa3
-lastReviewedNote: "Reviewed for Portal #67 citation dialog and comparison identity refinement: one header action opens an accessible modal with legacy hash support; comparison uses plain version text and an inline UUID field. Exact values and clipboard recovery remain intact."
+lastReviewedAt: 2026-09-09
+lastReviewedCommit: 6cb514fa07a4cea68b94e78e4e28b0217811d780
+lastReviewedNote: "Reviewed for Portal #71: brand homepage with real public catalog summary and separate LCA platform navigation. Anonymous read-only discovery, exact dataset evidence, privacy, deployment and performance requirements remain intact."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -47,7 +47,7 @@ related:
 
 ## 1. 产品定位
 
-Portal 是天工 LCA 的公共发现入口。匿名访问者可以搜索、浏览、理解、比较和引用所有已明确公开的信息，不需要先注册 `tiangong-lca-next`。
+Portal 是 Tiangong LCA 的品牌与公共发现入口。首页连接公开数据目录、数据说明和独立 LCA 产品平台。匿名访问者可以搜索、浏览、理解、比较和引用所有已明确公开的信息，不需要先注册 `tiangong-lca-next`。
 
 核心任务链为：
 
@@ -354,15 +354,17 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 
 ### 7.1 首页
 
-首页按专业科学数据目录的任务顺序组织：
+首页采用已确认的生命周期雕塑作为品牌首屏，按三层组织：
 
-1. 用一句直接的任务标题说明“查找生命周期评价数据”，辅文只解释可检索对象与可核对背景；
-2. 关键词与标识符搜索是首要操作，支持名称、UUID、CAS 号和分类；
-3. 用一个连续目录索引提供 Process、Flow、地区与来源四个入口，不拆成营销功能卡；
-4. 展示当前可发现记录数、最近公开更新时间以及真实可执行的 UUID、CAS、分类示例；
-5. 用“如何使用这些数据”说明范围、来源、版本、引用与已发布结果，并链接到数据说明页。
+1. Tiangong LCA 品牌、生命周期价值陈述与实时三维图形；“探索公开数据”定位到当前页的搜索区域，产品平台外链明确目标域名和登录边界；
+2. 关键词与标识符 GET 搜索，以及 Process、Flow、地区与来源四个连续目录入口；真实可发现记录数、更新时间和可执行示例来自原有公共 summary 契约，失效时搜索与浏览仍可使用；
+3. 数据的范围、来源、版本、引用与已发布结果说明，以及独立 LCA 平台入口。
 
-首屏不放营销 KPI、聊天窗口、登录 CTA、开发状态、基础设施说明或“高级功能”宣传卡。`lca.tiangong.earth` 是天工 LCA 产品平台入口，只在桌面全局导航和所有尺寸页脚作为次级外链出现；紧凑导航不为跨产品链接牺牲目录入口。该链接不与目录搜索竞争，也不暗示 Portal 共享登录态。`/` 聚焦搜索，输入控件不劫持快捷键。
+品牌图形是视觉隐喻，不提供数据覆盖、计算、排名或科学证据。首页不编造团队、伙伴、统计或 AI 功能。Team 内容迁移和工作区接入是独立交付。
+
+四语内容、搜索、链接和目录摘要保留 Server Component 与 SSG/ISR。WebGL 是客户端增强：视口内的独立岛在水合后加载 renderer、模型与材质；无 JavaScript、资源失败或 WebGL 不可用时保留轻量 SVG 轮廓，整个数据任务仍可继续。主题由既有网站偏好统一拥有，图形颜色模式不写入浏览器存储；减少动态效果、离屏、页面隐藏、暂停与卸载资源回收沿用组件要求。
+
+`lca.tiangong.earth` 是独立产品平台外链，不在 Portal 增加身份 Cookie、登录或共享会话。导航与正文链接保持真实可操作；不创建尚未提供内容的 Team 页面或空按钮。`/` 聚焦搜索，输入控件不劫持快捷键。
 
 ### 7.2 搜索页
 

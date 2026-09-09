@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { ModelTemplateContext, type ModelTemplate } from "./model-template";
+import {
+  ModelTemplateContext,
+  type ModelTemplate,
+} from "@/components/brand/lifecycle/model-template";
 
 /**
  * Prepares the same independently owned geometry for live stories and frozen review thumbnails.

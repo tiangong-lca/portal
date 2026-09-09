@@ -1,5 +1,11 @@
+import "./reference.css";
+import "@fontsource-variable/noto-sans-sc";
+import "@fontsource-variable/source-sans-3";
 import artwork from "./artwork.json";
-import { LifecycleSculpture, type LifecycleSculptureProps } from "./LifecycleSculpture";
+import {
+  LifecycleSculpture,
+  type LifecycleSculptureProps,
+} from "@/components/brand/lifecycle/LifecycleSculpture";
 
 const copy = {
   "zh-CN": {

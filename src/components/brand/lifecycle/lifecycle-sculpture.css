@@ -161,77 +161,6 @@
   }
 }
 
-.brand-reference {
-  background: #fcfcfe;
-  color: #282433;
-  min-height: 100svh;
-  padding: 28px 24px;
-  font-family: "Source Sans 3 Variable", "Noto Sans SC Variable", sans-serif;
-}
-.brand-reference[data-theme="dark"] {
-  background: #090a0d;
-  color: #ece9f1;
-}
-.brand-reference header {
-  max-width: 1024px;
-  margin: 0 auto 28px;
-}
-.brand-reference h1 {
-  font-size: 20px;
-  font-weight: 500;
-}
-.brand-reference header p {
-  margin-top: 10px;
-  font-size: 14px;
-  opacity: 0.75;
-}
-.brand-reference-columns {
-  max-width: 1024px;
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-}
-.brand-reference figure {
-  margin: 0;
-  min-width: 0;
-}
-.brand-reference figcaption {
-  margin-bottom: 16px;
-  text-align: center;
-  font-size: 14px;
-}
-.brand-reference-crop,
-.brand-reference-live {
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-.brand-reference-crop img {
-  position: absolute;
-  max-width: none;
-  height: auto;
-}
-.brand-reference-live .lifecycle-toolbar,
-.brand-reference-live .lifecycle-footer {
-  display: none;
-}
-.brand-reference-live .lifecycle-study,
-.brand-reference-live .lifecycle-stage,
-.brand-reference-live .lifecycle-object {
-  height: 100%;
-  min-height: 0;
-}
-/* The selected board's crop includes more empty space to the right of the sculpture. */
-.brand-reference-live .lifecycle-object {
-  transform: translateX(-3.8%);
-}
-@media (max-width: 700px) {
-  .brand-reference-columns {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 /* Keep the complete object visible in short windows and embedded review cards. */
 @media (max-height: 500px) {
   .lifecycle-study {
@@ -260,43 +189,41 @@
     height: 100%;
     min-height: 0;
   }
-  .brand-reference {
-    display: flex;
-    flex-direction: column;
-    height: 100svh;
-    padding: 12px;
-  }
-  .brand-reference header {
-    margin: 0 auto 12px;
-  }
-  .brand-reference h1 {
-    font-size: 16px;
-  }
-  .brand-reference header p {
-    margin-top: 4px;
-    font-size: 12px;
-  }
-  .brand-reference-columns {
-    flex: 1;
-    min-height: 0;
-    width: 100%;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-  .brand-reference figure {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 0;
-  }
-  .brand-reference figcaption {
-    margin-bottom: 8px;
-    font-size: 12px;
-  }
-  .brand-reference-crop,
-  .brand-reference-live {
-    height: calc(100% - 28px);
-    width: auto;
-    max-width: 100%;
-  }
+}
+
+.lifecycle-study[data-presentation="hero"] {
+  height: 100%;
+  min-height: 0;
+  background: transparent;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-stage {
+  min-height: 0;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-object {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-footer {
+  min-height: 48px;
+  flex-wrap: nowrap;
+  padding: 0 8px;
+  gap: 16px;
+  justify-content: flex-end;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-footer p {
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: left;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-controls {
+  width: auto;
+  flex-shrink: 0;
+  gap: 4px;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-controls button {
+  border-radius: 50%;
+}
+.lifecycle-study[data-presentation="hero"] .lifecycle-controls button:nth-child(2) {
+  flex: initial;
 }

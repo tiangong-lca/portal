@@ -14,15 +14,7 @@ import { createModelReflection } from "./components/model-reflection";
 import { createPlatformOcclusion } from "./components/platform-occlusion";
 import type { OpticalWire } from "./components/optical-wire";
 
-export type SculpturePart =
-  "assembly" | "plate" | "network" | "energy" | "factory" | "product" | "map";
-export type SculptureTheme = "light" | "dark";
-export type SceneState = {
-  theme: SculptureTheme;
-  colorful: boolean;
-  paused: boolean;
-  reduced: boolean;
-};
+import type { SceneState, SceneViewport, SculpturePart } from "./lifecycle-types";
 const LEVELS = [4.36, 2.18, 0, -2.18, -4.36];
 
 function release(root: THREE.Object3D) {
@@ -45,11 +37,17 @@ function release(root: THREE.Object3D) {
   materials.forEach((material) => material.dispose());
 }
 
-/** Authored miniature models and a calibrated procedural optical rig, isolated to Storybook. */
-export function createLifecycleScene(
-  host: HTMLElement,
+/** Authored miniature models and a calibrated procedural optical rig, shared by the homepage and isolated reviews. */
+export function createLifecycleRenderer(
+  surface: {
+    canvas: HTMLCanvasElement | OffscreenCanvas;
+    pixelRatio: number;
+    viewport: SceneViewport;
+    onFrame(): void;
+    presentAfterGpu?: boolean;
+  },
   initial: SceneState,
-  modelUrl = "./brand-exploration/lifecycle-models.glb",
+  modelUrl = "/brand/lifecycle/lifecycle-models.glb",
   part: SculpturePart = "assembly",
   template?: ModelTemplate,
 ) {
@@ -64,18 +62,18 @@ export function createLifecycleScene(
   }[part];
   const assembly = part === "assembly";
   const renderer = new THREE.WebGLRenderer({
+    canvas: surface.canvas,
     alpha: true,
     antialias: true,
+    preserveDrawingBuffer: Boolean(surface.presentAfterGpu),
     powerPreference: "low-power",
   });
   // Respect a 1x display; forced supersampling adds substantial software-rendering cost.
-  renderer.setPixelRatio(Math.min(Math.max(window.devicePixelRatio, 1), 2));
+  renderer.setPixelRatio(Math.min(Math.max(surface.pixelRatio, 1), 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
   renderer.localClippingEnabled = true;
-  renderer.domElement.setAttribute("aria-hidden", "true");
-  host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color();
   renderer.setClearColor(0x000000, 0);
@@ -216,6 +214,7 @@ export function createLifecycleScene(
   let contentReady = false;
   let inView = true;
   let frame = 0;
+  let dirty = true;
   // The pinned Three.js renderer requires WebGL 2; its type still includes legacy contexts.
   const gl = renderer.getContext() as WebGL2RenderingContext;
   let pendingDraw: WebGLSync | null = null;
@@ -379,14 +378,21 @@ export function createLifecycleScene(
   function render(now: number, force = false) {
     frame = 0;
     // Start with the complete geometry instead of compiling an intermediate empty scene.
-    if (disposed || !contentReady || (!force && (!inView || document.hidden))) return;
+    if (disposed || !contentReady || (!force && !inView)) return;
     // Poll without blocking: software WebGL must finish its last frame before we submit more.
     if (pendingDraw && !force && gl.clientWaitSync(pendingDraw, 0, 0) === gl.TIMEOUT_EXPIRED) {
-      requestRender();
+      frame = requestAnimationFrame(render);
       return;
     }
-    if (pendingDraw) gl.deleteSync(pendingDraw);
-    pendingDraw = null;
+    if (pendingDraw) {
+      gl.deleteSync(pendingDraw);
+      pendingDraw = null;
+      if (surface.presentAfterGpu && !force) {
+        surface.onFrame();
+        if (!dirty && (state.paused || state.reduced) && now >= transitionUntil) return;
+      }
+    }
+    dirty = false;
     const elapsed = Math.max(0, (now - last) / 1000 || 0.016);
     const dt = Math.min(elapsed, 0.05);
     last = now;
@@ -502,18 +508,22 @@ export function createLifecycleScene(
     renderer.render(scene, camera);
     pendingDraw = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
     gl.flush();
-    host.dataset.frame = String(Number(host.dataset.frame ?? 0) + 1);
-    // A slow render may finish after the transition deadline; do not queue a late frame.
-    if (moving || performance.now() < transitionUntil) requestRender();
+    if (surface.presentAfterGpu) {
+      // Present only completed frames; page composition never waits on an in-flight WebGL buffer.
+      frame = requestAnimationFrame(render);
+    } else {
+      surface.onFrame();
+      // A slow render may finish after the transition deadline; do not queue a late frame.
+      if (moving || performance.now() < transitionUntil) requestRender();
+    }
   }
   function requestRender() {
-    if (!disposed && contentReady && inView && !document.hidden && !frame)
-      frame = requestAnimationFrame(render);
+    dirty = true;
+    if (!disposed && contentReady && inView && !frame) frame = requestAnimationFrame(render);
   }
   let measuredWidth = 0;
   let measuredHeight = 0;
-  function resize() {
-    const { width, height } = host.getBoundingClientRect();
+  function resize({ width, height }: SceneViewport) {
     if (!width || !height || (width === measuredWidth && height === measuredHeight)) return;
     measuredWidth = width;
     measuredHeight = height;
@@ -532,28 +542,16 @@ export function createLifecycleScene(
     if (frame) cancelAnimationFrame(frame);
     render(performance.now(), true);
   }
-  const resizeObserver = new ResizeObserver(resize);
-  resizeObserver.observe(host);
-  const intersection = new IntersectionObserver(([entry]) => {
-    inView = Boolean(entry?.isIntersecting);
+  function setVisible(visible: boolean) {
+    inView = visible;
     if (!inView && frame) {
       cancelAnimationFrame(frame);
       frame = 0;
     }
     last = performance.now();
     requestRender();
-  });
-  intersection.observe(host);
-  const visibility = () => {
-    if (document.hidden && frame) {
-      cancelAnimationFrame(frame);
-      frame = 0;
-    }
-    last = performance.now();
-    requestRender();
-  };
-  document.addEventListener("visibilitychange", visibility);
-  resize();
+  }
+  resize(surface.viewport);
   paint(1);
 
   const abort = new AbortController();
@@ -640,6 +638,9 @@ export function createLifecycleScene(
 
   return {
     ready,
+    resize,
+    setVisible,
+    invalidate: requestRender,
     update(next: SceneState) {
       const appearanceChanged = next.theme !== state.theme || next.colorful !== state.colorful;
       state = next;
@@ -678,16 +679,12 @@ export function createLifecycleScene(
       if (frame) cancelAnimationFrame(frame);
       if (pendingDraw) gl.deleteSync(pendingDraw);
       pendingDraw = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      document.removeEventListener("visibilitychange", visibility);
       reflections.forEach((reflection) => reflection.dispose());
       release(scene);
       textures.forEach((texture) => texture.dispose());
       environmentTarget.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
-      renderer.domElement.remove();
     },
   };
 }

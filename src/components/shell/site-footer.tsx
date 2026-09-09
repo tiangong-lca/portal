@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Separator } from "@/components/ui/separator";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 
+/** @import import { SiteFooter } from "@/components/shell/site-footer"; */
 export async function SiteFooter({ locale }: { locale: PortalLocale }) {
   const t = await getTranslations({ locale, namespace: "Common" });
 
@@ -13,7 +14,7 @@ export async function SiteFooter({ locale }: { locale: PortalLocale }) {
       <Separator />
       <div className="grid gap-8 py-8 sm:grid-cols-[minmax(0,1.4fr)_minmax(10rem,0.6fr)_minmax(12rem,0.7fr)]">
         <div className="flex max-w-md flex-col gap-2">
-          <p className="font-heading font-semibold">{t("brandName")}</p>
+          <p className="font-heading font-semibold">{t("productFamily")}</p>
           <p className="text-muted-foreground text-sm leading-6">{t("footerDescription")}</p>
         </div>
         <nav aria-label={t("footerExplore")} className="flex flex-col gap-2 text-sm">
