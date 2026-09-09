@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: 6cb514fa07a4cea68b94e78e4e28b0217811d780
+lastReviewedCommit: f5aff49b89666212fadf59d6be4ed80f9322859b
 title: Portal UI and component standards
 docType: contract
 scope: repo
@@ -184,7 +184,7 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 
 ## Storybook 场景与审阅
 
-[Storybook 配置](../.storybook/main.ts)使用 Next.js Vite framework，CSF stories 与合成 fixture 留在 `.storybook/`。场景直接导入已有基础组件及业务组合，预览复用生产 CSS、生成的品牌 token、字体栈和四套实际字典；工具栏同步 document 的主题、语言和视口。生成的 worker 只在 `.storybook/public/`，不进入 Portal 的公开资产或 EdgeOne 产物。
+[Storybook 配置](../.storybook/main.ts)使用 Next.js Vite framework，CSF stories 与合成 fixture 留在 `.storybook/`。场景直接导入已有基础组件及业务组合，预览复用生产 CSS、生成的品牌 token、字体栈和四套实际字典；工具栏同步 document 的主题、语言和视口。MSW 的 `mockServiceWorker.js` 只生成到 `.storybook/public/`，不进入 Portal 的公开资产或 EdgeOne 产物。
 
 服务端展示组件在 loader 中执行；Vite alias 仅替代请求级翻译和服务端品牌配置，避免引入 Next 请求运行时。搜索页与场景共用 FacetsPanel。MSW 拦截同源 API，fixture 通过实际请求 schema 校验输入；主题和清单场景初始化并恢复专用存储键，不接触线上数据或生产凭据。
 

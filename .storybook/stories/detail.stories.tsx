@@ -203,15 +203,18 @@ export const CitationExpanded: Story = {
   play: async ({ canvas, canvasElement, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)].Detail;
     await userEvent.click(canvas.getByRole("button", { name: m.citation }));
-    const dialog = within(
-      await within(canvasElement.ownerDocument.body).findByRole("dialog", { name: m.citation }),
+    const body = within(canvasElement.ownerDocument.body);
+    // Re-query the live portal while locale/viewport rendering and its opening animation settle.
+    await waitFor(
+      async () => {
+        const dialog = within(body.getByRole("dialog", { name: m.citation }));
+        await expect(dialog.getByRole("button", { name: m.copyVersionId })).toBeVisible();
+        await expect(
+          dialog.getByText(detailRecord(storyLocale(globals), "process").citation!),
+        ).toBeVisible();
+      },
+      { timeout: 5000 },
     );
-    await waitFor(() =>
-      expect(dialog.getByRole("button", { name: m.copyVersionId })).toBeVisible(),
-    );
-    await expect(
-      dialog.getByText(detailRecord(storyLocale(globals), "process").citation!),
-    ).toBeVisible();
   },
 };
 export const CitationExpandedMobile: Story = {

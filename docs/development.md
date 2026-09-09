@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: 6457125715755850db333010f3bec5d17463024f
+lastReviewedCommit: f5aff49b89666212fadf59d6be4ed80f9322859b
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -103,6 +103,8 @@ Read the current top-level and selected command help before forming payloads. Di
 Use existing pnpm scripts and `pnpm exec` for installed binaries when an upstream skill shows generic `npm` or `npx` examples. Do not initialize an existing Storybook or upgrade dependencies as a side effect of ordinary UI work. Permission requests follow the active environment and existing user authorization; a generic skill's sandbox guidance does not override them.
 
 If MCP is unavailable, use the CLI. If that interface is also unavailable, continue applicable checks through repository scripts and inspect the rendered Storybook or product UI in the browser; report the unavailable review interface. A passing build alone does not prove visual quality or replace interaction/accessibility checks.
+
+Portal-based interaction checks query the current dialog inside their bounded visibility wait. Locale/viewport changes and opening animations can replace or temporarily hide portal content; keep the actual control/text visibility assertions and avoid retaining an early dialog element across that transition.
 
 The brand homepage and isolated catalog references import locked Fontsource variable-font build dependencies. Next and Vite emit their Unicode-range assets locally; only the homepage adopts the new font scope in production. The matching upstream OFL notices are retained in `.storybook/public/fonts/` and `public/brand/fonts/`; both preview and production distributions retain them. When updating these fonts, refresh their notices from the reviewed packages and verify the dependency license check, emitted assets and rendered Chinese/Latin metrics.
 
