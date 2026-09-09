@@ -23,6 +23,16 @@ const rendered = async (element: HTMLElement) => {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const frameCount = (element: HTMLElement) =>
   element.querySelector(".lifecycle-canvas")!.getAttribute("data-frame");
+const settledFrame = async (element: HTMLElement) => {
+  await waitFor(
+    () =>
+      expect(element.querySelector<HTMLElement>(".lifecycle-canvas")?.dataset.renderPending).toBe(
+        "false",
+      ),
+    { timeout: 15000 },
+  );
+  return frameCount(element);
+};
 
 const meta = {
   title: "Brand Explorations/Lifecycle Sculpture",
@@ -78,16 +88,15 @@ export const ReducedMotion: Story = {
   play: async ({ canvas, canvasElement }) => {
     await rendered(canvasElement);
     await expect(canvas.getByRole("button", { name: "暂停动效" })).toBeDisabled();
-    const before = frameCount(canvasElement);
+    const before = await settledFrame(canvasElement);
     await delay(250);
     await expect(frameCount(canvasElement)).toBe(before);
     await userEvent.click(canvas.getByRole("button", { name: "多彩模式" }));
-    await nextPaint();
     await expect(canvasElement.querySelector(".lifecycle-study")).toHaveAttribute(
       "data-color",
       "multi",
     );
-    const changed = frameCount(canvasElement);
+    const changed = await settledFrame(canvasElement);
     await expect(Number(changed)).toBeGreaterThan(Number(before));
     await delay(250);
     await expect(frameCount(canvasElement)).toBe(changed);
@@ -149,8 +158,7 @@ export const ColorAndThemeInteraction: Story = {
     await expect(sculpture).toHaveAttribute("aria-pressed", "true");
     await userEvent.click(canvas.getByRole("button", { name: "暂停动效" }));
     await expect(surface).toHaveAttribute("data-motion", "paused");
-    await delay(1400);
-    const pausedFrame = frameCount(canvasElement);
+    const pausedFrame = await settledFrame(canvasElement);
     await delay(250);
     await expect(frameCount(canvasElement)).toBe(pausedFrame);
     await userEvent.click(canvas.getByRole("button", { name: "重置" }));

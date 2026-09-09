@@ -44,6 +44,8 @@ export function createLifecycleRenderer(
     pixelRatio: number;
     viewport: SceneViewport;
     onFrame(): void;
+    /** Whether a draw or another animation callback is pending, including GPU-fence polling. */
+    onRenderPending?(pending: boolean): void;
     presentAfterGpu?: boolean;
   },
   initial: SceneState,
@@ -215,6 +217,12 @@ export function createLifecycleRenderer(
   let inView = true;
   let frame = 0;
   let dirty = true;
+  let renderPending = false;
+  function setRenderPending(pending: boolean) {
+    if (renderPending === pending) return;
+    renderPending = pending;
+    surface.onRenderPending?.(pending);
+  }
   // The pinned Three.js renderer requires WebGL 2; its type still includes legacy contexts.
   const gl = renderer.getContext() as WebGL2RenderingContext;
   let pendingDraw: WebGLSync | null = null;
@@ -378,7 +386,11 @@ export function createLifecycleRenderer(
   function render(now: number, force = false) {
     frame = 0;
     // Start with the complete geometry instead of compiling an intermediate empty scene.
-    if (disposed || !contentReady || (!force && !inView)) return;
+    if (disposed || !contentReady || (!force && !inView)) {
+      setRenderPending(false);
+      return;
+    }
+    setRenderPending(true);
     // Poll without blocking: software WebGL must finish its last frame before we submit more.
     if (pendingDraw && !force && gl.clientWaitSync(pendingDraw, 0, 0) === gl.TIMEOUT_EXPIRED) {
       frame = requestAnimationFrame(render);
@@ -389,7 +401,10 @@ export function createLifecycleRenderer(
       pendingDraw = null;
       if (surface.presentAfterGpu && !force) {
         surface.onFrame();
-        if (!dirty && (state.paused || state.reduced) && now >= transitionUntil) return;
+        if (!dirty && (state.paused || state.reduced) && now >= transitionUntil) {
+          setRenderPending(false);
+          return;
+        }
       }
     }
     dirty = false;
@@ -515,11 +530,15 @@ export function createLifecycleRenderer(
       surface.onFrame();
       // A slow render may finish after the transition deadline; do not queue a late frame.
       if (moving || performance.now() < transitionUntil) requestRender();
+      else setRenderPending(false);
     }
   }
   function requestRender() {
     dirty = true;
-    if (!disposed && contentReady && inView && !frame) frame = requestAnimationFrame(render);
+    if (!disposed && contentReady && inView && !frame) {
+      setRenderPending(true);
+      frame = requestAnimationFrame(render);
+    }
   }
   let measuredWidth = 0;
   let measuredHeight = 0;
@@ -547,6 +566,7 @@ export function createLifecycleRenderer(
     if (!inView && frame) {
       cancelAnimationFrame(frame);
       frame = 0;
+      setRenderPending(false);
     }
     last = performance.now();
     requestRender();
@@ -677,6 +697,7 @@ export function createLifecycleRenderer(
       disposed = true;
       abort.abort();
       if (frame) cancelAnimationFrame(frame);
+      setRenderPending(false);
       if (pendingDraw) gl.deleteSync(pendingDraw);
       pendingDraw = null;
       reflections.forEach((reflection) => reflection.dispose());
