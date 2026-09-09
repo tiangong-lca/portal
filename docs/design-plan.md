@@ -23,7 +23,7 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: 6cb514fa07a4cea68b94e78e4e28b0217811d780
+lastReviewedCommit: 6457125715755850db333010f3bec5d17463024f
 lastReviewedNote: "Reviewed for Portal #71: brand homepage with real public catalog summary and separate LCA platform navigation. Anonymous read-only discovery, exact dataset evidence, privacy, deployment and performance requirements remain intact."
 related:
   - docs/ui-system.md

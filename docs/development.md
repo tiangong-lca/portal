@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: 6cb514fa07a4cea68b94e78e4e28b0217811d780
+lastReviewedCommit: 6457125715755850db333010f3bec5d17463024f
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -154,7 +154,7 @@ The production hero renders into an independent OffscreenCanvas inside a same-or
 
 Moving the renderer into production requires checking the actual optional chunk/model requests as well as `check:bundle-budget`, `check:bundle`, license policy and production browser behavior. The homepage remains usable without JavaScript or WebGL. Hosted performance/CSP evidence belongs to the exact deployed commit, not a local Storybook or fixture pass.
 
-The production compile hook removes public source maps, including Turbopack's otherwise-emitted empty worker entrypoint map. Private server maps and development debugging remain available. The existing client-bundle checker continues to reject every public `.map` file. The homepage performance test waits up to the same 15-second model-readiness bound used in Storybook before measuring input latency; the existing 200 ms INP budget remains unchanged. Accessibility scans wait for local controls to hydrate and finite appearance transitions to settle before evaluating contrast.
+The production compile hook removes public source maps, including Turbopack's otherwise-emitted empty worker entrypoint map. Private server maps and development debugging remain available. The existing client-bundle checker continues to reject every public `.map` file. The homepage performance test waits up to the same 15-second model-readiness bound used in Storybook before measuring input latency. Its four consecutive cold-context samples share an 80-second harness deadline, allowing each bounded load plus measurement on software WebGL; per-sample progress is logged. The existing 200 ms INP, 2.5-second LCP and 0.1 CLS budgets remain unchanged. Accessibility scans wait for local controls to hydrate and finite appearance transitions to settle before evaluating contrast.
 
 ## Project skills
 

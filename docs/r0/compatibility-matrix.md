@@ -21,7 +21,7 @@ checkPaths:
   - tests/e2e/r0-compat.spec.ts
   - tests/fixtures/hmac/**
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: 6cb514fa07a4cea68b94e78e4e28b0217811d780
+lastReviewedCommit: 6457125715755850db333010f3bec5d17463024f
 lastReviewedNote: "Reviewed for Portal #71: the production homepage adds same-origin model and renderer-worker assets under the existing performance CSP. The ISR/Flight contract and strict-profile disposition are unchanged; historical hosted receipts do not qualify this new homepage, which requires exact-deployment validation before release."
 related:
   - ../design-plan.md
