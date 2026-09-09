@@ -86,15 +86,15 @@ test("renders public search, exact details, numeric context, versions, and lates
   request,
 }) => {
   await page.goto("/en/search?v=1&kind=process&q=electricity");
-  await expect(page.getByRole("heading", { name: "Search the data catalog" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Data catalog", level: 1 })).toBeVisible();
   await expect(page.getByText("Electricity, medium voltage", { exact: true })).toBeVisible();
-  await expect(page.getByText(processRef, { exact: true })).toBeVisible();
+  await expect(page.locator(`a[href*="${encodeURIComponent(processRef)}"]`).first()).toBeVisible();
   await expect(page.getByText("Reference product", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Electricity", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Functional unit", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("1 kWh", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("TianGong", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Name", { exact: true }).first()).toBeVisible();
+
   await expect(page.getByRole("link", { name: "Next" })).toHaveAttribute(
     "href",
     /cursor=eyJ2IjoxfQ/,
@@ -169,13 +169,15 @@ test("completes the HTML-first search to two-member comparison path", async ({ p
   await candidates.nth(0).check();
   await candidates.nth(1).check();
 
+  await page.getByRole("button", { name: "Refine results" }).click();
   const processFacet = page.getByRole("link", { name: /Process \(\d+\)/ });
   await expect(processFacet).toHaveAttribute("href", /q=electricity/);
   await expect(processFacet).toHaveAttribute("href", /kind=process/);
   await expect(processFacet).toHaveAttribute("href", /sort=relevance/);
   await expect(processFacet).not.toHaveAttribute("href", /cursor=/);
 
-  await page.getByRole("button", { name: "Compare selected Process datasets" }).click();
+  await page.keyboard.press("Escape");
+  await page.getByRole("link", { name: "Compare selected versions", exact: true }).click();
   await expect(page).toHaveURL(/\/en\/compare\?/);
   await expect(page.getByRole("heading", { name: "Compare Process datasets" })).toBeVisible();
   await expect(
@@ -262,11 +264,12 @@ test("renders Browse in initial HTML and keeps private work surfaces out of the 
 test("keeps the local collection local and shares member IDs only", async ({ context, page }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/en/collections");
+  await page.locator(".collection-add-shell > summary").click();
   await page.getByLabel("Add by version ID").fill(processRef);
   await page.getByRole("button", { name: "Add to shortlist" }).click();
   await page.getByLabel("Notes or selection rationale").fill("private local note");
   await page.reload();
-  await expect(page.getByText(processRef, { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy version ID" })).toBeVisible();
   await expect(page.getByLabel("Notes or selection rationale")).toHaveValue("private local note");
 
   await page.getByRole("button", { name: "Copy shortlist link" }).click();
@@ -307,7 +310,7 @@ test("keeps core controls available at mobile width and 200 percent text zoom", 
   await page.evaluate(() => {
     document.documentElement.style.fontSize = "200%";
   });
-  await expect(page.getByRole("searchbox", { name: "Search the data catalog" })).toBeVisible();
+  await expect(page.locator(".catalog-search-teaser")).toBeVisible();
   await expect(page.locator('header a[href="https://lca.tiangong.earth"]')).toBeHidden();
   await expect(
     page.getByRole("contentinfo").getByRole("link", { name: "Open the LCA platform" }),

@@ -1,3 +1,5 @@
+import { NavigationRail } from "../../src/components/shell/navigation-rail";
+import { SiteFooter } from "../../src/components/shell/site-footer";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { usePathname } from "@storybook/nextjs-vite/navigation.mock";
 import { expect, waitFor, within } from "storybook/test";
@@ -6,6 +8,7 @@ import { dictionaries, mobileGlobals, storyLocale } from "../fixtures";
 
 const meta = {
   component: SiteHeader,
+  subcomponents: { SiteFooter, NavigationRail },
   title: "Shell/Site header",
   tags: ["!autodocs"],
   parameters: { pageLayout: true },
@@ -21,12 +24,15 @@ const meta = {
     };
   },
   loaders: [
-    async ({ globals }) => ({ header: await SiteHeader({ locale: storyLocale(globals) }) }),
+    async ({ globals }) => ({
+      header: await SiteHeader({ locale: storyLocale(globals) }),
+      footer: await SiteFooter({ locale: storyLocale(globals) }),
+    }),
   ],
   render: (_, { loaded, globals }) => (
     <>
       {loaded.header}
-      <main id="main-content" tabIndex={-1} className="mx-auto max-w-7xl p-4 sm:p-6">
+      <main id="main-content" tabIndex={-1} className="portal-page site-shell-container">
         <h1 className="font-heading text-3xl font-semibold">
           {dictionaries[storyLocale(globals)].Search.title}
         </h1>
@@ -34,6 +40,7 @@ const meta = {
           {dictionaries[storyLocale(globals)].Search.description}
         </p>
       </main>
+      {loaded.footer}
     </>
   ),
 } satisfies Meta;
@@ -41,10 +48,26 @@ export default meta;
 type Story = StoryObj<Omit<typeof meta, "component">>;
 export const Desktop: Story = {
   globals: { viewport: { value: "desktop", isRotated: false } },
-  play: async ({ canvas, globals }) => {
-    await expect(
-      canvas.getByRole("link", { name: dictionaries[storyLocale(globals)].Common.search }),
-    ).toHaveAttribute("aria-current", "page");
+  play: async ({ canvas, canvasElement, userEvent, globals }) => {
+    const m = dictionaries[storyLocale(globals)].Common;
+    const banner = within(canvas.getByRole("banner"));
+    const active = banner.getByRole("link", { name: m.catalog });
+    const target = banner.getByRole("link", { name: m.methodology });
+    await expect(active).toHaveAttribute("aria-current", "page");
+    const indicator = canvasElement.querySelector(".navigation-rail-highlight")!;
+    const aligned = async (link: HTMLElement) => {
+      await waitFor(() =>
+        expect(
+          Math.abs(indicator.getBoundingClientRect().left - link.getBoundingClientRect().left),
+        ).toBeLessThan(2),
+      );
+    };
+    await userEvent.hover(canvas.getByRole("main"));
+    await aligned(active);
+    await userEvent.hover(target);
+    await aligned(target);
+    await userEvent.unhover(target);
+    await aligned(active);
   },
 };
 export const KeyboardSkip: Story = {

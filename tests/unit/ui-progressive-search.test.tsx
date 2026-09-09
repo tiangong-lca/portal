@@ -1,4 +1,6 @@
-import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
+import type { ReactNode } from "react";
+import { act, cleanup, render as renderBase, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -316,3 +318,11 @@ describe("progressive, version-aware discovery", () => {
     expect(pending.every((request) => request.signal.aborted)).toBe(true);
   });
 });
+
+function render(node: ReactNode) {
+  return renderBase(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      {node}
+    </NextIntlClientProvider>,
+  );
+}

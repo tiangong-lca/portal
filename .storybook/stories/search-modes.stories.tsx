@@ -1,7 +1,10 @@
+import { CatalogKindSwitch } from "../../src/features/catalog/catalog-kind-switch";
+import { CatalogPagination } from "../../src/features/catalog/catalog-pagination";
+import { CatalogResultsToolbar } from "../../src/features/catalog/catalog-results-toolbar";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect } from "storybook/test";
+import { expect, within } from "storybook/test";
 import { http, HttpResponse } from "msw";
-import { SearchModes } from "../../src/features/catalog/search-modes";
+import { SearchModeControl, SearchModes } from "../../src/features/catalog/search-modes";
 import { HybridSearchPanel } from "../../src/features/catalog/hybrid-search-panel";
 import { KeywordSearchForm } from "../../src/features/catalog/keyword-search-form";
 import { Field, FieldLabel } from "../../src/components/ui/field";
@@ -11,7 +14,18 @@ import { dictionaries, mobileGlobals, resultLabels, storyLocale } from "../fixtu
 
 const meta = {
   component: SearchModes,
-  subcomponents: { Button, Field, FieldLabel, HybridSearchPanel, Input, KeywordSearchForm },
+  subcomponents: {
+    SearchModeControl,
+    CatalogKindSwitch,
+    CatalogPagination,
+    CatalogResultsToolbar,
+    Button,
+    Field,
+    FieldLabel,
+    HybridSearchPanel,
+    Input,
+    KeywordSearchForm,
+  },
   title: "Catalog/Search modes",
   tags: ["!autodocs"],
   parameters: {
@@ -36,6 +50,7 @@ const meta = {
               <FieldLabel htmlFor="storybook-keyword">{m.Search.label}</FieldLabel>
               <Input id="storybook-keyword" name="q" placeholder={m.Search.placeholder} />
             </Field>
+            <SearchModeControl />
             <Button className="self-start" type="submit">
               {m.Search.submit}
             </Button>
@@ -61,7 +76,12 @@ export const Keyword: Story = {};
 export const Description: Story = {
   play: async ({ canvas, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)];
-    await userEvent.click(canvas.getByRole("radio", { name: m.Search.descriptionMode }));
+    await userEvent.click(
+      canvas.getByRole("combobox", { name: `${m.Search.searchMode}: ${m.Search.keywordMode}` }),
+    );
+    await userEvent.click(
+      within(document.body).getByRole("option", { name: m.Search.descriptionMode }),
+    );
     await expect(canvas.getByRole("textbox", { name: m.Hybrid.queryLabel })).toBeVisible();
     await expect(canvas.queryByRole("textbox", { name: m.Search.label })).not.toBeInTheDocument();
   },

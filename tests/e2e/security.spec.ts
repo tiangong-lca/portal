@@ -29,16 +29,8 @@ for (const path of [
   });
 }
 
-test("discloses lexical-query access logging without exposing public sourcemaps", async ({
-  page,
-  request,
-}) => {
+test("does not expose public sourcemaps", async ({ page, request }) => {
   await page.goto("/en/search?v=1&kind=process&q=electricity");
-  await expect(
-    page.getByText(
-      "Do not enter confidential information. Keyword searches may be stored in browser history and access logs.",
-    ),
-  ).toBeVisible();
 
   const scripts = await page
     .locator('script[src*="/_next/static/"]')

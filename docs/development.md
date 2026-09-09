@@ -1,6 +1,6 @@
 ---
 lastReviewedAt: 2026-09-09
-lastReviewedCommit: b1261f884c39f51a507a8d31b474f526e9785fde
+lastReviewedCommit: 921e2e8d061f37fe6a1d6c3dd280c013f708ac99
 title: Portal development workflow
 docType: guide
 scope: repo
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #73: renderer queue diagnostics and motion-test settlement preserve existing geometry, scheduling, software-WebGL coverage, CI gates and hosted-evidence boundaries."
+lastReviewedNote: "Reviewed for Portal #75: wide and ultrawide homepage scenarios and input-driven motion use the existing Storybook and production verification workflow; no build, deployment or fixture boundary changes."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -69,6 +69,8 @@ Run the checks that demonstrate the changed behavior before committing or pushin
 | Dependencies, runtime/build configuration or deployment | Frozen install and affected tooling/build checks. Read the [runtime/deployment plan](design-plan.md#17-edgeone-makers-部署) and [compatibility matrix](r0/compatibility-matrix.md) when the change affects hosted behavior. |
 
 `pnpm check` is the aggregate static, unit, build and bundle command when the change warrants that breadth. [CI](../.github/workflows/ci.yml) retains the complete required checks on PRs and `main`, including production browser and Storybook checks. Focused local verification does not waive CI or the [release acceptance requirements](design-plan.md#194-发布门).
+
+Unit tests rendering shared localized client components must use `NextIntlClientProvider` with the test locale dictionary. Production browser checks open the shortlist add disclosure and filter drawer before interacting with their controls. For constrained local machines, use `--workers=2` for the multi-locale UI suite.
 
 Normal tests use fixtures and never contact Production. The read-only live probe is explicitly enabled with `PORTAL_LIVE_PROBE=true`; missing live credentials must remain a reported skip, not an inferred production pass.
 
@@ -202,3 +204,11 @@ After editing, choose one explicit lint input (`--files`, `--staged`, `--worktre
 ```
 
 For routing changes, also run `list-rules`, `doctor`, `coverage` and `route` with the same explicit root. Use the smallest relevant documents; a component-only change should not require hosted compatibility evidence. Inspect any uncovered path or diagnostic before changing rules. Use `review mark` only after the associated review is complete, then repeat lint with the same input. [The pre-push gate](../scripts/docpact-gate.sh) validates committed changes against `origin/main`; [the manual documentation workflow](../.github/workflows/ai-doc-lint.yml) runs the same gate in GitHub.
+
+## CI validation boundaries
+
+The static, production browser and Storybook jobs run independently; the required `validate` job succeeds only when all three succeed. New commits cancel superseded runs. Production Playwright uses two workers and one retry in CI. Storybook owns the full component theme, locale and viewport matrix; production UI smoke covers one desktop light and one mobile dark layout while retaining routing, SSR/no-JavaScript, BFF, private sharing, CSP, numeric identity and performance checks. Browser failures must be fixed, not bypassed by reducing assertions or removing security gates.
+
+### Optional WebGL verification
+
+Ordinary CI skips the `webgl`-tagged lifecycle/brand-home stories and the homepage WebGL CWV sampler; the skipped tests must not be reported as WebGL acceptance. Other Storybook tests, real-page homepage navigation/accessibility/no-JavaScript smoke, and non-WebGL performance checks remain required. Rendering readiness, color/mouse interactions and GPU-dependent performance belong to the manually dispatched `WebGL manual verification` workflow. Locally, set `PORTAL_WEBGL_TESTS=1` and run `pnpm test:storybook` for only tagged stories, or `pnpm test:e2e -- --grep "home stays inside the local Core Web Vitals guard"` for homepage performance. Run these when reviewing sculpture/renderer changes; a manual run can fail without changing ordinary PR status.

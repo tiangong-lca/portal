@@ -27,7 +27,9 @@ describe("localized public text", () => {
 
   it("maps the complete evidence-backed Database search-card context", () => {
     const item = publicSearchPageSchema.parse(fixture.search).items[0]!;
+    item.summary = [{ language: "en", value: "Authored electricity supply description." }];
     expect(mapSearchItem(item, "en")).toMatchObject({
+      description: "Authored electricity supply description.",
       functionalUnit: "1 kWh",
       match: "Name",
       quality: "Reviewed",

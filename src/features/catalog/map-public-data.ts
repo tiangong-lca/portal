@@ -100,6 +100,7 @@ export function mapSearchItem(
     localizedText(context.source.providerName, locale) ??
     [context.source.databaseId, context.source.databaseVersion].filter(Boolean).join(" · ");
   return {
+    description: localizedText(item.summary, locale),
     accessLevel: item.accessLevel,
     capabilities: item.capabilities,
     functionalUnit: context.functionalUnit
@@ -127,6 +128,7 @@ export function mapHybridItem(item: PortalHybridCandidate, locale: Locale): Cata
     localizedText(context.source.providerName, locale) ??
     [context.source.databaseId, context.source.databaseVersion].filter(Boolean).join(" · ");
   return {
+    description: localizedText(item.summary, locale),
     accessLevel: item.accessLevel,
     capabilities: item.capabilities,
     functionalUnit: context.functionalUnit

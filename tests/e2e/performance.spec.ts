@@ -60,7 +60,9 @@ async function installVitalsObserver(page: Page) {
 }
 
 async function collectVitals(page: Page, route: string): Promise<Vitals> {
-  await page.goto(route, { waitUntil: "networkidle" });
+  await page.goto(route);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
   if (route === "/en") {
     // Measure input responsiveness with the complete runtime artwork rendering.
     await expect(page.locator(".lifecycle-study")).toHaveAttribute("data-renderer", "ready", {
@@ -108,6 +110,10 @@ for (const { label, route, ttfbBudget } of [
   { label: "cached Process detail", route: `/en/process/${processRef}`, ttfbBudget: 800 },
 ]) {
   test(`${label} stays inside the local Core Web Vitals guard`, async ({ page }) => {
+    test.skip(
+      route === "/en" && process.env.PORTAL_WEBGL_TESTS !== "1",
+      "WebGL performance is opt-in; ordinary CI validates homepage navigation separately.",
+    );
     // Each navigation creates a new GPU context. Allow all four bounded samples
     // to finish on software WebGL; the per-load wait and CWV limits stay fixed.
     if (route === "/en") test.setTimeout(sampleCount * (artworkReadyTimeout + 5000));

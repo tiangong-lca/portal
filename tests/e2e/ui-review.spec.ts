@@ -41,15 +41,11 @@ async function accessible(page: Page) {
   ).toEqual([]);
 }
 
+// Component locale/theme/viewport permutations belong to Storybook.
+// Keep real-page integration coverage at representative desktop and mobile sizes.
 for (const { locale, width, theme } of [
-  { locale: "fr", width: 320, theme: "light" },
-  { locale: "fr", width: 320, theme: "dark" },
-  { locale: "zh-CN", width: 390, theme: "light" },
-  { locale: "en", width: 390, theme: "dark" },
-  { locale: "de", width: 768, theme: "light" },
-  { locale: "de", width: 1024, theme: "light" },
+  { locale: "zh-CN", width: 390, theme: "dark" },
   { locale: "en", width: 1440, theme: "light" },
-  { locale: "zh-CN", width: 1440, theme: "dark" },
 ] as const) {
   test(`visual regression ${locale} ${width}px ${theme}`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 });
@@ -67,6 +63,7 @@ for (const { locale, width, theme } of [
         fullPage: true,
       });
     }
+    await page.locator(".collection-add-shell > summary").click();
     const input = page.getByRole("textbox", { name: t.Collections.memberRef });
     const add = page.getByRole("button", { name: t.Collections.add, exact: true });
     if (width >= 640) {
@@ -122,7 +119,10 @@ test("mobile filters layer above the sticky header, close on selection and prese
   await expect(drawer).toBeHidden();
   await expect(page).toHaveURL(/geo=cn/);
   await expect(page).toHaveURL(/q=electricity/);
-  await page.getByRole("radio", { name: en.Search.descriptionMode }).click();
+  await page
+    .getByRole("combobox", { name: `${en.Search.searchMode}: ${en.Search.keywordMode}` })
+    .click();
+  await page.getByRole("option", { name: en.Search.descriptionMode }).click();
   await expect(page.getByRole("region", { name: en.Hybrid.activeFilters })).toContainText(
     "China (CN)",
   );
@@ -192,7 +192,7 @@ test("sticky header receives pointer hits and citation links open a dismissible 
 }) => {
   await page.goto("/en/search?q=electricity");
   await page.evaluate(() => window.scrollTo(0, 260));
-  const nav = page.getByRole("banner").getByRole("link", { name: en.Common.browse, exact: true });
+  const nav = page.getByRole("banner").getByRole("link", { name: en.Common.catalog, exact: true });
   expect(
     await nav.evaluate((element) => {
       const box = element.getBoundingClientRect();
@@ -201,7 +201,7 @@ test("sticky header receives pointer hits and citation links open a dismissible 
     }),
   ).toBe(true);
   await nav.click();
-  await expect(page).toHaveURL(/\/browse\/process$/);
+  await expect(page).toHaveURL(/\/search\?v=1$/);
   await page.goto(`/en/process/${processRef}#citation`);
   const citation = page.getByRole("dialog", { name: en.Detail.citation, exact: true });
   await expect(citation).toBeVisible();
@@ -246,7 +246,10 @@ test("localizes a Process subtype in both search modes without changing its wire
   await expect(
     page.getByRole("link", { name: `${zh.Common.clear}: ${zh.Search.processSubtype}` }),
   ).toContainText("LCI结果");
-  await page.getByRole("radio", { name: zh.Search.descriptionMode }).click();
+  await page
+    .getByRole("combobox", { name: `${zh.Search.searchMode}: ${zh.Search.keywordMode}` })
+    .click();
+  await page.getByRole("option", { name: zh.Search.descriptionMode }).click();
   await expect(page.getByRole("region", { name: zh.Hybrid.activeFilters })).toContainText(
     "LCI结果",
   );

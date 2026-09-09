@@ -1,7 +1,11 @@
+import { Badge } from "@/components/ui/badge";
+import { CatalogCopyIdentity } from "./catalog-copy-identity";
+import { CatalogResultRow, CatalogResultList, CatalogResultSummary } from "./catalog-result-row";
+import { DatasetVersionTag, PublicContentTag } from "./dataset-tags";
+import "./search-workspace.css";
 import { BookmarkPlusIcon } from "lucide-react";
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
   AccordionContent,
@@ -9,15 +13,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { ActionGroup } from "@/components/ui/action-group";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import type { CatalogResultViewModel } from "@/features/catalog/view-model";
 import { localePath, type PortalLocale } from "@/i18n/routing";
@@ -30,6 +25,13 @@ import { groupSearchResults } from "./search-version-groups";
 import { AvailabilityBadges } from "./availability-badges";
 
 export type SearchResultLabels = {
+  publicContentLabels?: {
+    publicContent: string;
+    availabilityExchanges: string;
+    availabilityMetadata: string;
+    exchangesHelp: string;
+    metadataHelp: string;
+  };
   collect: string;
   compare: string;
   copied: string;
@@ -65,12 +67,14 @@ export function SearchResults({
   locale,
   selectable = false,
   siteOrigin,
+  query,
 }: {
   items: CatalogResultViewModel[];
   labels: SearchResultLabels;
   locale: PortalLocale;
   selectable?: boolean;
   siteOrigin: string;
+  query?: string;
 }) {
   if (items.length === 0) {
     return (
@@ -84,7 +88,7 @@ export function SearchResults({
   }
 
   return (
-    <ol className="flex flex-col gap-4">
+    <CatalogResultList>
       {groupSearchResults(items).map((item) => {
         const detailHref = localePath(locale, `${item.kind}/${encodeURIComponent(item.ref)}`);
         const citation = formatDatasetCitation(locale, {
@@ -105,13 +109,35 @@ export function SearchResults({
         ].filter((entry): entry is { label: string; value: string } => Boolean(entry.value));
 
         return (
-          <li key={`${item.kind}:${item.ref}`}>
-            <Card>
-              <CardHeader>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">
-                    {item.kind === "process" ? labels.process : labels.flow}
-                  </Badge>
+          <CatalogResultRow
+            key={`${item.kind}:${item.ref}`}
+            title={
+              <Link href={detailHref} prefetch={false}>
+                {item.name}
+              </Link>
+            }
+            selection={
+              selectable && item.kind === "process" ? (
+                <CompareChoice
+                  checkbox
+                  item={{ name: item.name, ref: item.ref }}
+                  label={labels.selectForCompare}
+                  locale={locale}
+                />
+              ) : undefined
+            }
+            tags={
+              <>
+                {item.ref.includes("@") && (
+                  <DatasetVersionTag version={item.ref.split("@")[1]!} label={labels.version} />
+                )}
+                {labels.publicContentLabels ? (
+                  <PublicContentTag
+                    compact
+                    content={item.capabilities?.exchangesVisible ? "exchanges" : "metadata"}
+                    labels={labels.publicContentLabels}
+                  />
+                ) : (
                   <AvailabilityBadges
                     capabilities={item.capabilities}
                     labels={{
@@ -120,127 +146,113 @@ export function SearchResults({
                       metadata: labels.metadataOnly,
                     }}
                   />
-                </div>
-                {selectable && item.kind === "process" ? (
-                  <CompareChoice
-                    checkbox
-                    item={{ name: item.name, ref: item.ref }}
-                    label={labels.selectForCompare}
-                    locale={locale}
+                )}
+                {labels.publicContentLabels && item.capabilities?.lciaVisible && (
+                  <PublicContentTag
+                    compact
+                    content="lcia"
+                    label={labels.lciaAvailable}
+                    labels={labels.publicContentLabels}
                   />
-                ) : null}
-                <CardTitle>
-                  <Link href={detailHref} prefetch={false}>
-                    {item.name}
+                )}
+              </>
+            }
+            action={
+              <div className="catalog-result-actions">
+                <CatalogCopyIdentity reference={item.ref} />
+                <CitationCopy
+                  iconOnly
+                  showText={false}
+                  citation={citation}
+                  copiedLabel={labels.copied}
+                  copyLabel={labels.copyCitation}
+                  failureLabel={labels.copyFailure}
+                />
+                <Button asChild variant="ghost" size="icon">
+                  <Link
+                    aria-label={`${labels.collect}: ${item.name}`}
+                    title={labels.collect}
+                    href={`${localePath(locale, "collections")}${buildMemberFragment(item)}`}
+                  >
+                    <BookmarkPlusIcon aria-hidden="true" />
                   </Link>
-                </CardTitle>
-                <CardDescription className="font-mono text-xs break-all">
-                  {item.ref}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {context.map(({ label, value }) => (
-                    <div className="flex min-w-0 flex-col gap-1" key={`${item.ref}:${label}`}>
-                      <dt className="text-muted-foreground font-mono text-xs tracking-[0.08em] uppercase">
-                        {label}
-                      </dt>
-                      <dd className="text-sm break-words">{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-                {item.matchingVersions && item.matchingVersions.length > 0 ? (
-                  <Accordion collapsible type="single">
-                    <AccordionItem value="versions">
-                      <AccordionTrigger className="min-h-11" type="button">
-                        <span>
-                          {labels.matchingVersions}{" "}
-                          <Badge className="ml-2" variant="secondary">
-                            {item.matchingVersions.length}
-                          </Badge>
-                        </span>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ul className="flex flex-col gap-3">
-                          {item.matchingVersions.map((version) => (
-                            <li
-                              className="bg-muted/40 grid grid-cols-1 gap-3 rounded-lg p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
-                              key={version.ref}
+                </Button>
+              </div>
+            }
+          >
+            <dl className="cr-row-meta">
+              {context
+                .filter((entry) => entry.label !== labels.match)
+                .map(({ label, value }) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+            </dl>
+            <CatalogResultSummary text={item.description} query={query} />
+
+            {item.matchingVersions && item.matchingVersions.length > 0 ? (
+              <Accordion collapsible type="single">
+                <AccordionItem value="versions">
+                  <AccordionTrigger className="min-h-11" type="button">
+                    <span>
+                      {labels.matchingVersions}{" "}
+                      <Badge className="ml-2" variant="secondary">
+                        {item.matchingVersions.length}
+                      </Badge>
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="flex flex-col gap-3">
+                      {item.matchingVersions.map((version) => (
+                        <li
+                          className="bg-muted/40 grid grid-cols-1 gap-3 rounded-lg p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+                          key={version.ref}
+                        >
+                          <div className="flex min-w-0 flex-1 flex-col gap-1">
+                            <Link
+                              className="text-sm font-medium break-words"
+                              href={localePath(
+                                locale,
+                                `${item.kind}/${encodeURIComponent(version.ref)}`,
+                              )}
                             >
-                              <div className="flex min-w-0 flex-1 flex-col gap-1">
-                                <Link
-                                  className="text-sm font-medium break-words"
-                                  href={localePath(
-                                    locale,
-                                    `${item.kind}/${encodeURIComponent(version.ref)}`,
-                                  )}
-                                >
-                                  {version.name ?? `${labels.version} ${version.version}`}
-                                </Link>
-                                {version.name ? (
-                                  <span className="text-muted-foreground font-mono text-xs">
-                                    {labels.version} {version.version}
-                                  </span>
-                                ) : null}
-                                {version.match ? (
-                                  <span className="text-muted-foreground text-xs">
-                                    {version.match}
-                                  </span>
-                                ) : null}
-                              </div>
-                              {selectable && item.kind === "process" ? (
-                                <CompareChoice
-                                  checkbox
-                                  item={{ name: version.name ?? item.name, ref: version.ref }}
-                                  label={labels.selectForCompare}
-                                  locale={locale}
-                                />
-                              ) : item.kind === "process" ? (
-                                <CompareChoice
-                                  item={{ name: version.name ?? item.name, ref: version.ref }}
-                                  label={labels.compare}
-                                  locale={locale}
-                                />
-                              ) : null}
-                            </li>
-                          ))}
-                        </ul>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                ) : null}
-              </CardContent>
-              <CardFooter className="block">
-                <ActionGroup>
-                  <Button asChild>
-                    <Link href={detailHref}>{labels.details}</Link>
-                  </Button>
-                  {item.kind === "process" && !selectable ? (
-                    <CompareChoice
-                      item={{ name: item.name, ref: item.ref }}
-                      label={labels.compare}
-                      locale={locale}
-                    />
-                  ) : null}
-                  <Button asChild variant="outline">
-                    <Link href={`${localePath(locale, "collections")}${buildMemberFragment(item)}`}>
-                      <BookmarkPlusIcon data-icon="inline-start" />
-                      {labels.collect}
-                    </Link>
-                  </Button>
-                  <CitationCopy
-                    citation={citation}
-                    copiedLabel={labels.copied}
-                    failureLabel={labels.copyFailure}
-                    copyLabel={labels.copyCitation}
-                    showText={false}
-                  />
-                </ActionGroup>
-              </CardFooter>
-            </Card>
-          </li>
+                              {version.name ?? `${labels.version} ${version.version}`}
+                            </Link>
+                            {version.name ? (
+                              <span className="text-muted-foreground font-mono text-xs">
+                                {labels.version} {version.version}
+                              </span>
+                            ) : null}
+                            {version.match ? (
+                              <span className="text-muted-foreground text-xs">{version.match}</span>
+                            ) : null}
+                          </div>
+                          {selectable && item.kind === "process" ? (
+                            <CompareChoice
+                              checkbox
+                              item={{ name: version.name ?? item.name, ref: version.ref }}
+                              label={labels.selectForCompare}
+                              locale={locale}
+                            />
+                          ) : item.kind === "process" ? (
+                            <CompareChoice
+                              item={{ name: version.name ?? item.name, ref: version.ref }}
+                              label={labels.compare}
+                              locale={locale}
+                            />
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            ) : null}
+          </CatalogResultRow>
         );
       })}
-    </ol>
+    </CatalogResultList>
   );
 }

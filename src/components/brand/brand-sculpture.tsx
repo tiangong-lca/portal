@@ -15,6 +15,7 @@ type SculptureComponent = typeof import("./lifecycle/LifecycleSculpture").Lifecy
  * @import import { BrandSculpture } from "@/components/brand/brand-sculpture";
  */
 export function BrandSculpture(props: BrandSculptureProps) {
+  const [failed, setFailed] = useState(false);
   const [Renderer, setRenderer] = useState<SculptureComponent | null>(null);
   const host = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -27,7 +28,7 @@ export function BrandSculpture(props: BrandSculptureProps) {
           if (mounted) setRenderer(() => module.LifecycleSculpture);
         })
         .catch(() => {
-          // The static artwork and the complete page remain usable if this optional chunk fails.
+          if (mounted) setFailed(true);
         });
     });
     if (host.current) observer.observe(host.current);
@@ -39,7 +40,11 @@ export function BrandSculpture(props: BrandSculptureProps) {
 
   return (
     <div className="brand-sculpture" ref={host}>
-      {Renderer ? <Renderer {...props} presentation="hero" /> : <SculptureOutline />}
+      {Renderer ? (
+        <Renderer {...props} presentation="hero" />
+      ) : failed ? (
+        <SculptureOutline />
+      ) : null}
     </div>
   );
 }

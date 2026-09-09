@@ -219,12 +219,14 @@
   line-height: 32px;
 }
 .cr-search-heading {
-  display: grid;
-  grid-template-columns: 208px minmax(0, 1fr);
-  column-gap: 40px;
-  align-items: center;
-  padding: 24px 0;
-  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+  padding: 40px 0 0;
+}
+.cr-search-heading .cr-title-line {
+  align-self: stretch;
 }
 .cr-search-form {
   display: flex;
@@ -241,12 +243,6 @@
 .cr-query input {
   font-size: 16px;
   font-weight: 400;
-}
-.cr-search-layout {
-  display: grid;
-  grid-template-columns: 208px minmax(0, 1fr);
-  gap: 40px;
-  padding-top: 20px;
 }
 .cr-desktop-filters {
   padding-right: 16px;
@@ -346,111 +342,6 @@
   flex-wrap: wrap;
   gap: 8px;
   padding-bottom: 16px;
-}
-.cr-result-list {
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--border);
-}
-.cr-result {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border);
-  transition: background-color 120ms;
-}
-.cr-result:hover {
-  background: var(--sidebar);
-}
-.cr-result[data-selected] {
-  background: var(--primary-subtle);
-  box-shadow: inset 2px 0 var(--primary);
-}
-.cr-record-select {
-  display: flex;
-  min-width: 28px;
-  min-height: 44px;
-  margin-top: -8px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.cr-result article {
-  min-width: 0;
-  flex: 1;
-  padding-right: 40px;
-}
-.cr-record-top {
-  min-width: 0;
-}
-.cr-record-identity {
-  min-width: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-}
-.cr-record-tags {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-.cr-record-top > button {
-  position: absolute;
-  right: 0;
-  top: 16px;
-}
-.cr-record-top h3 {
-  font-size: var(--cr-title);
-  line-height: 26px;
-  font-weight: 550;
-  letter-spacing: -0.01em;
-  overflow-wrap: anywhere;
-}
-.cr-record-top h3 a:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.cr-result .cr-row-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 24px;
-  margin-top: 8px;
-  font-variant-numeric: tabular-nums;
-}
-.cr-row-meta > div {
-  min-width: 0;
-  display: flex;
-  gap: 6px;
-  align-items: baseline;
-}
-.cr-row-meta dt {
-  font-size: var(--cr-caption);
-  color: var(--muted-foreground);
-  overflow-wrap: anywhere;
-}
-.cr-row-meta dd {
-  font-size: var(--cr-body);
-  overflow-wrap: anywhere;
-}
-.cr-row-meta [data-missing] {
-  color: var(--muted-foreground);
-}
-.cr-match {
-  font-size: var(--cr-body);
-  color: var(--muted-foreground);
-  line-height: 24px;
-  margin-top: 8px !important;
-}
-.cr-match mark {
-  background: var(--primary-subtle);
-  color: var(--foreground);
-  border-radius: 2px;
-  padding: 1px 2px;
 }
 .cr-mono {
   font-family: var(--font-mono);
@@ -1042,9 +933,6 @@
   .cr-desktop-filters {
     display: none;
   }
-  .cr-search-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
   .cr-filter-mobile {
     display: block;
   }
@@ -1159,9 +1047,6 @@
   .cr-search-form > button {
     min-width: 64px;
   }
-  .cr-search-layout {
-    padding-top: 16px;
-  }
   .cr-results-toolbar {
     align-items: flex-start;
     flex-direction: column;
@@ -1181,39 +1066,6 @@
   }
   .cr-results-actions button {
     min-height: 44px;
-  }
-  .cr-result {
-    gap: 8px;
-    padding: 20px 0;
-  }
-  .cr-record-select {
-    min-width: 24px;
-  }
-  .cr-result article {
-    padding-right: 0;
-  }
-  .cr-record-top {
-    padding-right: 48px;
-  }
-  .cr-record-top h3 {
-    font-size: 17px;
-    line-height: 26px;
-  }
-  .cr-record-top > button {
-    min-width: 44px;
-    min-height: 44px;
-    top: 10px;
-    right: -6px;
-  }
-  .cr-result .cr-row-meta {
-    gap: 4px 16px;
-    margin-top: 12px;
-  }
-  .cr-match {
-    margin-top: 10px !important;
-  }
-  .cr-record-identity {
-    row-gap: 12px;
   }
   .cr-filter-option {
     min-height: 44px;
@@ -1314,5 +1166,18 @@
 @media (prefers-reduced-motion: reduce) {
   .cr-result {
     transition: none;
+  }
+}
+
+.cr-search-form {
+  display: block;
+}
+.catalog-reference[data-view="search"] .cr-main {
+  max-width: 1440px;
+  padding-inline: 48px;
+}
+@media (max-width: 760px) {
+  .catalog-reference[data-view="search"] .cr-main {
+    padding-inline: 24px;
   }
 }

@@ -1,3 +1,4 @@
+import { CollectionsPageView } from "../../src/features/collections/collections-page-view";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, spyOn, waitFor, within } from "storybook/test";
 import { delay, http, HttpResponse } from "msw";
@@ -35,6 +36,7 @@ const summaries = http.post("*/internal/dataset-summaries", async ({ request }) 
 const meta = {
   title: "Shortlist/Workspace",
   component: CollectionsWorkspace,
+  subcomponents: { CollectionsPageView },
   tags: ["!autodocs"],
   argTypes: { labels: { control: false }, common: { control: false }, locale: { control: false } },
   args: {
@@ -42,7 +44,7 @@ const meta = {
     labels: dictionaries["zh-CN"].Collections,
     common: dictionaries["zh-CN"].Common,
   },
-  parameters: { msw: [summaries] },
+  parameters: { pageLayout: true, msw: [summaries] },
   beforeEach({ globals, parameters }) {
     const saved = [collectionsStorageKey, collectionsStorageKeyV2].map(
       (key) => [key, localStorage.getItem(key)] as const,
@@ -93,7 +95,7 @@ const meta = {
   render: (args, { globals }) => {
     const locale = storyLocale(globals);
     return (
-      <CollectionsWorkspace
+      <CollectionsPageView
         {...args}
         key={locale}
         locale={locale}
@@ -142,6 +144,7 @@ export const ServiceUnavailable: Story = {
 export const InvalidVersion: Story = {
   play: async ({ canvas, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)].Collections;
+    await userEvent.click(canvas.getByText(m.add, { selector: "summary" }));
     const input = canvas.getByRole("textbox", { name: m.memberRef });
     await userEvent.type(input, "invalid-version");
     await userEvent.click(canvas.getByRole("button", { name: m.add }));
@@ -277,6 +280,7 @@ export const MemberLimit: Story = {
   parameters: { atLimit: true },
   play: async ({ canvas, userEvent, globals }) => {
     const m = dictionaries[storyLocale(globals)].Collections;
+    await userEvent.click(canvas.getByText(m.add, { selector: "summary" }));
     await userEvent.type(canvas.getByRole("textbox", { name: m.memberRef }), refs[4]);
     await userEvent.click(canvas.getByRole("button", { name: m.add }));
     await expect(await canvas.findByText(m.memberLimit)).toBeVisible();

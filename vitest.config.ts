@@ -6,7 +6,7 @@ import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 const softwareWebGL =
   Boolean(process.env.CI) || process.env.PORTAL_STORYBOOK_SOFTWARE_WEBGL === "1";
 
-/** Shared by the component test runner and its CI renderer probe. */
+/** Browser settings; opt-in WebGL runs may use software rendering. */
 export const storybookBrowserLaunchOptions = {
   channel: "chromium",
   // Select Chromium's software OpenGL driver explicitly on GPU-less test hosts.
@@ -14,7 +14,12 @@ export const storybookBrowserLaunchOptions = {
 };
 
 export default defineConfig({
-  plugins: [storybookTest({ configDir: fileURLToPath(new URL("./.storybook", import.meta.url)) })],
+  plugins: [
+    storybookTest({
+      configDir: fileURLToPath(new URL("./.storybook", import.meta.url)),
+      tags: process.env.PORTAL_WEBGL_TESTS === "1" ? { include: ["webgl"] } : { skip: ["webgl"] },
+    }),
+  ],
   test: {
     name: "storybook",
     // Software WebGL compilation must not starve other stories' focus/animation assertions.

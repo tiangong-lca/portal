@@ -45,7 +45,9 @@
     "searchCompact": "Search",
     "browseCompact": "Browse",
     "methodologyCompact": "About",
-    "collectionsCompact": "Shortlist"
+    "collectionsCompact": "Shortlist",
+    "catalog": "Data catalog",
+    "catalogCompact": "Catalog"
   },
   "Home": {
     "eyebrow": "TianGong LCA Data Portal",
@@ -84,7 +86,9 @@
     "scaleUnavailable": "Catalog totals are temporarily unavailable. Search and browsing remain available.",
     "useTitle": "Using the catalog",
     "useDescription": "Check scope and license before use. Use a specific version when comparing or citing a dataset.",
-    "useLink": "About the data"
+    "useLink": "About the data",
+    "exploreCatalog": "Explore the catalog",
+    "collapseExplore": "Collapse exploration"
   },
   "Search": {
     "title": "Search the data catalog",
@@ -116,7 +120,10 @@
     "unavailableDescription": "Search results could not be loaded. Please try again.",
     "resultsFor": "Results for “{query}”",
     "searchMode": "Search mode",
-    "keywordMode": "Keywords or identifiers",
+    "sortRelevance": "Default order",
+    "sortModified": "Recently updated",
+    "sortName": "Name order",
+    "keywordMode": "Keyword search",
     "descriptionMode": "Describe your need",
     "filtersDescription": "Narrow results by geography, time, and source.",
     "appliedFilters": "Applied filters",
@@ -505,9 +512,12 @@
     "metadataTitle": "Tiangong LCA · Data, models and life cycle assessment",
     "explore": "Explore open data",
     "platformAction": "Open LCA platform",
-    "platformDestination": "lca.tiangong.earth · Separate platform; some features require sign-in",
     "heroIndex": "From data to environmental understanding",
     "catalogKicker": "Open data",
+    "searchEntryAction": "Start exploring",
+    "searchExample1": "Electricity in China",
+    "searchExample2": "Polyethylene",
+    "searchExample3": "Aluminium production",
     "catalogTitle": "Find your starting point.",
     "catalogDescription": "Discover process and flow data. Search by name or identifier, or follow the catalog by region and source.",
     "understandingKicker": "From discovery to understanding",

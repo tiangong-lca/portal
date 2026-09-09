@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRightLeftIcon, FileTextIcon } from "lucide-react";
+import { ArrowRightLeftIcon, FileTextIcon, ChartNoAxesCombinedIcon } from "lucide-react";
 import { Tooltip } from "radix-ui";
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "../../components/ui/badge";
@@ -33,8 +33,10 @@ export function PublicContentTag({
   content,
   labels,
   compact = false,
+  label: customLabel,
 }: {
-  content: "exchanges" | "metadata";
+  content: "exchanges" | "metadata" | "lcia";
+  label?: string;
   labels: PublicContentLabels;
   compact?: boolean;
 }) {
@@ -51,9 +53,16 @@ export function PublicContentTag({
     pendingOpen.current = requestAnimationFrame(() => setOpen(true));
   };
   const m = labels;
-  const label = content === "exchanges" ? m.availabilityExchanges : m.availabilityMetadata;
-  const description = content === "exchanges" ? m.exchangesHelp : m.metadataHelp;
-  const Icon = content === "exchanges" ? ArrowRightLeftIcon : FileTextIcon;
+  const label =
+    customLabel ?? (content === "exchanges" ? m.availabilityExchanges : m.availabilityMetadata);
+  const description =
+    content === "lcia" ? "" : content === "exchanges" ? m.exchangesHelp : m.metadataHelp;
+  const Icon =
+    content === "lcia"
+      ? ChartNoAxesCombinedIcon
+      : content === "exchanges"
+        ? ArrowRightLeftIcon
+        : FileTextIcon;
   if (compact) {
     return (
       <Tooltip.Provider delayDuration={250}>
@@ -91,7 +100,7 @@ export function PublicContentTag({
               collisionPadding={16}
             >
               <strong>{label}</strong>
-              <p>{description}</p>
+              {description && <p>{description}</p>}
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>

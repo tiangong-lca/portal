@@ -125,7 +125,21 @@ function hasForbiddenCredential(request: IncomingMessage): boolean {
 }
 
 function processSearchResponse() {
-  const firstItem = catalogFixture.search.items[0]!;
+  const firstItem = {
+    ...catalogFixture.search.items[0]!,
+    // Synthetic preview content, never injected into a production response.
+    summary: [
+      {
+        language: "zh-CN",
+        value: "用于本地界面预览的电力供应示例，展示发电背景与电网输配电过程的描述摘要。",
+      },
+      {
+        language: "en",
+        value:
+          "Synthetic electricity supply example for local UI preview, covering generation and grid transmission and distribution.",
+      },
+    ],
+  };
   return {
     ...catalogFixture.search,
     items: [
@@ -302,7 +316,46 @@ function rpcPayload(name: string, arguments_: Record<string, unknown>): unknown 
         ? catalogFixture.exchanges
         : null;
     case "portal_facets_v2":
-      return { ...catalogFixture.facets, kind: arguments_.p_kind };
+      return {
+        ...catalogFixture.facets,
+        kind: arguments_.p_kind,
+        groups: catalogFixture.facets.groups
+          .map((group) =>
+            group.id === "kind"
+              ? {
+                  ...group,
+                  values: group.values.map((value) => ({
+                    ...value,
+                    value: arguments_.p_kind,
+                    label: [{ language: "en", value: String(arguments_.p_kind) }],
+                  })),
+                }
+              : group,
+          )
+          .concat([
+            {
+              id: "geography",
+              label: [{ language: "en", value: "Geography" }],
+              hasMore: false,
+              values:
+                arguments_.p_kind === "flow"
+                  ? []
+                  : [{ value: "CN", label: [{ language: "en", value: "China" }], count: 2 }],
+            },
+            {
+              id: "source",
+              label: [{ language: "en", value: "Source" }],
+              hasMore: false,
+              values: [
+                {
+                  value: "TianGong",
+                  label: [{ language: "en", value: "TianGong" }],
+                  count: arguments_.p_kind === "all" ? 3 : arguments_.p_kind === "flow" ? 1 : 2,
+                },
+              ],
+            },
+          ]),
+      };
     case "portal_sitemap_entries_v1":
       return sitemapResponse(arguments_.p_kind);
     case "portal_sitemap_manifest_v1":

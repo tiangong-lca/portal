@@ -45,7 +45,9 @@
     "searchCompact": "Recherche",
     "browseCompact": "Catalogue",
     "methodologyCompact": "Données",
-    "collectionsCompact": "Sélection"
+    "collectionsCompact": "Sélection",
+    "catalog": "Catalogue de données",
+    "catalogCompact": "Catalogue"
   },
   "Home": {
     "eyebrow": "Portail de données TianGong LCA",
@@ -84,7 +86,9 @@
     "scaleUnavailable": "Les totaux du catalogue sont temporairement indisponibles. La recherche et la navigation restent accessibles.",
     "useTitle": "Utiliser le catalogue",
     "useDescription": "Vérifiez le périmètre et la licence avant utilisation. Comparez ou citez toujours une version précise.",
-    "useLink": "À propos des données"
+    "useLink": "À propos des données",
+    "exploreCatalog": "Explorer le catalogue",
+    "collapseExplore": "Réduire l’exploration"
   },
   "Search": {
     "title": "Rechercher dans le catalogue de données",
@@ -116,7 +120,10 @@
     "unavailableDescription": "Les résultats de recherche n’ont pas pu être chargés. Veuillez réessayer.",
     "resultsFor": "Résultats pour « {query} »",
     "searchMode": "Mode de recherche",
-    "keywordMode": "Mots-clés ou identifiants",
+    "sortRelevance": "Ordre par défaut",
+    "sortModified": "Mise à jour récente",
+    "sortName": "Par nom",
+    "keywordMode": "Recherche par mots-clés",
     "descriptionMode": "Décrire le besoin",
     "filtersDescription": "Affinez les résultats par région, période et source.",
     "appliedFilters": "Filtres actifs",
@@ -505,9 +512,12 @@
     "metadataTitle": "Tiangong LCA · Données, modèles et analyse du cycle de vie",
     "explore": "Explorer les données",
     "platformAction": "Ouvrir la plateforme ACV",
-    "platformDestination": "lca.tiangong.earth · Plateforme distincte ; connexion parfois requise",
     "heroIndex": "Des données à la compréhension des impacts",
     "catalogKicker": "Données ouvertes",
+    "searchEntryAction": "Explorer",
+    "searchExample1": "Électricité en Chine",
+    "searchExample2": "Polyéthylène",
+    "searchExample3": "Production d’aluminium",
     "catalogTitle": "Le point de départ de votre analyse.",
     "catalogDescription": "Découvrez des données de processus et de flux. Recherchez un nom ou un identifiant, ou explorez les régions et les sources.",
     "understandingKicker": "De la découverte à la compréhension",
