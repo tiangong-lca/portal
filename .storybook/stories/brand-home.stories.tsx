@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { usePathname } from "@storybook/nextjs-vite/navigation.mock";
-import { expect, userEvent, waitFor } from "storybook/test";
+import { expect, waitFor } from "storybook/test";
 import { BrandHome } from "@/components/brand/brand-home";
 import { ScrollCinematicHero } from "@/components/brand/scroll-cinematic-hero";
 import { SiteHeader } from "@/components/shell/site-header";
@@ -104,38 +104,7 @@ const meta = {
     for (const chapter of cinematicChapters[locale]) {
       await expect(canvasElement).toHaveTextContent(chapter);
     }
-    await expect(canvas.getByRole("link", { name: text.teamAction })).toHaveAttribute(
-      "href",
-      `/${storyLocale(globals)}/team`,
-    );
-    await expect(
-      canvasElement.querySelectorAll(".brand-team-ensemble .team-ensemble-person"),
-    ).toHaveLength(23);
-    await expect(canvas.queryByRole("button", { name: text.teamPrevious })).not.toBeInTheDocument();
-    await expect(canvas.queryByRole("button", { name: text.teamNext })).not.toBeInTheDocument();
-    const teamLabels = dictionaries[storyLocale(globals)].Team;
-    const portrait = canvas.queryByRole("button", {
-      name: `Ming Xu, ${teamLabels.roles.founder}`,
-    });
-    if (portrait) {
-      await userEvent.keyboard("{Tab}");
-      portrait.focus();
-      await waitFor(() => expect(canvas.getByRole("tooltip")).toBeVisible());
-      await expect(canvas.getByRole("tooltip").closest(".team-ensemble-person")).toBeNull();
-      await expect(canvas.getByRole("tooltip").closest(".team-ensemble")).toBeNull();
-      await userEvent.click(portrait);
-      await expect(canvasElement.querySelector(".team-ensemble-card")).not.toBeInTheDocument();
-      await userEvent.unhover(portrait);
-    } else {
-      await expect(window.innerWidth).toBeLessThanOrEqual(680);
-      const portraitTargets = canvasElement.querySelectorAll<HTMLElement>(
-        ".brand-team-section .team-ensemble-person-hit",
-      );
-      await expect(portraitTargets).toHaveLength(23);
-      for (const target of portraitTargets) {
-        await expect(getComputedStyle(target).display).toBe("none");
-      }
-    }
+    await expect(canvasElement.querySelector(".brand-team-section")).not.toBeInTheDocument();
     const firstFrame = canvasElement.querySelector(".brand-cinematic-hero img");
     await expect(firstFrame).toHaveAttribute("fetchpriority", "high");
     await expect(firstFrame).toHaveAttribute("decoding", "async");

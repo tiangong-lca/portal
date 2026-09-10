@@ -604,11 +604,6 @@
     "understandingTitle": "The context behind the data.",
     "understandingDescription": "Understand what a dataset describes and where it applies before taking it into your next analysis.",
     "platformTitle": "Take data into your next analysis.",
-    "platformDescription": "Discover and understand public data here. Continue your life cycle assessment work in the Tiangong LCA platform.",
-    "teamTitle": "The people growing open knowledge.",
-    "teamDescription": "Researchers, engineers, editors and community partners build TianGong together, making life cycle knowledge more open, reliable and useful.",
-    "teamAction": "View more",
-    "teamPrevious": "View previous team members",
-    "teamNext": "View next team members"
+    "platformDescription": "Discover and understand public data here. Continue your life cycle assessment work in the Tiangong LCA platform."
   }
 }

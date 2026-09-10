@@ -35,36 +35,12 @@ function MemberIdentity({ member, labels }: { member: TeamMember; labels: TeamLa
 
 function TeamPortrait({ member, priority = false }: { member: TeamMember; priority?: boolean }) {
   return (
-    <div
-      className="team-member-portrait"
-      data-team-transition-target={
-        ["ming-xu", "sangwon-suh", "nan-li", "jianchuan-qi", "jing-guo", "huimin-chang"].includes(
-          member.slug,
-        )
-          ? member.slug
-          : undefined
-      }
-    >
+    <div className="team-member-portrait">
       <Image
         alt=""
         aria-hidden="true"
         fill
         priority={priority}
-        unoptimized={[
-          "ming-xu",
-          "sangwon-suh",
-          "nan-li",
-          "jianchuan-qi",
-          "jing-guo",
-          "huimin-chang",
-        ].includes(member.slug)}
-        loading={
-          ["sangwon-suh", "nan-li", "jianchuan-qi", "jing-guo", "huimin-chang"].includes(
-            member.slug,
-          )
-            ? "eager"
-            : undefined
-        }
         sizes="(max-width: 680px) 100vw, (max-width: 1080px) 50vw, 25vw"
         src={`/team/portraits/${member.slug}.webp`}
       />
