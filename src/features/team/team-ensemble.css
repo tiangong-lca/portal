@@ -364,10 +364,6 @@
 }
 
 @media (max-width: 680px) {
-  .brand-team-section .team-ensemble-person-hit {
-    display: none;
-  }
-
   .team-ensemble-hint {
     display: none;
   }

@@ -604,11 +604,6 @@
     "understandingTitle": "Le contexte derrière les données.",
     "understandingDescription": "Comprenez ce que décrit un jeu de données et son domaine d’application avant de l’intégrer à votre analyse.",
     "platformTitle": "Des données pour votre prochaine analyse.",
-    "platformDescription": "Découvrez et comprenez les données publiques ici. Poursuivez votre analyse du cycle de vie sur la plateforme Tiangong LCA.",
-    "teamTitle": "Celles et ceux qui font grandir le savoir ouvert.",
-    "teamDescription": "Chercheurs, ingénieurs, éditeurs et membres de la communauté construisent TianGong ensemble pour rendre les connaissances sur le cycle de vie plus ouvertes, fiables et utiles.",
-    "teamAction": "Voir plus",
-    "teamPrevious": "Voir les membres précédents",
-    "teamNext": "Voir les membres suivants"
+    "platformDescription": "Découvrez et comprenez les données publiques ici. Poursuivez votre analyse du cycle de vie sur la plateforme Tiangong LCA."
   }
 }
