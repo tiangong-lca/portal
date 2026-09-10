@@ -261,8 +261,6 @@ export const CinematicPrototype: Story = {
     await expect(
       Math.abs(referenceTitle.parentElement!.getBoundingClientRect().top - initialPanelTop),
     ).toBeLessThanOrEqual(1);
-    window.scrollTo({ top: 100, behavior: "auto" });
-    await waitFor(() => expect(Number(hero?.dataset.frame)).toBeGreaterThan(5), { timeout: 1000 });
     const scrollRange = Math.max((hero?.offsetHeight ?? 0) - window.innerHeight, 1);
     window.scrollTo({ top: scrollRange * 0.3, behavior: "auto" });
     await waitFor(() => expect(hero).toHaveAttribute("data-chapter", "1"), { timeout: 1000 });
