@@ -1,23 +1,70 @@
 @media (prefers-reduced-motion: no-preference) {
   html[data-team-transition] .brand-team-ensemble [data-member="ming-xu"] .team-ensemble-portrait,
-  html[data-team-transition] [data-team-transition-target] {
+  html[data-team-transition] [data-team-transition-target="ming-xu"] {
     view-transition-name: team-ming-xu;
   }
-  html[data-team-transition]::view-transition-group(team-ming-xu) {
-    animation-duration: 620ms;
+  html[data-team-transition]
+    .brand-team-ensemble
+    [data-member="sangwon-suh"]
+    .team-ensemble-portrait,
+  html[data-team-transition] [data-team-transition-target="sangwon-suh"] {
+    view-transition-name: team-sangwon-suh;
+  }
+  html[data-team-transition] .brand-team-ensemble [data-member="nan-li"] .team-ensemble-portrait,
+  html[data-team-transition] [data-team-transition-target="nan-li"] {
+    view-transition-name: team-nan-li;
+  }
+  html[data-team-transition]
+    .brand-team-ensemble
+    [data-member="jianchuan-qi"]
+    .team-ensemble-portrait,
+  html[data-team-transition] [data-team-transition-target="jianchuan-qi"] {
+    view-transition-name: team-jianchuan-qi;
+  }
+  html[data-team-transition] .brand-team-ensemble [data-member="jing-guo"] .team-ensemble-portrait,
+  html[data-team-transition] [data-team-transition-target="jing-guo"] {
+    view-transition-name: team-jing-guo;
+  }
+  html[data-team-transition]
+    .brand-team-ensemble
+    [data-member="huimin-chang"]
+    .team-ensemble-portrait,
+  html[data-team-transition] [data-team-transition-target="huimin-chang"] {
+    view-transition-name: team-huimin-chang;
+  }
+  html[data-team-transition]::view-transition-group(team-ming-xu),
+  html[data-team-transition]::view-transition-group(team-jing-guo),
+  html[data-team-transition]::view-transition-group(team-huimin-chang),
+  html[data-team-transition]::view-transition-group(team-sangwon-suh),
+  html[data-team-transition]::view-transition-group(team-nan-li),
+  html[data-team-transition]::view-transition-group(team-jianchuan-qi) {
+    animation-duration: 900ms;
     animation-timing-function: cubic-bezier(0.22, 0.68, 0, 1);
+    z-index: 9;
+  }
+  html[data-team-transition]::view-transition-group(team-ming-xu) {
     z-index: 10;
   }
   html[data-team-transition]::view-transition-old(team-ming-xu),
-  html[data-team-transition]::view-transition-new(team-ming-xu) {
+  html[data-team-transition]::view-transition-new(team-ming-xu),
+  html[data-team-transition]::view-transition-old(team-jing-guo),
+  html[data-team-transition]::view-transition-new(team-jing-guo),
+  html[data-team-transition]::view-transition-old(team-huimin-chang),
+  html[data-team-transition]::view-transition-new(team-huimin-chang),
+  html[data-team-transition]::view-transition-old(team-sangwon-suh),
+  html[data-team-transition]::view-transition-new(team-sangwon-suh),
+  html[data-team-transition]::view-transition-old(team-nan-li),
+  html[data-team-transition]::view-transition-new(team-nan-li),
+  html[data-team-transition]::view-transition-old(team-jianchuan-qi),
+  html[data-team-transition]::view-transition-new(team-jianchuan-qi) {
     height: 100%;
     width: 100%;
     object-fit: contain;
-    animation-duration: 620ms;
+    animation-duration: 900ms;
     mix-blend-mode: normal;
   }
   html[data-team-transition]::view-transition-old(root),
   html[data-team-transition]::view-transition-new(root) {
-    animation-duration: 220ms;
+    animation-duration: 360ms;
   }
 }

@@ -79,7 +79,7 @@
 
 .team-founder-card {
   display: grid;
-  grid-template-columns: clamp(360px, 38vw, 520px) minmax(0, 1fr);
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
   min-height: 0;
   margin-bottom: 48px;
   background: var(--team-soft);
@@ -173,8 +173,8 @@
 
 .team-member-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 40px 20px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 32px 24px;
 }
 
 .team-member-card {
@@ -757,8 +757,13 @@
     grid-template-columns: 1fr;
   }
 
+  .team-founder-card .team-member-portrait {
+    width: min(100%, 280px);
+    justify-self: center;
+  }
+
   .team-founder-copy {
-    min-height: 240px;
+    min-height: 0;
   }
 }
 
@@ -780,8 +785,8 @@
     margin-bottom: 48px;
   }
   .team-member-grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 16px;
   }
   .team-member-card .team-member-portrait {
     aspect-ratio: 1.16;

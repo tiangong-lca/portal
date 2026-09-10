@@ -32,19 +32,18 @@ export function TeamTransitionLink(
                 resolve();
               };
               const inspect = () => {
-                const portrait = document.querySelector<HTMLImageElement>(
+                const portraits = document.querySelectorAll<HTMLImageElement>(
                   ".team-page [data-team-transition-target] img",
                 );
-                if (!portrait || decoding) return;
+                if (portraits.length !== 6 || decoding) return;
                 decoding = true;
-                void portrait
-                  .decode()
-                  .catch(() => {})
-                  .then(() => {
-                    if (done) return;
-                    window.scrollTo({ top: 0, behavior: "instant" });
-                    finish();
-                  });
+                void Promise.allSettled(
+                  Array.from(portraits, (portrait) => portrait.decode()),
+                ).then(() => {
+                  if (done) return;
+                  window.scrollTo({ top: 0, behavior: "instant" });
+                  finish();
+                });
               };
               const observer = new MutationObserver(inspect);
               const timeout = window.setTimeout(() => {

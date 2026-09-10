@@ -1089,3 +1089,9 @@
 .brand-team-ensemble .team-ensemble::after {
   display: none;
 }
+
+/* Scale the approved composition as a whole within the shared page boundary. */
+.brand-team-ensemble .team-ensemble-shell {
+  max-width: 960px;
+  margin-inline: auto;
+}
