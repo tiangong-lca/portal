@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { usePathname } from "@storybook/nextjs-vite/navigation.mock";
-import { expect, waitFor } from "storybook/test";
+import { expect, userEvent, waitFor } from "storybook/test";
 import { BrandHome } from "@/components/brand/brand-home";
 import { BrandSculpture } from "@/components/brand/brand-sculpture";
 import { SculptureOutline } from "@/components/brand/sculpture-outline";
@@ -102,6 +102,27 @@ const meta = {
       "href",
       "#explore",
     );
+    await expect(canvas.getByRole("link", { name: text.teamAction })).toHaveAttribute(
+      "href",
+      `/${storyLocale(globals)}/team`,
+    );
+    await expect(
+      canvasElement.querySelectorAll(".brand-team-ensemble .team-ensemble-person"),
+    ).toHaveLength(23);
+    await expect(canvas.queryByRole("button", { name: text.teamPrevious })).not.toBeInTheDocument();
+    await expect(canvas.queryByRole("button", { name: text.teamNext })).not.toBeInTheDocument();
+    const teamLabels = dictionaries[storyLocale(globals)].Team;
+    const portrait = canvas.getByRole("button", {
+      name: `Ming Xu, ${teamLabels.roles.founder}`,
+    });
+    await userEvent.keyboard("{Tab}");
+    portrait.focus();
+    await waitFor(() => expect(canvas.getByRole("tooltip")).toBeVisible());
+    await expect(canvas.getByRole("tooltip").closest(".team-ensemble-person")).toBeNull();
+    await expect(canvas.getByRole("tooltip").closest(".team-ensemble")).toBeNull();
+    await userEvent.click(portrait);
+    await expect(canvasElement.querySelector(".team-ensemble-card")).not.toBeInTheDocument();
+    await userEvent.unhover(portrait);
     if (parameters.artwork !== "loading" && parameters.artwork !== "unavailable") {
       await waitFor(
         () =>

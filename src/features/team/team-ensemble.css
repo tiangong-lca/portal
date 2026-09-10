@@ -1,0 +1,392 @@
+.team-ensemble-shell {
+  position: relative;
+}
+
+.team-ensemble {
+  --ensemble-accent: oklch(0.55 0.22 307);
+  --ensemble-surface: color-mix(in oklch, var(--background) 91%, var(--ensemble-accent));
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 30%);
+  border-radius: clamp(1rem, 2vw, 1.75rem);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--background) 96%, var(--ensemble-accent)),
+      transparent 54%
+    ),
+    radial-gradient(
+      ellipse at 50% 57%,
+      color-mix(in oklch, var(--ensemble-accent), transparent 70%),
+      transparent 58%
+    ),
+    linear-gradient(
+      145deg,
+      var(--ensemble-surface),
+      color-mix(in oklch, var(--muted) 94%, var(--ensemble-accent))
+    );
+  box-shadow:
+    inset 0 1px color-mix(in oklch, white, transparent 44%),
+    0 2.5rem 6rem color-mix(in oklch, var(--foreground), transparent 94%);
+}
+
+.team-ensemble::before {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(color-mix(in oklch, var(--border), transparent 60%) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--border), transparent 60%) 1px, transparent 1px);
+  background-size: 5.5rem 5.5rem;
+  mask-image: radial-gradient(ellipse at 50% 58%, black, transparent 72%);
+  content: "";
+  opacity: 0.2;
+}
+
+.team-ensemble::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 35;
+  height: 8%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in oklch, var(--ensemble-surface), transparent 2%) 92%
+  );
+  content: "";
+  pointer-events: none;
+}
+
+.dark .team-ensemble {
+  --ensemble-accent: oklch(0.7 0.2 304);
+  --ensemble-surface: oklch(0.105 0.015 300);
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      color-mix(in oklch, var(--ensemble-accent), transparent 72%),
+      transparent 40%
+    ),
+    linear-gradient(145deg, oklch(0.18 0.035 300), oklch(0.105 0.015 300) 70%);
+  box-shadow:
+    inset 0 1px color-mix(in oklch, white, transparent 88%),
+    0 2rem 6rem color-mix(in oklch, black, transparent 56%);
+}
+
+.dark .team-ensemble::after {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in oklch, oklch(0.105 0.015 300), transparent 2%) 92%
+  );
+}
+
+.team-ensemble-aura {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: min(62rem, 88%);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--ensemble-accent), transparent 82%),
+    transparent 66%
+  );
+  filter: blur(1rem);
+}
+
+.team-ensemble-orbit {
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  width: 82%;
+  height: 50%;
+  transform: translateX(-50%) rotate(-5deg);
+  border: 1px solid color-mix(in oklch, var(--ensemble-accent), transparent 78%);
+  border-radius: 50%;
+}
+
+.team-ensemble-orbit-two {
+  width: 58%;
+  height: 38%;
+  transform: translateX(-50%) rotate(7deg);
+  opacity: 0.55;
+}
+
+.team-ensemble-cast {
+  position: absolute;
+  inset: 9% 0 4%;
+  clip-path: inset(-20% 0 0);
+  mask-image: linear-gradient(to bottom, black 0 94%, transparent 100%);
+}
+
+.team-ensemble-person {
+  --ensemble-x: 50%;
+  --ensemble-bottom: 0%;
+  --ensemble-width: 20%;
+  --ensemble-z: 4;
+  position: absolute;
+  bottom: var(--ensemble-bottom);
+  left: var(--ensemble-x);
+  z-index: var(--ensemble-z);
+  width: var(--ensemble-width);
+  aspect-ratio: 804 / 752;
+  padding: 0;
+  transform: translateX(-50%);
+  border: 0;
+  outline: none;
+  background: none;
+  color: inherit;
+  pointer-events: none;
+  transition:
+    transform 320ms cubic-bezier(0.2, 0.75, 0.2, 1),
+    filter 320ms ease;
+}
+
+.team-ensemble-portrait {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  background: transparent;
+  filter: drop-shadow(0 0.15rem 0.35rem color-mix(in oklch, black, transparent 82%));
+  transition:
+    filter 300ms ease,
+    opacity 240ms ease;
+}
+
+/* Rear source crops disappear behind the foreground; the front row shares the cast baseline. */
+.team-ensemble-person[data-band="back"] .team-ensemble-portrait {
+  mask-image: linear-gradient(to bottom, black 0 76%, transparent 100%);
+}
+
+.team-ensemble-person[data-band="middle"] .team-ensemble-portrait {
+  mask-image: linear-gradient(to bottom, black 0 76%, transparent 100%);
+}
+
+/* Half-length sources keep their torsos until the foreground naturally covers them. */
+.team-ensemble-person:is(
+    [data-member="si-zhang"],
+    [data-member="ayazhan-nurpeiis"],
+    [data-member="jiayi-yuan"],
+    [data-member="chenling-fu"],
+    [data-member="yi-cao"]
+  )
+  .team-ensemble-portrait {
+  mask-image: linear-gradient(to bottom, black 0 89%, transparent 100%);
+}
+
+/* Keep these short torsos opaque until the neighbouring shoulders take over. */
+.team-ensemble-person:is([data-member="yan-qin"], [data-member="zimeng-cai"])
+  .team-ensemble-portrait {
+  mask-image: linear-gradient(to bottom, black 0 92%, transparent 100%);
+}
+
+.team-ensemble-person-hit {
+  position: absolute;
+  top: var(--ensemble-face-y);
+  left: var(--ensemble-face-x);
+  z-index: 3;
+  width: var(--ensemble-face-size);
+  aspect-ratio: 1;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: 50%;
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  transition:
+    box-shadow 220ms ease,
+    transform 260ms ease;
+}
+
+.team-ensemble-portrait img {
+  object-fit: contain;
+  object-position: 50% 100%;
+  filter: var(--portrait-balance) saturate(var(--portrait-saturation)) contrast(0.98)
+    brightness(calc(var(--portrait-exposure) * var(--portrait-theme-light, 1)));
+  transition:
+    filter 300ms ease,
+    transform 420ms cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+.dark .team-ensemble-person {
+  --portrait-theme-light: 1.025;
+}
+
+/* Outside the masked cast and clipped canvas, above every portrait layer. */
+.team-ensemble-caption {
+  position: absolute;
+  z-index: 200;
+  display: grid;
+  width: 220px;
+  max-width: 100%;
+  padding: 0.55rem 0.7rem;
+  transform: translate(-50%, -100%);
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 0.5rem 1.5rem color-mix(in oklch, black, transparent 84%);
+  pointer-events: none;
+}
+
+.team-ensemble-caption strong {
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+.team-ensemble-caption span {
+  color: var(--muted-foreground);
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.team-ensemble-person:has(.team-ensemble-person-hit:hover),
+.team-ensemble-person:has(.team-ensemble-person-hit:focus-visible),
+.team-ensemble-person[data-selected="true"] {
+  transform: translateX(-50%) translateY(-0.3rem);
+}
+
+.team-ensemble-person:has(.team-ensemble-person-hit:hover) .team-ensemble-portrait,
+.team-ensemble-person:has(.team-ensemble-person-hit:focus-visible) .team-ensemble-portrait,
+.team-ensemble-person[data-selected="true"] .team-ensemble-portrait {
+  filter: drop-shadow(0 1.5rem 1.8rem color-mix(in oklch, black, transparent 66%))
+    drop-shadow(0 0 1.4rem color-mix(in oklch, var(--ensemble-accent), transparent 62%));
+}
+
+.team-ensemble-person:has(.team-ensemble-person-hit:hover) img,
+.team-ensemble-person:has(.team-ensemble-person-hit:focus-visible) img,
+.team-ensemble-person[data-selected="true"] img {
+  transform: scale(1.012);
+}
+.team-ensemble-person[data-selected="true"] .team-ensemble-person-hit {
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--ensemble-accent), transparent 8%),
+    0 0 0 4px color-mix(in oklch, var(--background), transparent 42%),
+    0 0 1.25rem color-mix(in oklch, var(--ensemble-accent), transparent 58%);
+}
+
+.team-ensemble[data-has-selection="true"]
+  .team-ensemble-person[data-selected="false"]
+  .team-ensemble-portrait {
+  filter: brightness(0.96) drop-shadow(0 0.8rem 1rem color-mix(in oklch, black, transparent 84%));
+}
+
+.team-ensemble-person:has(.team-ensemble-person-hit:focus-visible) .team-ensemble-portrait {
+  filter: drop-shadow(0 0 0.18rem var(--ring))
+    drop-shadow(0 0 1.4rem color-mix(in oklch, var(--ensemble-accent), transparent 56%));
+}
+
+.team-ensemble-ground {
+  position: absolute;
+  right: 7%;
+  bottom: 1%;
+  left: 7%;
+  z-index: -1;
+  height: 15%;
+  transform: perspective(28rem) rotateX(66deg);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in oklch, var(--ensemble-accent), transparent 67%),
+    transparent 70%
+  );
+  filter: blur(0.35rem);
+}
+
+.team-ensemble-card {
+  position: absolute;
+  bottom: clamp(0.75rem, 2vw, 1.25rem);
+  left: 50%;
+  z-index: 100;
+  display: flex;
+  width: min(32rem, calc(100% - 2rem));
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.85rem 0.75rem 1rem;
+  transform: translateX(-50%);
+  border: 1px solid color-mix(in oklch, var(--ensemble-accent), transparent 62%);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--background), transparent 10%);
+  box-shadow: 0 1rem 3rem color-mix(in oklch, black, transparent 70%);
+  backdrop-filter: blur(24px);
+  animation: team-ensemble-card-in 260ms cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+.team-ensemble-card p,
+.team-ensemble-card h3,
+.team-ensemble-card span {
+  margin: 0;
+}
+.team-ensemble-card p {
+  color: var(--ensemble-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.team-ensemble-card h3 {
+  margin-top: 0.2rem;
+  font-size: 1.35rem;
+  letter-spacing: -0.025em;
+}
+.team-ensemble-card span {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+.team-ensemble-card-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+@keyframes team-ensemble-card-in {
+  from {
+    transform: translate(-50%, 0.5rem);
+    opacity: 0;
+  }
+}
+
+@keyframes team-ensemble-card-in-mobile {
+  from {
+    transform: translateY(0.5rem);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 680px) {
+  .team-ensemble-hint {
+    display: none;
+  }
+  .team-ensemble-card {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    width: auto;
+    margin-top: 0.75rem;
+    transform: none;
+    border-radius: 1rem;
+    animation-name: team-ensemble-card-in-mobile;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-ensemble-person,
+  .team-ensemble-portrait,
+  .team-ensemble-portrait img,
+  .team-ensemble-caption {
+    transition: none;
+  }
+  .team-ensemble-card {
+    animation: none;
+  }
+}

@@ -1,0 +1,23 @@
+@media (prefers-reduced-motion: no-preference) {
+  html[data-team-transition] .brand-team-ensemble [data-member="ming-xu"] .team-ensemble-portrait,
+  html[data-team-transition] [data-team-transition-target] {
+    view-transition-name: team-ming-xu;
+  }
+  html[data-team-transition]::view-transition-group(team-ming-xu) {
+    animation-duration: 620ms;
+    animation-timing-function: cubic-bezier(0.22, 0.68, 0, 1);
+    z-index: 10;
+  }
+  html[data-team-transition]::view-transition-old(team-ming-xu),
+  html[data-team-transition]::view-transition-new(team-ming-xu) {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    animation-duration: 620ms;
+    mix-blend-mode: normal;
+  }
+  html[data-team-transition]::view-transition-old(root),
+  html[data-team-transition]::view-transition-new(root) {
+    animation-duration: 220ms;
+  }
+}

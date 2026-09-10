@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: en
-lastReviewedNote: "Reviewed for Portal #75: wide and ultrawide homepage scenarios and input-driven motion use the existing Storybook and production verification workflow; no build, deployment or fixture boundary changes."
+lastReviewedNote: "Reviewed for Portal #77: Wix Team and Community content plus partner marks are repository-owned after migration; provenance, ordering, privacy and Storybook review requirements are documented."
 whenToUse:
   - when setting up Portal, choosing local checks, or using Storybook MCP and project skills
   - when changing repository tooling or documentation governance
@@ -108,7 +108,17 @@ If MCP is unavailable, use the CLI. If that interface is also unavailable, conti
 
 Portal-based interaction checks query the current dialog inside their bounded visibility wait. Locale/viewport changes and opening animations can replace or temporarily hide portal content; keep the actual control/text visibility assertions and avoid retaining an early dialog element across that transition.
 
+`Catalog/Pagination` covers the first-page, middle-page and mobile dark last-page states of the shared keyword/browse pager. Keep `Catalog/Progressive search` as the control for the separate additive “load more” behavior, so a pagination style change does not silently move or stretch that single action.
+
 The brand homepage and isolated catalog references import locked Fontsource variable-font build dependencies. Next and Vite emit their Unicode-range assets locally; only the homepage adopts the new font scope in production. The matching upstream OFL notices are retained in `.storybook/public/fonts/` and `public/brand/fonts/`; both preview and production distributions retain them. When updating these fonts, refresh their notices from the reviewed packages and verify the dependency license check, emitted assets and rendered Chinese/Latin metrics.
+
+### Team content and portraits
+
+`src/features/team/team-data.ts` is the Portal-owned snapshot of the public TianGong Wix Team page. Keep people in the source page's rendered reading order: top to bottom and left to right within each row. Do not use Wix repeater DOM order because Wix stores the three visual columns independently. Production Team, homepage ensemble and Storybook all import this one array. The homepage uses all 23 portraits in the approved shared composition with Ming Xu centered; the Team page remains the complete source-ordered roster.
+
+Portraits live in `public/team/portraits/` as optimized WebP files and do not depend on Wix at runtime. `public/team/NOTICE.txt` retains the source page, Wix site ID, retrieval date and original media identifiers. When the Wix page changes, re-read the rendered page, update data and images together, preserve the notice, then review the Team page and homepage ensemble in light, dark, mobile and reduced-motion modes.
+
+`src/features/team/community-data.ts` is the corresponding checked-in snapshot for the public Wix Domain Experts and Contributors collections plus the partner institution workbook. Preserve Wix ordering for the first two arrays and workbook row ordering for institutions. The source workbook contains private contact and operational columns; only institution names and matching Logo attachments are allowed into Portal. Expert portraits and partner marks live under `public/community/`, and `public/community/NOTICE.txt` records their source boundary. Reconcile data and assets together when Wix or the workbook changes, then run the `Brand/Community` and `Brand/Team` stories in light, dark and mobile modes. The disclosure interaction must still expose the complete lists to keyboard and assistive technology users.
 
 ### Brand sculpture assets
 
@@ -212,3 +222,7 @@ The static, production browser and Storybook jobs run independently; the require
 ### Optional WebGL verification
 
 Ordinary CI skips the `webgl`-tagged lifecycle/brand-home stories and the homepage WebGL CWV sampler; the skipped tests must not be reported as WebGL acceptance. Other Storybook tests, real-page homepage navigation/accessibility/no-JavaScript smoke, and non-WebGL performance checks remain required. Rendering readiness, color/mouse interactions and GPU-dependent performance belong to the manually dispatched `WebGL manual verification` workflow. Locally, set `PORTAL_WEBGL_TESTS=1` and run `pnpm test:storybook` for only tagged stories, or `pnpm test:e2e -- --grep "home stays inside the local Core Web Vitals guard"` for homepage performance. Run these when reviewing sculpture/renderer changes; a manual run can fail without changing ordinary PR status.
+
+### Portrait composition studio
+
+`Brand/Team Ensemble/Composition Studio` is a local Storybook-only editor. Drag face handles or use the Person, Depth, X, Bottom, Size and Layer controls; arrow keys nudge the selected portrait. Undo restores the previous edit. Desktop and mobile previews share the same 16:9 composition; the toggle only changes preview width. Crop top/right/bottom/left controls trim the image bounds in percentages without rescaling the face or editing the source file; opposite edges cannot exceed 99% in total. Crop settings scale with the fixed composition. Keep exposed silhouettes intact and hide straight crop edges behind overlapping portraits. Export layout reveals JSON for `src/features/team/team-ensemble-layout.json`; export does not write to disk. Preview enables the real profile interactions. This editor is not imported by public routes. Visual review must assess gaps and source-image crop edges as well as face visibility; passing interaction tests does not approve the composition.

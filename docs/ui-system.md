@@ -1,5 +1,5 @@
 ---
-lastReviewedAt: 2026-09-09
+lastReviewedAt: 2026-09-10
 lastReviewedCommit: 921e2e8d061f37fe6a1d6c3dd280c013f708ac99
 title: Portal UI and component standards
 docType: contract
@@ -8,7 +8,7 @@ status: active
 authoritative: true
 owner: tiangong-lca-portal
 language: zh-CN
-lastReviewedNote: "Reviewed for Portal #75: wider homepage composition, removal of redundant platform and artwork instructions, and bounded input-driven hero motion without a visible playback toolbar; standalone study controls remain available."
+lastReviewedNote: "Reviewed for the local Team and Community split: both routes share the Portal shell and responsive directory patterns while keeping their content responsibilities separate."
 whenToUse:
   - when changing shared UI, branding, localization, accessibility or Storybook scenarios
 whenToUpdate:
@@ -210,6 +210,18 @@ Toggle 的选中态具有持续的边框、浅色背景和下划线；比较选�
 
 Header 与 Footer 的容器宽度、响应式边距及字体由 `src/components/shell/site-shell.css` 统一拥有，所有实际路由复用同一规则；品牌首页不按页面存在与否覆盖 shell 的尺寸或字体，避免导航时横向位移。
 
+### Team 品牌页
+
+`src/features/team/` 拥有 Team 页面组合与从 Wix 公开页面核对的成员数据，优化后的头像保存在 `public/team/portraits/`，`NOTICE.txt` 记录来源页面、站点和媒体标识。生产页面与 `Brand/Team` Storybook 场景复用相同组件、四语字典与图片，不在场景中重建一套人物卡片。
+
+页面采用编辑式人物名录而非通用卡片墙，同时复用 `site-shell-container` 的 1440px 最大宽度、居中规则和响应式左右边距。开场只保留一个接近常规 Portal 页面的“认识天工团队”标题和简短介绍，不展示成员/机构计数、重复的团队标题或名录口号；人物内容紧接开场进入。创始人作为唯一重点条目，其余成员不显示序号或排名，保持 Wix 页面从上到下、同一行从左到右的视觉阅读顺序并使用统一网格。成员单元展示英文职位 Title、姓名、本地化机构及紧凑邮件图标；职位作为个人身份信息不随界面语言翻译，没有公开邮箱时不渲染空操作。头像采用轻度降低饱和度的静态基线，悬停和键盘焦点只增强品牌色与交互边界，不改变人物身份信息。手机改为单列并保留完整文本，亮暗主题不切换头像资产，减少动态效果时关闭缩放与颜色过渡。Storybook Team 页面场景包含生产共用的 Header 与 Footer，避免孤立组件预览掩盖页面边界问题。
+
+团队名录之后使用紧凑的社区入口，链接至独立的 `/:locale/community` 页面。Community 页与 Team 页共用字体、1440px 容器、Header、Footer 和亮暗主题，但独立承载长目录，顺序固定为领域专家、合作高校与机构、贡献者。领域专家保留 Wix 公开顺序、头像、机构、研究领域和公开邮件入口；合作高校与机构按工作表原始行序呈现名称与 Logo；贡献者采用更紧凑的三列目录，只展示姓名、机构和贡献主题。组标题不使用数量标记，每组先显示代表性首批内容，再通过同一套带 `aria-expanded` 的展开控件显示完整目录；展开后控件移至新增内容末尾、改为明确的收起动作。69 家机构均使用透明背景且统一可视边界的本地 Logo；Logo 墙不使用卡片底色和外框，让标志直接落在页面背景上，暗色模式统一提升亮度并降低饱和度。`Brand/Community` 独立页面场景负责验证共享 Shell、内容顺序、展开与收起行为、亮暗主题和手机布局；`Brand/Team` 验证核心成员和社区入口。
+
+首页第四区使用 `TeamCarousel` 从同一成员数据中选取 7 位成员，作为完整 Team 页的预览。初始可见顺序固定为 Huimin Chang、Nan Li、Ming Xu、Sangwon Suh、Jianchuan Qi，Ming Xu 位于中心主卡；其余两位作为循环缓冲。画廊限制在统一内容容器中，同时呈现中心主卡和向两侧递减的四张人物卡；浅色边缘按钮让成员在这些位置间循环换位，不自动播放。中心人物悬停时轻微抬升、放大并恢复头像饱和度；手机只保留中心与相邻人物。居中的轻量“查看更多”入口始终指向本地化 Team 页面。
+
+`TeamEnsemble` 是首页第四部分复用的分层人物群像组件，由 `Brand/Team Ensemble` 场景审阅。全部 23 位已核对成员按后景 8 人、中景 8 人和前景 7 人形成三段视觉景深；每段沿弧线逐人定位并错开头部高度，Ming Xu 是中心锚点，前景向两侧递减，肩部在不遮挡五官的前提下自然交叠。每个人物保留与脸部匹配的可聚焦热区，悬停或键盘聚焦只增强局部清晰度并显示姓名与英文 Title，不提升人物层级或显著改变尺寸。点击后通过底部紧凑资料条展示姓名、职位、机构与可用邮件入口，周围人物轻度退后，Escape 或关闭按钮收起。桌面与窄屏共享唯一的 16:9 构图，人物坐标、比例、层级与裁剪整体等比缩放；窄屏只调整资料卡布局，不单独排人。人物层使用原始 Wix 肖像生成的确定性前景蒙版，只将背景替换为 alpha 透明度；统一色调、景深对比和整组底部光雾将素材融入同一个场景。桌面前景人物延伸至共同裁切基线，由整组蒙版统一收口，不逐张提前淡出身体；后景与短胸像仅在躯干末端柔化原始照片的截断边缘。第二排优先使用 Si Zhang、Ayazhan、Jiayi 等半身素材，保留躯干至前景肩部后方；后排中央使用 Yi Cao 的完整躯干衔接中景。短胸像安排在有邻近肩部承接的位置，不依靠提前渐隐制造排间空白。不使用会重绘面部、服装或姿态的生成式替代素材。构图参考保存在 `docs/design-references/team-ensemble-composition-v2.png`，仅用于指导真实透明肖像的排布。
+
 真实搜索与样板共用 `CatalogResultsToolbar`，查询/类型与筛选/排序在同一行；结果区域采用全宽列表，筛选统一由抽屉打开。结果行字号由共享 CSS 明确拥有，不再由样板专用变量改变。真实排序仅提供服务端支持的 relevance、modified_desc、name_asc，不冒充按参考年份排序；匹配依据放入辅助展开区域。
 
 `CatalogSearchInput` 与 `CatalogSearchLayout` 分别统一实际路由和设计样板的输入控件及筛选/结果网格；样板仅提供合成数据和交互适配。关键词和描述模式保持挂载，切换保留各自草稿；模式菜单显示当前选项并支持键盘。
@@ -218,9 +230,11 @@ Header 与 Footer 的容器宽度、响应式边距及字体由 `src/components/
 
 搜索工作区以 `search-workspace.css` 统一模式切换、关键词结果和描述匹配结果的视觉层级：模式由搜索按钮旁的 `SearchModeControl` 图标菜单选择，过程/流为轻量下划线切换，结果页标题收紧，结果采用连续分隔行与共享的标题、元信息、引用及操作样式。检索类型、筛选、候选清单及比较行为保持原有数据契约；描述匹配的理解和更新状态为额外辅助区域，不另建结果卡片体系。
 
+关键词结果及复用该结果页的过程/流浏览使用同一 `CatalogPagination` 分页栏，上一页与下一页始终占据左右稳定位置，首尾不可用操作明确禁用。页面链接只原样携带服务返回的 opaque cursor，并附带有数量与 URL 长度上限的游标历史来构造可分享、可前后移动的结果页；新查询、类型、筛选或排序会清除该历史。描述需求搜索继续使用保留现有结果的“加载更多”，不混用替换页式分页。
+
 `CatalogSearchEntry` 统一首页第二屏与搜索初始态的标题、搜索区域轮廓和四个浏览入口。首页使用 `CatalogSearchTeaser` 原生链接，短暂演示示例文字后停住，悬停、聚焦、离屏及页面隐藏时暂停，减少动态效果时静态显示；整块入口进入空白搜索页，不提交示例。搜索初始页使用真实输入框，去掉章节编号和目录统计。支持时用原生跨文档 View Transition 将演示入口过渡到输入框，减少动态效果或不支持时正常导航。有关键词、游标、有效筛选或无效输入时保留结果/错误路径，不显示探索介绍；描述搜索入口继续可用。搜索表单使用原生 GET 作为回退，客户端导航保留查询与数据集类型。
 
-品牌首页三个章节统一使用 `SectionEyebrow`（`Brand/Section Eyebrow`）放在标题上方，编号为装饰性的阅读顺序，不作为分页进度。组件统一编号、分隔符、字号、亮暗颜色与标题前间距；标签使用所属页面的四语字典，长文本在标签列换行。首屏不再重复展示底部章节进度。该组件用于品牌章节，不扩展到目录功能页面。
+品牌首页四个章节统一使用 `SectionEyebrow`（`Brand/Section Eyebrow`）放在标题上方，编号为装饰性的阅读顺序，不作为分页进度。组件统一编号、分隔符、字号、亮暗颜色与标题前间距；标签使用所属页面的四语字典，长文本在标签列换行。首屏不再重复展示底部章节进度。该组件用于品牌章节，不扩展到目录功能页面或独立 Team 页。
 
 首页的 `BrandHome` 复用实际公共目录摘要，不将合成 fixture 引入生产；Storybook 场景必须明确其摘要是合成输入。示例计数仅在目录概览区域出现。`BrandSculpture` 延迟加载场景，避免将 Three.js 纳入首页基础脚本预算；模型与动态脚本另行记录实际传输体积，不能将基础脚本预算误报成页面全部下载量。
 
@@ -265,3 +279,9 @@ Header 与 Footer 的容器宽度、响应式边距及字体由 `src/components/
 生产页面仅保留代表性桌面亮色和手机暗色的集成巡检，完整组件主题、语言、尺寸与状态组合由 Storybook 覆盖。真实路由、SSR、无 JavaScript、隐私分享及安全检查不因组件覆盖而省略。
 
 WebGL 渲染就绪、图形交互与首页 GPU 性能采样属于手动专项验证。生命周期雕塑和完整品牌首页场景标记为 `webgl`，普通自动化跳过；Storybook 中仍可打开这些场景审阅。普通 CI 保留首页导航、可访问性和无 JavaScript 检查，不把跳过的图形场景计为验证通过。
+
+人物群像校色保留原始透明肖像，通过组件内逐人 RGB 通道增益、曝光与饱和度参数修正拍摄光线差异；未单独校正的照片使用共同基础色调。亮暗模式共享校色，暗色只轻微补偿亮度，悬停与选择不能覆盖基础校色或恢复原图高饱和度。构图位置与校色参数独立维护。
+
+首页第四部分复用 TeamEnsemble 的完整构图，代替左右切换画廊；首页群像采用无边框透明底展示，只在悬停或键盘聚焦时显示姓名与 Title，不展开人物资料卡；居中的团队详情入口位于群像下方。肖像采用懒加载，避免竞争首屏资源。
+
+首页团队入口使用 Ming Xu 肖像作为共享元素导航锚点，衔接群像与 Team 页创始人照片的位置和尺寸。目标肖像解码后启动约 620ms 过渡；减少动态效果、不支持 View Transition 或加载超时时保持普通跳转。人物构图与 hover 层级不随导航改变。

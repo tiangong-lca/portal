@@ -13,3 +13,7 @@ export async function getTranslations({
 }) {
   return createTranslator({ locale, messages: dictionaries[locale], namespace });
 }
+
+export async function getMessages({ locale }: { locale: PortalLocale }) {
+  return dictionaries[locale];
+}

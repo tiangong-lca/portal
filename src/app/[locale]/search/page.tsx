@@ -5,7 +5,7 @@ import { CatalogSort } from "@/features/catalog/catalog-sort";
 import { CatalogResultsToolbar } from "@/features/catalog/catalog-results-toolbar";
 import { CatalogSearchLayout } from "@/features/catalog/catalog-search-layout";
 import { CatalogSearchInput } from "@/features/catalog/catalog-search-input";
-import { SearchIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, SearchIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -28,6 +28,9 @@ import { CompareSelectionForm } from "@/features/compare/selection";
 import {
   facetHref,
   hasCatalogQuery,
+  nextSearchPageHref,
+  parseSearchCursorTrail,
+  previousSearchPageHref,
   searchHref,
   searchParameters,
 } from "@/features/catalog/search-links";
@@ -74,6 +77,7 @@ export default async function SearchPage({
   setRequestLocale(locale);
 
   const rawSearchParams = await searchParams;
+  const cursorTrail = parseSearchCursorTrail(rawSearchParams);
   let parsedSearch: ReturnType<typeof parsePortalSearchUrl>;
   let inputInvalid = false;
   try {
@@ -216,6 +220,10 @@ export default async function SearchPage({
   );
   const initialEntry = !hasQuery && !inputInvalid;
   const clearFiltersHref = searchHref(locale, { ...parsedSearch, filters: {} }, null);
+  const previousPageHref = previousSearchPageHref(locale, parsedSearch, cursorTrail);
+  const nextPageHref = nextCursor
+    ? nextSearchPageHref(locale, parsedSearch, nextCursor, cursorTrail)
+    : null;
   const facetContent = await FacetsPanel({ locale, parsedSearch, facets, dataUnavailable });
 
   return (
@@ -408,16 +416,34 @@ export default async function SearchPage({
                         </noscript>
                       </CompareSelectionForm>
                     )}
-                    {nextCursor && !aggregateView ? (
-                      <CatalogPagination label={common("next")}>
-                        <Button asChild variant="outline">
-                          <Link
-                            href={searchHref(locale, parsedSearch, nextCursor)}
-                            prefetch={false}
-                          >
+                    {!aggregateView && (previousPageHref || nextPageHref) ? (
+                      <CatalogPagination label={`${common("previous")} / ${common("next")}`}>
+                        {previousPageHref ? (
+                          <Button asChild variant="outline">
+                            <Link href={previousPageHref} prefetch={false}>
+                              <ArrowLeftIcon aria-hidden="true" />
+                              {common("previous")}
+                            </Link>
+                          </Button>
+                        ) : (
+                          <Button disabled variant="outline">
+                            <ArrowLeftIcon aria-hidden="true" />
+                            {common("previous")}
+                          </Button>
+                        )}
+                        {nextPageHref ? (
+                          <Button asChild variant="outline">
+                            <Link href={nextPageHref} prefetch={false}>
+                              {common("next")}
+                              <ArrowRightIcon aria-hidden="true" />
+                            </Link>
+                          </Button>
+                        ) : (
+                          <Button disabled variant="outline">
                             {common("next")}
-                          </Link>
-                        </Button>
+                            <ArrowRightIcon aria-hidden="true" />
+                          </Button>
+                        )}
                       </CatalogPagination>
                     ) : null}
                   </section>

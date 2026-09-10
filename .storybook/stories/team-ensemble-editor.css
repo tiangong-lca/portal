@@ -1,0 +1,65 @@
+.ensemble-editor {
+  padding: 16px;
+  max-width: 1440px;
+  margin: auto;
+}
+.ensemble-editor header,
+.ensemble-editor-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.ensemble-editor header strong {
+  margin-right: auto;
+}
+.ensemble-editor header button,
+.ensemble-editor select,
+.ensemble-editor input {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--background);
+  color: var(--foreground);
+  padding: 7px 10px;
+}
+.ensemble-editor label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+}
+.ensemble-editor input {
+  width: 80px;
+}
+.ensemble-editor-stage {
+  width: 100%;
+  margin: auto;
+  touch-action: none;
+}
+.ensemble-editor-stage[data-mobile="true"] {
+  width: 390px;
+  max-width: 100%;
+}
+.ensemble-editor-stage[data-editing="true"] .team-ensemble-person {
+  transition: none;
+  transform: translateX(-50%);
+}
+.ensemble-editor-stage[data-editing="true"] .team-ensemble-person-hit {
+  cursor: grab;
+}
+.ensemble-editor-stage[data-editing="true"] .team-ensemble-caption {
+  display: none;
+}
+.ensemble-editor-stage[data-editing="true"] .team-ensemble-portrait img {
+  transform: none;
+}
+.ensemble-editor p {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.ensemble-editor textarea {
+  width: 100%;
+  height: 180px;
+  font-family: monospace;
+}

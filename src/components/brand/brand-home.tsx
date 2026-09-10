@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { ArrowRight, ArrowDown, ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { CatalogSearchEntry } from "./catalog-search-entry";
+import { TeamEnsemble } from "@/features/team/team-ensemble";
+import { TeamTransitionLink } from "@/features/team/team-transition-link";
 import { localizedText } from "@/features/catalog/map-public-data";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 import type { PublicCatalogSummary } from "@/server/contracts/portal";
@@ -27,9 +29,10 @@ export type BrandHomeProps = {
  * @import import { BrandHome } from "@/components/brand/brand-home";
  */
 export async function BrandHome({ locale, summary, sculpture }: BrandHomeProps) {
-  const [t, catalog] = await Promise.all([
+  const [t, catalog, messages] = await Promise.all([
     getTranslations({ locale, namespace: "BrandHome" }),
     getTranslations({ locale, namespace: "Home" }),
+    getMessages({ locale }),
   ]);
   const count = new Intl.NumberFormat(locale);
   const latest = summary?.latestModifiedAt
@@ -206,6 +209,26 @@ export async function BrandHome({ locale, summary, sculpture }: BrandHomeProps) 
               </Button>
             </div>
           </div>
+        </div>
+      </section>
+      <section className="brand-team-section" aria-labelledby="brand-team-title">
+        <div className="brand-container brand-team-heading">
+          <div>
+            <SectionEyebrow number="04">TianGong Team</SectionEyebrow>
+            <h2 id="brand-team-title">{t("teamTitle")}</h2>
+          </div>
+          <p>{t("teamDescription")}</p>
+        </div>
+        <div className="brand-container brand-team-ensemble">
+          <TeamEnsemble labels={messages.Team} hoverOnly />
+        </div>
+        <div className="brand-container brand-team-action">
+          <TeamTransitionLink href={localePath(locale, "team")}>
+            <span>{t("teamAction")}</span>
+            <span className="brand-team-action-icon" aria-hidden="true">
+              <ArrowRight />
+            </span>
+          </TeamTransitionLink>
         </div>
       </section>
     </main>

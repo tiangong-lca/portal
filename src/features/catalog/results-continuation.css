@@ -24,3 +24,19 @@
     width: 100%;
   }
 }
+
+.catalog-pagination {
+  flex-direction: row;
+  justify-content: flex-end;
+  border-top: 0;
+  padding-top: 24px;
+}
+.catalog-pagination-paired {
+  justify-content: space-between;
+}
+.catalog-pagination > [data-slot="button"] {
+  width: auto;
+  min-width: 112px;
+  min-height: 44px;
+  border-radius: 6px;
+}
