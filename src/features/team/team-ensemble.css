@@ -192,8 +192,8 @@
   top: var(--ensemble-face-y);
   left: var(--ensemble-face-x);
   z-index: 3;
-  width: var(--ensemble-face-size);
-  aspect-ratio: 1;
+  width: max(var(--ensemble-face-size), 24px);
+  height: max(var(--ensemble-face-size), 24px);
   padding: 0;
   transform: translate(-50%, -50%);
   border: 0;
@@ -364,6 +364,10 @@
 }
 
 @media (max-width: 680px) {
+  .brand-team-section .team-ensemble-person-hit {
+    display: none;
+  }
+
   .team-ensemble-hint {
     display: none;
   }

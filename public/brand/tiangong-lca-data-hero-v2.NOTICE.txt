@@ -1,0 +1,12 @@
+Assets: cinematic-v4/frame-001.webp through frame-226.webp
+Purpose: TianGong LCA production scroll-cinematic homepage hero
+Created with: MiniMax Design, MiniMax H3 text-to-video
+Created: 2026-09-10
+Runtime preparation: the generated MP4 was normalized to 1920x1080 at 24 fps, then exported as
+226 WebP frames for deterministic scroll-controlled playback. The generator signature in the
+lower-right corner was removed using localized spatial interpolation before the runtime frames
+were encoded.
+Source prompt: MiniMax H3 text-to-video prompt developed from the approved TianGong LCA
+physical-matter, industrial-lifecycle and traceable-evidence art direction.
+Brand authorization: TIANGONG LCA text-only wordmark authorized by the repository owner.
+Third-party identity assets: none.

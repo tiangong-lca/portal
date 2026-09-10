@@ -23,8 +23,8 @@ checkPaths:
   - contracts/database-engine/portal/**
   - edgeone.json
 lastReviewedAt: 2026-09-10
-lastReviewedCommit: 49e50d0344574798411f3584534488eb3fcbd03e
-lastReviewedNote: "Reviewed for the local Team and Community split: core members remain on Team, while experts, partner institutions and contributors move to a dedicated localized Community route."
+lastReviewedCommit: 0fe6d177cc9a47ba51c03dfe33be4a6b6b1c110c
+lastReviewedNote: "Reviewed for the production cinematic homepage: the four-language public route replaces the lifecycle sculpture with a decoded scroll-driven frame sequence while preserving the anonymous read-only product and data boundaries."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -356,16 +356,16 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 
 ### 7.1 首页
 
-首页采用已确认的生命周期雕塑作为品牌首屏，按四层组织：
+首页采用滚动驱动的抽象工业影像作为品牌首屏，按四层组织：
 
-1. Tiangong LCA 品牌、生命周期价值陈述与实时三维图形；“探索公开数据”定位到当前页的搜索区域，产品平台通过真实外链进入；
+1. Tiangong LCA 品牌与三幕生命周期叙事；首屏不放操作按钮，目录与产品平台入口在后续实际内容区出现；
 2. 打字机示例作为数据目录入口，点击后进入可输入的搜索页；示例不自动提交或声称来自实时查询。Process、Flow、地区与来源四个入口进入同一目录结果布局；
 3. 数据的范围、来源、版本、引用与已发布结果说明，以及独立 LCA 平台入口；
 4. 全部 23 位团队成员以固定 16:9 分层群像呈现，整体等比缩放；首页只在 hover/focus 时显示姓名与英文 Title，下方 View more 通过 Ming Xu 肖像共享元素过渡进入完整团队页。
 
-品牌图形是视觉隐喻，不提供数据覆盖、计算、排名或科学证据。首页不编造伙伴、统计或 AI 功能。首页人物群像与团队页共用同一份成员数据、来源顺序和图片资产，不重复维护成员内容，也不以虚构数字补充。
+品牌影像是视觉隐喻，不提供数据覆盖、计算、排名或科学证据。首页不编造伙伴、统计或 AI 功能。首页人物群像与团队页共用同一份成员数据、来源顺序和图片资产，不重复维护成员内容，也不以虚构数字补充。
 
-四语内容、搜索、链接和目录摘要保留 Server Component 与 SSG/ISR。WebGL 是客户端增强：视口内的独立岛在水合后加载 renderer、模型与材质；无 JavaScript、资源失败或 WebGL 不可用时保留轻量 SVG 轮廓，整个数据任务仍可继续。主题由既有网站偏好统一拥有，图形颜色模式不写入浏览器存储；减少动态效果、离屏、页面隐藏、暂停与卸载资源回收沿用组件要求。
+四语内容、搜索、链接和目录摘要保留 Server Component 与 SSG/ISR。滚动影像是客户端增强：首帧解码后从加载幕淡入，后续同源 WebP 帧按滚动进度切换；画面加载失败或减少动态效果时保留稳定静态退化，整个数据任务仍可继续。文本位置固定并在三幕间交叉淡入淡出，主题由既有网站偏好统一拥有，不新增浏览器偏好存储。
 
 `lca.tiangong.earth` 是独立产品平台外链，不在 Portal 增加身份 Cookie、登录或共享会话。导航与正文链接保持真实可操作；团队入口指向已迁移并可审阅的公开内容。首页示例与搜索页输入框保持视觉连续，减少动态效果偏好下不播放打字机动画；输入控件不劫持快捷键。
 

@@ -1,17 +1,17 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { getMessages, getTranslations } from "next-intl/server";
-import { ArrowRight, ArrowDown, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { CatalogSearchEntry } from "./catalog-search-entry";
-import { TeamEnsemble } from "@/features/team/team-ensemble";
-import { TeamTransitionLink } from "@/features/team/team-transition-link";
 import { localizedText } from "@/features/catalog/map-public-data";
+import { TeamTransitionLink } from "@/features/team/team-transition-link";
+import { TeamEnsemble } from "@/features/team/team-ensemble";
 import { localePath, type PortalLocale } from "@/i18n/routing";
 import type { PublicCatalogSummary } from "@/server/contracts/portal";
 import { SectionEyebrow } from "./section-eyebrow";
-import { BrandSculpture } from "./brand-sculpture";
+import { ScrollCinematicHero } from "./scroll-cinematic-hero";
 
 import "@fontsource-variable/source-sans-3";
 import "@fontsource-variable/noto-sans-sc";
@@ -20,15 +20,15 @@ import "./brand-home.css";
 export type BrandHomeProps = {
   locale: PortalLocale;
   summary: PublicCatalogSummary | null;
-  /** The same sculpture may be prepared before mounting in frozen Storybook previews. */
-  sculpture?: ReactNode;
+  /** Optional isolated-review replacement for the production first-screen hero. */
+  hero?: ReactNode;
 };
 
 /**
  * The public brand entrance, with server-rendered search, catalog and product navigation.
  * @import import { BrandHome } from "@/components/brand/brand-home";
  */
-export async function BrandHome({ locale, summary, sculpture }: BrandHomeProps) {
+export async function BrandHome({ locale, summary, hero }: BrandHomeProps) {
   const [t, catalog, messages] = await Promise.all([
     getTranslations({ locale, namespace: "BrandHome" }),
     getTranslations({ locale, namespace: "Home" }),
@@ -40,37 +40,25 @@ export async function BrandHome({ locale, summary, sculpture }: BrandHomeProps) 
         new Date(summary.latestModifiedAt),
       )
     : null;
+  const resolvedHero = hero ?? (
+    <ScrollCinematicHero
+      eyebrow={t("eyebrow")}
+      titleLead={t("titleLead")}
+      titleFocus={t("titleFocus")}
+      titleSeparator={locale === "zh-CN" ? "" : " "}
+      description={t("description")}
+      chapterTwoLabel={t("chapterTwoLabel")}
+      chapterTwoTitle={t("chapterTwoTitle")}
+      chapterTwoDescription={t("chapterTwoDescription")}
+      chapterThreeLabel={t("chapterThreeLabel")}
+      chapterThreeTitle={t("chapterThreeTitle")}
+      chapterThreeDescription={t("chapterThreeDescription")}
+    />
+  );
 
   return (
     <main id="main-content" className="brand-home" lang={locale}>
-      <section className="brand-hero brand-container" aria-labelledby="brand-title">
-        <div className="brand-hero-copy">
-          <SectionEyebrow number="01">{t("eyebrow")}</SectionEyebrow>
-          <h1 id="brand-title">
-            <span>
-              {t("titleLead")}
-              {locale === "zh-CN" ? "" : " "}
-            </span>
-            <span className="brand-title-accent">{t("titleFocus")}</span>
-          </h1>
-          <p className="brand-hero-description">{t("description")}</p>
-          <div className="brand-hero-actions">
-            <Button asChild size="lg">
-              <a href="#explore">
-                {t("explore")}
-                <ArrowDown data-icon="inline-end" />
-              </a>
-            </Button>
-            <Button asChild size="lg" variant="ghost">
-              <a href="https://lca.tiangong.earth">
-                {t("platformAction")}
-                <ArrowUpRight data-icon="inline-end" />
-              </a>
-            </Button>
-          </div>
-        </div>
-        <div className="brand-hero-art">{sculpture ?? <BrandSculpture locale={locale} />}</div>
-      </section>
+      {resolvedHero}
 
       <section
         className="brand-catalog-section"
@@ -211,6 +199,7 @@ export async function BrandHome({ locale, summary, sculpture }: BrandHomeProps) 
           </div>
         </div>
       </section>
+
       <section className="brand-team-section" aria-labelledby="brand-team-title">
         <div className="brand-container brand-team-heading">
           <div>

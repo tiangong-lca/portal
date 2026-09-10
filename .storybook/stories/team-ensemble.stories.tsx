@@ -1,11 +1,15 @@
-import { TeamEnsembleEditor } from "./team-ensemble-editor";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { lazy, Suspense } from "react";
 import { expect, userEvent, waitFor } from "storybook/test";
 
 import { TeamEnsemble } from "@/features/team/team-ensemble";
 import { teamMembers } from "@/features/team/team-data";
 
 import { dictionaries, mobileGlobals, storyLocale } from "../fixtures";
+
+const TeamEnsembleEditor = lazy(() =>
+  import("./team-ensemble-editor").then((module) => ({ default: module.TeamEnsembleEditor })),
+);
 
 const meta = {
   title: "Brand/Team Ensemble",
@@ -34,6 +38,11 @@ const interactionPlay = async ({
     ["front", 7],
   ] as const) {
     await expect(canvasElement.querySelectorAll(`[data-band="${band}"]`)).toHaveLength(count);
+  }
+  for (const target of canvasElement.querySelectorAll<HTMLElement>(".team-ensemble-person-hit")) {
+    const bounds = target.getBoundingClientRect();
+    await expect(bounds.width).toBeGreaterThanOrEqual(24);
+    await expect(bounds.height).toBeGreaterThanOrEqual(24);
   }
   const ming = canvas.getByRole("button", {
     name: labels.ensembleOpen.replace("{name}", "Ming Xu"),
@@ -78,9 +87,13 @@ export const Selected: Story = {
 export const Mobile: Story = { globals: mobileGlobals, play: interactionPlay };
 
 export const CompositionStudio: Story = {
-  render: () => <TeamEnsembleEditor />,
+  render: () => (
+    <Suspense fallback={null}>
+      <TeamEnsembleEditor />
+    </Suspense>
+  ),
   play: async ({ canvas }) => {
-    const size = canvas.getByRole("spinbutton", { name: "Size" });
+    const size = await canvas.findByRole("spinbutton", { name: "Size" });
     const original = (size as HTMLInputElement).value;
     await userEvent.click(size);
     await userEvent.clear(size);
