@@ -114,17 +114,28 @@ const meta = {
     await expect(canvas.queryByRole("button", { name: text.teamPrevious })).not.toBeInTheDocument();
     await expect(canvas.queryByRole("button", { name: text.teamNext })).not.toBeInTheDocument();
     const teamLabels = dictionaries[storyLocale(globals)].Team;
-    const portrait = canvas.getByRole("button", {
+    const portrait = canvas.queryByRole("button", {
       name: `Ming Xu, ${teamLabels.roles.founder}`,
     });
-    await userEvent.keyboard("{Tab}");
-    portrait.focus();
-    await waitFor(() => expect(canvas.getByRole("tooltip")).toBeVisible());
-    await expect(canvas.getByRole("tooltip").closest(".team-ensemble-person")).toBeNull();
-    await expect(canvas.getByRole("tooltip").closest(".team-ensemble")).toBeNull();
-    await userEvent.click(portrait);
-    await expect(canvasElement.querySelector(".team-ensemble-card")).not.toBeInTheDocument();
-    await userEvent.unhover(portrait);
+    if (portrait) {
+      await userEvent.keyboard("{Tab}");
+      portrait.focus();
+      await waitFor(() => expect(canvas.getByRole("tooltip")).toBeVisible());
+      await expect(canvas.getByRole("tooltip").closest(".team-ensemble-person")).toBeNull();
+      await expect(canvas.getByRole("tooltip").closest(".team-ensemble")).toBeNull();
+      await userEvent.click(portrait);
+      await expect(canvasElement.querySelector(".team-ensemble-card")).not.toBeInTheDocument();
+      await userEvent.unhover(portrait);
+    } else {
+      await expect(window.innerWidth).toBeLessThanOrEqual(680);
+      const portraitTargets = canvasElement.querySelectorAll<HTMLElement>(
+        ".brand-team-section .team-ensemble-person-hit",
+      );
+      await expect(portraitTargets).toHaveLength(23);
+      for (const target of portraitTargets) {
+        await expect(getComputedStyle(target).display).toBe("none");
+      }
+    }
     const firstFrame = canvasElement.querySelector(".brand-cinematic-hero img");
     await expect(firstFrame).toHaveAttribute("fetchpriority", "high");
     await expect(firstFrame).toHaveAttribute("decoding", "async");

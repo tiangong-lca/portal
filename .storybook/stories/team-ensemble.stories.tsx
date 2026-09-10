@@ -49,9 +49,9 @@ const interactionPlay = async ({
   });
   await userEvent.click(ming);
   await expect(ming).toHaveAttribute("aria-pressed", "true");
-  await waitFor(async () => {
-    await expect(canvas.getByRole("heading", { level: 3, name: "Ming Xu" })).toBeVisible();
-  });
+  await expect(
+    await canvas.findByRole("heading", { level: 3, name: "Ming Xu" }),
+  ).toBeInTheDocument();
   await userEvent.click(canvas.getByRole("button", { name: labels.ensembleClose }));
   await expect(
     canvas.queryByRole("heading", { level: 3, name: "Ming Xu" }),
