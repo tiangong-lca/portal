@@ -22,9 +22,9 @@ checkPaths:
   - scripts/**
   - contracts/database-engine/portal/**
   - edgeone.json
-lastReviewedAt: 2026-09-09
-lastReviewedCommit: 49e50d0344574798411f3584534488eb3fcbd03e
-lastReviewedNote: "Reviewed for Portal #71: brand homepage with real public catalog summary and separate LCA platform navigation. Anonymous read-only discovery, exact dataset evidence, privacy, deployment and performance requirements remain intact."
+lastReviewedAt: 2026-09-10
+lastReviewedCommit: 0fe6d177cc9a47ba51c03dfe33be4a6b6b1c110c
+lastReviewedNote: "Reviewed for the production cinematic homepage: the four-language public route replaces the lifecycle sculpture with a decoded scroll-driven frame sequence while preserving the anonymous read-only product and data boundaries."
 related:
   - docs/ui-system.md
   - docs/development.md
@@ -343,6 +343,8 @@ DTO 不返回：
 | `/:locale/browse/:dimension` | 受控目录浏览 | ISR/RSC | 仅规范目录页可索引 |
 | `/:locale/collections` | 本地候选集 | Client island | `noindex,nofollow` |
 | `/:locale/methodology` | 方法论与字段解释 | SSG | `index,follow` |
+| `/:locale/team` | 天工团队与公开联系方式 | SSG | `index,follow` |
+| `/:locale/community` | 领域专家、合作高校与机构及贡献者 | SSG | `index,follow` |
 | `/:locale/databases` | 数据库目录 | 扩展阶段 | `index,follow` |
 | `/:locale/map` | 地图 | 扩展阶段 | `noindex,follow`，提供等价表格 |
 
@@ -354,17 +356,18 @@ Portal 不创建 `/api` 页面，不展示 REST/GraphQL/MCP/Skill 示例。
 
 ### 7.1 首页
 
-首页采用已确认的生命周期雕塑作为品牌首屏，按三层组织：
+首页采用滚动驱动的抽象工业影像作为品牌首屏，按四层组织：
 
-1. Tiangong LCA 品牌、生命周期价值陈述与实时三维图形；“探索公开数据”定位到当前页的搜索区域，产品平台通过真实外链进入；
+1. Tiangong LCA 品牌与三幕生命周期叙事；首屏不放操作按钮，目录与产品平台入口在后续实际内容区出现；
 2. 打字机示例作为数据目录入口，点击后进入可输入的搜索页；示例不自动提交或声称来自实时查询。Process、Flow、地区与来源四个入口进入同一目录结果布局；
-3. 数据的范围、来源、版本、引用与已发布结果说明，以及独立 LCA 平台入口。
+3. 数据的范围、来源、版本、引用与已发布结果说明，以及独立 LCA 平台入口；
+4. 全部 23 位团队成员以固定 16:9 分层群像呈现，整体等比缩放；首页只在 hover/focus 时显示姓名与英文 Title，下方 View more 通过 Ming Xu 肖像共享元素过渡进入完整团队页。
 
-品牌图形是视觉隐喻，不提供数据覆盖、计算、排名或科学证据。首页不编造团队、伙伴、统计或 AI 功能。Team 内容迁移和工作区接入是独立交付。
+品牌影像是视觉隐喻，不提供数据覆盖、计算、排名或科学证据。首页不编造伙伴、统计或 AI 功能。首页人物群像与团队页共用同一份成员数据、来源顺序和图片资产，不重复维护成员内容，也不以虚构数字补充。
 
-四语内容、搜索、链接和目录摘要保留 Server Component 与 SSG/ISR。WebGL 是客户端增强：视口内的独立岛在水合后加载 renderer、模型与材质；无 JavaScript、资源失败或 WebGL 不可用时保留轻量 SVG 轮廓，整个数据任务仍可继续。主题由既有网站偏好统一拥有，图形颜色模式不写入浏览器存储；减少动态效果、离屏、页面隐藏、暂停与卸载资源回收沿用组件要求。
+四语内容、搜索、链接和目录摘要保留 Server Component 与 SSG/ISR。滚动影像是客户端增强：首帧解码后从加载幕淡入，后续同源 WebP 帧按滚动进度切换；画面加载失败或减少动态效果时保留稳定静态退化，整个数据任务仍可继续。文本位置固定并在三幕间交叉淡入淡出，主题由既有网站偏好统一拥有，不新增浏览器偏好存储。
 
-`lca.tiangong.earth` 是独立产品平台外链，不在 Portal 增加身份 Cookie、登录或共享会话。导航与正文链接保持真实可操作；不创建尚未提供内容的 Team 页面或空按钮。首页示例与搜索页输入框保持视觉连续，减少动态效果偏好下不播放打字机动画；输入控件不劫持快捷键。
+`lca.tiangong.earth` 是独立产品平台外链，不在 Portal 增加身份 Cookie、登录或共享会话。导航与正文链接保持真实可操作；团队入口指向已迁移并可审阅的公开内容。首页示例与搜索页输入框保持视觉连续，减少动态效果偏好下不播放打字机动画；输入控件不劫持快捷键。
 
 ### 7.2 搜索页
 
@@ -472,6 +475,18 @@ Process Group 只有在上游返回稳定 `groupId`、成员和逐条依据时�
 
 Portal 不实现匿名反馈写入接口。
 
+### 7.7 团队
+
+团队页是 Tiangong LCA 品牌入口的一部分，使用项目拥有的 Wix 公开 Team 页面作为已核对来源。Portal 在仓库中保留经优化的成员头像、来源记录、姓名、职务、机构和已公开联系地址，页面构建和访问不依赖 Wix 运行时。迁移不得补造履历、合作关系或未公开身份；后续人员变化需要重新核对 Wix 来源并更新来源记录。
+
+页面以单一“认识天工团队”标题、简短介绍、团队名录和统一联系方式组织，不沿用首页的编号分屏，不展示成员/机构计数或在名录前重复品牌口号。创始人条目拥有明确视觉层级，其余成员不显示序号或排名，但严格按 Wix 页面从上到下、同一行从左到右的视觉阅读顺序排列；头像、职务、姓名、机构和紧凑邮件操作组成一致的成员单元。亮暗主题使用同一真实头像和语义色，悬停只改变轻微景深与品牌色层次，减少动态效果时禁用过渡。成员姓名、英文职位 Title 与邮件保持统一来源值；四语字典只翻译机构和页面文案，避免职务翻译改变身份含义。生产路由与 Storybook 页面场景均使用共享 Header、Footer 和页面容器边界。
+
+TianGong Data Community 使用独立的 `/:locale/community` 品牌目录页，避免领域专家、机构和贡献者的长目录压过核心团队。Team 页在成员名录后提供轻量入口，两页继续共用 Header、Footer、内容容器和视觉语言。Community 页按领域专家、合作高校与机构、贡献者排列，使专业判断与组织协作先建立可信度，再呈现更大规模的个人贡献目录；组标题不突出总数。
+
+分层人物群像在 Storybook 独立验证，并复用于首页第四部分；Team 页面保留完整成员名录。组件使用全部 23 位已核对成员，以后景 8 人、中景 8 人和前景 7 人组成三段视觉景深；同一景深内沿弧形轮廓错开头部高度，中心人物与前景承担视觉主次，肩部在不遮挡面部的前提下自然交叠。桌面和移动端共享构图参数，整体等比缩放。hover/focus 只增强局部清晰度并浮现姓名与英文 Title，不改变已设计的景深；点击后在海报底部展示紧凑人物资料条，并以局部高亮聚焦选中人物。人物使用原始肖像的确定性前景蒙版，保留原图人物像素并以 alpha 去除背景；生成式工具不得重绘人物面部、服装、姿态或身体来冒充原始肖像。`docs/design-references/team-ensemble-composition-v2.png` 是构图参考而不是运行时人物资源。
+
+领域专家与贡献者以 Wix `contributors` 页面公开数据为准，保持其排序和中英文领域信息；合作高校与机构以项目提供的工作表和附件 Logo 为准，保持工作表顺序。每组初始只展示首批条目，完整名单由可展开与收起的目录控件提供。表格中的电话、私人邮箱、内部行号、院校分类和备注不得进入 Portal；贡献者目录也不复制 Wix 公开邮箱，只有领域专家保留明确的公开联系入口。生产访问不依赖 Wix 或本地附件；附件缺失的机构 Logo 从机构官网或可追溯的品牌资源补齐，全部移除文件内背景并统一可视边界。机构 Logo 以无底色、无外框的标志墙呈现，避免透明图片再次被卡片容器包成方形色块。
+
 ## 8. URL、浏览器状态与分享
 
 ### 8.1 URL 状态
@@ -479,7 +494,7 @@ Portal 不实现匿名反馈写入接口。
 查询参数采用版本化 schema，首个参数为 `v=1`。URL 可以包含：
 
 - identifier/lexical `q`、对象类型、分面、排序、密度；
-- 页游标的可序列化 token；
+- 页游标的可序列化 token，以及用于关键词结果前后翻页的有界 opaque cursor 历史；
 - 比较集合，最多 4 个 `uuid@version`。
 
 GET 中的 identifier/lexical `q` 会进入浏览器历史、EdgeOne access URL 和其默认 24 小时平台日志，界面必须提示不要输入机密内容；应用日志不得再次复制它。跨域 Referrer Policy 固定为 `strict-origin-when-cross-origin`，不向外站发送 path/query。
@@ -487,6 +502,8 @@ GET 中的 identifier/lexical `q` 会进入浏览器历史、EdgeOne access URL 
 自然语言 Hybrid 原文不进入 query string：Client island 通过 same-origin POST 提交，Route Handler 与 Edge 均禁止记录 body；不隐式写入浏览器存储，只有用户显式“分享此查询”时才将原文放入 fragment 并显示完整预览。清单名称、备注、采用/排除理由同样不进入 query string。
 
 所有参数由 Zod 严格解析；未知键忽略，非法值回退到安全默认值，超长输入返回可理解的 400 页面而不是 500。
+
+关键词搜索与过程/流浏览的“下一页”把当前 opaque cursor 加入有界历史，“上一页”只从该历史恢复前一页，不解码或改写 cursor，也不依赖可能离开目录的浏览器后退记录。搜索条件、类型、分面或排序变化时重置游标及历史；历史超过条数或 URL 大小预算时丢弃最早条目。自然语言结果采用追加加载，不使用该历史。
 
 MVP 输入上限：查询 512 个 Unicode code points、解码后的 query string 8 KB、比较 ID 4 个、普通页 50 行。本地 JSON 导入上限 1 MB；候选集 fragment 只在成员不超过 20 且编码后不超过约 1.5 KB 时启用。
 

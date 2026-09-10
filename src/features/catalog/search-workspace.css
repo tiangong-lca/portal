@@ -250,16 +250,6 @@
   font-size: 14px;
   border-radius: 6px;
 }
-.catalog-pagination {
-  justify-content: flex-end;
-  border-top: 0;
-  padding-top: 24px;
-}
-.catalog-pagination [data-slot="button"] {
-  min-height: 44px;
-  min-width: 112px;
-  border-radius: 6px;
-}
 .catalog-description-workspace > [data-slot="card-header"] {
   display: none;
 }
@@ -292,14 +282,6 @@
 .catalog-description-workspace .catalog-description-submit > button[type="submit"] {
   min-width: 96px;
 }
-.catalog-pagination {
-  flex-direction: row;
-}
-.catalog-pagination > [data-slot="button"] {
-  width: auto;
-  min-width: 112px;
-}
-
 .catalog-description-query {
   border: 1px solid var(--input);
   border-radius: 6px;

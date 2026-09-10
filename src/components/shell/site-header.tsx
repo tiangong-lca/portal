@@ -26,6 +26,8 @@ export async function SiteHeader({ locale }: SiteHeaderProps) {
   const links = [
     [localePath(locale, "search?v=1"), t("catalog"), t("catalogCompact")],
     [localePath(locale, "methodology"), t("methodology"), t("methodologyCompact")],
+    [localePath(locale, "team"), t("team"), t("teamCompact")],
+    [localePath(locale, "community"), t("community"), t("communityCompact")],
     [localePath(locale, "collections"), t("collections"), t("collectionsCompact")],
   ] as const;
 

@@ -28,6 +28,8 @@ export async function SiteFooter({ locale }: { locale: PortalLocale }) {
             [
               [localePath(locale, "search?v=1"), t("catalog")],
               [localePath(locale, "methodology"), t("methodology")],
+              [localePath(locale, "team"), t("team")],
+              [localePath(locale, "community"), t("community")],
               [localePath(locale, "collections"), t("collections")],
             ] as const
           ).map(([href, label]) => (

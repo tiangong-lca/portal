@@ -1,0 +1,43 @@
+TianGong Team portraits
+
+Source page: https://www.tiangong.earth/team
+Source site: TianGong Wix site (site ID a073ed78-3967-419b-9323-cf8b0c7087d7)
+Retrieved: 2026-09-09
+
+These portraits and the corresponding public profile fields were copied from the
+project-owned TianGong Wix site for use on the TianGong LCA Portal. The checked-in
+WebP files are 804 × 752 optimized copies. Member names, roles, institutions and
+published email addresses are recorded in src/features/team/team-data.ts and the
+localized Portal dictionaries.
+
+The 23 PNG files in cutouts/ are deterministic foreground masks generated
+from the corresponding source portraits with rembg u2net_human_seg. The process
+only replaces background pixels with alpha transparency and does not synthesize
+or redraw faces, clothing, poses or body geometry. They are currently used by
+the Storybook TeamEnsemble design study.
+
+Source media IDs:
+
+ming-xu.webp              1cbbec_7a7be46d882a430fac89848cd7fb3fcb~mv2.jpg
+jianchuan-qi.webp          e0c7eb_b9a8c66097b04c159fae8073d64f1f87~mv2.png
+yuanyi-huang.webp          e0c7eb_ea6563fbecc8401d9fb29dae9037070c~mv2.png
+yan-qin.webp               539a71_240f762443dc45d1905494e25e5a3687~mv2.jpg
+chenling-fu.webp           093dfe_dfb3d40901244bc69429cabffa920c3d~mv2.jpg
+zimeng-cai.webp            e0c7eb_ba6f4f2514e34a1fa00c24de5abb0732~mv2.png
+ziqi-wang.webp             e0c7eb_48732b47072f499d9683c214b191e21d~mv2.png
+bin-shui.webp              35f454_cb4b091093614111a35c971243ba9fed~mv2.png
+sangwon-suh.webp           539a71_e2f25240fe394b33a47ac9a7231d15c8~mv2.jpg
+huimin-chang.webp          e0c7eb_3abeb937cb9344fd8ac48bf33d9ca8d3~mv2.png
+bixuan-wu.webp             539a71_623285bd66c84a1585a05092d7eb2e03~mv2.jpg
+yushi-chen.webp            539a71_d906f29cb18342bb8453c9177b531505~mv2.jpg
+yi-cao.webp                e0c7eb_6ce39266a78e45aaad9eb7d124b5b0c9~mv2.png
+si-zhang.webp              35f454_e0ca01257cb4444697dc1cda7bbafa4c~mv2.jpg
+chao-zhang.webp            093dfe_c00d3f0b47934ce5848dfd5ec6df4f58~mv2.jpg
+ruiqiao-li.webp            e0c7eb_01aaadcc2bca4abaa8cb0a88daf4087e~mv2.png
+nan-li.webp                e0c7eb_180364b8ecc54189834f7b8cfc0179e3~mv2.png
+jing-guo.webp              e0c7eb_e952ddbe21224dcfaba961410cfcb200~mv2.png
+ying-zheng.webp            539a71_c7b1d96fe4fc42ab9a6e819af831fd67~mv2.jpg
+jinbiao-lyu.webp           539a71_ace8e996bc214a47bb9bf2b8bb4b308b~mv2.jpg
+ruoxi-xiong.webp           e0c7eb_a1d1878d609b4ef5aac274981ac5d1e6~mv2.png
+jiayi-yuan.webp            e0c7eb_9fc7e98f90394690834067ba2a57f75b~mv2.png
+ayazhan-nurpeiis.webp      e0c7eb_36ef8c84f4714ed1b5b8bddc106137e0~mv2.png

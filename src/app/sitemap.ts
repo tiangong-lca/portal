@@ -4,6 +4,8 @@ import { localePath, locales } from "@/i18n/routing";
 
 const staticPaths = [
   "",
+  "team",
+  "community",
   "methodology",
   "browse/process",
   "browse/flow",

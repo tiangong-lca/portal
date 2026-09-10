@@ -53,6 +53,14 @@ export const Desktop: Story = {
     const banner = within(canvas.getByRole("banner"));
     const active = banner.getByRole("link", { name: m.catalog });
     const target = banner.getByRole("link", { name: m.methodology });
+    await expect(banner.getByRole("link", { name: m.team })).toHaveAttribute(
+      "href",
+      `/${storyLocale(globals)}/team`,
+    );
+    await expect(banner.getByRole("link", { name: m.community })).toHaveAttribute(
+      "href",
+      `/${storyLocale(globals)}/community`,
+    );
     await expect(active).toHaveAttribute("aria-current", "page");
     const indicator = canvasElement.querySelector(".navigation-rail-highlight")!;
     const aligned = async (link: HTMLElement) => {

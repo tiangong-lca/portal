@@ -1,0 +1,47 @@
+TianGong Community content and partner marks
+
+Community source: https://www.tiangong.earth/contributors
+Community source site: TianGong Wix site (site ID a073ed78-3967-419b-9323-cf8b0c7087d7)
+Partner source workbook: 天工数据工作联系表.xlsx
+Partner source attachment archive: 天工数据工作联系表_附件.zip
+Retrieved: 2026-09-09
+
+The Domain Experts and Contributors records follow the published order on the
+project-owned TianGong Wix site. Expert portraits are checked-in 480 × 480 WebP
+derivatives of the corresponding Wix media. Contributor contact details were not
+copied into the Portal directory.
+
+Partner institutions follow the workbook row order. Logo files are checked-in
+as transparent WebP derivatives unless a cleaner public SVG or high-resolution
+transparent PNG is available. The 58 matching workbook attachments were
+supplemented with marks retrieved from the following institutional or
+institution-derived public sources on 2026-09-09:
+
+- https://www.bift.edu.cn/images/bf_index/bf.jpg
+- https://www.bistu.edu.cn/picture/logo.png
+- https://wwwassets.unipd.it/sites/default/files/media/2026-04/UNIPD_Marchio_STD_RED.png
+- https://www.tsinghua-riet.com/templates/default/images/logo.png
+- https://github.com/SHUGUG/SHU-Logo/blob/master/logo_vi.svg
+- https://www.sspu.edu.cn/_upload/tpl/00/ad/173/template173/images/logo2.svg
+- https://www.xhlab.ac.cn/images/logo_pc.png
+- https://www.cnis.ac.cn/images/logo.png
+- https://www.caf.ac.cn/images/20191030101948828sa6.png
+- https://www.cauc.edu.cn/zhv5/template_files/1/img/logo.png
+- https://www.cup.edu.cn/images/gb2017/logo_01.png
+
+Three visibly low-resolution or background-contaminated marks were replaced on
+2026-09-10 with cleaner public assets:
+
+- University of Adelaide: https://en.wikipedia.org/wiki/Special:Redirect/file/The_University_of_Adelaide_Logo.svg
+  Official usage guidance: https://www.adelaide.edu.au/brand/visual-identity/logo
+- University of Groningen: https://www.rug.nl/_definition/shared/images/logo--en.svg
+- Guangxi University: https://www.gxu.edu.cn/images/logo2.png
+- University of Michigan: https://commons.wikimedia.org/wiki/File:University_of_Michigan_logo.svg
+  Official marks reference: https://brand.umich.edu/trademarks
+
+All 69 marks have a transparent background and normalized optical bounds.
+Private workbook contact fields, internal row references, classifications and
+notes are intentionally excluded.
+
+The source collection and workbook names above identify where future updates
+should be reconciled.
